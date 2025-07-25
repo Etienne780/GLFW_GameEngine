@@ -35,6 +35,7 @@ namespace EngineCore {
 
 		// is true as long as the key has the right state
 		static bool KeyPressed(int key);
+		static bool KeyRepeating(int key);
 
 		// is only one frame true
 		static bool AnyKeyJustPressed();
@@ -52,13 +53,12 @@ namespace EngineCore {
 
 		static Vector2 GetMousePosition();
 
-		// interner GLFW Callback
-		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
 	private:
 		Input();
 		static std::unordered_map<int, Key> keyStates;
 		static Vector2 m_mousePosition;
+
+		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 		static bool getAnyKeyState(bool keyPressed, bool justPressed);
 		static std::vector<int> getKeysState(bool keyPressed, bool justPressed);

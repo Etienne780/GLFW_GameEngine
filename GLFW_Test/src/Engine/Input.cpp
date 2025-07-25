@@ -42,6 +42,11 @@ namespace EngineCore {
 		return it != keyStates.end() && it->second.isPressed;
 	}
 
+	bool Input::KeyRepeating(int key) {
+		auto it = keyStates.find(key);
+		return it != keyStates.end() && it->second.isRepeating;
+	}
+
 	bool Input::AnyKeyJustPressed() {
 		return getAnyKeyState(true, true);
 	}

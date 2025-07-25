@@ -1,6 +1,5 @@
 #include "MyGameApp.h"
 #include "..\Engine\Engine.h"
-#include "..\Core\Log.h"
 
 using namespace EngineCore;
 
