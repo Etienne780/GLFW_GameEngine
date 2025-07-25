@@ -1,3 +1,8 @@
+// made by me and chatGPT
+// the syntax looks so bad :( 
+// this is peak C++ code
+// not even Holy C can keep up
+
 #pragma once
 #include <iostream>
 #include <string>
@@ -47,10 +52,13 @@ public:
     }
 
     // Überladene Methoden für Formatstrings mit variadischen Argumenten
-    template<typename... Args>
-    static void Error(const String& format, Args&&... args) {
+    template<typename T, typename... Args,
+        typename = std::enable_if_t<
+        std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
+        >>
+    static void Error(T&& format, Args&&... args) {
         if (!m_levelError) return;
-        m_print("[ERROR]: " + formatString(format, std::forward<Args>(args)...));
+        m_print("[ERROR]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     template<typename... Args>
@@ -59,10 +67,13 @@ public:
         m_print("[ERROR]: " + format::joinArgs(std::forward<Args>(args)...));
     }
 
-    template<typename... Args>
-    static void Warn(const String& format, Args&&... args) {
+    template<typename T, typename... Args,
+        typename = std::enable_if_t<
+        std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
+        >>
+    static void Warn(T&& format, Args&&... args) {
         if (!m_levelWarning) return;
-        m_print("[WARNING]: " + formatString(format, std::forward<Args>(args)...));
+        m_print("[WARNING]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     template<typename... Args>
@@ -71,10 +82,13 @@ public:
         m_print("[WARNING]: " + format::joinArgs(std::forward<Args>(args)...));
     }
 
-    template<typename... Args>
-    static void Info(const String& format, Args&&... args) {
+    template<typename T, typename... Args,
+        typename = std::enable_if_t<
+        std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
+        >>
+    static void Info(T&& format, Args&&... args) {
         if (!m_levelInfo) return;
-        m_print("[INFO]: " + formatString(format, std::forward<Args>(args)...));
+        m_print("[INFO]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     template<typename... Args>
@@ -83,10 +97,13 @@ public:
         m_print("[INFO]: " + format::joinArgs(std::forward<Args>(args)...));
     }
 
-    template<typename... Args>
-    static void Debug(const String& format, Args&&... args) {
+    template<typename T, typename... Args,
+        typename = std::enable_if_t<
+        std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
+        >>
+    static void Debug(T&& format, Args&&... args) {
         if (!m_levelDebug) return;
-        m_print("[Debug]: " + formatString(format, std::forward<Args>(args)...));
+        m_print("[Debug]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     template<typename... Args>
@@ -95,9 +112,12 @@ public:
         m_print("[Debug]: " + format::joinArgs(std::forward<Args>(args)...));
     }
 
-    template<typename... Args>
-    static void Print(const String& format, Args&&... args) {
-        m_print(formatString(format, std::forward<Args>(args)...));
+    template<typename T, typename... Args,
+        typename = std::enable_if_t<
+        std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
+        >>
+    static void Print(T&& format, Args&&... args) {
+        m_print(formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     template<typename... Args>
@@ -105,10 +125,13 @@ public:
         m_print(format::joinArgs(std::forward<Args>(args)...));
     }
 
-    template<typename... Args>
-    static void Print(Level level, const String& format, Args&&... args) {
+    template<typename T, typename... Args,
+        typename = std::enable_if_t<
+        std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
+        >>
+    static void Print(Level level, T&& format, Args&&... args) {
         if (!IsLevelSelected(level)) return;
-        m_print(formatString(format, std::forward<Args>(args)...));
+        m_print(formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     template<typename... Args>

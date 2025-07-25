@@ -1,5 +1,8 @@
 #pragma once
-#include <GLFW\glfw3.h>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 #include "Application.h"
 #include "Time.h"
@@ -20,6 +23,8 @@ namespace EngineCore {
 		void Update(double currentTimeSec);
 		void LateUpdate();
 		void Shutdown();
+
+		void WindowResize(int width, int height);
 
 	private:
 		int m_frameCount = 0;

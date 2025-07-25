@@ -1,12 +1,29 @@
 #pragma once
 #include <String>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
+#include "..\Core\Log.h"
+#include "..\Core\Math.h"
 
 typedef std::string String;
 
+namespace EngineCore {
+	class Engine;
+}
+
 class Application {
+	friend class EngineCore::Engine;
+
 public:
-	String name;
-	String version;
+	const String name;
+	const String version;
+
+	int windowHeight = 600;
+	int windowWidth = 800;
+
 	int frameCount = 0;
 
 	Application(String name, String version);
@@ -15,4 +32,16 @@ public:
 	virtual void OnStart();
 	virtual void OnUpdate();
 	virtual void OnShutdown();
+
+	virtual void OnWindowResize(int newWidth, int newHeight);
+
+	void SetBackgroundColor(float r, float g, float b, float a);
+	void SetBackgroundColor(const Vector4& color);
+	void BackgroundClear();
+
+	GLFWwindow* GetWindow();
+
+private:
+	Vector4 m_backgroundColor;
+	GLFWwindow* m_window;
 };

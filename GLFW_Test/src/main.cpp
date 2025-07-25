@@ -1,59 +1,59 @@
-#include <GLFW\glfw3.h>
-
-#include "Engine\Engine.h"
 #include "Game\MyGameApp.h"
 
-#include "Core\Log.h"
-
-#define WINDOW_TITLE "GLFW-Test"
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
-
 void glfw_error_callback(int error, const char* description);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+std::unique_ptr<EngineCore::Engine> engine;
 
 int main() {
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())
 	{
 		Log::Error("Initialization of GLFW faild!");
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 	}
 	Log::Info("Initialized GLFW successfully");
 
-	// Creates the window
-	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
+	auto app = std::make_unique<MyGameApp>();
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	GLFWwindow* window = glfwCreateWindow(app->windowWidth, app->windowHeight, app->name.c_str(), NULL, NULL);
 	if (!window)
 	{
 		// Window or OpenGL context creation failed
 		Log::Error("Window or OpenGL context creation failed!");
 		glfwTerminate();
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
+	}
+	glfwMakeContextCurrent(window);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		Log::Error("Failed to initialize GLAD!");
+		glfwTerminate();
+		return EXIT_FAILURE;
 	}
 
-	glfwMakeContextCurrent(window);
+	glViewport(0, 0, app->windowWidth, app->windowHeight);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSwapInterval(1);
 
-	auto app = std::make_unique<MyGameApp>();
-	EngineCore::Engine engine(std::move(app), window);
-	engine.Start();
+	engine = std::make_unique<EngineCore::Engine>(std::move(app), window);
+	engine->Start();
 
-	// glfwSetWindowCloseCallback
-	// glfwSetWindowShouldClose
 	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
-
 		double time = glfwGetTime();// is in sec
-		engine.Update(time);
-		engine.LateUpdate();
+		engine->Update(time);
+		engine->LateUpdate();
 
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
-	engine.Shutdown();
-
+	engine->Shutdown();
+	engine.reset();
 	glfwDestroyWindow(window);
 
 	glfwTerminate();
@@ -65,3 +65,10 @@ void glfw_error_callback(int error, const char* description)
 	Log::Error("GLFW Error: {}, {}", error, description);
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+
+	if (engine)
+		engine->WindowResize(width, height);
+}

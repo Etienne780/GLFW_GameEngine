@@ -6,6 +6,7 @@ namespace EngineCore {
 
 	void Engine::Start() {
 		Input::Init(m_window);
+		app->m_window = m_window;
 
 		Log::Info("Starts application: \"{}\", version: \"{}\"", app->name, app->version);
 		app->OnStart();
@@ -28,5 +29,11 @@ namespace EngineCore {
 
 	void Engine::Shutdown() {
 		app->OnShutdown();
+	}
+
+	void Engine::WindowResize(int width, int height) {
+		app->windowWidth = width;
+		app->windowHeight = height;
+		app->OnWindowResize(width, height);
 	}
 }

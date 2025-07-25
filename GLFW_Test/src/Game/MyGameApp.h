@@ -1,6 +1,6 @@
 // MyGameApp.h
 #pragma once
-#include "..\Engine\Application.h"
+#include "..\Engine\Engine.h"
 
 class MyGameApp : public Application {
 public:
@@ -10,4 +10,6 @@ protected:
 	void OnStart() override;
 	void OnUpdate() override;
 	void OnShutdown() override;
+
+	void OnWindowResize(int newWidth, int newHeight) override;
 };
