@@ -14,15 +14,15 @@ namespace EngineCore {
 	public:
 		std::unique_ptr<Application> app;
 
-		Engine(std::unique_ptr<Application> app);
+		Engine(std::unique_ptr<Application> app, GLFWwindow* window);
 
-		void Start(GLFWwindow* window);
+		void Start();
 		void Update(double currentTimeSec);
+		void LateUpdate();
 		void Shutdown();
 
 	private:
-		GLFWwindow* m_window;
-		Time m_time;
-		Input m_input;
+		int m_frameCount = 0;
+		GLFWwindow* m_window = nullptr;
 	};
 }

@@ -1,22 +1,29 @@
 #include "Engine.h"
 
 namespace EngineCore {
-	Engine::Engine(std::unique_ptr<Application> app)
-		: app(std::move(app)) {}
+	Engine::Engine(std::unique_ptr<Application> app, GLFWwindow* window)
+		: app(std::move(app)), m_window(window) {}
 
-	void Engine::Start(GLFWwindow* window) {
-		m_window = window;
-		m_input.Init(m_window);
+	void Engine::Start() {
+		Input::Init(m_window);
 
 		Log::Info("Starts application: \"{}\", version: \"{}\"", app->name, app->version);
 		app->OnStart();
 	}
 
 	void Engine::Update(double currentTimeSec) {
-		m_time.UpdateTime(currentTimeSec);
-		m_input.Update(m_window);
+		m_frameCount++;
+		app->frameCount = m_frameCount;
+		Input::frameCount = m_frameCount;
+
+		Time::UpdateTime(currentTimeSec);
+		Input::Update(m_window);
 
 		app->OnUpdate();
+	}
+
+	void Engine::LateUpdate() {
+		Input::LateUpdate();
 	}
 
 	void Engine::Shutdown() {

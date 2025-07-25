@@ -1,6 +1,9 @@
 #include "Time.h"
 
 namespace EngineCore {
+	double Time::timeSec = 0.0;
+	double Time::deltaTimeSec = 0.0;
+	
 	Time::Time() {}
 
 	void Time::UpdateTime(double currentTimeSec) {
@@ -12,11 +15,11 @@ namespace EngineCore {
 		deltaTimeSec = currentTimeSec - timeSec;
 	}
 
-	double Time::GetTimeSec() const {
+	double Time::GetTimeSec() {
 		return timeSec;
 	}
 
-	double Time::GetDeltaTimeSec() const {
+	double Time::GetDeltaTimeSec() {
 		return deltaTimeSec;
 	}
 }

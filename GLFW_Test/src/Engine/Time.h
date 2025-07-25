@@ -3,16 +3,16 @@
 namespace EngineCore {
 	class Time {
 	public:
-		Time();
-		void UpdateTime(double currentTimeSec);
+		static void UpdateTime(double currentTimeSec);
 
-		double GetTimeSec() const;
-		double GetDeltaTimeSec() const;
+		static double GetTimeSec();
+		static double GetDeltaTimeSec();
 
 	private:
-		void CalculateDeltaTime(double currentTimeSec);
+		Time();
+		static void CalculateDeltaTime(double currentTimeSec);
 
-		double timeSec = 0.0;
-		double deltaTimeSec = 0.0;
+		static double timeSec;
+		static double deltaTimeSec;
 	};
 }

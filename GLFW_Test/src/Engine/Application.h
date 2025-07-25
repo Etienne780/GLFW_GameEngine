@@ -7,6 +7,7 @@ class Application {
 public:
 	String name;
 	String version;
+	int frameCount = 0;
 
 	Application(String name, String version);
 	virtual ~Application() = default;

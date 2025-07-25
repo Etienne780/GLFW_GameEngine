@@ -10,7 +10,6 @@
 #define WINDOW_HEIGHT 480
 
 void glfw_error_callback(int error, const char* description);
-static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main() {
 	glfwSetErrorCallback(glfw_error_callback);
@@ -34,24 +33,23 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
-	glfwSetKeyCallback(window, glfw_key_callback);
-
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
 	auto app = std::make_unique<MyGameApp>();
-	EngineCore::Engine engine(std::move(app));
-	engine.Start(window);
+	EngineCore::Engine engine(std::move(app), window);
+	engine.Start();
 
 	// glfwSetWindowCloseCallback
 	// glfwSetWindowShouldClose
-	while (!glfwWindowShouldClose(window))
-	{
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+
 		double time = glfwGetTime();// is in sec
 		engine.Update(time);
+		engine.LateUpdate();
 
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
 
 	engine.Shutdown();
@@ -65,11 +63,5 @@ int main() {
 void glfw_error_callback(int error, const char* description)
 {
 	Log::Error("GLFW Error: {}, {}", error, description);
-}
-
-static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
