@@ -35,9 +35,9 @@ public:
 
 	virtual void OnWindowResize(int newWidth, int newHeight);
 
-	void SetBackgroundColor(float r, float g, float b, float a);
-	void SetBackgroundColor(const Vector4& color);
-	void BackgroundClear();
+	void App_SetBackgroundColor(float r, float g, float b, float a);
+	void App_SetBackgroundColor(const Vector4& color);
+	void App_BackgroundClear();
 
 	GLFWwindow* GetWindow();
 

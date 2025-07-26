@@ -12,6 +12,45 @@ namespace format {
     struct always_false : std::false_type {};
 
     template<typename T>
+    String toString(T value);
+
+    namespace detail {
+
+        template<typename... Args>
+        String joinArgsImpl(const String& separator, Args&&... args) {
+            std::vector<String> strings;
+            (strings.push_back(toString(std::forward<Args>(args))), ...);
+
+            std::ostringstream result;
+            for (size_t i = 0; i < strings.size(); ++i) {
+                result << strings[i];
+                if (i != strings.size() - 1)
+                    result << separator;
+            }
+            return result.str();
+        }
+
+    } // namespace detail
+
+    template<typename T, std::size_t N>
+    String arrayToString(const T(&arr)[N]) {
+        std::ostringstream result;
+        result << "[";
+        for (std::size_t i = 0; i < N; ++i) {
+            result << toString(arr[i]);
+            if (i != N - 1)
+                result << ", ";
+        }
+        result << "]";
+        return result.str();
+    }
+
+    template<std::size_t N>
+    String toString(const char(&arr)[N]) {
+        return String(arr);
+    }
+
+    template<typename T>
     String toString(T value) {
         if constexpr (std::is_same_v<T, bool>) {
             return (value) ? "true" : "false";
@@ -31,26 +70,13 @@ namespace format {
     }
 
     template<typename... Args>
-    static String _joinArgsImpl(const String& separator, Args&&... args) {
-        std::vector<String> strings;
-        (strings.push_back(toString(std::forward<Args>(args))), ...);
-
-        std::ostringstream result;
-        for (size_t i = 0; i < strings.size(); ++i) {
-            result << strings[i];
-            if (i != strings.size() - 1)
-                result << separator;
-        }
-        return result.str();
+    String joinArgs(Args&&... args) {
+        return detail::joinArgsImpl(", ", std::forward<Args>(args)...);
     }
 
     template<typename... Args>
-    static String joinArgs(Args&&... args) {
-        return _joinArgsImpl(", ", std::forward<Args>(args)...);
+    String joinArgsSeperator(const String& separator, Args&&... args) {
+        return detail::joinArgsImpl(separator, std::forward<Args>(args)...);
     }
 
-    template<typename... Args>
-    static String joinArgs(const String& separator, Args&&... args) {
-        return _joinArgsImpl(separator, std::forward<Args>(args)...);
-    }
 }

@@ -8,7 +8,16 @@ namespace EngineCore {
 		Input::Init(m_window);
 		app->m_window = m_window;
 
-		Log::Info("Starts application: \"{}\", version: \"{}\"", app->name, app->version);
+		String msg = Log::GetFormattedString("Starts application: \"{}\", version: \"{}\"", app->name, app->version);
+		Log::Info(msg);
+		String seperator;
+		int headerLength = strlen("[INFO]: ");
+		for (int i = 0; i < msg.length() + headerLength; i++) {
+			seperator += '=';
+		}
+		Log::Print(seperator);
+		Log::Print("");
+
 		app->OnStart();
 	}
 

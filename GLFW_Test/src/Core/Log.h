@@ -140,6 +140,19 @@ public:
         m_print(format::joinArgs(std::forward<Args>(args)...));
     }
 
+    template<typename T, typename... Args,
+        typename = std::enable_if_t<
+        std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
+        >>
+    static String GetFormattedString(T&& format, Args&&... args) {
+        return formatString(std::forward<T>(format), std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    static String GetFormattedString(Args&&... args) {
+        return format::joinArgs(std::forward<Args>(args)...);
+    }
+
 private:
     Log();
 
