@@ -18,11 +18,11 @@ class Application {
 	friend class EngineCore::Engine;
 
 public:
-	const String name;
-	const String version;
+	const String app_name;
+	const String app_version;
 
-	int window_Height = 600;
-	int window_Width = 800;
+	int app_window_Height = 600;
+	int app_window_Width = 800;
 
 	int app_frameCount = 0;
 	int app_framesPerSecond = 0;
