@@ -23,7 +23,7 @@ namespace EngineCore {
 
 	void Engine::Update(double currentTimeSec) {
 		m_frameCount++;
-		app->frameCount = m_frameCount;
+		app->app_frameCount = m_frameCount;
 		Input::frameCount = m_frameCount;
 
 		Time::UpdateTime(currentTimeSec);
@@ -41,8 +41,8 @@ namespace EngineCore {
 	}
 
 	void Engine::WindowResize(int width, int height) {
-		app->windowWidth = width;
-		app->windowHeight = height;
+		app->window_Width = width;
+		app->window_Height = height;
 		app->OnWindowResize(width, height);
 	}
 }

@@ -24,7 +24,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-	GLFWwindow* window = glfwCreateWindow(app->windowWidth, app->windowHeight, app->name.c_str(), NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(app->window_Width, app->window_Height, app->name.c_str(), NULL, NULL);
 	if (!window)
 	{
 		// Window or OpenGL context creation failed
@@ -42,7 +42,7 @@ int main() {
 		return EXIT_FAILURE;
 	}
 
-	glViewport(0, 0, app->windowWidth, app->windowHeight);
+	glViewport(0, 0, app->window_Width, app->window_Height);
 	glfwSwapInterval(1);
 
 	engine = std::make_unique<EngineCore::Engine>(std::move(app), window);

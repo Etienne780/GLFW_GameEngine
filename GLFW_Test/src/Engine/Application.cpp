@@ -14,6 +14,14 @@ void Application::App_SetBackgroundColor(float r, float g, float b, float a) {
     m_backgroundColor = Vector4(r, g, b, a);
 }
 
+void Application::App_SetBackgroundColor(float r, float g, float b) {
+    m_backgroundColor = Vector4(r, g, b, 1.0f);
+}
+
+void Application::App_SetBackgroundColor(float brightness) {
+    m_backgroundColor = Vector4(brightness, brightness, brightness, 1.0f);
+}
+
 void Application::App_SetBackgroundColor(const Vector4& color) {
     m_backgroundColor = color;
 }
