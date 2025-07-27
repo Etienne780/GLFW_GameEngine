@@ -34,6 +34,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 		Log::Error("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
 		Log::Print(Log::levelError, "Vertex: {}", vertexPath);
 		Log::Print(Log::levelError, "Fragment: {}", fragmentPath);
+		return;
 	}
 
 	const char* vShaderCode = vertexCode.c_str();
