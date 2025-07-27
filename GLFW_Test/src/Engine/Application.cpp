@@ -1,7 +1,7 @@
 #include "Application.h"
 
 Application::Application(String name, String version)
-    : name(name), version(version) {
+    : app_name(name), app_version(version) {
 }
 
 void Application::OnStart() {}

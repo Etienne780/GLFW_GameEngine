@@ -8,7 +8,7 @@ namespace EngineCore {
 		Input::Init(m_window);
 		app->m_window = m_window;
 
-		String msg = Log::GetFormattedString("Starts application: \"{}\", version: \"{}\"", app->name, app->version);
+		String msg = Log::GetFormattedString("Starts application: \"{}\", version: \"{}\"", app->app_name, app->app_version);
 		Log::Info(msg);
 		String seperator;
 		int headerLength = strlen("[INFO]: ");
@@ -49,8 +49,8 @@ namespace EngineCore {
 	}
 
 	void Engine::WindowResize(int width, int height) {
-		app->window_Width = width;
-		app->window_Height = height;
+		app->app_window_Width = width;
+		app->app_window_Height = height;
 		app->OnWindowResize(width, height);
 	}
 }

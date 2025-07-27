@@ -96,11 +96,9 @@ void MyGameApp::OnUpdate() {
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
 
-bool IsMouseInWindow() {
-	Vector2 m = Input::GetMousePosition();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
 }
 
 void MyGameApp::OnShutdown() {
