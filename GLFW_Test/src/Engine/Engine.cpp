@@ -18,6 +18,7 @@ namespace EngineCore {
 		Log::Print(seperator);
 		Log::Print("");
 
+		stbi_set_flip_vertically_on_load(true);
 		app->OnStart();
 	}
 

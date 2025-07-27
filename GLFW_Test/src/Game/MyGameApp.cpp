@@ -24,8 +24,20 @@ int CreateTexture(const char* path) {
 	unsigned char* imageData = stbi_load(path, &width, &height, &nrChannels, 0);
 
 	if (imageData) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-			GL_UNSIGNED_BYTE, imageData);
+		GLenum format;
+		if (nrChannels == 1)
+			format = GL_RED;
+		else if (nrChannels == 3)
+			format = GL_RGB;
+		else if (nrChannels == 4)
+			format = GL_RGBA;
+		else {
+			Log::Error("Unsupported number of channels: {}", nrChannels);
+			stbi_image_free(imageData);
+			return 0;
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, imageData);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
