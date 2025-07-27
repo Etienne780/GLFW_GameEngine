@@ -21,6 +21,8 @@ class Shader {
 public:
     /// OpenGL shader program ID
     unsigned int ID;
+    
+    bool isActive = false;
 
     /**
      * @brief Default constructor. Does not initialize any shader program.

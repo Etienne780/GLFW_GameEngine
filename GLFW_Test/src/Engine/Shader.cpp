@@ -88,6 +88,7 @@ void Shader::Use() {
 		Log::Warn("Could not Use Shader. Shader was not initialized");
 		return;
 	}
+	isActive = true;
 	glUseProgram(ID);
 }
 
@@ -104,12 +105,20 @@ void Shader::SetBool(const String& name, bool value) const {
 		Log::Warn("Could not SetBool Shader. Shader was not initialized");
 		return;
 	}
+	if (!isActive) {
+		Log::Warn("Could not SetBool Shader. Shader is not active");
+		return;
+	}
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
 
 void Shader::SetInt(const String& name, int value) const {
 	if (ID == -1) {
 		Log::Warn("Could not SetInt Shader. Shader was not initialized");
+		return;
+	}
+	if (!isActive) {
+		Log::Warn("Could not SetInt Shader. Shader is not active");
 		return;
 	}
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
@@ -120,12 +129,20 @@ void Shader::SetFloat(const String& name, float value) const {
 		Log::Warn("Could not SetFloat Shader. Shader was not initialized");
 		return;
 	}
+	if (!isActive) {
+		Log::Warn("Could not SetFloat Shader. Shader is not active");
+		return;
+	}
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
 void Shader::SetVector2(const String& name, Vector2 value) const {
 	if (ID == -1) {
 		Log::Warn("Could not SetVector2 Shader. Shader was not initialized");
+		return;
+	}
+	if (!isActive) {
+		Log::Warn("Could not SetVector2 Shader. Shader is not active");
 		return;
 	}
 	glUniform2f(glGetUniformLocation(ID, name.c_str()), value.x, value.y);
@@ -136,12 +153,20 @@ void Shader::SetVector3(const String& name, Vector3 value) const {
 		Log::Warn("Could not SetVector3 Shader. Shader was not initialized");
 		return;
 	}
+	if (!isActive) {
+		Log::Warn("Could not SetVector3 Shader. Shader is not active");
+		return;
+	}
 	glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
 }
 
 void Shader::SetVector4(const String& name, Vector4 value) const {
 	if (ID == -1) {
 		Log::Warn("Could not SetVector4 Shader. Shader was not initialized");
+		return;
+	}
+	if (!isActive) {
+		Log::Warn("Could not SetVector4 Shader. Shader is not active");
 		return;
 	}
 	glUniform4f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z, value.w);

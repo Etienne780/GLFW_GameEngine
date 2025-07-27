@@ -189,7 +189,8 @@
     <ClInclude Include="src\Game\MyGameApp.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\MissingTexture.png" />
+    <Image Include="assets\missingTexture.png" />
+    <Image Include="assets\stone.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\Default.frag" />

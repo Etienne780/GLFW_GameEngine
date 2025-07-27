@@ -7,13 +7,10 @@ MyGameApp::MyGameApp()
 }
 
 unsigned int EBO, VBO, VAO;
-unsigned int texture;
+unsigned int texture1, texture2;
 Shader DefaultShader;
-void MyGameApp::OnStart() {
-	App_SetBackgroundColor(0.2f, 0.3f, 0.3f);
-
-	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
-
+int CreateTexture(const char* path) {
+	unsigned int texture;
 	// create texture
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -24,7 +21,7 @@ void MyGameApp::OnStart() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char* imageData = stbi_load("assets/stone.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* imageData = stbi_load(path, &width, &height, &nrChannels, 0);
 
 	if (imageData) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
@@ -36,6 +33,16 @@ void MyGameApp::OnStart() {
 	}
 	stbi_image_free(imageData);
 
+	return texture;
+}
+
+void MyGameApp::OnStart() {
+	App_SetBackgroundColor(0.2f, 0.3f, 0.3f);
+
+	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
+
+	texture1 = CreateTexture("assets/stone.jpg");
+	texture2 = CreateTexture("assets/missingTexture.jpg");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -74,7 +81,6 @@ void MyGameApp::OnStart() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -84,6 +90,10 @@ void MyGameApp::OnStart() {
 
 	// uncomment this call to draw in wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	DefaultShader.Use();
+	DefaultShader.SetInt("texture1", 0);
+	DefaultShader.SetInt("texture2", 1);
 }
 
 void MyGameApp::OnUpdate() {
@@ -93,7 +103,10 @@ void MyGameApp::OnUpdate() {
 	App_BackgroundClear();
 
 	DefaultShader.Use();
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture2);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
