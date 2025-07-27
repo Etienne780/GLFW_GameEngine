@@ -13,6 +13,7 @@
 #include "..\Core\Log.h"
 #include "..\Core\Math.h"
 #include "..\Core\ColorUtils.h"
+#include "..\Core\stb_image.h"
 
 namespace EngineCore {
 	class Engine {
