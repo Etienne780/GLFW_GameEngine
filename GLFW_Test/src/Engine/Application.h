@@ -25,6 +25,7 @@ public:
 	int window_Width = 800;
 
 	int app_frameCount = 0;
+	int app_framesPerSecond = 0;
 
 	Application(String name, String version);
 	virtual ~Application() = default;

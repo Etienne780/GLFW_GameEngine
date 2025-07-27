@@ -1,6 +1,4 @@
-#ifndef VECTOR2_H
-#define VECTOR2_H
-
+#pragma once
 #include <stdexcept>
 #include <cmath>
 
@@ -39,5 +37,3 @@ public:
     Vector2 operator*(float scalar) const;
     Vector2 operator/(float scalar) const;
 };
-
-#endif

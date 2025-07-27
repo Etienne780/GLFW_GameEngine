@@ -29,6 +29,14 @@ namespace EngineCore {
 		Time::UpdateTime(currentTimeSec);
 		Input::Update(m_window);
 
+		m_fpsCounter += Time::GetDeltaTimeSec();
+		if (m_fpsCounter >= 1) {
+			m_framesPerSecond = m_frameCount - m_lastFrameCount;
+			m_lastFrameCount = m_frameCount;
+			m_fpsCounter -= 1.0;
+		}
+
+		app->app_framesPerSecond = m_framesPerSecond;
 		app->OnUpdate();
 	}
 
