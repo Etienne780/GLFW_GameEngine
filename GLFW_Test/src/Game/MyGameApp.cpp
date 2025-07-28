@@ -55,7 +55,7 @@ void MyGameApp::OnStart() {
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
 
 	texture1 = CreateTexture("assets/stone.jpg");
-	texture2 = CreateTexture("assets/missingTexture.jpg");
+	texture2 = CreateTexture("assets/missingTexture.png");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -109,8 +109,6 @@ void MyGameApp::OnStart() {
 	DefaultShader.SetInt("texture2", 1);
 }
 
-Shader s;
-float mixAmount = 0;
 void MyGameApp::OnUpdate() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(GetWindow(), true);
@@ -118,8 +116,6 @@ void MyGameApp::OnUpdate() {
 	App_Background_Clear();
 
 	App_Shader_Bind(&DefaultShader);
-	DefaultShader.SetFloat("mixAmount", mixAmount);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	glActiveTexture(GL_TEXTURE1);

@@ -166,6 +166,7 @@
     <ClCompile Include="src\Engine\Engine.cpp" />
     <ClCompile Include="src\Engine\Input.cpp" />
     <ClCompile Include="src\Engine\Shader.cpp" />
+    <ClCompile Include="src\Engine\Texture2D.cpp" />
     <ClCompile Include="src\Engine\Time.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\Game\MyGameApp.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="src\Engine\Engine.h" />
     <ClInclude Include="src\Engine\Input.h" />
     <ClInclude Include="src\Engine\Shader.h" />
+    <ClInclude Include="src\Engine\Texture2D.h" />
     <ClInclude Include="src\Engine\Time.h" />
     <ClInclude Include="src\Core\FormatUtils.h" />
     <ClInclude Include="src\Core\Log.h" />

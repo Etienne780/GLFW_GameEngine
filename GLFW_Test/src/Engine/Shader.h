@@ -83,7 +83,7 @@ public:
 
 private:
     /// OpenGL shader program ID
-    unsigned int m_ID;
+    unsigned int m_ID = -1;
     bool m_IsActive = false;
 
     /**

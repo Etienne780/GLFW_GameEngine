@@ -9,7 +9,6 @@ bool Shader::IsActive() {
 }
 
 Shader::Shader() {
-	m_ID = -1;
 }
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
