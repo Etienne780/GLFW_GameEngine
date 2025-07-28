@@ -40,6 +40,22 @@ Vector4& Vector4::operator-=(const Vector4& other) {
     return *this;
 }
 
+Vector4& Vector4::operator+=(float scalar) {
+    x += scalar;
+    y += scalar;
+    z += scalar;
+    w += scalar;
+    return *this;
+}
+
+Vector4& Vector4::operator-=(float scalar) {
+    x -= scalar;
+    y -= scalar;
+    z -= scalar;
+    w -= scalar;
+    return *this;
+}
+
 Vector4& Vector4::operator*=(float scalar) {
     x *= scalar; y *= scalar;
     z *= scalar; w *= scalar;
@@ -59,17 +75,22 @@ Vector4 Vector4::operator+(const Vector4& other) const {
     return Vector4(x + other.x, y + other.y, z + other.z, w + other.w);
 }
 
-// Subtracts two vectors and returns the result
 Vector4 Vector4::operator-(const Vector4& other) const {
     return Vector4(x - other.x, y - other.y, z - other.z, w - other.w);
 }
 
-// Scales the vector with a scalar and returns the result
+Vector4 Vector4::operator+(float scalar) const {
+    return Vector4(x + scalar, y + scalar, z + scalar, w + scalar);
+}
+
+Vector4 Vector4::operator-(float scalar) const {
+    return Vector4(x - scalar, y - scalar, z - scalar, w - scalar);
+}
+
 Vector4 Vector4::operator*(float scalar) const {
     return Vector4(x * scalar, y * scalar, z * scalar, w * scalar);
 }
 
-// Divides the vector by a scalar and returns the result
 Vector4 Vector4::operator/(float scalar) const {
     if (scalar == 0) {
         throw std::runtime_error("Division by zero is not allowed");

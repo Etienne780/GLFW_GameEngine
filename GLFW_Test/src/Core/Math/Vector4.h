@@ -33,12 +33,20 @@ public:
     // Operator overloads for vector operations
     Vector4& operator+=(const Vector4& other);
     Vector4& operator-=(const Vector4& other);
+
+    Vector4& operator+=(float scalar);
+    Vector4& operator-=(float scalar);
+
     Vector4& operator*=(float scalar);
     Vector4& operator/=(float scalar);
     
     // Additional operator overloads for convenient operations
     Vector4 operator+(const Vector4& other) const;
     Vector4 operator-(const Vector4& other) const;
+
+    Vector4 operator+(float scalar) const;
+    Vector4 operator-(float scalar) const;
+
     Vector4 operator*(float scalar) const;
     Vector4 operator/(float scalar) const;
 };

@@ -31,12 +31,20 @@ public:
     // Operator overloads for vector operations
     Vector2& operator+=(const Vector2& other);
     Vector2& operator-=(const Vector2& other);
+
+    Vector2& operator+=(float scalar);
+    Vector2& operator-=(float scalar);
+
     Vector2& operator*=(float scalar);
     Vector2& operator/=(float scalar);
     
     // Additional operator overloads for convenient operations
     Vector2 operator+(const Vector2& other) const;
     Vector2 operator-(const Vector2& other) const;
+
+    Vector2 operator+(float scalar) const;
+    Vector2 operator-(float scalar) const;
+
     Vector2 operator*(float scalar) const;
     Vector2 operator/(float scalar) const;
 };

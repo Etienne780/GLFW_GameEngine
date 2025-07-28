@@ -35,7 +35,6 @@ Vector3& Vector3::operator+=(const Vector3& other) {
     return *this;
 }
 
-// Subtracts another vector from the current vector
 Vector3& Vector3::operator-=(const Vector3& other) {
     x -= other.x;
     y -= other.y;
@@ -43,7 +42,20 @@ Vector3& Vector3::operator-=(const Vector3& other) {
     return *this;
 }
 
-// Scales the vector by a scalar
+Vector3& Vector3::operator+=(float scalar) {
+    x += scalar;
+    y += scalar;
+    z += scalar;
+    return *this;
+}
+
+Vector3& Vector3::operator-=(float scalar) {
+    x -= scalar;
+    y -= scalar;
+    z -= scalar;
+    return *this;
+}
+
 Vector3& Vector3::operator*=(float scalar) {
     x *= scalar;
     y *= scalar;
@@ -51,7 +63,6 @@ Vector3& Vector3::operator*=(float scalar) {
     return *this;
 }
 
-// Divides the vector by a scalar
 Vector3& Vector3::operator/=(float scalar) {
     if (scalar == 0) {
         throw std::runtime_error("Division by zero is not possible");
@@ -62,22 +73,26 @@ Vector3& Vector3::operator/=(float scalar) {
     return *this;
 }
 
-// Adds two vectors and returns the result
 Vector3 Vector3::operator+(const Vector3& other) const {
     return Vector3(x + other.x, y + other.y, z + other.z);
 }
 
-// Subtracts two vectors and returns the result
 Vector3 Vector3::operator-(const Vector3& other) const {
     return Vector3(x - other.x, y - other.y, z - other.z);
 }
 
-// Scales the vector by a scalar and returns the result
+Vector3 Vector3::operator+(float scalar) const {
+    return Vector3(x + scalar, y + scalar, z + scalar);
+}
+
+Vector3 Vector3::operator-(float scalar) const {
+    return Vector3(x - scalar, y - scalar, z - scalar);
+}
+
 Vector3 Vector3::operator*(float scalar) const {
     return Vector3(x * scalar, y * scalar, z * scalar);
 }
 
-// Divides the vector by a scalar and returns the result
 Vector3 Vector3::operator/(float scalar) const {
     if (scalar == 0) {
         throw std::runtime_error("Division by zero is not possible");
