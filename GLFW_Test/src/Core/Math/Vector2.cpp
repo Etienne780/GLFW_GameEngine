@@ -23,6 +23,10 @@ float Vector2::dot(const Vector2& other) const {
     return (x * other.x) + (y * other.y);
 }
 
+float Vector2::cross(const Vector2& other) const {
+    return x * other.y - y * other.x;
+}
+
 Vector2 Vector2::lerp(const Vector2& vec, float t) const {
     return Vector2(
         MathUtil::Lerp(x, vec.x, t), 

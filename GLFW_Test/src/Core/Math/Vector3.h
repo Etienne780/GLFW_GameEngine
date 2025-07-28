@@ -27,6 +27,8 @@ public:
 
     float dot(const Vector3& other) const;
 
+    Vector3 cross(const Vector3& other) const;
+
     // Returns a new vector linearly interpolated between this vector and the given vector
     // using the interpolation factor t (0.0 returns this vector, 1.0 returns the target vector)
     Vector3 lerp(const Vector3& other, float t) const;
