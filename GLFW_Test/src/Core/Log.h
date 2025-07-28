@@ -167,16 +167,12 @@ private:
     static bool m_levelInfo;
     static bool m_levelDebug;
 
-    // Basis-Version ohne Argumente
     static void m_print(const String& message);
 
-    // String-Formatierung mit Platzhaltern
     template<typename... Args>
     static void m_print(const String& message, Args&&... args) {
-        m_print(formatString(message, std::forward<Args>(args)...));
+        m_print(formatString(0, message, std::forward<Args>(args)...));
     }
-
-    // Hilfsmethoden für formatString (rekursiv)
 
     static String formatString(const String& format) {
         return format;
@@ -184,12 +180,26 @@ private:
 
     template<typename T, typename... Args>
     static String formatString(const String& format, T&& value, Args&&... args) {
+        return formatStringImpl(0, format, std::forward<T>(value), std::forward<Args>(args)...);
+    }
+
+    template<typename T, typename... Args>
+    static String formatStringImpl(int depth, const String& format, T&& value, Args&&... args) {
         size_t pos = format.find("{}");
         if (pos == String::npos) {
-            // Kein Platzhalter mehr, String zurückgeben (überschüssige Argumente ignorieren)
+            if (depth == 0) {
+                return FormatUtils::joinArgs(format, std::forward<T>(value), std::forward<Args>(args)...);
+            }
             return format;
         }
-        String result = format.substr(0, pos) + FormatUtils::toString(std::forward<T>(value)) + formatString(format.substr(pos + 2), std::forward<Args>(args)...);
+
+        String result = format.substr(0, pos)
+            + FormatUtils::toString(std::forward<T>(value))
+            + formatStringImpl(1, format.substr(pos + 2), std::forward<Args>(args)...);
         return result;
+    }
+
+    static String formatStringImpl(int, const String& format) {
+        return format;
     }
 };

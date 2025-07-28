@@ -32,7 +32,7 @@ int CreateTexture(const char* path) {
 		else if (nrChannels == 4)
 			format = GL_RGBA;
 		else {
-			Log::Error("Unsupported number of channels: {}", nrChannels);
+			Log::Error("Unsupported number of channels: {}!", nrChannels);
 			stbi_image_free(imageData);
 			return 0;
 		}
@@ -41,8 +41,10 @@ int CreateTexture(const char* path) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		Log::Error("Failed to load texture");
+
 	}
+	Log::Error("Failed to load texture!");
+	Log::Error(path);
 	stbi_image_free(imageData);
 
 	return texture;
