@@ -24,27 +24,45 @@ void Texture2D::Create(const char* path) {
 	unsigned char* imageData = stbi_load(path, &m_width, &m_height, &m_nrChannels, 0);
 
 	if (imageData) {
-		GLenum format;
 		if (m_nrChannels == 1)
-			format = GL_RED;
+			m_format = GL_RED;
 		else if (m_nrChannels == 3)
-			format = GL_RGB;
+			m_format = GL_RGB;
 		else if (m_nrChannels == 4)
-			format = GL_RGBA;
+			m_format = GL_RGBA;
 		else {
 			Log::Error("Texture2D: Unsupported number of channels: {}!", m_nrChannels);
 			stbi_image_free(imageData);
 			return;
 		}
 
-		glTexImage2D(GL_TEXTURE_2D, 0, format, m_width, m_height, 0, format, GL_UNSIGNED_BYTE, imageData);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, GL_UNSIGNED_BYTE, imageData);
+		if (m_createMipmaps) {
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
 	}
 	else {
 		Log::Error("Texture2D: Failed to load texture!");
 		Log::Error(path);
 	}
 	stbi_image_free(imageData);
+}
+
+void Texture2D::Bind(unsigned int unit) const {
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, m_ID);
+}
+
+void Texture2D::Unbind(unsigned int unit) const {
+	glActiveTexture(GL_TEXTURE0 + unit);
+
+	GLint boundTexture = 0;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &boundTexture);
+
+	if (static_cast<GLint>(m_ID) != boundTexture)
+		return;
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture2D::SetWrapping(unsigned int wrappingMode) {
@@ -73,26 +91,30 @@ void Texture2D::SetFilterMag(unsigned int filterMode) {
 	m_filterMag = filterMode;
 }
 
-int Texture2D::GetID() {
+void Texture2D::SetGenerateMipmaps(bool enable) {
+	m_createMipmaps = enable;
+}
+
+int Texture2D::GetID() const  {
 	return m_ID;
 }
 
-String Texture2D::GetPath() {
+String Texture2D::GetPath() const  {
 	return m_path;
 }
 
-int Texture2D::GetWidth() {
+int Texture2D::GetWidth() const  {
 	return m_width;
 }
 
-int Texture2D::GetHeight() {
+int Texture2D::GetHeight() const  {
 	return m_height;
 }
 
-Vector2 Texture2D::GetSize() {
+Vector2 Texture2D::GetSize() const  {
 	return Vector2(m_width, m_height);
 }
 
-int Texture2D::GetNrChannels() {
+int Texture2D::GetNrChannels() const  {
 	return m_nrChannels;
 }

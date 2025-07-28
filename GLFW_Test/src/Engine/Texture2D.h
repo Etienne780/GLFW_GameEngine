@@ -25,6 +25,9 @@ public:
 	*/
 	void Create(const char* path);
 
+	void Bind(unsigned int unit = 0) const;
+	void Unbind(unsigned int unit = 0) const;
+
 	void SetWrapping(unsigned int wrappingMode);
 	void SetWrappingX(unsigned int wrappingMode);
 	void SetWrappingY(unsigned int wrappingMode);
@@ -33,12 +36,14 @@ public:
 	void SetFilterMin(unsigned int filterMode);
 	void SetFilterMag(unsigned int filterMode);
 
-	int GetID();
-	String GetPath();
-	int GetWidth();
-	int GetHeight();
-	Vector2 GetSize();
-	int GetNrChannels();
+	void SetGenerateMipmaps(bool enable);
+
+	int GetID() const;
+	String GetPath() const;
+	int GetWidth() const;
+	int GetHeight() const;
+	Vector2 GetSize() const;
+	int GetNrChannels() const;
 
 private:
 	unsigned int m_ID = -1;
@@ -46,6 +51,7 @@ private:
 	int m_width = 0;
 	int m_height = 0;
 	int m_nrChannels = -1;
+	GLenum m_format = GL_RGB;
 
 	unsigned int m_wrappingX = GL_REPEAT;
 	unsigned int m_wrappingY = GL_REPEAT;

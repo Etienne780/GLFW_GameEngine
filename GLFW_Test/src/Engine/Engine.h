@@ -8,6 +8,7 @@
 #include "Time.h"
 #include "Input.h"
 #include "Shader.h"
+#include "Texture2D.h"
 
 #include "..\Core\FormatUtils.h"
 #include "..\Core\Log.h"

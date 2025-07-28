@@ -7,55 +7,15 @@ MyGameApp::MyGameApp()
 }
 
 unsigned int EBO, VBO, VAO;
-unsigned int texture1, texture2;
 Shader DefaultShader;
-int CreateTexture(const char* path) {
-	unsigned int texture;
-	// create texture
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// set the texture wrapping/filtering options (on currently bound texture)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load and generate the texture
-	int width, height, nrChannels;
-	unsigned char* imageData = stbi_load(path, &width, &height, &nrChannels, 0);
-
-	if (imageData) {
-		GLenum format;
-		if (nrChannels == 1)
-			format = GL_RED;
-		else if (nrChannels == 3)
-			format = GL_RGB;
-		else if (nrChannels == 4)
-			format = GL_RGBA;
-		else {
-			Log::Error("Unsupported number of channels: {}!", nrChannels);
-			stbi_image_free(imageData);
-			return 0;
-		}
-
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, imageData);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		Log::Error("Failed to load texture!");
-		Log::Error(path);
-	}
-	stbi_image_free(imageData);
-
-	return texture;
-}
-
+Texture2D texture1, texture2;
 void MyGameApp::OnStart() {
 	App_Background_SetColor(0.2f, 0.3f, 0.3f);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
 
-	texture1 = CreateTexture("assets/stone.jpg");
-	texture2 = CreateTexture("assets/missingTexture.png");
+	texture1.Create("assets/stone.jpg");
+	texture2.Create("assets/missingTexture.png");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -116,14 +76,15 @@ void MyGameApp::OnUpdate() {
 	App_Background_Clear();
 
 	App_Shader_Bind(&DefaultShader);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture2);
+	texture1.Bind(0);
+	texture2.Bind(1);
+
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	texture1.Unbind(0);
+	texture2.Unbind(1);
+
 	glBindVertexArray(0);
 }
 
