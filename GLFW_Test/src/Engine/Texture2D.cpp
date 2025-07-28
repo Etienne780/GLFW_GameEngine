@@ -112,7 +112,7 @@ int Texture2D::GetHeight() const  {
 }
 
 Vector2 Texture2D::GetSize() const  {
-	return Vector2(m_width, m_height);
+	return Vector2(static_cast<float>(m_width), static_cast<float>(m_height));
 }
 
 int Texture2D::GetNrChannels() const  {
