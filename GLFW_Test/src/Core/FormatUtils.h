@@ -55,6 +55,12 @@ public:
         return joinArgsImpl(separator, std::forward<Args>(args)...);
     }
 
+    template<typename T>
+    static String toHex(T num) {
+        static_assert(std::is_arithmetic<T>::value, "toHex requires arithmetic types");
+
+    }
+
 private:
     template<typename T>
     struct always_false : std::false_type {};
