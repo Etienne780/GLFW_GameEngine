@@ -18,12 +18,8 @@ typedef std::string String;
  * create a shader program, and set uniform values easily.
  */
 class Shader {
+    friend class Application;
 public:
-    /// OpenGL shader program ID
-    unsigned int ID;
-    
-    bool isActive = false;
-
     /**
      * @brief Default constructor. Does not initialize any shader program.
      */
@@ -37,15 +33,9 @@ public:
      */
     Shader(const char* vertexPath, const char* fragmentPath);
 
-    /**
-     * @brief Activates the shader program for use in the current OpenGL context.
-     */
-    void Use();
+    unsigned int GetID();
 
-    /**
-     * @brief Deletes the shader program. Should be called during cleanup.
-     */
-    void Delete();
+    bool IsActive();
 
     // --- Uniform setters ---
 
@@ -90,4 +80,24 @@ public:
      * @param value Vector4 value to set.
      */
     void SetVector4(const String& name, Vector4 value) const;
+
+private:
+    /// OpenGL shader program ID
+    unsigned int m_ID;
+    bool m_IsActive = false;
+
+    /**
+    * @brief Activates the shader program for use in the current OpenGL context.
+    */
+    void Bind();
+
+    /**
+    * @brief Deactivates the shader program in the current OpenGL context.
+    */
+    void Unbind();
+
+    /**
+    * @brief Deletes the shader program. Should be called during cleanup.
+    */
+    void Delete();
 };

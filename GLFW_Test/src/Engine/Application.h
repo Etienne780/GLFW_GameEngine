@@ -5,6 +5,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include "Shader.h"
+
 #include "..\Core\Log.h"
 #include "..\Core\Math.h"
 
@@ -36,15 +38,20 @@ public:
 
 	virtual void OnWindowResize(int newWidth, int newHeight);
 
-	void App_SetBackgroundColor(float r, float g, float b, float a);
-	void App_SetBackgroundColor(float r, float g, float b);
-	void App_SetBackgroundColor(float brightness);
-	void App_SetBackgroundColor(const Vector4& color);
-	void App_BackgroundClear();
+	void App_Background_SetColor(float r, float g, float b);
+	void App_Background_SetColor(float brightness);
+	void App_Background_SetColor(const Vector3& color);
+	void App_Background_Clear();
+
+	void App_Shader_Bind(Shader* shader);
+	void App_Shader_Unbind(Shader* shader);
+	void App_Shader_Delete(Shader* shader);
 
 	GLFWwindow* GetWindow();
 
 private:
-	Vector4 m_backgroundColor;
-	GLFWwindow* m_window;
+	Vector3 m_backgroundColor = Vector3(0.2f, 0.3f, 0.3f);
+	GLFWwindow* m_window = nullptr;
+
+	Shader* m_currentShader = nullptr;
 };

@@ -1,7 +1,15 @@
-#include "Shader.h"
+ï»¿#include "Shader.h"
+
+unsigned int Shader::GetID() {
+	return m_ID;
+}
+
+bool Shader::IsActive() {
+	return m_IsActive;
+}
 
 Shader::Shader() {
-	ID = -1;
+	m_ID = -1;
 }
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
@@ -19,7 +27,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 		vShaderFile.open(vertexPath);
 		fShaderFile.open(fragmentPath);
 		std::stringstream vShaderStream, fShaderStream;
-		// read file’s buffer contents into streams
+		// read fileâ€™s buffer contents into streams
 		vShaderStream << vShaderFile.rdbuf();
 		fShaderStream << fShaderFile.rdbuf();
 		// close file handlers
@@ -67,107 +75,121 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 		Log::Error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n{}", infoLog);
 	};
 
-	ID = glCreateProgram();
-	glAttachShader(ID, vertex);
-	glAttachShader(ID, fragment);
-	glLinkProgram(ID);
+	m_ID = glCreateProgram();
+	glAttachShader(m_ID, vertex);
+	glAttachShader(m_ID, fragment);
+	glLinkProgram(m_ID);
 	// print linking errors if any
-	glGetProgramiv(ID, GL_LINK_STATUS, &success);
+	glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
 	if (!success)
 	{
-		glGetProgramInfoLog(ID, 512, NULL, infoLog);
+		glGetProgramInfoLog(m_ID, 512, NULL, infoLog);
 		Log::Error("ERROR::SHADER::PROGRAM::LINKING_FAILED\n{}", infoLog);
 	}
-	// delete shaders; they’re linked into our program and no longer necessary
+	// delete shaders; theyâ€™re linked into our program and no longer necessary
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 }
 
-void Shader::Use() {
-	if (ID == -1) {
+void Shader::Bind() {
+	if (m_ID == -1) {
 		Log::Warn("Could not Use Shader. Shader was not initialized");
 		return;
 	}
-	isActive = true;
-	glUseProgram(ID);
+	m_IsActive = true;
+	glUseProgram(m_ID);
+}
+
+void Shader::Unbind() {
+	if (!m_IsActive) return;
+
+	GLint currentProgram = 0;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+
+	if (static_cast<GLint>(m_ID) != currentProgram)
+		return;
+
+	m_IsActive = false;
+	glUseProgram(0);
 }
 
 void Shader::Delete() {
-	if (ID == -1) {
+	if (m_ID == -1) {
 		Log::Warn("Could not Delete Shader. Shader was not initialized");
 		return;
 	}
-	glDeleteProgram(ID);
+	m_IsActive = false;
+	glDeleteProgram(m_ID);
 }
 
 void Shader::SetBool(const String& name, bool value) const {
-	if (ID == -1) {
+	if (m_ID == -1) {
 		Log::Warn("Could not SetBool Shader. Shader was not initialized");
 		return;
 	}
-	if (!isActive) {
+	if (!m_IsActive) {
 		Log::Warn("Could not SetBool Shader. Shader is not active");
 		return;
 	}
-	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
 }
 
 void Shader::SetInt(const String& name, int value) const {
-	if (ID == -1) {
+	if (m_ID == -1) {
 		Log::Warn("Could not SetInt Shader. Shader was not initialized");
 		return;
 	}
-	if (!isActive) {
+	if (!m_IsActive) {
 		Log::Warn("Could not SetInt Shader. Shader is not active");
 		return;
 	}
-	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
 void Shader::SetFloat(const String& name, float value) const {
-	if (ID == -1) {
+	if (m_ID == -1) {
 		Log::Warn("Could not SetFloat Shader. Shader was not initialized");
 		return;
 	}
-	if (!isActive) {
+	if (!m_IsActive) {
 		Log::Warn("Could not SetFloat Shader. Shader is not active");
 		return;
 	}
-	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+	glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
 void Shader::SetVector2(const String& name, Vector2 value) const {
-	if (ID == -1) {
+	if (m_ID == -1) {
 		Log::Warn("Could not SetVector2 Shader. Shader was not initialized");
 		return;
 	}
-	if (!isActive) {
+	if (!m_IsActive) {
 		Log::Warn("Could not SetVector2 Shader. Shader is not active");
 		return;
 	}
-	glUniform2f(glGetUniformLocation(ID, name.c_str()), value.x, value.y);
+	glUniform2f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y);
 }
 
 void Shader::SetVector3(const String& name, Vector3 value) const {
-	if (ID == -1) {
+	if (m_ID == -1) {
 		Log::Warn("Could not SetVector3 Shader. Shader was not initialized");
 		return;
 	}
-	if (!isActive) {
+	if (!m_IsActive) {
 		Log::Warn("Could not SetVector3 Shader. Shader is not active");
 		return;
 	}
-	glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
+	glUniform3f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z);
 }
 
 void Shader::SetVector4(const String& name, Vector4 value) const {
-	if (ID == -1) {
+	if (m_ID == -1) {
 		Log::Warn("Could not SetVector4 Shader. Shader was not initialized");
 		return;
 	}
-	if (!isActive) {
+	if (!m_IsActive) {
 		Log::Warn("Could not SetVector4 Shader. Shader is not active");
 		return;
 	}
-	glUniform4f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z, value.w);
+	glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
 }

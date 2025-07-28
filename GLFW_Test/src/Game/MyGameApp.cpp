@@ -50,7 +50,7 @@ int CreateTexture(const char* path) {
 }
 
 void MyGameApp::OnStart() {
-	App_SetBackgroundColor(0.2f, 0.3f, 0.3f);
+	App_Background_SetColor(0.2f, 0.3f, 0.3f);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
 
@@ -104,18 +104,22 @@ void MyGameApp::OnStart() {
 	// uncomment this call to draw in wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	DefaultShader.Use();
+	App_Shader_Bind(&DefaultShader);
 	DefaultShader.SetInt("texture1", 0);
 	DefaultShader.SetInt("texture2", 1);
 }
 
+Shader s;
+float mixAmount = 0;
 void MyGameApp::OnUpdate() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(GetWindow(), true);
 
-	App_BackgroundClear();
+	App_Background_Clear();
 
-	DefaultShader.Use();
+	App_Shader_Bind(&DefaultShader);
+	DefaultShader.SetFloat("mixAmount", mixAmount);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	glActiveTexture(GL_TEXTURE1);
@@ -132,7 +136,7 @@ void MyGameApp::OnShutdown() {
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	DefaultShader.Delete();
+	App_Shader_Delete(&DefaultShader);
 }
 
 void MyGameApp::OnWindowResize(int newWidth, int newHeight) {
