@@ -1,5 +1,9 @@
 #include "Vector3.h"
 
+std::string Vector3::toString() const {
+    return FormatUtils::formatString("[{}, {}, {}]", x, y, z);
+}
+
 void Vector3::normalize() {
     float len = magnitude();
     if (len > 0) {

@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "MathUtils.h"
+#include "..\FormatUtils.h"
 
 class Vector2 {
 public:
@@ -12,6 +13,8 @@ public:
     Vector2() {}
     Vector2(float x, float y) : x(x), y(y) {}
     
+    std::string toString() const;
+
     // Normalizes the vector (sets the length to 1)
     void normalize();
     

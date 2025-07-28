@@ -55,12 +55,16 @@ public:
         return joinArgsImpl(separator, std::forward<Args>(args)...);
     }
 
-    template<typename T>
-    static String toHex(T num) {
-        static_assert(std::is_arithmetic<T>::value, "toHex requires arithmetic types");
-
+    /// Base case for formatString – returns unchanged format string.
+    static String formatString(const String& format) {
+        return format;
     }
 
+    /// Recursively formats a string by replacing each "{}" with corresponding argument.
+    template<typename T, typename... Args>
+    static String formatString(const String& format, T&& value, Args&&... args) {
+        return formatStringImpl(0, format, std::forward<T>(value), std::forward<Args>(args)...);
+    }
 private:
     template<typename T>
     struct always_false : std::false_type {};
@@ -77,5 +81,28 @@ private:
                 result << separator;
         }
         return result.str();
+    }
+
+    /// Internal implementation of formatString with recursion depth.
+    template<typename T, typename... Args>
+    static String formatStringImpl(int depth, const String& format, T&& value, Args&&... args) {
+        size_t pos = format.find("{}");
+        if (pos == String::npos) {
+            if (depth == 0) {
+                // No placeholders found: fallback to concatenated args.
+                return FormatUtils::joinArgs(format, std::forward<T>(value), std::forward<Args>(args)...);
+            }
+            return format;
+        }
+
+        String result = format.substr(0, pos)
+            + FormatUtils::toString(std::forward<T>(value))
+            + formatStringImpl(1, format.substr(pos + 2), std::forward<Args>(args)...);
+        return result;
+    }
+
+    /// Base case for formatStringImpl – returns remaining format unchanged.
+    static String formatStringImpl(int, const String& format) {
+        return format;
     }
 };

@@ -1,5 +1,9 @@
 #include "Vector4.h"
 
+std::string Vector4::toString() const {
+    return FormatUtils::formatString("[{}, {}, {}, {}]", x, y, z, w);
+}
+
 void Vector4::normalize() {
     float len = magnitude();
     if (len > 0) {

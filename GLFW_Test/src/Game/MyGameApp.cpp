@@ -41,10 +41,9 @@ int CreateTexture(const char* path) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-
+		Log::Error("Failed to load texture!");
+		Log::Error(path);
 	}
-	Log::Error("Failed to load texture!");
-	Log::Error(path);
 	stbi_image_free(imageData);
 
 	return texture;
@@ -84,7 +83,7 @@ void MyGameApp::OnStart() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	float vertexSize = 8 * sizeof(float);
+	GLsizei vertexSize = 8 * sizeof(float);
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
 	glEnableVertexAttribArray(0);

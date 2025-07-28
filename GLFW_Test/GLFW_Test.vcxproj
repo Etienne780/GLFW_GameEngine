@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\ColorUtils.cpp" />
+    <ClCompile Include="src\Core\ConversionUtils.cpp" />
     <ClCompile Include="src\Core\Math\Vector2.cpp" />
     <ClCompile Include="src\Core\Math\Vector3.cpp" />
     <ClCompile Include="src\Core\Math\Vector4.cpp" />
@@ -173,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\ColorUtils.h" />
+    <ClInclude Include="src\Core\ConversionUtils.h" />
     <ClInclude Include="src\Core\Math.h" />
     <ClInclude Include="src\Core\Math\MathUtils.h" />
     <ClInclude Include="src\Core\Math\Vector2.h" />

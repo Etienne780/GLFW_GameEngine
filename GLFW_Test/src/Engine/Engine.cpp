@@ -11,7 +11,7 @@ namespace EngineCore {
 		String msg = Log::GetFormattedString("Starts application: \"{}\", version: \"{}\"", app->app_name, app->app_version);
 		Log::Info(msg);
 		String seperator;
-		int headerLength = strlen("[INFO]: ");
+		size_t headerLength = strlen("[INFO]: ");
 		for (int i = 0; i < msg.length() + headerLength; i++) {
 			seperator += '=';
 		}

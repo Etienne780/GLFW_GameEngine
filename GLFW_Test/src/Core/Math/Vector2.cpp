@@ -1,5 +1,9 @@
 #include "Vector2.h"
 
+std::string Vector2::toString() const {
+    return FormatUtils::formatString("[{}, {}]", x, y);
+}
+
 void Vector2::normalize() {
     float len = magnitude();
     if (len > 0) {

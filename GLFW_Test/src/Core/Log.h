@@ -64,7 +64,7 @@ public:
         >>
         static void Error(T&& format, Args&&... args) {
         if (!m_levelError) return;
-        m_print("[ERROR]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print("[ERROR]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs a raw error message composed from arguments, without format string.
@@ -81,7 +81,7 @@ public:
         >>
         static void Warn(T&& format, Args&&... args) {
         if (!m_levelWarning) return;
-        m_print("[WARNING]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print("[WARNING]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs a raw warning message.
@@ -98,7 +98,7 @@ public:
         >>
         static void Info(T&& format, Args&&... args) {
         if (!m_levelInfo) return;
-        m_print("[INFO]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print("[INFO]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs an informational message with argument joining.
@@ -115,7 +115,7 @@ public:
         >>
         static void Debug(T&& format, Args&&... args) {
         if (!m_levelDebug) return;
-        m_print("[Debug]: " + formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print("[Debug]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs a debug message without formatting.
@@ -131,7 +131,7 @@ public:
         std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
         >>
         static void Print(T&& format, Args&&... args) {
-        m_print(formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Prints joined arguments without log level prefix.
@@ -147,7 +147,7 @@ public:
         >>
         static void Print(Level level, T&& format, Args&&... args) {
         if (!IsLevelSelected(level)) return;
-        m_print(formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Conditionally prints joined arguments based on log level.
@@ -163,7 +163,7 @@ public:
         std::is_convertible_v<T, String> || std::is_convertible_v<T, const char*>
         >>
         static String GetFormattedString(T&& format, Args&&... args) {
-        return formatString(std::forward<T>(format), std::forward<Args>(args)...);
+        return FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...);
     }
 
     /// Returns joined arguments as string.
@@ -188,40 +188,6 @@ private:
     /// Helper for formatted print with extra arguments.
     template<typename... Args>
     static void m_print(const String& message, Args&&... args) {
-        m_print(formatString(0, message, std::forward<Args>(args)...));
-    }
-
-    /// Base case for formatString – returns unchanged format string.
-    static String formatString(const String& format) {
-        return format;
-    }
-
-    /// Recursively formats a string by replacing each "{}" with corresponding argument.
-    template<typename T, typename... Args>
-    static String formatString(const String& format, T&& value, Args&&... args) {
-        return formatStringImpl(0, format, std::forward<T>(value), std::forward<Args>(args)...);
-    }
-
-    /// Internal implementation of formatString with recursion depth.
-    template<typename T, typename... Args>
-    static String formatStringImpl(int depth, const String& format, T&& value, Args&&... args) {
-        size_t pos = format.find("{}");
-        if (pos == String::npos) {
-            if (depth == 0) {
-                // No placeholders found: fallback to concatenated args.
-                return FormatUtils::joinArgs(format, std::forward<T>(value), std::forward<Args>(args)...);
-            }
-            return format;
-        }
-
-        String result = format.substr(0, pos)
-            + FormatUtils::toString(std::forward<T>(value))
-            + formatStringImpl(1, format.substr(pos + 2), std::forward<Args>(args)...);
-        return result;
-    }
-
-    /// Base case for formatStringImpl – returns remaining format unchanged.
-    static String formatStringImpl(int, const String& format) {
-        return format;
+        m_print(FormatUtils::formatString(0, message, std::forward<Args>(args)...));
     }
 };

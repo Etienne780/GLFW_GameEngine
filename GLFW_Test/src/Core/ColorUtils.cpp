@@ -1,7 +1,11 @@
 #include "ColorUtils.h"
 #include <cmath>
 
-Vector3 ColorUtils::HSVtoRGB(float h, float s, float v) {
+Vector3 ColorUtils::HSVToRGB(const Vector3& color) {
+    return HSVToRGB(color.x, color.y, color.z);
+}
+
+Vector3 ColorUtils::HSVToRGB(float h, float s, float v) {
     float c = v * s;
     float x = c * (1.0f - std::fabs(fmod(h / 60.0f, 2.0f) - 1.0f));
     float m = v - c;
@@ -17,7 +21,11 @@ Vector3 ColorUtils::HSVtoRGB(float h, float s, float v) {
     return Vector3(r + m, g + m, b + m);
 }
 
-Vector3 ColorUtils::RGBtoHSV(float r, float g, float b) {
+Vector3 ColorUtils::RGBToHSV(const Vector3& color) {
+    return RGBToHSV(color.x, color.y, color.z);
+}
+
+Vector3 ColorUtils::RGBToHSV(float r, float g, float b) {
     float max = std::fmax(r, std::fmax(g, b));
     float min = std::fmin(r, std::fmin(g, b));
     float delta = max - min;
@@ -55,4 +63,102 @@ Vector3 ColorUtils::ClampColor(const Vector3& color) {
     float g = std::fmax(0.0f, std::fmin(1.0f, color.y));
     float b = std::fmax(0.0f, std::fmin(1.0f, color.z));
     return Vector3(r, g, b);
+}
+
+String ColorUtils::RGBToHex(const Vector3& color, bool withPrefix) {
+    return RGBToHex(color.x, color.y, color.z, withPrefix);
+}
+
+String ColorUtils::RGBToHex(float r, float g, float b, bool withPrefix) {
+    int newR = static_cast<int>(r * 255.0f);
+    int newG = static_cast<int>(g * 255.0f);
+    int newB = static_cast<int>(b * 255.0f);
+
+    newR = std::clamp(newR, 0, 255);
+    newG = std::clamp(newG, 0, 255);
+    newB = std::clamp(newB, 0, 255);
+
+    return RGBToHexImpl(newR, newG, newB, withPrefix);
+}
+
+String ColorUtils::HSVToHex(const Vector3& color, bool withPrefix) {
+    return HSVToHex(color.x, color.y, color.z, withPrefix);
+}
+
+String ColorUtils::HSVToHex(float h, float s, float v, bool withPrefix) {
+    Vector3 rgb = HSVToRGB(h, s, v);
+
+    int r = static_cast<int>(rgb.x * 255.0f);
+    int g = static_cast<int>(rgb.y * 255.0f);
+    int b = static_cast<int>(rgb.z * 255.0f);
+
+    r = std::clamp(r, 0, 255);
+    g = std::clamp(g, 0, 255);
+    b = std::clamp(b, 0, 255);
+
+    return RGBToHexImpl(r, g, b, withPrefix);
+}
+
+String ColorUtils::RGBToHexImpl(int r, int g, int b, bool withPrefix) {
+    std::ostringstream stream;
+    stream << std::hex << std::uppercase
+        << (r < 16 ? "0" : "") << r
+        << (g < 16 ? "0" : "") << g
+        << (b < 16 ? "0" : "") << b;
+    return withPrefix ? "#" + stream.str() : stream.str();
+}
+
+Vector3 ColorUtils::HexToRGB(const String& hex) {
+    Vector3 result;
+
+    if (hex.empty() || hex[0] != '#') {
+        Log::Warn("HexToRGB: Hex string must start with '#'.");
+        return result;
+    }
+
+    if (hex.length() != 7) {
+        Log::Warn("HexToRGB: Hex string must be in format '#RRGGBB'.");
+        return result;
+    }
+
+    try {
+        int r = ConversionUtils::HexToIntegral(hex.substr(1, 2)); // R (at index 1 and 2)
+        int g = ConversionUtils::HexToIntegral(hex.substr(3, 2)); // G (at index 3 and 4)
+        int b = ConversionUtils::HexToIntegral(hex.substr(5, 2)); // B (at index 5 and 6)
+
+        result = Vector3(r / 255.0f, g / 255.0f, b / 255.0f);
+    }
+    catch (const std::exception& e) {
+        Log::Error("HexToRGB: Conversion failed - {}", e.what());
+    }
+
+    return result;
+}
+
+Vector4 ColorUtils::HexToRGBA(const String& hex) {
+    Vector4 result;
+
+    if (hex.empty() || hex[0] != '#') {
+        Log::Warn("HexToRGBA: Hex string must start with '#'.");
+        return result;
+    }
+
+    if (hex.length() != 9) {
+        Log::Warn("HexToRGBA: Hex string must be in format '#RRGGBBAA'.");
+        return result;
+    }
+
+    try {
+        int r = ConversionUtils::HexToIntegral(hex.substr(1, 2)); // R (at index 1 and 2)
+        int g = ConversionUtils::HexToIntegral(hex.substr(3, 2)); // G (at index 3 and 4)
+        int b = ConversionUtils::HexToIntegral(hex.substr(5, 2)); // B (at index 5 and 6)
+        int a = ConversionUtils::HexToIntegral(hex.substr(7, 2)); // B (at index 7 and 8)
+
+        result = Vector4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+    }
+    catch (const std::exception& e) {
+        Log::Error("HexToRGBA: Conversion failed - {}", e.what());
+    }
+
+    return result;
 }
