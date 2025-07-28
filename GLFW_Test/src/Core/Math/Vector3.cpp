@@ -19,11 +19,15 @@ float Vector3::squaredMagnitude() const {
     return (x * x + y * y + z * z);
 }
 
-Vector3 Vector3::lerp(const Vector3& vec, float t) const {
+float Vector3::dot(const Vector3& other) const {
+    return (x * other.x) + (y * other.y) + (z * other.z);
+}
+
+Vector3 Vector3::lerp(const Vector3& other, float t) const {
     return Vector3(
-        MathUtil::Lerp(x, vec.x, t),
-        MathUtil::Lerp(y, vec.y, t),
-        MathUtil::Lerp(z, vec.z, t)
+        MathUtil::Lerp(x, other.x, t),
+        MathUtil::Lerp(y, other.y, t),
+        MathUtil::Lerp(z, other.z, t)
     );
 }
 

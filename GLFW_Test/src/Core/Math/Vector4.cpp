@@ -19,6 +19,10 @@ float Vector4::squaredMagnitude() const {
     return x * x + y * y + z * z + w * w;
 }
 
+float Vector4::dot(const Vector4& other) const {
+    return (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w);
+}
+
 Vector4 Vector4::lerp(const Vector4& vec, float t) const {
     return Vector4(
         MathUtil::Lerp(x, vec.x, t),
