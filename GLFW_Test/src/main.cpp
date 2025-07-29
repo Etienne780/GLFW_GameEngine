@@ -43,7 +43,7 @@ int main() {
 	}
 
 	glViewport(0, 0, app->app_window_Width, app->app_window_Height);
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 
 	engine = std::make_unique<EngineCore::Engine>(std::move(app), window);
 	engine->Start();
