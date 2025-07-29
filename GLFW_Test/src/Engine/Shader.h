@@ -87,14 +87,67 @@ public:
      */
     void SetVector4(const String& name, const Vector4& value) const;
 
+    /**
+     * @brief Sets a 2x2 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 4 float values in column-major order.
+     */
     void SetMatrix2(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 3x3 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 9 float values in column-major order.
+     */
     void SetMatrix3(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 4x4 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 16 float values in column-major order.
+     */
     void SetMatrix4(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 2x3 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 6 float values in column-major order.
+     */
     void SetMatrix2x3(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 3x2 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 6 float values in column-major order.
+     */
     void SetMatrix3x2(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 2x4 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 8 float values in column-major order.
+     */
     void SetMatrix2x4(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 4x2 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 8 float values in column-major order.
+     */
     void SetMatrix4x2(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 3x4 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 12 float values in column-major order.
+     */
     void SetMatrix3x4(const String& name, const float* data) const;
+
+    /**
+     * @brief Sets a 4x3 matrix uniform variable in the shader.
+     * @param name Name of the uniform variable in the GLSL shader.
+     * @param data Pointer to 12 float values in column-major order.
+     */
     void SetMatrix4x3(const String& name, const float* data) const;
 
 private:
