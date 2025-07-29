@@ -1,4 +1,5 @@
 #include "ConversionUtils.h"
+#include "Math.h"
 
 int ConversionUtils::HexToIntegral(const std::string& hex) {
     int result = 0;
@@ -13,4 +14,12 @@ int ConversionUtils::HexToIntegral(const std::string& hex) {
 
     ss >> result;
     return result;
+}
+
+float ConversionUtils::ToDegrees(float radians) {
+    return radians * (180 / M_PI);
+}
+
+float ConversionUtils::ToRadians(float degrees) {
+    return degrees * (M_PI / 180);
 }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <type_traits>
 #include <bitset>
@@ -66,4 +66,12 @@ public:
 
         return withPrefix ? "0b" + binStr : binStr;
     }
+
+    // Converts an angle in radians to degrees.
+    // Example: π radians ≈ 180 degrees.
+    static float ToDegrees(float radians);
+
+    // Converts an angle in degrees to radians.
+    // Example: 180 degrees ≈ π radians.
+    static float ToRadians(float degrees);
 };
