@@ -17,14 +17,21 @@ void MyGameApp::OnStart() {
 	texture1.Create("assets/stone.jpg");
 	texture2.Create("assets/missingTexture.png");
 
+	/*
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+	*/
+
+
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float vertices[] = {
-		// positions // colors // texture coords
-		0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-		-0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left
+		// positions  // texture coords
+		0.5f, 0.5f, 0.0f, 1.0f, 1.0f, // top right
+		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f // top left
 	};
 	unsigned int indices[] = {
 		1, 0, 3,
@@ -43,16 +50,13 @@ void MyGameApp::OnStart() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	GLsizei vertexSize = 8 * sizeof(float);
+	GLsizei vertexSize = 5 * sizeof(float);
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
 	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
 	// UV attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -67,6 +71,9 @@ void MyGameApp::OnStart() {
 	App_Shader_Bind(&DefaultShader);
 	DefaultShader.SetInt("texture1", 0);
 	DefaultShader.SetInt("texture2", 1);
+	
+	Matrix trans = GLTransform::RotationZ(ConversionUtils::ToRadians(90)) * GLTransform::ScaleUniform(0.5);
+	DefaultShader.SetMatrix4("transform", trans.ToOpenGLData().data());
 }
 
 void MyGameApp::OnUpdate() {
