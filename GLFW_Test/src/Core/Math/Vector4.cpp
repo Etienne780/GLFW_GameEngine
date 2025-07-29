@@ -1,29 +1,29 @@
 #include "Vector4.h"
 
-std::string Vector4::toString() const {
+std::string Vector4::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}, {}]", x, y, z, w);
 }
 
-void Vector4::normalize() {
-    float len = magnitude();
+void Vector4::Normalize() {
+    float len = Magnitude();
     if (len > 0) {
         *this /= len;
     }
 }
 
-float Vector4::magnitude() const {
-    return std::sqrt(squaredMagnitude());
+float Vector4::Magnitude() const {
+    return std::sqrt(SquaredMagnitude());
 }
 
-float Vector4::squaredMagnitude() const {
+float Vector4::SquaredMagnitude() const {
     return x * x + y * y + z * z + w * w;
 }
 
-float Vector4::dot(const Vector4& other) const {
+float Vector4::Dot(const Vector4& other) const {
     return (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w);
 }
 
-Vector4 Vector4::lerp(const Vector4& vec, float t) const {
+Vector4 Vector4::Lerp(const Vector4& vec, float t) const {
     return Vector4(
         MathUtil::Lerp(x, vec.x, t),
         MathUtil::Lerp(y, vec.y, t),
@@ -100,4 +100,20 @@ Vector4 Vector4::operator/(float scalar) const {
         throw std::runtime_error("Division by zero is not allowed");
     }
     return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
+}
+
+float& Vector4::operator[](int index) {
+    if (index == 0) return x;
+    if (index == 1) return y;
+    if (index == 2) return z;
+    if (index == 3) return w;
+    throw std::out_of_range("Vector4 index out of range");
+}
+
+const float& Vector4::operator[](int index) const {
+    if (index == 0) return x;
+    if (index == 1) return y;
+    if (index == 2) return z;
+    if (index == 3) return w;
+    throw std::out_of_range("Vector4 index out of range");
 }

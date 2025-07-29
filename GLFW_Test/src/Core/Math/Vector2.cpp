@@ -1,33 +1,33 @@
 #include "Vector2.h"
 
-std::string Vector2::toString() const {
+std::string Vector2::ToString() const {
     return FormatUtils::formatString("[{}, {}]", x, y);
 }
 
-void Vector2::normalize() {
-    float len = magnitude();
+void Vector2::Normalize() {
+    float len = Magnitude();
     if (len > 0) {
         *this /= len;
     }
 }
 
-float Vector2::magnitude() const {
-    return std::sqrt(squaredMagnitude());
+float Vector2::Magnitude() const {
+    return std::sqrt(SquaredMagnitude());
 }
 
-float Vector2::squaredMagnitude() const {
+float Vector2::SquaredMagnitude() const {
     return (x * x + y * y);
 }
 
-float Vector2::dot(const Vector2& other) const {
+float Vector2::Dot(const Vector2& other) const {
     return (x * other.x) + (y * other.y);
 }
 
-float Vector2::cross(const Vector2& other) const {
+float Vector2::Cross(const Vector2& other) const {
     return x * other.y - y * other.x;
 }
 
-Vector2 Vector2::lerp(const Vector2& vec, float t) const {
+Vector2 Vector2::Lerp(const Vector2& vec, float t) const {
     return Vector2(
         MathUtil::Lerp(x, vec.x, t), 
         MathUtil::Lerp(y, vec.y, t) 
@@ -98,4 +98,16 @@ Vector2 Vector2::operator/(float scalar) const {
         throw std::runtime_error("Division by zero is not possible");
     }
     return Vector2(x / scalar, y / scalar);
+}
+
+float& Vector2::operator[](int index) {
+    if (index == 0) return x;
+    if (index == 1) return y;
+    throw std::out_of_range("Vector2 index out of range");
+}
+
+const float& Vector2::operator[](int index) const {
+    if (index == 0) return x;
+    if (index == 1) return y;
+    throw std::out_of_range("Vector2 index out of range");
 }

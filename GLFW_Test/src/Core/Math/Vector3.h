@@ -3,6 +3,8 @@
 #include <cmath>
 
 #include "MathUtils.h"
+#include "Matrix.h"
+
 #include "..\FormatUtils.h"
 
 class Vector3 {
@@ -14,43 +16,50 @@ public:
     Vector3() {}
     Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
     
-    std::string toString() const;
+    std::string ToString() const;
 
     // Normalizes the vector (sets the length to 1)
-    void normalize();
+    void Normalize();
     
     // Returns the magnitude (length) of the vector
-    float magnitude() const;
+    float Magnitude() const;
     
     // Returns the squared magnitude (without square root)
-    float squaredMagnitude() const;
+    float SquaredMagnitude() const;
 
     // Returns the dot of this and the other vector;
-    float dot(const Vector3& other) const;
+    float Dot(const Vector3& other) const;
 
-    Vector3 cross(const Vector3& other) const;
+    Vector3 Cross(const Vector3& other) const;
 
     // Returns a new vector linearly interpolated between this vector and the given vector
     // using the interpolation factor t (0.0 returns this vector, 1.0 returns the target vector)
-    Vector3 lerp(const Vector3& other, float t) const;
+    Vector3 Lerp(const Vector3& other, float t) const;
 
     // Operator overloads for vector operations
     Vector3& operator+=(const Vector3& other);
     Vector3& operator-=(const Vector3& other);
-
     Vector3& operator+=(float scalar);
     Vector3& operator-=(float scalar);
-
     Vector3& operator*=(float scalar);
     Vector3& operator/=(float scalar);
     
     // Additional operator overloads for convenient operations
     Vector3 operator+(const Vector3& other) const;
     Vector3 operator-(const Vector3& other) const;
-
     Vector3 operator+(float scalar) const;
     Vector3 operator-(float scalar) const;
-
     Vector3 operator*(float scalar) const;
     Vector3 operator/(float scalar) const;
+
+    float& operator[](int index);
+    const float& operator[](int index) const;
+
+    explicit operator Matrix<float>() const {
+        return Matrix<float>({
+            {x},
+            {y},
+            {z}
+        });
+    }
 };

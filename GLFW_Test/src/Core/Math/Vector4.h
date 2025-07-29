@@ -3,6 +3,8 @@
 #include <cmath>
 
 #include "MathUtils.h"
+#include "Matrix.h"
+
 #include "..\FormatUtils.h"
 
 class Vector4 {
@@ -15,41 +17,49 @@ public:
     Vector4() {}
     Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
     
-    std::string toString() const;
+    std::string ToString() const;
 
     // Normalizes the vector (sets the length to 1)
-    void normalize();
+    void Normalize();
     
     // Returns the magnitude (length) of the vector
-    float magnitude() const;
+    float Magnitude() const;
     
     // Returns the squared magnitude (without square root)
-    float squaredMagnitude() const;
+    float SquaredMagnitude() const;
 
     // Returns the dot of this and the other vector;
-    float dot(const Vector4& other) const;
+    float Dot(const Vector4& other) const;
 
     // Returns a new vector linearly interpolated between this vector and the given vector
     // using the interpolation factor t (0.0 returns this vector, 1.0 returns the target vector)
-    Vector4 lerp(const Vector4& vec, float t) const;
+    Vector4 Lerp(const Vector4& vec, float t) const;
 
     // Operator overloads for vector operations
     Vector4& operator+=(const Vector4& other);
     Vector4& operator-=(const Vector4& other);
-
     Vector4& operator+=(float scalar);
     Vector4& operator-=(float scalar);
-
     Vector4& operator*=(float scalar);
     Vector4& operator/=(float scalar);
     
     // Additional operator overloads for convenient operations
     Vector4 operator+(const Vector4& other) const;
     Vector4 operator-(const Vector4& other) const;
-
     Vector4 operator+(float scalar) const;
     Vector4 operator-(float scalar) const;
-
     Vector4 operator*(float scalar) const;
     Vector4 operator/(float scalar) const;
+
+    float& operator[](int index);
+    const float& operator[](int index) const;
+
+    explicit operator Matrix<float>() const {
+        return Matrix<float>({
+            {x},
+            {y},
+            {z},
+            {w}
+        });
+    }
 };
