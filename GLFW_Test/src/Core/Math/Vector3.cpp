@@ -8,6 +8,14 @@
 
 #include "..\FormatUtils.h"
 
+const Vector3 Vector3::forward(0, 0, 1);
+const Vector3 Vector3::back(0, 0, -1);
+const Vector3 Vector3::up(0, 1, 0);
+const Vector3 Vector3::down(0, -1, 0);
+const Vector3 Vector3::left(-1, 0, 0);
+const Vector3 Vector3::right(1, 0, 0);
+const Vector3 Vector3::one(1, 1, 1);
+
 std::string Vector3::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}]", x, y, z);
 }
@@ -39,12 +47,28 @@ Vector3 Vector3::Cross(const Vector3 & other) const {
     );
 }
 
-Vector3 Vector3::Lerp(const Vector3& other, float t) const {
+float Vector3::Dot(const Vector3& a, const Vector3& b) {
+    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+Vector3 Vector3::Cross(const Vector3& a, const Vector3& b) {
     return Vector3(
-        MathUtil::Lerp(x, other.x, t),
-        MathUtil::Lerp(y, other.y, t),
-        MathUtil::Lerp(z, other.z, t)
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
     );
+}
+
+Vector3 Vector3::Lerp(const Vector3& a, const Vector3& b, float t) {
+    return Vector3(
+        MathUtil::Lerp(a.x, b.x, t),
+        MathUtil::Lerp(a.y, b.y, t),
+        MathUtil::Lerp(a.z, b.z, t)
+    );
+}
+
+float Vector3::Distance(const Vector3& a, const Vector3& b) {
+    return (a - b).Magnitude();
 }
 
 // Adds another vector to the current vector
@@ -141,4 +165,25 @@ Vector3::operator Matrix<float>() const {
         {y},
         {z}
     });
+}
+
+Vector3 operator+(float scalar, const Vector3& other) {
+    return other + scalar;
+}
+
+Vector3 operator-(float scalar, const Vector3& other) {
+    return Vector3(scalar - other.x, scalar - other.y, scalar - other.z);
+}
+
+Vector3 operator*(float scalar, const Vector3& other) {
+    return other * scalar;
+}
+
+Vector3 operator/(float scalar, const Vector3& other) {
+    if (other.x == 0 || other.y == 0) {
+        std::ostringstream oss;
+        oss << "Division by zero (" << other.x << ", " << other.y << ", " << other.z << ")";
+        throw std::runtime_error(oss.str());
+    }
+    return Vector3(scalar / other.x, scalar / other.y, scalar / other.z);
 }

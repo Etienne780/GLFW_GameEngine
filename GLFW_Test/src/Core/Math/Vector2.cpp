@@ -7,6 +7,11 @@
 
 #include "..\FormatUtils.h"
 
+const Vector2 Vector2::up(0, 1);
+const Vector2 Vector2::down(0, -1);
+const Vector2 Vector2::left(-1, 0);
+const Vector2 Vector2::right(1, 0);
+const Vector2 Vector2::one(1, 1);
 
 std::string Vector2::ToString() const {
     return FormatUtils::formatString("[{}, {}]", x, y);
@@ -35,11 +40,24 @@ float Vector2::Cross(const Vector2& other) const {
     return x * other.y - y * other.x;
 }
 
-Vector2 Vector2::Lerp(const Vector2& vec, float t) const {
+
+float Vector2::Dot(const Vector2& a, const Vector2& b) {
+    return (a.x * b.x) + (a.y * b.y);
+}
+
+float Vector2::Cross(const Vector2& a, const Vector2& b) {
+    return a.x * b.y - a.y * b.x;
+}
+
+Vector2 Vector2::Lerp(const Vector2& a, const Vector2& b, float t) {
     return Vector2(
-        MathUtil::Lerp(x, vec.x, t), 
-        MathUtil::Lerp(y, vec.y, t) 
+        MathUtil::Lerp(a.x, b.x, t),
+        MathUtil::Lerp(a.y, b.y, t)
     );
+}
+
+float Vector2::Distance(const Vector2& a, const Vector2& b) {
+    return (a - b).Magnitude();
 }
 
 Vector2& Vector2::operator+=(const Vector2& other) {
@@ -125,4 +143,25 @@ Vector2::operator Matrix<float>() const {
         {x},
         {y}
     });
+}
+
+Vector2 operator+(float scalar, const Vector2& other) {
+    return other + scalar;
+}
+
+Vector2 operator-(float scalar, const Vector2& other) {
+    return Vector2(scalar - other.x, scalar - other.y);
+}
+
+Vector2 operator*(float scalar, const Vector2& other) {
+    return other * scalar;
+}
+
+Vector2 operator/(float scalar, const Vector2& other) {
+    if (other.x == 0 || other.y == 0) {
+        std::ostringstream oss;
+        oss << "Division by zero (" << other.x << ", " << other.y << ")";
+        throw std::runtime_error(oss.str());
+    }
+    return Vector2(scalar / other.x, scalar / other.y);
 }

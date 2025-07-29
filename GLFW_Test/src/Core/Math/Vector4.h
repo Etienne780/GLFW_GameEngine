@@ -7,6 +7,8 @@ class Matrix;
 
 class Vector4 {
 public:
+    static const Vector4 one;
+
     float x = 0;
     float y = 0;
     float z = 0;
@@ -29,9 +31,14 @@ public:
     // Returns the dot of this and the other vector;
     float Dot(const Vector4& other) const;
 
-    // Returns a new vector linearly interpolated between this vector and the given vector
-    // using the interpolation factor t (0.0 returns this vector, 1.0 returns the target vector)
-    Vector4 Lerp(const Vector4& vec, float t) const;
+    // Returns the dot of this and the other vector;
+    static float Dot(const Vector4& a, const Vector4& b);
+
+    // Returns a new vector linearly interpolated between a and the b
+    // using the interpolation factor t (0.0 returns a, 1.0 returns b)
+    static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
+
+    static float Distance(const Vector4& a, const Vector4& b);
 
     // Operator overloads for vector operations
     Vector4& operator+=(const Vector4& other);
@@ -54,3 +61,12 @@ public:
 
     explicit operator Matrix<float>() const;
 };
+
+#pragma region non_member_operations
+
+Vector4 operator+(float scalar, const Vector4& other);
+Vector4 operator-(float scalar, const Vector4& other);
+Vector4 operator*(float scalar, const Vector4& other);
+Vector4 operator/(float scalar, const Vector4& other);
+
+#pragma endregion
