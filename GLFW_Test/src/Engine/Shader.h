@@ -3,6 +3,10 @@
 
 typedef std::string String;
 
+template<typename T>
+    requires std::is_arithmetic_v<T>
+class Matrix;
+
 class Vector2;
 class Vector3;
 class Vector4;
@@ -30,6 +34,12 @@ public:
     Shader(const char* vertexPath, const char* fragmentPath);
 
     unsigned int GetID();
+
+    /**
+    * @brief Gets the location in the current shader programm
+    * @param name Name of the uniform variable in the GLSL shader.
+    */
+    int GetUniformLocation(const String& name) const;
 
     bool IsActive();
 
@@ -61,21 +71,31 @@ public:
      * @param name Name of the uniform variable in the GLSL shader.
      * @param value Vector2 value to set.
      */
-    void SetVector2(const String& name, Vector2 value) const;
+    void SetVector2(const String& name, const Vector2& value) const;
 
     /**
      * @brief Sets a vec3 uniform variable (3D vector) in the shader.
      * @param name Name of the uniform variable in the GLSL shader.
      * @param value Vector3 value to set.
      */
-    void SetVector3(const String& name, Vector3 value) const;
+    void SetVector3(const String& name, const Vector3& value) const;
 
     /**
      * @brief Sets a vec4 uniform variable (4D vector) in the shader.
      * @param name Name of the uniform variable in the GLSL shader.
      * @param value Vector4 value to set.
      */
-    void SetVector4(const String& name, Vector4 value) const;
+    void SetVector4(const String& name, const Vector4& value) const;
+
+    void SetMatrix2(const String& name, const float* data) const;
+    void SetMatrix3(const String& name, const float* data) const;
+    void SetMatrix4(const String& name, const float* data) const;
+    void SetMatrix2x3(const String& name, const float* data) const;
+    void SetMatrix3x2(const String& name, const float* data) const;
+    void SetMatrix2x4(const String& name, const float* data) const;
+    void SetMatrix4x2(const String& name, const float* data) const;
+    void SetMatrix3x4(const String& name, const float* data) const;
+    void SetMatrix4x3(const String& name, const float* data) const;
 
 private:
     /// OpenGL shader program ID
@@ -96,4 +116,12 @@ private:
     * @brief Deletes the shader program. Should be called during cleanup.
     */
     void Delete();
+
+    /**
+    * @brief Checks if a value can be set. if not print warnings 
+    * 
+    * @param funcName is the name of the set func
+    * @param paramName is the name of the param
+    */
+    bool CanSetValue(const String& funcName, const String& paramName) const;
 };

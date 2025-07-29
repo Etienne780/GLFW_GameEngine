@@ -99,7 +99,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
 void Shader::Bind() {
 	if (m_ID == -1) {
-		Log::Warn("Could not Use Shader. Shader was not initialized");
+		Log::Warn("Shader: Could not Use Shader. Shader was not initialized");
 		return;
 	}
 	m_IsActive = true;
@@ -121,81 +121,125 @@ void Shader::Unbind() {
 
 void Shader::Delete() {
 	if (m_ID == -1) {
-		Log::Warn("Could not Delete Shader. Shader was not initialized");
+		Log::Warn("Shader: Could not Delete Shader. Shader was not initialized");
 		return;
 	}
 	m_IsActive = false;
 	glDeleteProgram(m_ID);
 }
 
-void Shader::SetBool(const String& name, bool value) const {
+bool Shader::CanSetValue(const String& funcName, const String& paramName) const {
 	if (m_ID == -1) {
-		Log::Warn("Could not SetBool Shader. Shader was not initialized");
-		return;
+		Log::Warn("Shader: Could not {} ({}). Shader was not initialized", funcName, paramName);
+		return false;
 	}
 	if (!m_IsActive) {
-		Log::Warn("Could not SetBool Shader. Shader is not active");
-		return;
+		Log::Warn("Shader: Could not {} ({}). Shader is not active", funcName, paramName);
+		return false;
 	}
+
+	return true;
+}
+
+void Shader::SetBool(const String& name, bool value) const {
+	if (!CanSetValue("SetBool", name)) return;
+
 	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
 }
 
 void Shader::SetInt(const String& name, int value) const {
-	if (m_ID == -1) {
-		Log::Warn("Could not SetInt Shader. Shader was not initialized");
-		return;
-	}
-	if (!m_IsActive) {
-		Log::Warn("Could not SetInt Shader. Shader is not active");
-		return;
-	}
+	if (!CanSetValue("SetInt", name)) return;
+
 	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
 void Shader::SetFloat(const String& name, float value) const {
-	if (m_ID == -1) {
-		Log::Warn("Could not SetFloat Shader. Shader was not initialized");
-		return;
-	}
-	if (!m_IsActive) {
-		Log::Warn("Could not SetFloat Shader. Shader is not active");
-		return;
-	}
+	if (!CanSetValue("SetFloat", name)) return;
+
 	glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
-void Shader::SetVector2(const String& name, Vector2 value) const {
-	if (m_ID == -1) {
-		Log::Warn("Could not SetVector2 Shader. Shader was not initialized");
-		return;
-	}
-	if (!m_IsActive) {
-		Log::Warn("Could not SetVector2 Shader. Shader is not active");
-		return;
-	}
+void Shader::SetVector2(const String& name, const Vector2& value) const {
+	if (!CanSetValue("SetVector2", name)) return;
+
 	glUniform2f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y);
 }
 
-void Shader::SetVector3(const String& name, Vector3 value) const {
-	if (m_ID == -1) {
-		Log::Warn("Could not SetVector3 Shader. Shader was not initialized");
-		return;
-	}
-	if (!m_IsActive) {
-		Log::Warn("Could not SetVector3 Shader. Shader is not active");
-		return;
-	}
+void Shader::SetVector3(const String& name, const Vector3& value) const {
+	if (!CanSetValue("SetVector3", name)) return;
+
 	glUniform3f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z);
 }
 
-void Shader::SetVector4(const String& name, Vector4 value) const {
-	if (m_ID == -1) {
-		Log::Warn("Could not SetVector4 Shader. Shader was not initialized");
-		return;
-	}
-	if (!m_IsActive) {
-		Log::Warn("Could not SetVector4 Shader. Shader is not active");
-		return;
-	}
+void Shader::SetVector4(const String& name, const Vector4& value) const {
+	if (!CanSetValue("SetVector4", name)) return;
+
 	glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
+}
+
+#pragma region SetMatrix
+
+void Shader::SetMatrix2(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix2fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::SetMatrix3(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::Shader::SetMatrix4(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::SetMatrix2x3(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix2x3fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::SetMatrix3x2(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix3x2fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::SetMatrix2x4(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix2x4fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::SetMatrix4x2(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix4x2fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::SetMatrix3x4(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix3x4fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+void Shader::SetMatrix4x3(const String& name, const float* data) const {
+	if (!CanSetValue("SetMatrix", name)) return;
+
+	glUniformMatrix4x3fv(GetUniformLocation(name), 1, GL_FALSE, data);
+}
+
+#pragma endregion
+
+int Shader::GetUniformLocation(const String& name) const {
+	int location = glGetUniformLocation(m_ID, name.c_str());
+	if (location == -1) {
+		Log::Warn("Shader: Param {} was not found", name);
+		return -1;
+	}
+	return location;
 }
