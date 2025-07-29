@@ -10,19 +10,14 @@
 
 typedef std::string String;
 
-/*
-* Matrix create template
-auto rotationMatrix = [](float angle) -> Matrix<float> {
-    float c = std::cos(angle);
-    float s = std::sin(angle);
+Matrix<float> matrix_gl_identity();
 
-    return Matrix<float>({
-        { c, -s, 0 },
-        { s,  c, 0 },
-        { 0,  0, 1 }
-    });
-};
-*/
+Matrix<float> matrix_gl_scale_non_uniform(float x, float y, float z);
+Matrix<float> matrix_gl_scale_non_uniform(Vector3 scalar);
+Matrix<float> matrix_gl_scale_uniform(float scalar);
+
+Matrix<float> matrix_gl_translation(float x, float y, float z);
+Matrix<float> matrix_gl_translation(Vector3 translation);
 
 template<typename T>
 requires std::is_arithmetic_v<T>
@@ -280,6 +275,8 @@ public:
         return result;
     }
 
+    #pragma region explicit_casting
+
     explicit operator Vector2() const {
         if (!((GetRowCount() == 2 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 2))) {
             throw std::runtime_error("Matrix cannot be converted to Vector2 due to incompatible dimensions");
@@ -319,9 +316,13 @@ public:
         }
     }
 
+    #pragma endregion
+
 private:
     std::vector<std::vector<T>> m_matrix;
 };
+
+#pragma region non_member_operations
 
 template<typename T>
 Matrix<T> operator+(T scalar, const Matrix<T>& matrix) {
@@ -370,3 +371,5 @@ Matrix<T> operator/(T scalar, const Matrix<T>& matrix) {
 
     return result;
 }
+
+#pragma endregion

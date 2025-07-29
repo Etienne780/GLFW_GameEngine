@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClCompile Include="src\Core\ColorUtils.cpp" />
     <ClCompile Include="src\Core\ConversionUtils.cpp" />
+    <ClCompile Include="src\Core\Math\Matrix.cpp" />
     <ClCompile Include="src\Core\Math\Vector2.cpp" />
     <ClCompile Include="src\Core\Math\Vector3.cpp" />
     <ClCompile Include="src\Core\Math\Vector4.cpp" />
