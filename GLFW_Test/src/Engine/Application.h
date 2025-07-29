@@ -1,14 +1,13 @@
 #pragma once
-#include <String>
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <String>
 
-#include "Shader.h"
+#include "..\Core\Math\Vector3.h"
 
-#include "..\Core\Log.h"
-#include "..\Core\Math.h"
+class Shader;
 
 typedef std::string String;
 
@@ -50,7 +49,7 @@ public:
 	GLFWwindow* GetWindow();
 
 private:
-	Vector3 m_backgroundColor = Vector3(0.2f, 0.3f, 0.3f);
+	Vector3 m_backgroundColor;
 	GLFWwindow* m_window = nullptr;
 
 	Shader* m_currentShader = nullptr;

@@ -1,13 +1,9 @@
 #pragma once
-#include <sstream>
 #include <string>
 #include <type_traits>
-#include <algorithm>
 
-#include "ConversionUtils.h"
-#include "Math/Vector3.h"
-#include "Math/Vector4.h"
-#include "Log.h"
+class Vector3;
+class Vector4;
 
 typedef std::string String;
 

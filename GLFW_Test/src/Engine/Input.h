@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <unordered_map>
 
-#include "..\Core\Math\Vector2.h"
+class Vector2;
 
 namespace EngineCore {
 

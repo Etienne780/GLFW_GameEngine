@@ -1,15 +1,11 @@
 #pragma once
-
-#include <glad/glad.h>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-#include "..\Core\Log.h"
-#include "..\Core\Math.h"
 
 typedef std::string String;
+
+class Vector2;
+class Vector3;
+class Vector4;
 
 /**
  * @brief A utility class for loading, compiling, linking, and using GLSL shader programs.

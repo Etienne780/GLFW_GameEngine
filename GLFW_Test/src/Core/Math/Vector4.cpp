@@ -1,4 +1,11 @@
 #include "Vector4.h"
+#include <stdexcept>
+#include <cmath>
+
+#include "Matrix.h"
+#include "MathUtils.h"
+
+#include "..\FormatUtils.h"
 
 std::string Vector4::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}, {}]", x, y, z, w);
@@ -116,4 +123,13 @@ const float& Vector4::operator[](int index) const {
     if (index == 2) return z;
     if (index == 3) return w;
     throw std::out_of_range("Vector4 index out of range");
+}
+
+Vector4::operator Matrix<float>() const {
+    return Matrix<float>({
+        {x},
+        {y},
+        {z},
+        {w}
+    });
 }

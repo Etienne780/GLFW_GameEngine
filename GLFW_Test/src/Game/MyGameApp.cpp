@@ -6,6 +6,15 @@ MyGameApp::MyGameApp()
 	: Application("MyGameApp", "1.0.0") {
 }
 
+auto scalingMatrix = [](Vector3 scalar) -> Matrix<float> {
+	return Matrix<float>({
+		{ scalar.x, 0, 0, 0 },
+		{ 0, scalar.y, 0, 0 },
+		{ 0, 0, scalar.z, 0 },
+		{ 0, 0, 0, 1 }
+	});
+};
+
 unsigned int EBO, VBO, VAO;
 Shader DefaultShader;
 Texture2D texture1, texture2;
@@ -13,6 +22,8 @@ void MyGameApp::OnStart() {
 	App_Background_SetColor(0.2f, 0.3f, 0.3f);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
+
+	// Matrix m = scalingMatrix();
 
 	texture1.Create("assets/stone.jpg");
 	texture2.Create("assets/missingTexture.png");

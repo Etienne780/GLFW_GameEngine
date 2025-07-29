@@ -1,5 +1,13 @@
 #include "Vector2.h"
 
+#include <cmath>
+
+#include "Matrix.h"
+#include "MathUtils.h"
+
+#include "..\FormatUtils.h"
+
+
 std::string Vector2::ToString() const {
     return FormatUtils::formatString("[{}, {}]", x, y);
 }
@@ -110,4 +118,11 @@ const float& Vector2::operator[](int index) const {
     if (index == 0) return x;
     if (index == 1) return y;
     throw std::out_of_range("Vector2 index out of range");
+}
+
+Vector2::operator Matrix<float>() const {
+    return Matrix<float>({
+        {x},
+        {y}
+    });
 }

@@ -1,4 +1,11 @@
 ﻿#include "Shader.h"
+#include <glad/glad.h>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+#include "..\Core\Log.h"
+#include "..\Core\Math.h"
 
 unsigned int Shader::GetID() {
 	return m_ID;

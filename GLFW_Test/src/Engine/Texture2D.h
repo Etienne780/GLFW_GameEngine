@@ -1,16 +1,10 @@
 #pragma once
-
-#include <glad/glad.h>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-#include "..\Core\Log.h"
-#include "..\Core\Math.h"
-#include "..\Core\stb_image.h"
 
 typedef std::string String;
+
+typedef unsigned int GLenum;
+class Vector2;
 
 /**
  * @brief Represents a 2D texture that can be loaded from file and used in OpenGL.
@@ -146,16 +140,16 @@ private:
     int m_width = 0;
     int m_height = 0;
     int m_nrChannels = -1;
-    GLenum m_format = GL_RGB;
+    GLenum m_format;
 
-    unsigned int m_wrappingX = GL_REPEAT;
-    unsigned int m_wrappingY = GL_REPEAT;
+    unsigned int m_wrappingX;
+    unsigned int m_wrappingY;
 
     // Filter used when the texture is downscaled
-    unsigned int m_filterMin = GL_LINEAR;
+    unsigned int m_filterMin;
 
     // Filter used when the texture is upscaled
-    unsigned int m_filterMag = GL_LINEAR;
+    unsigned int m_filterMag;
 
     bool m_createMipmaps = true;
 };

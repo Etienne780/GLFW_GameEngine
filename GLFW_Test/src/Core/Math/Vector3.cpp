@@ -1,5 +1,13 @@
 #include "Vector3.h"
 
+#include <stdexcept>
+#include <cmath>
+
+#include "Matrix.h"
+#include "MathUtils.h"
+
+#include "..\FormatUtils.h"
+
 std::string Vector3::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}]", x, y, z);
 }
@@ -125,4 +133,12 @@ const float& Vector3::operator[](int index) const {
     if (index == 1) return y;
     if (index == 2) return z;
     throw std::out_of_range("Vector3 index out of range");
+}
+
+Vector3::operator Matrix<float>() const {
+    return Matrix<float>({
+        {x},
+        {y},
+        {z}
+    });
 }

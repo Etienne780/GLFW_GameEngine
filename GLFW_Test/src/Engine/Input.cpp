@@ -1,5 +1,7 @@
 ﻿#include "Input.h"
 
+#include "..\Core\Math\Vector2.h"
+
 namespace EngineCore {
 
 	int Input::frameCount = 0;

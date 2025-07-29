@@ -1,11 +1,9 @@
 #pragma once
 #include <stdexcept>
-#include <cmath>
 
-#include "MathUtils.h"
-#include "Matrix.h"
-
-#include "..\FormatUtils.h"
+template<typename T>
+requires std::is_arithmetic_v<T>
+class Matrix;
 
 class Vector3 {
 public:
@@ -55,11 +53,5 @@ public:
     float& operator[](int index);
     const float& operator[](int index) const;
 
-    explicit operator Matrix<float>() const {
-        return Matrix<float>({
-            {x},
-            {y},
-            {z}
-        });
-    }
+    explicit operator Matrix<float>() const;
 };

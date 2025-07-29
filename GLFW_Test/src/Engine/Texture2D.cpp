@@ -1,6 +1,21 @@
 #include "Texture2D.h"
+#include <glad/glad.h>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+#include "..\Core\Log.h"
+#include "..\Core\Math.h"
+#include "..\Core\stb_image.h"
 
 Texture2D::Texture2D() {
+	m_format = GL_RGB;
+
+	m_wrappingX = GL_REPEAT;
+	m_wrappingY = GL_REPEAT;
+
+	m_filterMin = GL_LINEAR;
+	m_filterMag = GL_LINEAR;
 }
 
 Texture2D::~Texture2D() {

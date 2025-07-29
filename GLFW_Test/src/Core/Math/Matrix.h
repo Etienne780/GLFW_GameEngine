@@ -213,9 +213,9 @@ public:
             throw std::runtime_error("Matrix column count must match Vector2 size (2)");
         }
 
-        Matrix<T> result(getRowCount(), 1);
+        Matrix<T> result(GetRowCount(), 1);
 
-        for (int i = 0; i < getRowCount(); ++i) {
+        for (int i = 0; i < GetRowCount(); ++i) {
             result(i, 0) = (*this)(i, 0) * other[0] + (*this)(i, 1) * other[1];
         }
 
@@ -223,13 +223,13 @@ public:
     }
 
     Matrix<T> operator*(const Vector3& other) const {
-        if (getColCount() != 3) {
+        if (GetColCount() != 3) {
             throw std::runtime_error("Matrix column count must match Vector3 size (3)");
         }
 
-        Matrix<T> result(getRowCount(), 1);
+        Matrix<T> result(GetRowCount(), 1);
 
-        for (int i = 0; i < getRowCount(); ++i) {
+        for (int i = 0; i < GetRowCount(); ++i) {
             result(i, 0) = (*this)(i, 0) * other[0]
                 + (*this)(i, 1) * other[1]
                 + (*this)(i, 2) * other[2];
@@ -239,13 +239,13 @@ public:
     }
 
     Matrix<T> operator*(const Vector4& other) const {
-        if (getColCount() != 4) {
+        if (GetColCount() != 4) {
             throw std::runtime_error("Matrix column count must match Vector4 size (4)");
         }
 
-        Matrix<T> result(getRowCount(), 1);
+        Matrix<T> result(GetRowCount(), 1);
 
-        for (int i = 0; i < getRowCount(); ++i) {
+        for (int i = 0; i < GetRowCount(); ++i) {
             result(i, 0) = (*this)(i, 0) * other[0]
                 + (*this)(i, 1) * other[1]
                 + (*this)(i, 2) * other[2]
@@ -281,11 +281,11 @@ public:
     }
 
     explicit operator Vector2() const {
-        if (!((getRowCount() == 2 && getColCount() == 1) || (getRowCount() == 1 && getColCount() == 2))) {
+        if (!((GetRowCount() == 2 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 2))) {
             throw std::runtime_error("Matrix cannot be converted to Vector2 due to incompatible dimensions");
         }
 
-        if (getColCount() == 1) {
+        if (GetColCount() == 1) {
             return Vector2((*this)(0, 0), (*this)(1, 0));
         }
         else {
@@ -294,11 +294,11 @@ public:
     }
 
     explicit operator Vector3() const {
-        if (!((getRowCount() == 3 && getColCount() == 1) || (getRowCount() == 1 && getColCount() == 3))) {
+        if (!((GetRowCount() == 3 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 3))) {
             throw std::runtime_error("Matrix cannot be converted to Vector3 due to incompatible dimensions");
         }
 
-        if (getColCount() == 1) {
+        if (GetColCount() == 1) {
             return Vector3((*this)(0, 0), (*this)(1, 0), (*this)(2, 0));
         }
         else {
@@ -307,11 +307,11 @@ public:
     }
 
     explicit operator Vector4() const {
-        if (!((getRowCount() == 4 && getColCount() == 1) || (getRowCount() == 1 && getColCount() == 4))) {
+        if (!((GetRowCount() == 4 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 4))) {
             throw std::runtime_error("Matrix cannot be converted to Vector4 due to incompatible dimensions");
         }
 
-        if (getColCount() == 1) {
+        if (GetColCount() == 1) {
             return Vector4((*this)(0, 0), (*this)(1, 0), (*this)(2, 0), (*this)(3, 0));
         }
         else {

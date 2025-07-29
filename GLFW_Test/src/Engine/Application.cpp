@@ -1,7 +1,13 @@
 #include "Application.h"
 
+#include "Shader.h"
+
+#include "..\Core\Log.h"
+#include "..\Core\Math.h"
+
 Application::Application(String name, String version)
     : app_name(name), app_version(version) {
+    m_backgroundColor = Vector3(0.2f, 0.3f, 0.3f);
 }
 
 void Application::OnStart() {}
