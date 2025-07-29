@@ -1,7 +1,5 @@
 #include "Matrix.h"
 
-#include "Vector3.h"
-
 #pragma region matrix_templates
 
 Matrix<float> matrix_gl_identity() {

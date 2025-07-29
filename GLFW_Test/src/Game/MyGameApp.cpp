@@ -13,7 +13,7 @@ void MyGameApp::OnStart() {
 	App_Background_SetColor(0.2f, 0.3f, 0.3f);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
-	
+
 	texture1.Create("assets/stone.jpg");
 	texture2.Create("assets/missingTexture.png");
 

@@ -2,73 +2,145 @@
 #include <stdexcept>
 
 template<typename T>
-requires std::is_arithmetic_v<T>
+    requires std::is_arithmetic_v<T>
 class Matrix;
 
+/**
+ * @class Vector2
+ * @brief Represents a 2D vector with common vector operations.
+ */
 class Vector2 {
 public:
-    static const Vector2 up;
-    static const Vector2 down;
-    static const Vector2 left;
-    static const Vector2 right;
-    static const Vector2 one;
+    // Predefined direction vectors
+    static const Vector2 up;     ///< Unit vector pointing upwards (0, 1)
+    static const Vector2 down;   ///< Unit vector pointing downwards (0, -1)
+    static const Vector2 left;   ///< Unit vector pointing left (-1, 0)
+    static const Vector2 right;  ///< Unit vector pointing right (1, 0)
+    static const Vector2 one;    ///< Vector with both components set to one (1, 1)
 
-    float x = 0;
-    float y = 0;
+    float x = 0; ///< X component of the vector
+    float y = 0; ///< Y component of the vector
 
-    Vector2() {}
-    Vector2(float x, float y) : x(x), y(y) {}
-    
+    Vector2() {} ///< Default constructor initializes to (0, 0)
+    Vector2(float x, float y) : x(x), y(y) {} ///< Constructs vector with given components
+
+    /**
+     * @brief Converts the vector to a string representation.
+     * @return String in the format "(x, y)".
+     */
     std::string ToString() const;
 
-    // Normalizes the vector (sets the length to 1)
+    /**
+     * @brief Normalizes the vector to have length 1.
+     * Modifies the vector in place.
+     */
     void Normalize();
-    
-    // Returns the magnitude (length) of the vector
+
+    /**
+     * @brief Calculates the magnitude (length) of the vector.
+     * @return Length as a float.
+     */
     float Magnitude() const;
-    
-    // Returns the squared magnitude (without square root)
+
+    /**
+     * @brief Calculates the squared magnitude of the vector.
+     * Avoids costly square root operation.
+     * @return Squared length as a float.
+     */
     float SquaredMagnitude() const;
 
-    // Returns the dot of this and the other vector;
+    /**
+     * @brief Computes the dot product with another vector.
+     * @param other The other vector.
+     * @return Scalar dot product result.
+     */
     float Dot(const Vector2& other) const;
-    // Returns the cross of this and the other vector;
+
+    /**
+     * @brief Computes the 2D cross product with another vector.
+     * Note: In 2D, cross product returns a scalar (z-component of 3D cross).
+     * @param other The other vector.
+     * @return Scalar cross product result.
+     */
     float Cross(const Vector2& other) const;
 
-    // Returns the dot of a and b;
+    /**
+     * @brief Static dot product between two vectors.
+     * @param a First vector.
+     * @param b Second vector.
+     * @return Scalar dot product result.
+     */
     static float Dot(const Vector2& a, const Vector2& b);
-    // Returns the cross of a and b;
+
+    /**
+     * @brief Static 2D cross product between two vectors.
+     * @param a First vector.
+     * @param b Second vector.
+     * @return Scalar cross product result.
+     */
     static float Cross(const Vector2& a, const Vector2& b);
 
-    // Returns a new vector linearly interpolated between a and b
-    // using the interpolation factor t (0.0 returns a, 1.0 returns b)
+    /**
+     * @brief Linearly interpolates between two vectors.
+     * @param a Start vector.
+     * @param b End vector.
+     * @param t Interpolation factor in [0, 1].
+     * @return Interpolated vector.
+     */
     static Vector2 Lerp(const Vector2& a, const Vector2& b, float t);
 
+    /**
+     * @brief Computes the Euclidean distance between two vectors.
+     * @param a First vector.
+     * @param b Second vector.
+     * @return Distance as a float.
+     */
     static float Distance(const Vector2& a, const Vector2& b);
 
-    // Operator overloads for vector operations
-    Vector2& operator+=(const Vector2& other);
-    Vector2& operator-=(const Vector2& other);
-    Vector2& operator+=(float scalar);
-    Vector2& operator-=(float scalar);
-    Vector2& operator*=(float scalar);
-    Vector2& operator/=(float scalar);
-    
-    // Additional operator overloads for convenient operations
-    Vector2 operator+(const Vector2& other) const;
-    Vector2 operator-(const Vector2& other) const;
-    Vector2 operator+(float scalar) const;
-    Vector2 operator-(float scalar) const;
-    Vector2 operator*(float scalar) const;
-    Vector2 operator/(float scalar) const;
+    // Compound assignment operators modifying this vector
 
+    Vector2& operator+=(const Vector2& other); ///< Add another vector
+    Vector2& operator-=(const Vector2& other); ///< Subtract another vector
+    Vector2& operator+=(float scalar);          ///< Add scalar to all components
+    Vector2& operator-=(float scalar);          ///< Subtract scalar from all components
+    Vector2& operator*=(float scalar);          ///< Multiply all components by scalar
+    Vector2& operator/=(float scalar);          ///< Divide all components by scalar
+
+    // Binary operators returning new vectors
+
+    Vector2 operator+(const Vector2& other) const; ///< Vector addition
+    Vector2 operator-(const Vector2& other) const; ///< Vector subtraction
+    Vector2 operator+(float scalar) const;         ///< Add scalar to vector
+    Vector2 operator-(float scalar) const;         ///< Subtract scalar from vector
+    Vector2 operator*(float scalar) const;         ///< Multiply vector by scalar
+    Vector2 operator/(float scalar) const;         ///< Divide vector by scalar
+
+    /**
+     * @brief Index operator for accessing vector components.
+     * @param index Component index (0 = x, 1 = y).
+     * @return Reference to the component.
+     * @throws std::out_of_range if index is invalid.
+     */
     float& operator[](int index);
+
+    /**
+     * @brief Const index operator for accessing components.
+     * @param index Component index.
+     * @return Const reference to component.
+     * @throws std::out_of_range if index is invalid.
+     */
     const float& operator[](int index) const;
 
+    /**
+     * @brief Explicit conversion operator to a Matrix<float>.
+     * @return Matrix representation of this vector.
+     */
     explicit operator Matrix<float>() const;
 };
 
 #pragma region non_member_operations
+
+// Non-member operators to allow scalar op vector with scalar first
 
 Vector2 operator+(float scalar, const Vector2& other);
 Vector2 operator-(float scalar, const Vector2& other);
