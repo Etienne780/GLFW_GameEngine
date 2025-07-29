@@ -1,8 +1,6 @@
 #pragma once
 #include <stdexcept>
 
-template<typename T>
-    requires std::is_arithmetic_v<T>
 class Matrix;
 
 /**
@@ -134,10 +132,10 @@ public:
     const float& operator[](int index) const;
 
     /**
-     * @brief Explicit conversion operator to a Matrix<float>.
+     * @brief Explicit conversion operator to a Matrix.
      * @return Matrix representation of this vector.
      */
-    explicit operator Matrix<float>() const;
+    explicit operator Matrix() const;
 };
 
 #pragma region non_member_operations

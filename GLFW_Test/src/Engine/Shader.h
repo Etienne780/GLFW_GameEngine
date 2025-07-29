@@ -3,10 +3,8 @@
 
 typedef std::string String;
 
-template<typename T>
-    requires std::is_arithmetic_v<T>
-class Matrix;
 
+class Matrix;
 class Vector2;
 class Vector3;
 class Vector4;

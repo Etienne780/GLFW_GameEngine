@@ -135,8 +135,8 @@ const float& Vector4::operator[](int index) const {
     throw std::out_of_range("Vector4 index out of range");
 }
 
-Vector4::operator Matrix<float>() const {
-    return Matrix<float>({
+Vector4::operator Matrix() const {
+    return Matrix({
         {x},
         {y},
         {z},

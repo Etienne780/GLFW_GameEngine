@@ -138,8 +138,8 @@ const float& Vector2::operator[](int index) const {
     throw std::out_of_range("Vector2 index out of range");
 }
 
-Vector2::operator Matrix<float>() const {
-    return Matrix<float>({
+Vector2::operator Matrix() const {
+    return Matrix({
         {x},
         {y}
     });
