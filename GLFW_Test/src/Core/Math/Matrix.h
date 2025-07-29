@@ -29,6 +29,22 @@ namespace GLTransform {
     Matrix<float> RotationXYZ(float rx, float ry, float rz);
     Matrix<float> RotationXYZ(Vector3 radians);
 
+    /**
+     * @brief Combines multiple matrices by multiplying them in the given order (left to right).
+     * @tparam T Type of matrix elements (e.g., float)
+     * @param first The first matrix in the multiplication chain
+     * @param rest Remaining matrices to multiply
+     * @return Combined transformation matrix (first * rest...)
+     */
+    template<typename T, typename... Matrices>
+    Matrix<T> Combine(const Matrix<T>& first, const Matrices&... rest) {
+        return first * CombineMatrices(rest...);
+    }
+
+    template<typename T>
+    Matrix<T> Combine(const Matrix<T>& last) {
+        return last;
+    }
 }
 
 
