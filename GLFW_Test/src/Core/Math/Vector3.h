@@ -25,6 +25,7 @@ public:
     // Returns the squared magnitude (without square root)
     float squaredMagnitude() const;
 
+    // Returns the dot of this and the other vector;
     float dot(const Vector3& other) const;
 
     Vector3 cross(const Vector3& other) const;

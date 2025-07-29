@@ -26,6 +26,7 @@ public:
     // Returns the squared magnitude (without square root)
     float squaredMagnitude() const;
 
+    // Returns the dot of this and the other vector;
     float dot(const Vector4& other) const;
 
     // Returns a new vector linearly interpolated between this vector and the given vector
