@@ -11,16 +11,29 @@
 
 typedef std::string String;
 
-// Forward declaration of identity and transformation matrices
-Matrix<float> matrix_gl_identity();
-Matrix<float> matrix_gl_scale_non_uniform(float x, float y, float z);
-Matrix<float> matrix_gl_scale_non_uniform(Vector3 scalar);
-Matrix<float> matrix_gl_scale_uniform(float scalar);
-Matrix<float> matrix_gl_translation(float x, float y, float z);
-Matrix<float> matrix_gl_translation(Vector3 translation);
+namespace GLTransform {
+
+    Matrix<float> Identity();
+
+    Matrix<float> ScaleNonUniform(float x, float y, float z);
+    Matrix<float> ScaleNonUniform(Vector3 scalar);
+
+    Matrix<float> ScaleUniform(float scalar);
+
+    Matrix<float> Translation(float x, float y, float z);
+    Matrix<float> Translation(Vector3 translation);
+
+    Matrix<float> RotationX(float radians);
+    Matrix<float> RotationY(float radians);
+    Matrix<float> RotationZ(float radians);
+    Matrix<float> RotationXYZ(float rx, float ry, float rz);
+    Matrix<float> RotationXYZ(Vector3 radians);
+
+}
+
 
 template<typename T>
-    requires std::is_arithmetic_v<T>
+requires std::is_arithmetic_v<T>
 class Matrix {
 public:
     // Constructs a matrix with given row and column dimensions, initialized with zeros
@@ -45,6 +58,33 @@ public:
 
     // Returns the number of columns in the matrix
     int GetColCount() const { return static_cast<int>(m_matrix.empty() ? 0 : m_matrix[0].size()); }
+
+    template<typename U = T>
+    requires std::is_same_v<U, float>
+    std::vector<float> ToOpenGLData() const {
+        int rows = GetRowCount();
+        if (rows == 0) {
+            throw std::runtime_error("Matrix has no rows.");
+        }
+
+        int cols = GetColCount();
+        for (const auto& row : m_matrix) {
+            if (row.size() != static_cast<size_t>(cols)) {
+                throw std::runtime_error("Matrix rows are not of equal length.");
+            }
+        }
+
+        std::vector<float> data(rows * cols);
+
+        // Convert to column-major order
+        for (int col = 0; col < cols; ++col) {
+            for (int row = 0; row < rows; ++row) {
+                data[col * rows + row] = m_matrix[row][col];
+            }
+        }
+
+        return data;
+    }
 
     // Converts the matrix to a human-readable string representation
     String ToString() const {

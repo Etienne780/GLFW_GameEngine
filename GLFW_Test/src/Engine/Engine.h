@@ -10,10 +10,11 @@
 #include "Shader.h"
 #include "Texture2D.h"
 
-#include "..\Core\FormatUtils.h"
 #include "..\Core\Log.h"
 #include "..\Core\Math.h"
+#include "..\Core\FormatUtils.h"
 #include "..\Core\ColorUtils.h"
+#include "..\Core\ConversionUtils.h"
 #include "..\Core\stb_image.h"
 
 namespace EngineCore {
