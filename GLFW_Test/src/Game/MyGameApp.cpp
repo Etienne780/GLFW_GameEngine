@@ -17,11 +17,6 @@ void MyGameApp::OnStart() {
 	texture1.Create("assets/stone.jpg");
 	texture2.Create("assets/missingTexture.png");
 
-	Vector2 vec1(1, 2);
-	Vector2 vec2(1, 2);
-
-	vec1 -= vec2;
-
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float vertices[] = {
