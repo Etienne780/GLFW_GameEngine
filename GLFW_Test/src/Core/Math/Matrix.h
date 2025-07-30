@@ -13,6 +13,7 @@ public:
     // Constructs a matrix with given row and column dimensions, initialized with zeros
     Matrix(int rows, int cols);
 
+    Matrix(int rows, int cols, const float* values);
     // Constructs a matrix using an initializer list (e.g., {{1, 2}, {3, 4}})
     Matrix(std::initializer_list<std::initializer_list<float>> values);
 

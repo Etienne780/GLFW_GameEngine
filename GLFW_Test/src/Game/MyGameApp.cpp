@@ -72,28 +72,15 @@ void MyGameApp::OnStart() {
 	DefaultShader.SetInt("texture1", 0);
 }
 
-const size_t maxSamples = 5000;
-std::vector<float> frames;
-float highestFPS = std::numeric_limits<float>::lowest();
-float lowestFPS = std::numeric_limits<float>::max();
 Matrix trans1 = GLTransform::Identity();
 Matrix trans2 = GLTransform::Identity();
 void MyGameApp::OnUpdate() {
-	if (frames.size() >= maxSamples) {
-		frames.erase(frames.begin()); // ältestes entfernen
-	}
-	frames.push_back(app_framesPerSecond);
-	if (Time::GetTimeSec() > 4) {
-		if (app_framesPerSecond > highestFPS) highestFPS = app_framesPerSecond;
-		if (app_framesPerSecond < lowestFPS) lowestFPS = app_framesPerSecond;
-	}
-
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(GetWindow(), true);
 
 	using namespace GLTransform;
-	trans1 = Combine(Translation(0.5f, -0.5f, 0.0f), RotationZ(Time::GetTimeSec()));
-	trans2 = Combine(Translation(-0.5f, 0.5f, 0.0f), ScaleUniform(sin(Time::GetTimeSec()) / 2));
+	trans1 = Combine(Translation(0.5f, -0.5f, 0.0f), RotationZ(static_cast<float>(Time::GetTimeSec())));
+	trans2 = Combine(Translation(-0.5f, 0.5f, 0.0f), ScaleUniform(sin(static_cast<float>(Time::GetTimeSec())) / 2));
 
 	App_Background_Clear();
 
@@ -110,11 +97,6 @@ void MyGameApp::OnUpdate() {
 	texture2.Unbind(0);
 
 	glBindVertexArray(0);
-
-	Log::Info("Time: {}", Time::GetTimeSec());
-
-	if (Time::GetTimeSec() >= 25)
-		glfwSetWindowShouldClose(GetWindow(), true);
 }
 
 void MyGameApp::OnShutdown() {
@@ -123,33 +105,7 @@ void MyGameApp::OnShutdown() {
 	glDeleteBuffers(1, &EBO);
 
 	App_Shader_Delete(&DefaultShader);
-
-	Log::ClearLog();
-	Log::Print("Benchmark results:");
-	Log::Print("Time: {}", Time::GetTimeSec());
-
-	float averageFPS = 0.0f;
-	for (float f : frames) {
-		averageFPS += f;
-	}
-	averageFPS /= static_cast<float>(frames.size());
-
-	Log::Print("Average FPS: {}", averageFPS);
-	Log::Print("Hightes FPS: {}", highestFPS);
-	Log::Print("Lowest FPS: {}", lowestFPS);
-	Log::Print("Sample Count: {}", maxSamples);
 }
-
-/*
-Old Matrix class
-
-Benchmark results:
-Time: 25.000105
-Average FPS: 3202.805908
-Hightes FPS: 3258.000000
-Lowest FPS: 3060.000000
-Sample Count: 5000
-*/
 
 void MyGameApp::OnWindowResize(int newWidth, int newHeight) {
 	OnUpdate();

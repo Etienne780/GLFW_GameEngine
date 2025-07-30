@@ -9,6 +9,10 @@ Matrix::Matrix(int rows, int cols)
     : m_rows(rows), m_cols(cols), m_data(rows* cols, 0.0f) {
 }
 
+Matrix::Matrix(int rows, int cols, const float* values)
+    : m_rows(rows), m_cols(cols), m_data(values, values + (rows * cols)) {
+}
+
 Matrix::Matrix(std::initializer_list<std::initializer_list<float>> values) {
     m_rows = static_cast<int>(values.size());
     m_cols = values.begin()->size();
@@ -33,14 +37,12 @@ const float* Matrix::Data() const {
 }
 
 std::vector<float> Matrix::ToOpenGLData() const {
-    std::vector<float> result(m_rows * m_cols);
+    std::vector<float> result;
+    result.reserve(m_rows * m_cols);
 
-    // Column-major order
-    for (int col = 0; col < m_cols; ++col) {
-        for (int row = 0; row < m_rows; ++row) {
-            result[col * m_rows + row] = (*this)(row, col);
-        }
-    }
+    for (int col = 0; col < m_cols; ++col)
+        for (int row = 0; row < m_rows; ++row)
+            result.push_back((*this)(row, col));
 
     return result;
 }
@@ -64,16 +66,20 @@ int Matrix::ToIndex(int row, int col) const {
 }
 
 float& Matrix::operator()(int row, int col) {
-    if (row < 0 || col < 0 || row >= GetRowCount() || col >= GetColCount()) {
+#ifndef NDEBUG
+    if (row < 0 || col < 0 || row >= m_rows || col >= m_cols) {
         throw std::runtime_error("Matrix index out of bounds");
     }
+#endif
     return m_data[ToIndex(row, col)];
 }
 
 const float& Matrix::operator()(int row, int col) const {
-    if (row < 0 || col < 0 || row >= GetRowCount() || col >= GetColCount()) {
+#ifndef NDEBUG
+    if (row < 0 || col < 0 || row >= m_rows || col >= m_cols) {
         throw std::runtime_error("Matrix index out of bounds");
     }
+#endif
     return m_data[ToIndex(row, col)];
 }
 
@@ -165,10 +171,15 @@ Matrix Matrix::operator*(const Matrix& other) const {
 
     Matrix result(GetRowCount(), other.GetColCount());
 
-    for (int i = 0; i < GetRowCount(); ++i)
-        for (int j = 0; j < other.GetColCount(); ++j)
-            for (int k = 0; k < GetColCount(); ++k)
-                result(i, j) += (*this)(i, k) * other(k, j);
+    for (int i = 0; i < GetRowCount(); ++i) {
+        for (int j = 0; j < other.GetColCount(); ++j) {
+            float sum = 0.0f;
+            for (int k = 0; k < GetColCount(); ++k) {
+                sum += (*this)(i, k) * other(k, j);
+            }
+            result(i, j) = sum;
+        }
+    }
 
     return result;
 }
@@ -313,79 +324,82 @@ Matrix operator/(float scalar, const Matrix& matrix) {
 namespace GLTransform {
 
     Matrix Identity() {
-        return Matrix({
-            { 1, 0, 0, 0 },
-            { 0, 1, 0, 0 },
-            { 0, 0, 1, 0 },
-            { 0, 0, 0, 1 }
-        });
-    };
+        float m4x4[16] = { 
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        };
+        return Matrix(4, 4, m4x4);
+    }
 
     Matrix ScaleNonUniform(float x, float y, float z) {
-        return Matrix({
-            { x, 0, 0, 0 },
-            { 0, y, 0, 0 },
-            { 0, 0, z, 0 },
-            { 0, 0, 0, 1 }
-        });
-    };
+        float data[16] = {
+            x, 0, 0, 0,
+            0, y, 0, 0,
+            0, 0, z, 0,
+            0, 0, 0, 1
+        };
+        return Matrix(4, 4, data);
+    }
 
     Matrix ScaleNonUniform(Vector3 scalar) {
         return ScaleNonUniform(scalar.x, scalar.y, scalar.z);
-    };
+    }
 
     Matrix ScaleUniform(float scalar) {
         return ScaleNonUniform(scalar, scalar, scalar);
-    };
+    }
 
     Matrix Translation(float x, float y, float z) {
-        return Matrix({
-            { 1, 0, 0, x },
-            { 0, 1, 0, y },
-            { 0, 0, 1, z },
-            { 0, 0, 0, 1 }
-        });
-    };
+        float data[16] = {
+            1, 0, 0, x,
+            0, 1, 0, y,
+            0, 0, 1, z,
+            0, 0, 0, 1
+        };
+        return Matrix(4, 4, data);
+    }
 
     Matrix Translation(Vector3 translation) {
         return Translation(translation.x, translation.y, translation.z);
-    };
+    }
 
     Matrix RotationX(float radians) {
         float c = std::cos(radians);
         float s = std::sin(radians);
-
-        return Matrix({
-            { 1, 0,  0, 0 },
-            { 0, c, -s, 0 },
-            { 0, s,  c, 0 },
-            { 0, 0,  0, 1 }
-        });
-    };
+        float data[16] = {
+            1, 0,  0, 0,
+            0, c, -s, 0,
+            0, s,  c, 0,
+            0, 0,  0, 1
+        };
+        return Matrix(4, 4, data);
+    }
 
     Matrix RotationY(float radians) {
         float c = std::cos(radians);
         float s = std::sin(radians);
-
-        return Matrix({
-            {  c, 0, s, 0 },
-            {  0, 1, 0, 0 },
-            { -s, 0, c, 0 },
-            {  0, 0, 0, 1 }
-        });
-    };
+        float data[16] = {
+             c, 0, s, 0,
+             0, 1, 0, 0,
+            -s, 0, c, 0,
+             0, 0, 0, 1
+        };
+        return Matrix(4, 4, data);
+    }
 
     Matrix RotationZ(float radians) {
         float c = std::cos(radians);
         float s = std::sin(radians);
-
-        return Matrix({
-            { c, -s, 0, 0 },
-            { s,  c, 0, 0 },
-            { 0,  0, 1, 0 },
-            { 0,  0, 0, 1 }
-        });
-    };
+        float data[16] = {
+            c, -s, 0, 0,
+            s,  c, 0, 0,
+            0,  0, 1, 0,
+            0,  0, 0, 1
+        };
+        return Matrix(4, 4, data);
+    }
 
     Matrix RotationXYZ(float rx, float ry, float rz) {
         return RotationZ(rz) * RotationY(ry) * RotationX(rx);
