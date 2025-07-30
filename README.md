@@ -18,6 +18,6 @@ This project is a personal learning exercise aimed at gaining a deeper understan
 
 ## Build Requirements
 
-- **C++17 or higher** (tested with C++20)
+- **C++20 or higher**
 - **GLFW** (linked manually or via package manager)  
 - **CMake** or **Visual Studio 2019+**
