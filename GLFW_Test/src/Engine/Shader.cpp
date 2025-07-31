@@ -7,239 +7,243 @@
 #include "..\Core\Log.h"
 #include "..\Core\Math.h"
 
-unsigned int Shader::GetID() {
-	return m_ID;
-}
+namespace EngineCore {
 
-bool Shader::IsActive() {
-	return m_IsActive;
-}
-
-Shader::Shader() {
-}
-
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-	// 1. retrieve the vertex/fragment source code from filePath
-	String vertexCode;
-	String fragmentCode;
-	std::ifstream vShaderFile;
-	std::ifstream fShaderFile;
-	// ensure ifstream objects can throw exceptions:
-	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	try
-	{
-		// open files
-		vShaderFile.open(vertexPath);
-		fShaderFile.open(fragmentPath);
-		std::stringstream vShaderStream, fShaderStream;
-		// read file’s buffer contents into streams
-		vShaderStream << vShaderFile.rdbuf();
-		fShaderStream << fShaderFile.rdbuf();
-		// close file handlers
-		vShaderFile.close();
-		fShaderFile.close();
-		// convert stream into string
-		vertexCode = vShaderStream.str();
-		fragmentCode = fShaderStream.str();
-	}
-	catch (std::ifstream::failure e)
-	{
-		Log::Error("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
-		Log::Print(Log::levelError, "Vertex: {}", vertexPath);
-		Log::Print(Log::levelError, "Fragment: {}", fragmentPath);
-		return;
+	unsigned int Shader::GetID() {
+		return m_ID;
 	}
 
-	const char* vShaderCode = vertexCode.c_str();
-	const char* fShaderCode = fragmentCode.c_str();
-
-	unsigned int vertex, fragment;
-	int success;
-	char infoLog[512];
-	// vertex Shader
-	vertex = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex, 1, &vShaderCode, NULL);
-	glCompileShader(vertex);
-	// print compile errors if any
-	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		Log::Error("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n{}", infoLog);
-	};
-
-	// fragment Shader
-	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment, 1, &fShaderCode, NULL);
-	glCompileShader(fragment);
-	// print compile errors if any
-	glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-		Log::Error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n{}", infoLog);
-	};
-
-	m_ID = glCreateProgram();
-	glAttachShader(m_ID, vertex);
-	glAttachShader(m_ID, fragment);
-	glLinkProgram(m_ID);
-	// print linking errors if any
-	glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(m_ID, 512, NULL, infoLog);
-		Log::Error("ERROR::SHADER::PROGRAM::LINKING_FAILED\n{}", infoLog);
-	}
-	// delete shaders; they’re linked into our program and no longer necessary
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
-}
-
-void Shader::Bind() {
-	if (m_ID == -1) {
-		Log::Warn("Shader: Could not Use Shader. Shader was not initialized");
-		return;
-	}
-	m_IsActive = true;
-	glUseProgram(m_ID);
-}
-
-void Shader::Unbind() {
-	if (!m_IsActive) return;
-
-	GLint currentProgram = 0;
-	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-
-	if (static_cast<GLint>(m_ID) != currentProgram)
-		return;
-
-	m_IsActive = false;
-	glUseProgram(0);
-}
-
-void Shader::Delete() {
-	if (m_ID == -1) {
-		Log::Warn("Shader: Could not Delete Shader. Shader was not initialized");
-		return;
-	}
-	m_IsActive = false;
-	glDeleteProgram(m_ID);
-}
-
-bool Shader::CanSetValue(const String& funcName, const String& paramName) const {
-	if (m_ID == -1) {
-		Log::Warn("Shader: Could not {} ({}). Shader was not initialized", funcName, paramName);
-		return false;
-	}
-	if (!m_IsActive) {
-		Log::Warn("Shader: Could not {} ({}). Shader is not active", funcName, paramName);
-		return false;
+	bool Shader::IsActive() {
+		return m_IsActive;
 	}
 
-	return true;
-}
+	Shader::Shader() {
+	}
 
-void Shader::SetBool(const String& name, bool value) const {
-	if (!CanSetValue("SetBool", name)) return;
+	Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+		// 1. retrieve the vertex/fragment source code from filePath
+		String vertexCode;
+		String fragmentCode;
+		std::ifstream vShaderFile;
+		std::ifstream fShaderFile;
+		// ensure ifstream objects can throw exceptions:
+		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			// open files
+			vShaderFile.open(vertexPath);
+			fShaderFile.open(fragmentPath);
+			std::stringstream vShaderStream, fShaderStream;
+			// read file’s buffer contents into streams
+			vShaderStream << vShaderFile.rdbuf();
+			fShaderStream << fShaderFile.rdbuf();
+			// close file handlers
+			vShaderFile.close();
+			fShaderFile.close();
+			// convert stream into string
+			vertexCode = vShaderStream.str();
+			fragmentCode = fShaderStream.str();
+		}
+		catch (std::ifstream::failure e)
+		{
+			Log::Error("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
+			Log::Print(Log::levelError, "Vertex: {}", vertexPath);
+			Log::Print(Log::levelError, "Fragment: {}", fragmentPath);
+			return;
+		}
 
-	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
-}
+		const char* vShaderCode = vertexCode.c_str();
+		const char* fShaderCode = fragmentCode.c_str();
 
-void Shader::SetInt(const String& name, int value) const {
-	if (!CanSetValue("SetInt", name)) return;
+		unsigned int vertex, fragment;
+		int success;
+		char infoLog[512];
+		// vertex Shader
+		vertex = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex, 1, &vShaderCode, NULL);
+		glCompileShader(vertex);
+		// print compile errors if any
+		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+			Log::Error("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n{}", infoLog);
+		};
 
-	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
-}
+		// fragment Shader
+		fragment = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment, 1, &fShaderCode, NULL);
+		glCompileShader(fragment);
+		// print compile errors if any
+		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(fragment, 512, NULL, infoLog);
+			Log::Error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n{}", infoLog);
+		};
 
-void Shader::SetFloat(const String& name, float value) const {
-	if (!CanSetValue("SetFloat", name)) return;
+		m_ID = glCreateProgram();
+		glAttachShader(m_ID, vertex);
+		glAttachShader(m_ID, fragment);
+		glLinkProgram(m_ID);
+		// print linking errors if any
+		glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
+		if (!success)
+		{
+			glGetProgramInfoLog(m_ID, 512, NULL, infoLog);
+			Log::Error("ERROR::SHADER::PROGRAM::LINKING_FAILED\n{}", infoLog);
+		}
+		// delete shaders; they’re linked into our program and no longer necessary
+		glDeleteShader(vertex);
+		glDeleteShader(fragment);
+	}
 
-	glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
-}
+	void Shader::Bind() {
+		if (m_ID == -1) {
+			Log::Warn("Shader: Could not Use Shader. Shader was not initialized");
+			return;
+		}
+		m_IsActive = true;
+		glUseProgram(m_ID);
+	}
 
-void Shader::SetVector2(const String& name, const Vector2& value) const {
-	if (!CanSetValue("SetVector2", name)) return;
+	void Shader::Unbind() {
+		if (!m_IsActive) return;
 
-	glUniform2f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y);
-}
+		GLint currentProgram = 0;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 
-void Shader::SetVector3(const String& name, const Vector3& value) const {
-	if (!CanSetValue("SetVector3", name)) return;
+		if (static_cast<GLint>(m_ID) != currentProgram)
+			return;
 
-	glUniform3f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z);
-}
+		m_IsActive = false;
+		glUseProgram(0);
+	}
 
-void Shader::SetVector4(const String& name, const Vector4& value) const {
-	if (!CanSetValue("SetVector4", name)) return;
+	void Shader::Delete() {
+		if (m_ID == -1) {
+			Log::Warn("Shader: Could not Delete Shader. Shader was not initialized");
+			return;
+		}
+		m_IsActive = false;
+		glDeleteProgram(m_ID);
+	}
 
-	glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
-}
+	bool Shader::CanSetValue(const String& funcName, const String& paramName) const {
+		if (m_ID == -1) {
+			Log::Warn("Shader: Could not {} ({}). Shader was not initialized", funcName, paramName);
+			return false;
+		}
+		if (!m_IsActive) {
+			Log::Warn("Shader: Could not {} ({}). Shader is not active", funcName, paramName);
+			return false;
+		}
+
+		return true;
+	}
+
+	void Shader::SetBool(const String& name, bool value) const {
+		if (!CanSetValue("SetBool", name)) return;
+
+		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
+	}
+
+	void Shader::SetInt(const String& name, int value) const {
+		if (!CanSetValue("SetInt", name)) return;
+
+		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
+	}
+
+	void Shader::SetFloat(const String& name, float value) const {
+		if (!CanSetValue("SetFloat", name)) return;
+
+		glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+	}
+
+	void Shader::SetVector2(const String& name, const Vector2& value) const {
+		if (!CanSetValue("SetVector2", name)) return;
+
+		glUniform2f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y);
+	}
+
+	void Shader::SetVector3(const String& name, const Vector3& value) const {
+		if (!CanSetValue("SetVector3", name)) return;
+
+		glUniform3f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z);
+	}
+
+	void Shader::SetVector4(const String& name, const Vector4& value) const {
+		if (!CanSetValue("SetVector4", name)) return;
+
+		glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
+	}
 
 #pragma region SetMatrix
 
-void Shader::SetMatrix2(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix2(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix2fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix2fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::SetMatrix3(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix3(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::Shader::SetMatrix4(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::Shader::SetMatrix4(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::SetMatrix2x3(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix2x3(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix2x3fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix2x3fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::SetMatrix3x2(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix3x2(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix3x2fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix3x2fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::SetMatrix2x4(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix2x4(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix2x4fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix2x4fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::SetMatrix4x2(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix4x2(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix4x2fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix4x2fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::SetMatrix3x4(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix3x4(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix3x4fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix3x4fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
-void Shader::SetMatrix4x3(const String& name, const float* data) const {
-	if (!CanSetValue("SetMatrix", name)) return;
+	void Shader::SetMatrix4x3(const String& name, const float* data) const {
+		if (!CanSetValue("SetMatrix", name)) return;
 
-	glUniformMatrix4x3fv(GetUniformLocation(name), 1, GL_FALSE, data);
-}
+		glUniformMatrix4x3fv(GetUniformLocation(name), 1, GL_FALSE, data);
+	}
 
 #pragma endregion
 
-int Shader::GetUniformLocation(const String& name) const {
-	int location = glGetUniformLocation(m_ID, name.c_str());
-	if (location == -1) {
-		Log::Warn("Shader: Param {} was not found", name);
-		return -1;
+	int Shader::GetUniformLocation(const String& name) const {
+		int location = glGetUniformLocation(m_ID, name.c_str());
+		if (location == -1) {
+			Log::Warn("Shader: Param {} was not found", name);
+			return -1;
+		}
+		return location;
 	}
-	return location;
+
 }
