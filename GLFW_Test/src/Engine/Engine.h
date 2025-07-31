@@ -18,6 +18,7 @@
 #include "..\Core\stb_image.h"
 
 namespace EngineCore {
+
 	class Engine {
 	public:
 		std::unique_ptr<Application> app;
@@ -39,4 +40,5 @@ namespace EngineCore {
 
 		GLFWwindow* m_window = nullptr;
 	};
+
 }

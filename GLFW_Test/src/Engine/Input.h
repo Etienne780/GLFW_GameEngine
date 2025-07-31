@@ -31,18 +31,22 @@ namespace EngineCore {
 
 		// is only one frame true
 		static bool KeyJustPressed(int key);
+		// is only one frame true
 		static bool KeyJustReleased(int key);
 
 		// is true as long as the key has the right state
 		static bool KeyPressed(int key);
+		// is true as long as the key has the right state
 		static bool KeyRepeating(int key);
 
 		// is only one frame true
 		static bool AnyKeyJustPressed();
+		// is only one frame true
 		static bool AnyKeyJustReleased();
 
 		// is true as long as the key has the right state
 		static bool AnyKeyPressed();
+		// is true as long as the key has the right state
 		static bool AnyKeyReleased();
 
 		static std::vector<int> KeysJustPressed();
@@ -63,4 +67,5 @@ namespace EngineCore {
 		static bool getAnyKeyState(bool keyPressed, bool justPressed);
 		static std::vector<int> getKeysState(bool keyPressed, bool justPressed);
 	};
+
 }

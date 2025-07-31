@@ -172,4 +172,5 @@ namespace EngineCore {
 	bool Key::justReleased() const {
 		return wasReleased;
 	}
+
 }

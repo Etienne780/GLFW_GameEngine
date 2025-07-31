@@ -5,6 +5,7 @@
 #include "..\Core\Log.h"
 #include "..\Core\Math.h"
 
+
 Application::Application(String name, String version)
     : app_name(name), app_version(version) {
     m_backgroundColor = Vector3(0.2f, 0.3f, 0.3f);
@@ -34,7 +35,7 @@ void Application::App_Background_Clear() {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Application::App_Shader_Bind(Shader* shader) {
+void Application::App_Shader_Bind(EngineCore::Shader* shader) {
     if (shader == nullptr) return;
 
     if (m_currentShader != nullptr && m_currentShader != shader) {
@@ -45,7 +46,7 @@ void Application::App_Shader_Bind(Shader* shader) {
     m_currentShader->Bind();
 }
 
-void Application::App_Shader_Unbind(Shader* shader) {
+void Application::App_Shader_Unbind(EngineCore::Shader* shader) {
     if (shader == nullptr) return;
 
     if (m_currentShader != nullptr && m_currentShader == shader) {
@@ -54,7 +55,7 @@ void Application::App_Shader_Unbind(Shader* shader) {
     }
 }
 
-void Application::App_Shader_Delete(Shader* shader) {
+void Application::App_Shader_Delete(EngineCore::Shader* shader) {
     if (shader == nullptr) return;
 
     if (m_currentShader != nullptr && m_currentShader == shader) {

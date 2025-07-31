@@ -47,6 +47,8 @@ namespace EngineCore {
 
 	void Engine::Shutdown() {
 		app->OnShutdown();
+
+		Texture2D::Cleanup();
 	}
 
 	void Engine::WindowResize(int width, int height) {

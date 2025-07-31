@@ -7,12 +7,12 @@
 
 #include "..\Core\Math\Vector3.h"
 
-class Shader;
 
 typedef std::string String;
 
 namespace EngineCore {
 	class Engine;
+	class Shader;
 }
 
 class Application {
@@ -42,9 +42,9 @@ public:
 	void App_Background_SetColor(const Vector3& color);
 	void App_Background_Clear();
 
-	void App_Shader_Bind(Shader* shader);
-	void App_Shader_Unbind(Shader* shader);
-	void App_Shader_Delete(Shader* shader);
+	void App_Shader_Bind(EngineCore::Shader* shader);
+	void App_Shader_Unbind(EngineCore::Shader* shader);
+	void App_Shader_Delete(EngineCore::Shader* shader);
 
 	GLFWwindow* GetWindow();
 
@@ -52,5 +52,5 @@ private:
 	Vector3 m_backgroundColor;
 	GLFWwindow* m_window = nullptr;
 
-	Shader* m_currentShader = nullptr;
+	EngineCore::Shader* m_currentShader = nullptr;
 };
