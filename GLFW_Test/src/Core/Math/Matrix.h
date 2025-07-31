@@ -10,6 +10,7 @@ class Vector4;
 
 class Matrix {
 public:
+    Matrix();
     // Constructs a matrix with the specified number of rows and columns, initialized to zero.
     Matrix(int rows, int cols);
 
@@ -104,6 +105,8 @@ public:
     Matrix& operator+=(const Matrix& other);
     // Subtracts another matrix element-wise
     Matrix& operator-=(const Matrix& other);
+    // Matrix multiplication with another matrix
+    Matrix& operator*=(const Matrix& other);
     // Adds a scalar to all matrix elements
     Matrix& operator+=(float scalar);
     // Subtracts a scalar from all matrix elements
@@ -144,8 +147,7 @@ private:
     int m_rows = 0;
     int m_cols = 0;
     std::vector<float> m_data;
-
-    Matrix();
+    mutable std::vector<float> _cachedColMajorData;
     
     // row-major layout
     int ToIndex(int row, int col) const;

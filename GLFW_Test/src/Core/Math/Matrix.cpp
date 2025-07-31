@@ -5,6 +5,9 @@
 #include "Vector4.h"
 #include "..\FormatUtils.h"
 
+Matrix::Matrix() {
+}
+
 Matrix::Matrix(int rows, int cols)
     : m_rows(rows), m_cols(cols), m_data(rows* cols, 0.0f) {
 }
@@ -58,7 +61,8 @@ std::vector<float> Matrix::ToColMajorData() const {
 }
 
 const float* Matrix::ToOpenGLData() const {
-    return ToColMajorData().data();
+    _cachedColMajorData = ToColMajorData();
+    return _cachedColMajorData.data();
 }
 
 String Matrix::ToString() const {
@@ -151,9 +155,11 @@ Matrix& Matrix::operator+=(const Matrix& other) {
 }
 
 Matrix& Matrix::operator-=(const Matrix& other) {
+#ifndef NDEBUG
     if (m_rows != other.m_rows || m_cols != other.m_cols) {
         throw std::runtime_error("Matrix dimensions do not match for subtraction.");
     }
+#endif
 
     float* a = GetData();
     const float* b = other.GetData();
@@ -161,6 +167,32 @@ Matrix& Matrix::operator-=(const Matrix& other) {
     for (int i = 0; i < m_rows; ++i)
         for (int j = 0; j < m_cols; ++j)
             a[i * m_cols + j] -= b[i * m_cols + j];
+    return *this;
+}
+
+Matrix& Matrix::operator*=(const Matrix& other) {
+    #ifndef NDEBUG
+    if (m_cols != other.m_rows) {
+        throw std::runtime_error("Matrix dimensions invalid for multiplication.");
+    }
+    #endif
+
+    Matrix result(m_rows, other.m_cols);
+    const float* a = GetData();
+    const float* b = other.GetData();
+    float* r = result.GetData();
+
+    for (int i = 0; i < m_rows; ++i) {
+        for (int j = 0; j < other.m_cols; ++j) {
+            float sum = 0.0f;
+            for (int k = 0; k < m_cols; ++k) {
+                sum += a[i * m_cols + k] * b[k * other.m_cols + j];
+            }
+            r[i * other.m_cols + j] = sum;
+        }
+    }
+
+    *this = std::move(result);
     return *this;
 }
 
