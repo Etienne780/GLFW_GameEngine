@@ -22,8 +22,8 @@ public:
 	const String app_name;
 	const String app_version;
 
-	int app_window_Height = 600;
-	int app_window_Width = 800;
+	int app_window_height = 600;
+	int app_window_width = 800;
 
 	int app_frameCount = 0;
 	int app_framesPerSecond = 0;

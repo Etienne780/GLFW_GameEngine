@@ -52,8 +52,8 @@ namespace EngineCore {
 	}
 
 	void Engine::WindowResize(int width, int height) {
-		app->app_window_Width = width;
-		app->app_window_Height = height;
+		app->app_window_width = width;
+		app->app_window_height = height;
 		app->OnWindowResize(width, height);
 	}
 }
