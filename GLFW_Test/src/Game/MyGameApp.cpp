@@ -8,31 +8,68 @@ MyGameApp::MyGameApp()
 
 unsigned int EBO, VBO, VAO;
 Shader DefaultShader;
-Texture2D texture1, texture2;
+Texture2D texture1;
+Matrix model, view, projection;
+Vector3 modelPos;
 void MyGameApp::OnStart() {
 	App_Background_SetColor(0.2f, 0.3f, 0.3f);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
 
 	texture1.Create("assets/stone.jpg");
-	texture2.Create("assets/missingTexture.png");
-
-	/*
-	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-	trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-	*/
-
-
+	
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float vertices[] = {
-		// positions  // texture coords
-		0.5f, 0.5f, 0.0f, 1.0f, 1.0f, // top right
-		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f // top left
+		// Rückseite
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		// Vorderseite
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		// Linke Seite
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		// Rechte Seite
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		 // Unterseite
+		 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		  0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		 // Oberseite
+		 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
+
 	unsigned int indices[] = {
 		1, 0, 3,
 		3, 2, 1
@@ -40,15 +77,15 @@ void MyGameApp::OnStart() {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	//glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	GLsizei vertexSize = 5 * sizeof(float);
 	// position attribute
@@ -65,37 +102,62 @@ void MyGameApp::OnStart() {
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
 
-	// uncomment this call to draw in wireframe polygons.
+	// wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	{ 
+		using namespace GLTransform;
+		
+		modelPos.Set(0, 0, -5);
+		model = RotationXYZ(ConversionUtils::ToRadians(-55.0f), 0, 0);
+		Translation(model, modelPos);
+		view = Translation(0, 0, -3.0f);
+		//projection = Orthographic(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 10.0f);
+		projection = Perspective(ConversionUtils::ToRadians(45.0f), app_window_width / app_window_height, 0.1f, 100.0f);
+	}
 
 	App_Shader_Bind(&DefaultShader);
 	DefaultShader.SetInt("texture1", 0);
+
+	App_Application_DepthTesting(true);
 }
 
-Matrix trans1 = GLTransform::Identity();
-Matrix trans2 = GLTransform::Identity();
+float t = 0;
 void MyGameApp::OnUpdate() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(GetWindow(), true);
 
-	using namespace GLTransform;
-	trans1 = Combine(Translation(0.5f, -0.5f, 0.0f), RotationZ(static_cast<float>(Time::GetTimeSec())));
-	trans2 = Combine(Translation(-0.5f, 0.5f, 0.0f), ScaleUniform(sin(static_cast<float>(Time::GetTimeSec())) / 2));
-
 	App_Background_Clear();
-
 	App_Shader_Bind(&DefaultShader);
 
+	{
+		using namespace GLTransform;
+
+
+		t += 0.005;
+		modelPos.x = sin(t) * 1;
+		Vector3 rotation(
+			ConversionUtils::ToRadians(t * 80),
+			ConversionUtils::ToRadians(t * 80),
+			0
+		);
+
+		Matrix mat = Identity();
+		RotationXYZ(mat, rotation);
+		Translation(mat, modelPos);
+
+		model = mat;
+	}
+
 	texture1.Bind(0);
-	DefaultShader.SetMatrix4("transform", trans1.ToOpenGLData().data());
+	DefaultShader.SetMatrix4("model", model.ToOpenGLData());
+	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
+	DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	texture2.Bind(0);
-	DefaultShader.SetMatrix4("transform", trans2.ToOpenGLData().data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	texture2.Unbind(0);
-
+	texture1.Unbind(0);
 	glBindVertexArray(0);
 }
 
