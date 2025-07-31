@@ -25,16 +25,28 @@ public:
 
     const float* Data() const;
 
+    #pragma region to_conversion
+
     std::vector<float> ToOpenGLData() const;
 
     // Converts the matrix to a human-readable string representation
     String ToString() const;
+    // Converts this matrix to a Vector2 if the dimensions match
+    Vector2 ToVector2() const;
+    // Converts this matrix to a Vector3 if the dimensions match
+    Vector3 ToVector3() const;
+    // Converts this matrix to a Vector4 if the dimensions match
+    Vector4 ToVector4() const;
+
+    #pragma endregion
 
     // Accesses or modifies an element at the specified row and column
     float& operator()(int row, int col);
 
     // Returns the value at the specified row and column
     const float& operator()(int row, int col) const;
+
+    #pragma region operation=
 
     // Adds another matrix element-wise
     Matrix& operator+=(const Matrix& other);
@@ -48,6 +60,10 @@ public:
     Matrix& operator*=(float scalar);
     // Divides all elements by a scalar
     Matrix& operator/=(float scalar);
+
+    #pragma endregion
+
+    #pragma region operation
 
     // Matrix addition
     Matrix operator+(const Matrix& other) const;
@@ -69,15 +85,6 @@ public:
     Matrix operator*(float scalar) const;
     // Matrix-scalar division
     Matrix operator/(float scalar) const;
-
-    #pragma region explicit_casting
-
-    // Converts this matrix to a Vector2 if the dimensions match
-    explicit operator Vector2() const;
-    // Converts this matrix to a Vector3 if the dimensions match
-    explicit operator Vector3() const;
-    // Converts this matrix to a Vector4 if the dimensions match
-    explicit operator Vector4() const;
 
     #pragma endregion
 

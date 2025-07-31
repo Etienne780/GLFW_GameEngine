@@ -20,6 +20,16 @@ std::string Vector3::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}]", x, y, z);
 }
 
+Matrix Vector3::ToMatrix3x1() const {
+    float data[3] = { x, y, z };
+    return Matrix(3, 1, data);
+}
+
+Matrix Vector3::ToMatrix1x3() const {
+    float data[3] = { x, y, z };
+    return Matrix(1, 3, data);
+}
+
 void Vector3::Normalize() {
     float len = Magnitude();
     if (len > 0) {
@@ -157,14 +167,6 @@ const float& Vector3::operator[](int index) const {
     if (index == 1) return y;
     if (index == 2) return z;
     throw std::out_of_range("Vector3 index out of range");
-}
-
-Vector3::operator Matrix() const {
-    return Matrix({
-        {x},
-        {y},
-        {z}
-    });
 }
 
 Vector3 operator+(float scalar, const Vector3& other) {

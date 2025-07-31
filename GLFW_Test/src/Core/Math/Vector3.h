@@ -30,6 +30,16 @@ public:
      * @return String in the format "(x, y, z)".
      */
     std::string ToString() const;
+    /**
+    * @brief Converts this vector to a 3x1 column matrix.
+    * @return A Matrix with 3 rows and 1 column representing this vector.
+    */
+    Matrix ToMatrix3x1() const;
+    /**
+     * @brief Converts this vector to a 1x3 row matrix.
+     * @return A Matrix with 1 row and 3 columns representing this vector.
+     */
+    Matrix ToMatrix1x3() const;
 
     /**
      * @brief Normalizes the vector to have length 1.
@@ -130,12 +140,6 @@ public:
      * @throws std::out_of_range if index is invalid.
      */
     const float& operator[](int index) const;
-
-    /**
-     * @brief Explicit conversion operator to a Matrix.
-     * @return Matrix representation of this vector.
-     */
-    explicit operator Matrix() const;
 };
 
 #pragma region non_member_operations

@@ -24,6 +24,16 @@ public:
      * @return String in the format "(x, y, z, w)".
      */
     std::string ToString() const;
+    /**
+    * @brief Converts this vector to a 4x1 column matrix.
+    * @return A Matrix with 4 rows and 1 column representing this vector.
+    */
+    Matrix ToMatrix4x1() const;
+    /**
+    * @brief Converts this vector to a 1x4 row matrix.
+    * @return A Matrix with 1 row and 4 columns representing this vector.
+    */
+    Matrix ToMatrix1x4() const;
 
     /**
      * @brief Normalizes the vector to have length 1.
@@ -109,12 +119,6 @@ public:
      * @throws std::out_of_range if index is invalid.
      */
     const float& operator[](int index) const;
-
-    /**
-     * @brief Explicit conversion operator to a Matrix<float>.
-     * @return Matrix representation of this vector.
-     */
-    explicit operator Matrix() const;
 };
 
 #pragma region non_member_operations

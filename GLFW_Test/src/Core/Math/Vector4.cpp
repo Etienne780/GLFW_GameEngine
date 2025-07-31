@@ -12,6 +12,15 @@ const Vector4 Vector4::one(1, 1, 1, 1);
 std::string Vector4::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}, {}]", x, y, z, w);
 }
+Matrix Vector4::ToMatrix4x1() const {
+    float data[4] = { x, y, z, w };
+    return Matrix(4, 1, data);
+}
+
+Matrix Vector4::ToMatrix1x4() const {
+    float data[4] = { x, y, z, w };
+    return Matrix(1, 4, data);
+}
 
 void Vector4::Normalize() {
     float len = Magnitude();
@@ -133,15 +142,6 @@ const float& Vector4::operator[](int index) const {
     if (index == 2) return z;
     if (index == 3) return w;
     throw std::out_of_range("Vector4 index out of range");
-}
-
-Vector4::operator Matrix() const {
-    return Matrix({
-        {x},
-        {y},
-        {z},
-        {w}
-    });
 }
 
 Vector4 operator+(float scalar, const Vector4& other) {

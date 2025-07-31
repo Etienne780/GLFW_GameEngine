@@ -36,6 +36,8 @@ const float* Matrix::Data() const {
     return m_data.data();
 }
 
+#pragma region to_conversion
+
 std::vector<float> Matrix::ToOpenGLData() const {
     std::vector<float> result;
     result.reserve(m_rows * m_cols);
@@ -58,12 +60,49 @@ String Matrix::ToString() const {
     return result;
 }
 
+Vector2 Matrix::ToVector2() const {
+#ifndef NDEBUG
+    if (!((GetRowCount() == 2 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 2))) {
+        throw std::runtime_error("Matrix cannot be converted to Vector2 due to incompatible dimensions");
+    }
+#endif
+    return GetColCount() == 1 ?
+        Vector2((*this)(0, 0), (*this)(1, 0)) :
+        Vector2((*this)(0, 0), (*this)(0, 1));
+}
+
+Vector3 Matrix::ToVector3() const {
+#ifndef NDEBUG
+    if (!((GetRowCount() == 3 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 3))) {
+        throw std::runtime_error("Matrix cannot be converted to Vector3 due to incompatible dimensions");
+    }
+#endif
+    return GetColCount() == 1 ?
+        Vector3((*this)(0, 0), (*this)(1, 0), (*this)(2, 0)) :
+        Vector3((*this)(0, 0), (*this)(0, 1), (*this)(0, 2));
+}
+
+Vector4 Matrix::ToVector4() const {
+#ifndef NDEBUG
+    if (!((GetRowCount() == 4 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 4))) {
+        throw std::runtime_error("Matrix cannot be converted to Vector4 due to incompatible dimensions");
+    }
+#endif
+    return GetColCount() == 1 ?
+        Vector4((*this)(0, 0), (*this)(1, 0), (*this)(2, 0), (*this)(3, 0)) :
+        Vector4((*this)(0, 0), (*this)(0, 1), (*this)(0, 2), (*this)(0, 3));
+}
+
 int Matrix::ToIndex(int row, int col) const {
+#ifndef NDEBUG
     if (row < 0 || col < 0 || row >= m_rows || col >= m_cols) {
         throw std::runtime_error("Matrix index out of bounds");
     }
+#endif
     return row * m_cols + col; // row-major layout
 }
+
+#pragma endregion
 
 float& Matrix::operator()(int row, int col) {
 #ifndef NDEBUG
@@ -235,40 +274,6 @@ Matrix Matrix::operator/(float scalar) const {
     Matrix result = *this;
     result /= scalar;
     return result;
-}
-
-#pragma endregion
-
-#pragma region explicit_casting
-
-// Converts this matrix to a Vector2 if the dimensions match
-Matrix::operator Vector2() const {
-    if (!((GetRowCount() == 2 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 2))) {
-        throw std::runtime_error("Matrix cannot be converted to Vector2 due to incompatible dimensions");
-    }
-    return GetColCount() == 1 ?
-        Vector2((*this)(0, 0), (*this)(1, 0)) :
-        Vector2((*this)(0, 0), (*this)(0, 1));
-}
-
-// Converts this matrix to a Vector3 if the dimensions match
-Matrix::operator Vector3() const {
-    if (!((GetRowCount() == 3 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 3))) {
-        throw std::runtime_error("Matrix cannot be converted to Vector3 due to incompatible dimensions");
-    }
-    return GetColCount() == 1 ?
-        Vector3((*this)(0, 0), (*this)(1, 0), (*this)(2, 0)) :
-        Vector3((*this)(0, 0), (*this)(0, 1), (*this)(0, 2));
-}
-
-// Converts this matrix to a Vector4 if the dimensions match
-Matrix::operator Vector4() const {
-    if (!((GetRowCount() == 4 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 4))) {
-        throw std::runtime_error("Matrix cannot be converted to Vector4 due to incompatible dimensions");
-    }
-    return GetColCount() == 1 ?
-        Vector4((*this)(0, 0), (*this)(1, 0), (*this)(2, 0), (*this)(3, 0)) :
-        Vector4((*this)(0, 0), (*this)(0, 1), (*this)(0, 2), (*this)(0, 3));
 }
 
 #pragma endregion

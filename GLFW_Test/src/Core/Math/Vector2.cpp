@@ -17,6 +17,16 @@ std::string Vector2::ToString() const {
     return FormatUtils::formatString("[{}, {}]", x, y);
 }
 
+Matrix Vector2::ToMatrix2x1() const {
+    float data[2] = { x, y };
+    return Matrix(2, 1, data);
+}
+
+Matrix Vector2::ToMatrix1x2() const {
+    float data[2] = { x, y };
+    return Matrix(1, 2, data);
+}
+
 void Vector2::Normalize() {
     float len = Magnitude();
     if (len > 0) {
@@ -136,13 +146,6 @@ const float& Vector2::operator[](int index) const {
     if (index == 0) return x;
     if (index == 1) return y;
     throw std::out_of_range("Vector2 index out of range");
-}
-
-Vector2::operator Matrix() const {
-    return Matrix({
-        {x},
-        {y}
-    });
 }
 
 Vector2 operator+(float scalar, const Vector2& other) {
