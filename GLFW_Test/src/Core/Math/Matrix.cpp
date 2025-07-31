@@ -57,8 +57,8 @@ std::vector<float> Matrix::ToColMajorData() const {
     return result;
 }
 
-std::vector<float> Matrix::ToOpenGLData() const {
-    return ToColMajorData();
+const float* Matrix::ToOpenGLData() const {
+    return ToColMajorData().data();
 }
 
 String Matrix::ToString() const {

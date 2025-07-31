@@ -56,12 +56,12 @@ public:
     /**
      * @brief Converts the matrix to a flat float array suitable for OpenGL.
      *
-     * Internally returns the same data as ToColMajorData(), since OpenGL expects
+     * Internally returns the same data as ToColMajorData().data(), since OpenGL expects
      * column-major layout for uniform matrices.
      *
-     * @return A std::vector<float> containing the matrix elements in column-major layout.
+     * @return A const float* containing the matrix elements in column-major layout.
      */
-    std::vector<float> ToOpenGLData() const;
+    const float* ToOpenGLData() const;
 
     /**
     * @brief Converts the matrix to a human-readable string.
