@@ -37,6 +37,8 @@ public:
 
 	virtual void OnWindowResize(int newWidth, int newHeight);
 
+	void App_Application_DepthTesting(bool value);
+
 	void App_Background_SetColor(float r, float g, float b);
 	void App_Background_SetColor(float brightness);
 	void App_Background_SetColor(const Vector3& color);
@@ -49,6 +51,7 @@ public:
 	GLFWwindow* GetWindow();
 
 private:
+	bool m_isDepthBufferEnabled = false;
 	Vector3 m_backgroundColor;
 	GLFWwindow* m_window = nullptr;
 

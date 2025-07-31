@@ -17,6 +17,14 @@ void Application::OnShutdown() {}
 
 void Application::OnWindowResize(int newWidth, int newHeight) {}
 
+void Application::App_Application_DepthTesting(bool value) {
+    m_isDepthBufferEnabled = value;
+    if(value)
+        glEnable(GL_DEPTH_TEST);
+    else 
+        glDisable(GL_DEPTH_TEST);
+}
+
 void Application::App_Background_SetColor(float r, float g, float b) {
     m_backgroundColor = Vector3(r, g, b);
 }
@@ -30,9 +38,8 @@ void Application::App_Background_SetColor(const Vector3& color) {
 }
 
 void Application::App_Background_Clear() {
-
     glClearColor(m_backgroundColor.x, m_backgroundColor.y, m_backgroundColor.z, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(((m_isDepthBufferEnabled) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
 }
 
 void Application::App_Shader_Bind(EngineCore::Shader* shader) {
