@@ -198,22 +198,8 @@ Matrix& Matrix::operator*=(const Matrix& other) {
     #endif
 
     m_isDataDirty = true;
-    Matrix result(m_rows, other.m_cols);
-    const float* a = GetData();
-    const float* b = other.GetData();
-    float* r = result.GetData();
 
-    for (int i = 0; i < m_rows; ++i) {
-        for (int j = 0; j < other.m_cols; ++j) {
-            float sum = 0.0f;
-            for (int k = 0; k < m_cols; ++k) {
-                sum += a[i * m_cols + k] * b[k * other.m_cols + j];
-            }
-            r[i * other.m_cols + j] = sum;
-        }
-    }
-
-    *this = std::move(result);
+    *this = other * (*this);
     return *this;
 }
 
@@ -561,10 +547,14 @@ namespace GLTransform {
             throw std::runtime_error("ScaleNonUniform: Matrix must be 4x4");
         }
         #endif
-        float* o = out.GetData();
-        o[0] = x;
-        o[1 * 4 + 1] = y;
-        o[2 * 4 + 2] = z;
+
+        Matrix scale = Identity();
+        float* s = scale.GetData();
+        s[0] = x;
+        s[1 * 4 + 1] = y;
+        s[2 * 4 + 2] = z;
+
+        out *= scale;
     }
 
     void ScaleNonUniform(Matrix& out, const Vector3& scalar) {
@@ -582,10 +572,14 @@ namespace GLTransform {
             throw std::runtime_error("Translation: Matrix must be 4x4");
         }
         #endif
-        float* o = out.GetData();
-        o[0 * 4 + 3] = x;
-        o[1 * 4 + 3] = y;
-        o[2 * 4 + 3] = z;
+
+        Matrix trans = Identity();
+        float* t = trans.GetData();
+        t[0 * 4 + 3] = x;
+        t[1 * 4 + 3] = y;
+        t[2 * 4 + 3] = z;
+
+        out *= trans;
     }
 
     void Translation(Matrix& out, const Vector3& translation) {
@@ -598,14 +592,18 @@ namespace GLTransform {
             throw std::runtime_error("RotationX: Matrix must be 4x4");
         }
         #endif
+
+        Matrix rot = Identity();
         float c = std::cos(radians), s = std::sin(radians);
-        float* o = out.GetData();
-        o[0] = 1;
-        o[1 * 4 + 1] = c;
-        o[1 * 4 + 2] = -s;
-        o[2 * 4 + 1] = s;
-        o[2 * 4 + 2] = c;
-        o[3 * 4 + 3] = 1;
+        float* r = rot.GetData();
+        r[0] = 1;
+        r[1 * 4 + 1] = c;
+        r[1 * 4 + 2] = -s;
+        r[2 * 4 + 1] = s;
+        r[2 * 4 + 2] = c;
+        r[3 * 4 + 3] = 1;
+
+        out *= rot;
     }
 
     void RotationY(Matrix& out, float radians) {
@@ -614,14 +612,18 @@ namespace GLTransform {
             throw std::runtime_error("RotationY: Matrix must be 4x4");
         }
         #endif
+
+        Matrix rot = Identity();
         float c = std::cos(radians), s = std::sin(radians);
-        float* o = out.GetData();
-        o[0] = c;
-        o[2] = s;
-        o[1 * 4 + 1] = 1;
-        o[2 * 4 + 0] = -s;
-        o[2 * 4 + 2] = c;
-        o[3 * 4 + 3] = 1;
+        float* r = rot.GetData();
+        r[0] = c;
+        r[2] = s;
+        r[1 * 4 + 1] = 1;
+        r[2 * 4 + 0] = -s;
+        r[2 * 4 + 2] = c;
+        r[3 * 4 + 3] = 1;
+
+        out *= rot;
     }
 
     void RotationZ(Matrix& out, float radians) {
@@ -630,14 +632,18 @@ namespace GLTransform {
             throw std::runtime_error("RotationZ: Matrix must be 4x4");
         }
         #endif
+
+        Matrix rot = Identity();
         float c = std::cos(radians), s = std::sin(radians);
-        float* o = out.GetData();
-        o[0] = c;
-        o[1] = -s;
-        o[1 * 4 + 0] = s;
-        o[1 * 4 + 1] = c;
-        o[2 * 4 + 2] = 1;
-        o[3 * 4 + 3] = 1;
+        float* r = rot.GetData();
+        r[0] = c;
+        r[1] = -s;
+        r[1 * 4 + 0] = s;
+        r[1 * 4 + 1] = c;
+        r[2 * 4 + 2] = 1;
+        r[3 * 4 + 3] = 1;
+
+        out *= rot;
     }
 
     void RotationXYZ(Matrix& out, float rx, float ry, float rz) {
@@ -647,11 +653,11 @@ namespace GLTransform {
         }
         #endif
 
-        Matrix rotX(4, 4), rotY(4, 4), rotZ(4, 4);
+        Matrix rotX = Identity(), rotY = Identity(), rotZ = Identity();
         RotationX(rotX, rx);
         RotationY(rotY, ry);
         RotationZ(rotZ, rz);
-        out = rotZ * rotY * rotX;
+        out *= rotZ * rotY * rotX;
     }
 
     void RotationXYZ(Matrix& out, const Vector3& radians) {
