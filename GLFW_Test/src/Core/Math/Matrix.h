@@ -183,6 +183,37 @@ namespace GLTransform {
     Matrix RotationXYZ(float rx, float ry, float rz);
     Matrix RotationXYZ(const Vector3& radians);
 
+    /**
+     * @brief Creates an orthographic projection matrix (right-handed coordinate system).
+     *
+     * Maps a 3D volume defined by the left, right, bottom, top, near, and far planes into normalized device coordinates.
+     * This is typically used for 2D rendering or UI systems, where perspective distortion is not desired.
+     *
+     * @param left   The left plane of the view volume.
+     * @param right  The right plane of the view volume.
+     * @param bottom The bottom plane of the view volume.
+     * @param top    The top plane of the view volume.
+     * @param zNear  The near clipping plane distance.
+     * @param zFar   The far clipping plane distance.
+     * @return       A 4x4 orthographic projection matrix.
+     */
+    Matrix Orthographic(float left, float right, float bottom, float top, float zNear, float zFar);
+
+    /**
+     * @brief Creates a perspective projection matrix (right-handed coordinate system).
+     *
+     * Simulates a realistic perspective where distant objects appear smaller.
+     * This matrix is commonly used for 3D scenes with depth perception.
+     *
+     * @param fovy    Field of view in the y-direction, in radians.
+     * @param aspect  Aspect ratio of the viewport (width / height).
+     * @param zNear   The near clipping plane distance (must be > 0).
+     * @param zFar    The far clipping plane distance (must be > zNear).
+     * @return        A 4x4 perspective projection matrix.
+     */
+    Matrix Perspective(float fovy, float aspect, float zNear, float zFar);
+
+
     void Identity(Matrix& out);
     
     void ScaleNonUniform(Matrix& out, float x, float y, float z);

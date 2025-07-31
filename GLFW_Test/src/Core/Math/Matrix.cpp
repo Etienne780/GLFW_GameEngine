@@ -485,6 +485,36 @@ namespace GLTransform {
         return RotationXYZ(radians.x, radians.y, radians.z);
     }
 
+    Matrix Orthographic(float left, float right, float bottom, float top, float zNear, float zFar)
+    {
+        Matrix result = Matrix(4, 4);
+        float* a = result.GetData();
+
+        a[0 * 4 + 0] = 2.0f / (right - left);
+        a[1 * 4 + 1] = 2.0f / (top - bottom);
+        a[2 * 4 + 2] = -2.0f / (zFar - zNear);
+        a[3 * 4 + 3] = 1.0f;
+
+        a[0 * 4 + 3] = -(right + left) / (right - left);
+        a[1 * 4 + 3] = -(top + bottom) / (top - bottom);
+        a[2 * 4 + 3] = -(zFar + zNear) / (zFar - zNear);
+        return result;
+    }
+
+    Matrix Perspective(float fovy, float aspect, float zNear, float zFar)
+    {
+        Matrix result = Matrix(4, 4);
+        float* a = result.GetData();
+
+        float const tanHalfFovy = tan(fovy / 2.0f);
+        a[0 * 4 + 0] = 1.0f / (aspect * tanHalfFovy);
+        a[1 * 4 + 1] = 1.0f / (tanHalfFovy);
+        a[2 * 4 + 2] = -(zFar + zNear) / (zFar - zNear);
+        a[2 * 4 + 3] = -(2.0f * zFar * zNear) / (zFar - zNear); 
+        a[3 * 4 + 2] = -1.0f;
+        return result;
+    }
+
     void Identity(Matrix& out) {
         #ifndef NDEBUG
         if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
