@@ -42,6 +42,17 @@ public:
     Matrix ToMatrix1x3() const;
 
     /**
+    * @brief Sets each component of a vector
+    *
+    * @param x component of the vector
+    * @param y component of the vector
+    * @param z component of the vector
+    *
+    * @return this vector
+    */
+    Vector3& Set(float x, float y, float z);
+
+    /**
      * @brief Normalizes the vector to have length 1.
      * Modifies the vector in place.
      */

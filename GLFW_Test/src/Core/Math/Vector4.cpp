@@ -22,6 +22,14 @@ Matrix Vector4::ToMatrix1x4() const {
     return Matrix(1, 4, data);
 }
 
+Vector4& Vector4::Set(float _x, float _y, float _z, float _w) {
+    x = _x;
+    y = _y;
+    z = _z;
+    w = _w;
+    return *this;
+}
+
 void Vector4::Normalize() {
     float len = Magnitude();
     if (len > 0) {

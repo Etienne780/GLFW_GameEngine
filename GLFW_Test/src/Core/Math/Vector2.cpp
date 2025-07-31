@@ -27,6 +27,12 @@ Matrix Vector2::ToMatrix1x2() const {
     return Matrix(1, 2, data);
 }
 
+Vector2& Vector2::Set(float _x, float _y) {
+    x = _x;
+    y = _y;
+    return *this;
+}
+
 void Vector2::Normalize() {
     float len = Magnitude();
     if (len > 0) {

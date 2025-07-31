@@ -36,6 +36,18 @@ public:
     Matrix ToMatrix1x4() const;
 
     /**
+    * @brief Sets each component of a vector
+    *
+    * @param x component of the vector
+    * @param y component of the vector
+    * @param z component of the vector
+    * @param w component of the vector
+    *
+    * @return this vector
+    */
+    Vector4& Set(float x, float y, float z, float w);
+
+    /**
      * @brief Normalizes the vector to have length 1.
      * Modifies the vector in place.
      */

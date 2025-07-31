@@ -30,6 +30,13 @@ Matrix Vector3::ToMatrix1x3() const {
     return Matrix(1, 3, data);
 }
 
+Vector3& Vector3::Set(float _x, float _y, float _z) {
+    x = _x;
+    y = _y;
+    z = _z;
+    return *this;
+}
+
 void Vector3::Normalize() {
     float len = Magnitude();
     if (len > 0) {

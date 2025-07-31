@@ -38,6 +38,15 @@ public:
      */
     Matrix ToMatrix1x2() const;
 
+    /**
+    * @brief Sets each component of a vector
+    * 
+    * @param x component of the vector
+    * @param y component of the vector
+    * 
+    * @return this vector
+    */
+    Vector2& Set(float x, float y);
 
     /**
      * @brief Normalizes the vector to have length 1.
