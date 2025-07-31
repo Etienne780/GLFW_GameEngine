@@ -61,8 +61,8 @@ std::vector<float> Matrix::ToColMajorData() const {
 }
 
 const float* Matrix::ToOpenGLData() const {
-    _cachedColMajorData = ToColMajorData();
-    return _cachedColMajorData.data();
+    m_cachedColMajorData = ToColMajorData();
+    return m_cachedColMajorData.data();
 }
 
 String Matrix::ToString() const {

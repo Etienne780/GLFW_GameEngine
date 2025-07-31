@@ -147,7 +147,7 @@ private:
     int m_rows = 0;
     int m_cols = 0;
     std::vector<float> m_data;
-    mutable std::vector<float> _cachedColMajorData;
+    mutable std::vector<float> m_cachedColMajorData;
     
     // row-major layout
     int ToIndex(int row, int col) const;
