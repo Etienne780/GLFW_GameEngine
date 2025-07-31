@@ -15,7 +15,7 @@ Matrix::Matrix(int rows, int cols, const float* values)
 
 Matrix::Matrix(std::initializer_list<std::initializer_list<float>> values) {
     m_rows = static_cast<int>(values.size());
-    m_cols = values.begin()->size();
+    m_cols = static_cast<int>(values.begin()->size());
     m_data.reserve(m_rows * m_cols);
     for (const auto& row : values) {
         if (row.size() != static_cast<size_t>(m_cols))
@@ -32,21 +32,33 @@ int Matrix::GetColCount() const {
     return m_cols; 
 }
 
-const float* Matrix::Data() const {
+float* Matrix::GetData() {
+    return m_data.data(); 
+}
+
+const float* Matrix::GetData() const {
     return m_data.data();
 }
 
-#pragma region to_conversion
+void Matrix::SetData(float value) {
+    std::fill(m_data.begin(), m_data.end(), value);
+}
 
-std::vector<float> Matrix::ToOpenGLData() const {
+#pragma region to_conversion
+std::vector<float> Matrix::ToColMajorData() const {
     std::vector<float> result;
     result.reserve(m_rows * m_cols);
+    const float* a = GetData();
 
     for (int col = 0; col < m_cols; ++col)
         for (int row = 0; row < m_rows; ++row)
-            result.push_back((*this)(row, col));
+            result.push_back(a[row * m_cols + col]);
 
     return result;
+}
+
+std::vector<float> Matrix::ToOpenGLData() const {
+    return ToColMajorData();
 }
 
 String Matrix::ToString() const {
@@ -125,53 +137,66 @@ const float& Matrix::operator()(int row, int col) const {
 #pragma region operation=
 
 Matrix& Matrix::operator+=(const Matrix& other) {
-    if (GetRowCount() != other.GetRowCount() || GetColCount() != other.GetColCount()) {
+    if (m_rows != other.m_rows || m_cols != other.m_cols) {
         throw std::runtime_error("Matrix dimensions do not match for addition.");
     }
-    for (int i = 0; i < GetRowCount(); ++i)
-        for (int j = 0; j < GetColCount(); ++j)
-            (*this)(i, j) += other(i, j);
+
+    float* a = GetData();
+    const float* b = other.GetData();
+
+    for (int i = 0; i < m_rows; ++i)
+        for (int j = 0; j < m_cols; ++j)
+            a[i * m_cols + j] += b[i * m_cols + j];
     return *this;
 }
 
 Matrix& Matrix::operator-=(const Matrix& other) {
-    if (GetRowCount() != other.GetRowCount() || GetColCount() != other.GetColCount()) {
+    if (m_rows != other.m_rows || m_cols != other.m_cols) {
         throw std::runtime_error("Matrix dimensions do not match for subtraction.");
     }
-    for (int i = 0; i < GetRowCount(); ++i)
-        for (int j = 0; j < GetColCount(); ++j)
-            (*this)(i, j) -= other(i, j);
+
+    float* a = GetData();
+    const float* b = other.GetData();
+
+    for (int i = 0; i < m_rows; ++i)
+        for (int j = 0; j < m_cols; ++j)
+            a[i * m_cols + j] -= b[i * m_cols + j];
     return *this;
 }
 
 Matrix& Matrix::operator+=(float scalar) {
+    float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
-            (*this)(i, j) += scalar;
+            a[i * m_cols + j] += scalar;
     return *this;
 }
 
 Matrix& Matrix::operator-=(float scalar) {
+    float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
-            (*this)(i, j) -= scalar;
+            a[i * m_cols + j] -= scalar;
     return *this;
 }
 
 Matrix& Matrix::operator*=(float scalar) {
+    float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
-            (*this)(i, j) *= scalar;
+            a[i * m_cols + j] *= scalar;
     return *this;
 }
 
 Matrix& Matrix::operator/=(float scalar) {
+#ifndef NDEBUG
     if (scalar == 0)
         throw std::runtime_error("Matrix division by zero is not allowed");
-
+#endif
+    float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
-            (*this)(i, j) /= scalar;
+            a[i * m_cols + j] /= scalar;
     return *this;
 }
 
@@ -204,19 +229,21 @@ Matrix  Matrix::operator-(float scalar) const {
 }
 
 Matrix Matrix::operator*(const Matrix& other) const {
-    if (GetColCount() != other.GetRowCount()) {
+    if (m_cols != other.m_rows) 
         throw std::runtime_error("Matrix multiplication not allowed");
-    }
 
-    Matrix result(GetRowCount(), other.GetColCount());
+    Matrix result(m_rows, other.m_cols);
+    const float* a = GetData();
+    const float* b = other.GetData();
+    float* r = result.GetData();
 
-    for (int i = 0; i < GetRowCount(); ++i) {
-        for (int j = 0; j < other.GetColCount(); ++j) {
+    for (int i = 0; i < m_rows; ++i) {
+        for (int j = 0; j < other.m_cols; ++j) {
             float sum = 0.0f;
-            for (int k = 0; k < GetColCount(); ++k) {
-                sum += (*this)(i, k) * other(k, j);
+            for (int k = 0; k < m_cols; ++k) {
+                sum += a[i * m_cols + k] * b[k * other.m_cols + j];
             }
-            result(i, j) = sum;
+            r[i * other.m_cols + j] = sum;
         }
     }
 
@@ -224,42 +251,48 @@ Matrix Matrix::operator*(const Matrix& other) const {
 }
 
 Matrix Matrix::operator*(const Vector2& other) const {
-    if (GetColCount() != 2)
+    if (m_cols != 2)
         throw std::runtime_error("Matrix column count must match Vector2 size (2)");
 
-    Matrix result(GetRowCount(), 1);
+    Matrix result(m_rows, 1);
+    const float* a = GetData();
+    float* r = result.GetData();
 
-    for (int i = 0; i < GetRowCount(); ++i)
-        result(i, 0) = (*this)(i, 0) * other[0] + (*this)(i, 1) * other[1];
+    for (int i = 0; i < m_rows; ++i)
+        r[i] = a[i * m_cols + 0] * other.x + a[i * m_cols + 1] * other.y;
 
     return result;
 }
 
 Matrix Matrix::operator*(const Vector3& other) const {
-    if (GetColCount() != 3)
+    if (m_cols != 3)
         throw std::runtime_error("Matrix column count must match Vector3 size (3)");
 
-    Matrix result(GetRowCount(), 1);
+    Matrix result(m_rows, 1);
+    const float* a = GetData();
+    float* r = result.GetData();
 
-    for (int i = 0; i < GetRowCount(); ++i)
-        result(i, 0) = (*this)(i, 0) * other[0]
-        + (*this)(i, 1) * other[1]
-        + (*this)(i, 2) * other[2];
+    for (int i = 0; i < m_rows; ++i)
+        r[i] = a[i * m_cols + 0] * other.x
+        + a[i * m_cols + 1] * other.y
+        + a[i * m_cols + 2] * other.z;
 
     return result;
 }
 
 Matrix Matrix::operator*(const Vector4& other) const {
-    if (GetColCount() != 4)
+    if (m_cols != 4)
         throw std::runtime_error("Matrix column count must match Vector4 size (4)");
 
-    Matrix result(GetRowCount(), 1);
+    Matrix result(m_rows, 1);
+    const float* a = GetData();
+    float* r = result.GetData();
 
-    for (int i = 0; i < GetRowCount(); ++i)
-        result(i, 0) = (*this)(i, 0) * other[0]
-        + (*this)(i, 1) * other[1]
-        + (*this)(i, 2) * other[2]
-        + (*this)(i, 3) * other[3];
+    for (int i = 0; i < m_rows; ++i)
+        r[i] = a[i * m_cols + 0] * other.x
+        + a[i * m_cols + 1] * other.y
+        + a[i * m_cols + 2] * other.z
+        + a[i * m_cols + 3] * other.w;
 
     return result;
 }
@@ -308,16 +341,22 @@ Matrix operator/(float scalar, const Matrix& matrix) {
     int cols = matrix.GetColCount();
 
     Matrix result(rows, cols);
+    const float* a = matrix.GetData();
+    float* r = result.GetData();
 
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            float val = matrix(i, j);
-            if (val == 0) {
+            int index = i * cols + j;
+
+#ifndef NDEBUG
+            if (a[index] == 0.0f) {
                 std::ostringstream oss;
                 oss << "Division by zero at (" << i << "," << j << ")";
                 throw std::runtime_error(oss.str());
             }
-            result(i, j) = scalar / val;
+#endif
+
+            r[index] = scalar / a[index];
         }
     }
 
@@ -414,7 +453,121 @@ namespace GLTransform {
         return RotationXYZ(radians.x, radians.y, radians.z);
     }
 
-    Matrix Combine(const Matrix& last) {
-        return last;
+    void Identity(Matrix& out) {
+        #ifndef NDEBUG
+        if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
+            throw std::runtime_error("Identity: Matrix must be 4x4");
+        }
+        #endif
+
+        out.SetData(0);
+        float* o = out.GetData();
+        o[0] = 1;
+        o[1 * 4 + 1] = 1;
+        o[2 * 4 + 2] = 1;
+        o[3 * 4 + 3] = 1;
+    }
+
+    void ScaleNonUniform(Matrix& out, float x, float y, float z) {
+        #ifndef NDEBUG
+        if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
+            throw std::runtime_error("ScaleNonUniform: Matrix must be 4x4");
+        }
+        #endif
+        float* o = out.GetData();
+        o[0] = x;
+        o[1 * 4 + 1] = y;
+        o[2 * 4 + 2] = z;
+    }
+
+    void ScaleNonUniform(Matrix& out, Vector3 scalar) {
+        ScaleNonUniform(out, scalar.x, scalar.y, scalar.z);
+    }
+
+
+    void ScaleUniform(Matrix& out, float scalar) {
+        ScaleNonUniform(out, scalar, scalar, scalar);
+    }
+
+    void Translation(Matrix& out, float x, float y, float z) {
+        #ifndef NDEBUG
+        if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
+            throw std::runtime_error("Translation: Matrix must be 4x4");
+        }
+        #endif
+        float* o = out.GetData();
+        o[0 * 4 + 3] = x;
+        o[1 * 4 + 3] = y;
+        o[2 * 4 + 3] = z;
+    }
+
+    void Translation(Matrix& out, Vector3 translation) {
+        Translation(out, translation.x, translation.y, translation.z);
+    }
+
+    void RotationX(Matrix& out, float radians) {
+        #ifndef NDEBUG
+        if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
+            throw std::runtime_error("RotationX: Matrix must be 4x4");
+        }
+        #endif
+        float c = std::cos(radians), s = std::sin(radians);
+        float* o = out.GetData();
+        o[0] = 1;
+        o[1 * 4 + 1] = c;
+        o[1 * 4 + 2] = -s;
+        o[2 * 4 + 1] = s;
+        o[2 * 4 + 2] = c;
+        o[3 * 4 + 3] = 1;
+    }
+
+    void RotationY(Matrix& out, float radians) {
+        #ifndef NDEBUG
+        if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
+            throw std::runtime_error("RotationY: Matrix must be 4x4");
+        }
+        #endif
+        float c = std::cos(radians), s = std::sin(radians);
+        float* o = out.GetData();
+        o[0] = c;
+        o[2] = s;
+        o[1 * 4 + 1] = 1;
+        o[2 * 4 + 0] = -s;
+        o[2 * 4 + 2] = c;
+        o[3 * 4 + 3] = 1;
+    }
+
+    void RotationZ(Matrix& out, float radians) {
+        #ifndef NDEBUG
+        if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
+            throw std::runtime_error("RotationZ: Matrix must be 4x4");
+        }
+        #endif
+        float c = std::cos(radians), s = std::sin(radians);
+        float* o = out.GetData();
+        o[0] = c;
+        o[1] = -s;
+        o[1 * 4 + 0] = s;
+        o[1 * 4 + 1] = c;
+        o[2 * 4 + 2] = 1;
+        o[3 * 4 + 3] = 1;
+    }
+
+    void RotationXYZ(Matrix& out, float rx, float ry, float rz) {
+        #ifndef NDEBUG
+        if (out.GetRowCount() != 4 || out.GetColCount() != 4) {
+            throw std::runtime_error("RotationXYZ: Matrix must be 4x4");
+        }
+        #endif
+
+        Matrix rotX(4, 4), rotY(4, 4), rotZ(4, 4);
+        RotationX(rotX, rx);
+        RotationY(rotY, ry);
+        RotationZ(rotZ, rz);
+        out = rotZ * rotY * rotX;
+    }
+
+    void RotationXYZ(Matrix& out, Vector3 radians) {
+        RotationXYZ(out, radians.x, radians.y, radians.z);
     }
 }

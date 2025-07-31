@@ -10,32 +10,84 @@ class Vector4;
 
 class Matrix {
 public:
-    // Constructs a matrix with given row and column dimensions, initialized with zeros
+    // Constructs a matrix with the specified number of rows and columns, initialized to zero.
     Matrix(int rows, int cols);
 
+    // Constructs a matrix with the specified dimensions and initializes it with the given raw float array (row-major order).
     Matrix(int rows, int cols, const float* values);
-    // Constructs a matrix using an initializer list (e.g., {{1, 2}, {3, 4}})
+
+    // Constructs a matrix from a nested initializer list (e.g., {{1, 2}, {3, 4}}).
     Matrix(std::initializer_list<std::initializer_list<float>> values);
 
-    // Returns the number of rows in the matrix
+    /**
+    * @brief Returns the number of rows in the matrix.
+    * @return Integer representing the row count.
+    */
     int GetRowCount() const;
 
-    // Returns the number of columns in the matrix
+    /**
+    * @brief Returns the number of columns in the matrix.
+    * @return Integer representing the column count.
+    */
     int GetColCount() const;
 
-    const float* Data() const;
+    /**
+    * @brief Provides mutable access to the raw matrix data (row-major order).
+    * @return Pointer to the internal float array representing the matrix data.
+    */
+    float* GetData();
+
+    /**
+    * @brief Provides read-only access to the raw matrix data (row-major order).
+    * @return Const pointer to the internal float array representing the matrix data.
+    */
+    const float* GetData() const;
+
+    void SetData(float value);
 
     #pragma region to_conversion
 
+    /**
+     * @brief Converts the matrix to a flat float array in column-major order.
+     * @return A std::vector<float> containing the matrix elements in column-major layout.
+     */
+    std::vector<float> ToColMajorData() const;
+
+    /**
+     * @brief Converts the matrix to a flat float array suitable for OpenGL.
+     *
+     * Internally returns the same data as ToColMajorData(), since OpenGL expects
+     * column-major layout for uniform matrices.
+     *
+     * @return A std::vector<float> containing the matrix elements in column-major layout.
+     */
     std::vector<float> ToOpenGLData() const;
 
-    // Converts the matrix to a human-readable string representation
+    /**
+    * @brief Converts the matrix to a human-readable string.
+    * @return A string representing the matrix content.
+    */
     String ToString() const;
-    // Converts this matrix to a Vector2 if the dimensions match
+
+    /**
+    * @brief Converts this matrix to a Vector2 if dimensions are compatible (2x1 or 1x2).
+    * @return A Vector2 containing the corresponding matrix elements.
+    * @throws std::runtime_error if dimensions are incompatible.
+    */
     Vector2 ToVector2() const;
-    // Converts this matrix to a Vector3 if the dimensions match
+
+    /**
+    * @brief Converts this matrix to a Vector3 if dimensions are compatible (3x1 or 1x3).
+    * @return A Vector3 containing the corresponding matrix elements.
+    * @throws std::runtime_error if dimensions are incompatible.
+    */
     Vector3 ToVector3() const;
-    // Converts this matrix to a Vector4 if the dimensions match
+
+    /**
+    * @brief Converts this matrix to a Vector4 if dimensions are compatible (4x1 or 1x4).
+    * @return A Vector4 containing the corresponding matrix elements.
+    * @throws std::runtime_error if dimensions are incompatible.
+    */
     Vector4 ToVector4() const;
 
     #pragma endregion
@@ -108,6 +160,9 @@ Matrix operator/(float scalar, const Matrix& matrix);
 
 #pragma endregion
 
+/**
+* @brief GLTransform provides functions to create and manipulate 4x4 matrices, primarily for OpenGL use.
+*/
 namespace GLTransform {
 
     Matrix Identity();
@@ -126,17 +181,19 @@ namespace GLTransform {
     Matrix RotationXYZ(float rx, float ry, float rz);
     Matrix RotationXYZ(Vector3 radians);
 
-    Matrix Combine(const Matrix& last);
-
-    /**
-     * @brief Combines multiple matrices by multiplying them in the given order (left to right).
-     * @tparam T Type of matrix elements (e.g., float)
-     * @param first The first matrix in the multiplication chain
-     * @param rest Remaining matrices to multiply
-     * @return Combined transformation matrix (first * rest...)
-     */
-    template<typename... Matrices>
-    Matrix Combine(const Matrix& first, const Matrices&... rest) {
-        return first * Combine(rest...);
-    }
+    void Identity(Matrix& out);
+    
+    void ScaleNonUniform(Matrix& out, float x, float y, float z);
+    void ScaleNonUniform(Matrix& out, Vector3 scalar);
+    
+    void ScaleUniform(Matrix& out, float scalar);
+    
+    void Translation(Matrix& out, float x, float y, float z);
+    void Translation(Matrix& out, Vector3 translation);
+    
+    void RotationX(Matrix& out, float radians);
+    void RotationY(Matrix& out, float radians);
+    void RotationZ(Matrix& out, float radians);
+    void RotationXYZ(Matrix& out, float rx, float ry, float rz);
+    void RotationXYZ(Matrix& out, Vector3 radians);
 }
