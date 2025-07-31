@@ -170,32 +170,32 @@ namespace GLTransform {
     Matrix Identity();
 
     Matrix ScaleNonUniform(float x, float y, float z);
-    Matrix ScaleNonUniform(Vector3 scalar);
+    Matrix ScaleNonUniform(const Vector3& scalar);
 
     Matrix ScaleUniform(float scalar);
 
     Matrix Translation(float x, float y, float z);
-    Matrix Translation(Vector3 translation);
+    Matrix Translation(const Vector3& translation);
 
     Matrix RotationX(float radians);
     Matrix RotationY(float radians);
     Matrix RotationZ(float radians);
     Matrix RotationXYZ(float rx, float ry, float rz);
-    Matrix RotationXYZ(Vector3 radians);
+    Matrix RotationXYZ(const Vector3& radians);
 
     void Identity(Matrix& out);
     
     void ScaleNonUniform(Matrix& out, float x, float y, float z);
-    void ScaleNonUniform(Matrix& out, Vector3 scalar);
+    void ScaleNonUniform(Matrix& out, const Vector3& scalar);
     
     void ScaleUniform(Matrix& out, float scalar);
     
     void Translation(Matrix& out, float x, float y, float z);
-    void Translation(Matrix& out, Vector3 translation);
+    void Translation(Matrix& out, const Vector3& translation);
     
     void RotationX(Matrix& out, float radians);
     void RotationY(Matrix& out, float radians);
     void RotationZ(Matrix& out, float radians);
     void RotationXYZ(Matrix& out, float rx, float ry, float rz);
-    void RotationXYZ(Matrix& out, Vector3 radians);
+    void RotationXYZ(Matrix& out, const Vector3& radians);
 }

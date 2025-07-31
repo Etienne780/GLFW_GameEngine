@@ -419,7 +419,7 @@ namespace GLTransform {
         return Matrix(4, 4, data);
     }
 
-    Matrix ScaleNonUniform(Vector3 scalar) {
+    Matrix ScaleNonUniform(const Vector3& scalar) {
         return ScaleNonUniform(scalar.x, scalar.y, scalar.z);
     }
 
@@ -437,7 +437,7 @@ namespace GLTransform {
         return Matrix(4, 4, data);
     }
 
-    Matrix Translation(Vector3 translation) {
+    Matrix Translation(const Vector3& translation) {
         return Translation(translation.x, translation.y, translation.z);
     }
 
@@ -481,7 +481,7 @@ namespace GLTransform {
         return RotationZ(rz) * RotationY(ry) * RotationX(rx);
     }
 
-    Matrix RotationXYZ(Vector3 radians) {
+    Matrix RotationXYZ(const Vector3& radians) {
         return RotationXYZ(radians.x, radians.y, radians.z);
     }
 
@@ -512,7 +512,7 @@ namespace GLTransform {
         o[2 * 4 + 2] = z;
     }
 
-    void ScaleNonUniform(Matrix& out, Vector3 scalar) {
+    void ScaleNonUniform(Matrix& out, const Vector3& scalar) {
         ScaleNonUniform(out, scalar.x, scalar.y, scalar.z);
     }
 
@@ -533,7 +533,7 @@ namespace GLTransform {
         o[2 * 4 + 3] = z;
     }
 
-    void Translation(Matrix& out, Vector3 translation) {
+    void Translation(Matrix& out, const Vector3& translation) {
         Translation(out, translation.x, translation.y, translation.z);
     }
 
@@ -599,7 +599,7 @@ namespace GLTransform {
         out = rotZ * rotY * rotX;
     }
 
-    void RotationXYZ(Matrix& out, Vector3 radians) {
+    void RotationXYZ(Matrix& out, const Vector3& radians) {
         RotationXYZ(out, radians.x, radians.y, radians.z);
     }
 }
