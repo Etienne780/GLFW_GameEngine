@@ -44,7 +44,9 @@ public:
     */
     const float* GetData() const;
 
-    void SetData(float value);
+    Matrix& SetData(float value);
+
+    Matrix& SetDataDirty();
 
     #pragma region to_conversion
 
@@ -147,6 +149,7 @@ private:
     int m_rows = 0;
     int m_cols = 0;
     std::vector<float> m_data;
+    mutable bool m_isDataDirty = true;
     mutable std::vector<float> m_cachedColMajorData;
     
     // row-major layout

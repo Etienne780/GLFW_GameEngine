@@ -36,32 +36,49 @@ int Matrix::GetColCount() const {
 }
 
 float* Matrix::GetData() {
+    m_isDataDirty = true;
     return m_data.data(); 
 }
 
 const float* Matrix::GetData() const {
+    m_isDataDirty = true;
     return m_data.data();
 }
 
-void Matrix::SetData(float value) {
+Matrix& Matrix::SetData(float value) {
+    m_isDataDirty = true;
     std::fill(m_data.begin(), m_data.end(), value);
+    return *this;
+}
+
+Matrix& Matrix::SetDataDirty() {
+    m_isDataDirty = true;
+    return *this;
 }
 
 #pragma region to_conversion
 std::vector<float> Matrix::ToColMajorData() const {
-    std::vector<float> result;
-    result.reserve(m_rows * m_cols);
-    const float* a = GetData();
+    if (m_isDataDirty) {
+        std::vector<float> result;
+        result.reserve(m_rows * m_cols);
+        const float* a = GetData();
 
-    for (int col = 0; col < m_cols; ++col)
-        for (int row = 0; row < m_rows; ++row)
-            result.push_back(a[row * m_cols + col]);
+        for (int col = 0; col < m_cols; ++col)
+            for (int row = 0; row < m_rows; ++row)
+                result.push_back(a[row * m_cols + col]);
 
-    return result;
+        m_isDataDirty = false;
+        return result;
+    }
+
+    return m_cachedColMajorData;
 }
 
 const float* Matrix::ToOpenGLData() const {
-    m_cachedColMajorData = ToColMajorData();
+    if (m_isDataDirty) {
+        m_cachedColMajorData = ToColMajorData();
+        m_isDataDirty = false;
+    }
     return m_cachedColMajorData.data();
 }
 
@@ -77,64 +94,65 @@ String Matrix::ToString() const {
 }
 
 Vector2 Matrix::ToVector2() const {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (!((GetRowCount() == 2 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 2))) {
         throw std::runtime_error("Matrix cannot be converted to Vector2 due to incompatible dimensions");
     }
-#endif
+    #endif
     return GetColCount() == 1 ?
         Vector2((*this)(0, 0), (*this)(1, 0)) :
         Vector2((*this)(0, 0), (*this)(0, 1));
 }
 
 Vector3 Matrix::ToVector3() const {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (!((GetRowCount() == 3 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 3))) {
         throw std::runtime_error("Matrix cannot be converted to Vector3 due to incompatible dimensions");
     }
-#endif
+    #endif
     return GetColCount() == 1 ?
         Vector3((*this)(0, 0), (*this)(1, 0), (*this)(2, 0)) :
         Vector3((*this)(0, 0), (*this)(0, 1), (*this)(0, 2));
 }
 
 Vector4 Matrix::ToVector4() const {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (!((GetRowCount() == 4 && GetColCount() == 1) || (GetRowCount() == 1 && GetColCount() == 4))) {
         throw std::runtime_error("Matrix cannot be converted to Vector4 due to incompatible dimensions");
     }
-#endif
+    #endif
     return GetColCount() == 1 ?
         Vector4((*this)(0, 0), (*this)(1, 0), (*this)(2, 0), (*this)(3, 0)) :
         Vector4((*this)(0, 0), (*this)(0, 1), (*this)(0, 2), (*this)(0, 3));
 }
 
 int Matrix::ToIndex(int row, int col) const {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (row < 0 || col < 0 || row >= m_rows || col >= m_cols) {
         throw std::runtime_error("Matrix index out of bounds");
     }
-#endif
+    #endif
     return row * m_cols + col; // row-major layout
 }
 
 #pragma endregion
 
 float& Matrix::operator()(int row, int col) {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (row < 0 || col < 0 || row >= m_rows || col >= m_cols) {
         throw std::runtime_error("Matrix index out of bounds");
     }
-#endif
+    #endif
+    m_isDataDirty = true;
     return m_data[ToIndex(row, col)];
 }
 
 const float& Matrix::operator()(int row, int col) const {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (row < 0 || col < 0 || row >= m_rows || col >= m_cols) {
         throw std::runtime_error("Matrix index out of bounds");
     }
-#endif
+    #endif
     return m_data[ToIndex(row, col)];
 }
 
@@ -145,6 +163,7 @@ Matrix& Matrix::operator+=(const Matrix& other) {
         throw std::runtime_error("Matrix dimensions do not match for addition.");
     }
 
+    m_isDataDirty = true;
     float* a = GetData();
     const float* b = other.GetData();
 
@@ -155,12 +174,13 @@ Matrix& Matrix::operator+=(const Matrix& other) {
 }
 
 Matrix& Matrix::operator-=(const Matrix& other) {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (m_rows != other.m_rows || m_cols != other.m_cols) {
         throw std::runtime_error("Matrix dimensions do not match for subtraction.");
     }
-#endif
+    #endif
 
+    m_isDataDirty = true;
     float* a = GetData();
     const float* b = other.GetData();
 
@@ -177,6 +197,7 @@ Matrix& Matrix::operator*=(const Matrix& other) {
     }
     #endif
 
+    m_isDataDirty = true;
     Matrix result(m_rows, other.m_cols);
     const float* a = GetData();
     const float* b = other.GetData();
@@ -197,6 +218,7 @@ Matrix& Matrix::operator*=(const Matrix& other) {
 }
 
 Matrix& Matrix::operator+=(float scalar) {
+    m_isDataDirty = true;
     float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
@@ -205,6 +227,7 @@ Matrix& Matrix::operator+=(float scalar) {
 }
 
 Matrix& Matrix::operator-=(float scalar) {
+    m_isDataDirty = true;
     float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
@@ -213,6 +236,7 @@ Matrix& Matrix::operator-=(float scalar) {
 }
 
 Matrix& Matrix::operator*=(float scalar) {
+    m_isDataDirty = true;
     float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
@@ -221,10 +245,11 @@ Matrix& Matrix::operator*=(float scalar) {
 }
 
 Matrix& Matrix::operator/=(float scalar) {
-#ifndef NDEBUG
+    #ifndef NDEBUG
     if (scalar == 0)
         throw std::runtime_error("Matrix division by zero is not allowed");
-#endif
+    #endif
+    m_isDataDirty = true;
     float* a = GetData();
     for (int i = 0; i < GetRowCount(); ++i)
         for (int j = 0; j < GetColCount(); ++j)
@@ -346,7 +371,7 @@ Matrix Matrix::operator/(float scalar) const {
 #pragma region non_member_operations
 
 Matrix operator+(float scalar, const Matrix& matrix) {
-    return matrix + scalar;
+    return (matrix + scalar);
 }
 
 Matrix operator-(float scalar, const Matrix& matrix) {
@@ -365,7 +390,7 @@ Matrix operator-(float scalar, const Matrix& matrix) {
 }
 
 Matrix operator*(float scalar, const Matrix& matrix) {
-    return matrix * scalar;
+    return (matrix * scalar);
 }
 
 Matrix operator/(float scalar, const Matrix& matrix) {
@@ -380,13 +405,13 @@ Matrix operator/(float scalar, const Matrix& matrix) {
         for (int j = 0; j < cols; ++j) {
             int index = i * cols + j;
 
-#ifndef NDEBUG
+            #ifndef NDEBUG
             if (a[index] == 0.0f) {
                 std::ostringstream oss;
                 oss << "Division by zero at (" << i << "," << j << ")";
                 throw std::runtime_error(oss.str());
             }
-#endif
+            #endif
 
             r[index] = scalar / a[index];
         }
