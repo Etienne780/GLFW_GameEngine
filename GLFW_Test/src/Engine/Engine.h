@@ -23,22 +23,34 @@ namespace EngineCore {
 	public:
 		std::unique_ptr<Application> app;
 
-		Engine(std::unique_ptr<Application> app, GLFWwindow* window);
+		Engine(std::unique_ptr<Application> app);
 
-		void Start();
-		void Update(double currentTimeSec);
-		void LateUpdate();
-		void Shutdown();
-
-		void WindowResize(int width, int height);
+		int EngineStart();
+		void EngineLoop();
 
 	private:
+		bool m_isEngineRunning = true;
+
 		int m_frameCount = 0;
 		int m_framesPerSecond = 0;// m_framesPerSecond = m_frameCount - m_lastFrameCount;
 		double m_fpsCounter = 0;// checks if a second has passed
 		int m_lastFrameCount = 0;// is the frame count from the last sec 
 
 		GLFWwindow* m_window = nullptr;
+
+		void Update(double currentTimeSec);
+		void LateUpdate();
+		void Shutdown();
+
+		void OnWindowResize(int width, int height);
+
+		int GLFWInit();
+		int GLFWCreateWindow();
+		void GLFWCloseWindow();
+		static void GLFWErrorCallback(int error, const char* description);
+		static void GLFWFramebufferSizeCallback(GLFWwindow* window, int width, int height);
+
+		int GLADInit();
 	};
 
 }

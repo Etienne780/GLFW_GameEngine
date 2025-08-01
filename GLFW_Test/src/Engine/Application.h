@@ -10,6 +10,8 @@
 
 typedef std::string String;
 
+class Vector2;
+
 namespace EngineCore {
 	class Engine;
 	class Shader;
@@ -19,15 +21,6 @@ class Application {
 	friend class EngineCore::Engine;
 
 public:
-	const String app_name;
-	const String app_version;
-
-	int app_window_height = 600;
-	int app_window_width = 800;
-
-	int app_frameCount = 0;
-	int app_framesPerSecond = 0;
-
 	Application(String name, String version);
 	virtual ~Application() = default;
 
@@ -37,23 +30,59 @@ public:
 
 	virtual void OnWindowResize(int newWidth, int newHeight);
 
-	void App_Application_DepthTesting(bool value);
+	const String& App_Application_Get_Name() const;
+	const String& App_Application_Get_Version() const;
+	GLFWwindow* App_Application_Get_Window() const;
+	int App_Application_Get_Window_Height() const;
+	int App_Application_Get_Window_Width() const;
+	int App_Application_Get_FrameCount() const;
+	int App_Application_Get_FramesPerSecond() const;
+	bool App_Application_Get_WindowHeader() const;
+	bool App_Application_Get_CloseAppOnWindowClose() const;
 
-	void App_Background_SetColor(float r, float g, float b);
-	void App_Background_SetColor(float brightness);
-	void App_Background_SetColor(const Vector3& color);
-	void App_Background_Clear();
+	void App_Application_Set_WindowHeader(bool value);
+	void App_Application_Set_CloseAppOnWindowClose(bool value);
 
+
+	void App_OpenGL_Get_Version(int& major, int& minor) const;
+	bool App_OpenGL_Get_DepthTesting() const;
+	void App_OpenGL_Get_BackgroundColor(float& r, float& g, float& b) const;
+	const Vector3& App_OpenGL_Get_BackgroundColor() const;
+
+	void App_OpenGL_Set_Version(int major, int minor);
+	// cant be called in the constructor. needs a window
+	void App_OpenGL_Set_DepthTesting(bool value);
+	void App_OpenGL_Set_BackgroundColor(float r, float g, float b);
+	void App_OpenGL_Set_BackgroundColor(float brightness);
+	void App_OpenGL_Set_BackgroundColor(const Vector3& color);
+	// needs a window
+	void App_OpenGL_BackgroundColor();
+
+	// needs a window
+	EngineCore::Shader* App_Shader_Get_Bind();
+	// needs a window
 	void App_Shader_Bind(EngineCore::Shader* shader);
+	// needs a window
 	void App_Shader_Unbind(EngineCore::Shader* shader);
+	// needs a window
 	void App_Shader_Delete(EngineCore::Shader* shader);
 
-	GLFWwindow* GetWindow();
-
 private:
-	bool m_isDepthBufferEnabled = false;
-	Vector3 m_backgroundColor;
-	GLFWwindow* m_window = nullptr;
+	const String m_appApplicationName;
+	const String m_appApplicationVersion;
+	int m_appApplicationWindowHeight = 600;
+	int m_appApplicationWindowWidth = 800;
+	int m_appApplicationFrameCount = 0;
+	int m_appApplicationFramesPerSecond = 0;
+	bool m_appApplicationWindowHeader = true;
+	bool m_appApplicationCloseAppOnWindowClose = true;
 
-	EngineCore::Shader* m_currentShader = nullptr;
+	int m_appOpenGLVersionMajor = 3;
+	int m_appOpenGLVersionMinor = 3;
+	bool m_appOpenGLDepthTesting = false;
+	Vector3 m_appOpenGLBackgroundColor;
+
+	EngineCore::Shader* m_appShaderCurrentShader = nullptr;
+
+	GLFWwindow* m_window = nullptr;
 };

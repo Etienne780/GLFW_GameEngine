@@ -12,10 +12,14 @@ namespace EngineCore {
 	Input::Input() {}
 
 	void Input::Init(GLFWwindow* window) {
+		if (window == nullptr) return;
+
 		glfwSetKeyCallback(window, Input::KeyCallback);
 	}
 
 	void Input::Update(GLFWwindow* window) {
+		if (window == nullptr) return;
+
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		m_mousePosition = Vector2(static_cast<float>(xpos), static_cast<float>(ypos));

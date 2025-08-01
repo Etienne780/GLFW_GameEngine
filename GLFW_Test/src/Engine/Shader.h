@@ -3,7 +3,6 @@
 
 typedef std::string String;
 
-
 class Matrix;
 class Vector2;
 class Vector3;

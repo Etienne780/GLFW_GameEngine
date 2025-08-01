@@ -4,6 +4,11 @@ using namespace EngineCore;
 
 MyGameApp::MyGameApp() 
 	: Application("MyGameApp", "1.0.0") {
+
+	App_Application_Set_WindowHeader(true);
+	App_Application_Set_CloseAppOnWindowClose(true);
+
+	App_OpenGL_Set_Version(3, 3);
 }
 
 unsigned int EBO, VBO, VAO;
@@ -12,7 +17,8 @@ Texture2D texture1;
 Matrix model, view, projection;
 Vector3 modelPos;
 void MyGameApp::OnStart() {
-	App_Background_SetColor(0.2f, 0.3f, 0.3f);
+	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
+	App_OpenGL_Set_DepthTesting(true);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
 
@@ -74,7 +80,7 @@ void MyGameApp::OnStart() {
 		1, 0, 3,
 		3, 2, 1
 	};
-
+	
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	//glGenBuffers(1, &EBO);
@@ -113,28 +119,32 @@ void MyGameApp::OnStart() {
 		Translation(model, modelPos);
 		view = Translation(0, 0, -3.0f);
 		//projection = Orthographic(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 10.0f);
-		projection = Perspective(ConversionUtils::ToRadians(45.0f), app_window_width / app_window_height, 0.1f, 100.0f);
+		projection = Perspective(ConversionUtils::ToRadians(45.0f), static_cast<float>(App_Application_Get_Window_Width() / App_Application_Get_Window_Height()), 0.1f, 100.0f);
 	}
 
 	App_Shader_Bind(&DefaultShader);
 	DefaultShader.SetInt("texture1", 0);
 
-	App_Application_DepthTesting(true);
+	App_OpenGL_Set_DepthTesting(true);
 }
 
+struct Vertex {
+	Vector3 position;
+	Vector3 normal;
+	Vector2 uv;
+};
 float t = 0;
 void MyGameApp::OnUpdate() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
-		glfwSetWindowShouldClose(GetWindow(), true);
+		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 
-	App_Background_Clear();
+	App_OpenGL_BackgroundColor();
 	App_Shader_Bind(&DefaultShader);
 
 	{
 		using namespace GLTransform;
 
-
-		t += 0.005;
+		t += 0.005f;
 		modelPos.x = sin(t) * 1;
 		Vector3 rotation(
 			ConversionUtils::ToRadians(t * 80),
@@ -170,5 +180,4 @@ void MyGameApp::OnShutdown() {
 }
 
 void MyGameApp::OnWindowResize(int newWidth, int newHeight) {
-	OnUpdate();
 }
