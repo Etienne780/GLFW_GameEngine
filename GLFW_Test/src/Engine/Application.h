@@ -103,7 +103,7 @@ private:
 	bool m_appOpenGLDepthTesting = false;
 	Vector3 m_appOpenGLBackgroundColor;
 
-	EngineCore::Shader* m_appShaderCurrentShader;
+	EngineCore::Shader* m_appShaderCurrentShader = nullptr;
 
 	GLFWwindow* m_window = nullptr;
 };
