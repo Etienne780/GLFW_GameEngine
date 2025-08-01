@@ -124,9 +124,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\missingTexture.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="assets\stone.jpg">
       <Filter>Resource Files</Filter>
     </Image>

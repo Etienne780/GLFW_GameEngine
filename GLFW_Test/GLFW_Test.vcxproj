@@ -195,7 +195,6 @@
     <ClInclude Include="src\Game\MyGameApp.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\missingTexture.png" />
     <Image Include="assets\stone.jpg" />
   </ItemGroup>
   <ItemGroup>
