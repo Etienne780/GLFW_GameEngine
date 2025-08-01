@@ -5,8 +5,11 @@ using namespace EngineCore;
 MyGameApp::MyGameApp() 
 	: Application("MyGameApp", "1.0.0") {
 
-	App_Application_Set_WindowHeader(true);
+	App_Application_Set_Header(true);
 	App_Application_Set_CloseAppOnWindowClose(true);
+	App_Application_Set_Window_Resizable(true);
+	App_Application_Set_Window_Decoration(true);
+	App_Application_Set_Window_Floating(true);
 
 	App_OpenGL_Set_Version(3, 3);
 }
@@ -21,8 +24,7 @@ void MyGameApp::OnStart() {
 	App_OpenGL_Set_DepthTesting(true);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
-
-	texture1.Create("assets/stone.jpg");
+	texture1.Create("assets/stone.jpg das funktioniert save");
 	
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -124,8 +126,6 @@ void MyGameApp::OnStart() {
 
 	App_Shader_Bind(&DefaultShader);
 	DefaultShader.SetInt("texture1", 0);
-
-	App_OpenGL_Set_DepthTesting(true);
 }
 
 struct Vertex {
@@ -134,9 +134,22 @@ struct Vertex {
 	Vector2 uv;
 };
 float t = 0;
+
 void MyGameApp::OnUpdate() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
+
+	if (Input::KeyJustPressed(GLFW_KEY_J)) {
+		App_Application_Set_Window_Resizable(!App_Application_Get_Window_Resizable());
+	}
+
+	if (Input::KeyJustPressed(GLFW_KEY_K)) {
+		App_Application_Set_Window_Visibility(!App_Application_Get_Window_Visibility());
+	}
+
+	if (Input::KeyJustPressed(GLFW_KEY_L)) {
+		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
+	}
 
 	App_OpenGL_BackgroundColor();
 	App_Shader_Bind(&DefaultShader);
@@ -144,8 +157,8 @@ void MyGameApp::OnUpdate() {
 	{
 		using namespace GLTransform;
 
-		t += 0.005f;
-		modelPos.x = sin(t) * 1;
+		t += 0.7f * Time::GetDeltaTimeSec();
+		modelPos.x = sin(t);
 		Vector3 rotation(
 			ConversionUtils::ToRadians(t * 80),
 			ConversionUtils::ToRadians(t * 80),

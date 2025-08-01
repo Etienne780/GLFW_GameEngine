@@ -40,6 +40,22 @@ int Application::App_Application_Get_Window_Width() const {
     return m_appApplicationWindowWidth;
 }
 
+bool Application::App_Application_Get_Window_Resizable() const {
+    return m_appApplicationWindowResizable;
+}
+
+bool Application::App_Application_Get_Window_Decoration() const {
+    return m_appApplicationWindowDecoration;
+}
+
+bool Application::App_Application_Get_Window_Floating() const {
+    return m_appApplicationWindowFloating;
+}
+
+bool Application::App_Application_Get_Window_Visibility() const {
+    return m_appApplicationWindowVisibility;
+}
+
 int Application::App_Application_Get_FrameCount() const {
     return m_appApplicationFrameCount;
 }
@@ -48,8 +64,8 @@ int Application::App_Application_Get_FramesPerSecond() const {
     return m_appApplicationFramesPerSecond;
 }
 
-bool Application::App_Application_Get_WindowHeader() const {
-    return m_appApplicationWindowHeader;
+bool Application::App_Application_Get_Header() const {
+    return m_appApplicationHeader;
 }
 
 bool Application::App_Application_Get_CloseAppOnWindowClose() const {
@@ -75,18 +91,45 @@ const Vector3& Application::App_OpenGL_Get_BackgroundColor() const {
     return m_appOpenGLBackgroundColor;
 }
 
-EngineCore::Shader* Application::App_Shader_Get_Bind() {
-    if (m_window == nullptr) return nullptr;
-
-    return m_appShaderCurrentShader;
-}
-
 #pragma endregion
 
 #pragma region set_funcs
 
-void Application::App_Application_Set_WindowHeader(bool value) {
-    m_appApplicationWindowHeader = value;
+void Application::App_Application_Set_Header(bool value) {
+    m_appApplicationHeader = value;
+}
+
+void Application::App_Application_Set_Window_Height(int height) {
+    m_appApplicationWindowHeight = height;
+}
+
+void Application::App_Application_Set_Window_Width(int width) {
+    m_appApplicationWindowWidth = width;
+}
+
+void Application::App_Application_Set_Window_Resizable(bool value) {
+    m_appApplicationWindowResizable = value;
+
+    if (m_window != nullptr)
+        glfwSetWindowAttrib(m_window, GLFW_RESIZABLE, value ? GLFW_TRUE : GLFW_FALSE);
+}
+
+void Application::App_Application_Set_Window_Decoration(bool value) {
+    m_appApplicationWindowDecoration = value;
+
+    if (m_window != nullptr)
+        glfwSetWindowAttrib(m_window, GLFW_DECORATED, value ? GLFW_TRUE : GLFW_FALSE);
+}
+
+void Application::App_Application_Set_Window_Floating(bool value) {
+    m_appApplicationWindowFloating = value;
+
+    if (m_window != nullptr)
+        glfwSetWindowAttrib(m_window, GLFW_FLOATING, value ? GLFW_TRUE : GLFW_FALSE);
+}
+
+void Application::App_Application_Set_Window_Visibility(bool value) {
+    m_appApplicationWindowVisibility = value;
 }
 
 void Application::App_Application_Set_CloseAppOnWindowClose(bool value) {

@@ -21,6 +21,14 @@ class Application {
 	friend class EngineCore::Engine;
 
 public:
+	enum class WindowState {
+		Minimized,
+		Maximized,
+		Restored,    // Normal Windowsize
+		Fullscreen,
+		Hidden
+	};
+
 	Application(String name, String version);
 	virtual ~Application() = default;
 
@@ -35,12 +43,22 @@ public:
 	GLFWwindow* App_Application_Get_Window() const;
 	int App_Application_Get_Window_Height() const;
 	int App_Application_Get_Window_Width() const;
+	bool App_Application_Get_Window_Resizable() const;
+	bool App_Application_Get_Window_Decoration() const;
+	bool App_Application_Get_Window_Floating() const;
+	bool App_Application_Get_Window_Visibility() const;
 	int App_Application_Get_FrameCount() const;
 	int App_Application_Get_FramesPerSecond() const;
-	bool App_Application_Get_WindowHeader() const;
+	bool App_Application_Get_Header() const;
 	bool App_Application_Get_CloseAppOnWindowClose() const;
 
-	void App_Application_Set_WindowHeader(bool value);
+	void App_Application_Set_Header(bool value);
+	void App_Application_Set_Window_Height(int height);
+	void App_Application_Set_Window_Width(int width);
+	void App_Application_Set_Window_Resizable(bool value);
+	void App_Application_Set_Window_Decoration(bool value);
+	void App_Application_Set_Window_Floating(bool value);
+	void App_Application_Set_Window_Visibility(bool value);
 	void App_Application_Set_CloseAppOnWindowClose(bool value);
 
 
@@ -59,8 +77,6 @@ public:
 	void App_OpenGL_BackgroundColor();
 
 	// needs a window
-	EngineCore::Shader* App_Shader_Get_Bind();
-	// needs a window
 	void App_Shader_Bind(EngineCore::Shader* shader);
 	// needs a window
 	void App_Shader_Unbind(EngineCore::Shader* shader);
@@ -70,11 +86,16 @@ public:
 private:
 	const String m_appApplicationName;
 	const String m_appApplicationVersion;
+	bool m_appApplicationHeader = true;
 	int m_appApplicationWindowHeight = 600;
 	int m_appApplicationWindowWidth = 800;
 	int m_appApplicationFrameCount = 0;
 	int m_appApplicationFramesPerSecond = 0;
-	bool m_appApplicationWindowHeader = true;
+	bool m_appApplicationWindowResizable = true;
+	bool m_appApplicationWindowDecoration = true;
+	bool m_appApplicationWindowFloating = false;
+	bool m_appApplicationWindowVisibility = true;
+	WindowState m_appApplicationWindowState = WindowState::Restored;// not implementedasdflkdgs;
 	bool m_appApplicationCloseAppOnWindowClose = true;
 
 	int m_appOpenGLVersionMajor = 3;
@@ -82,7 +103,7 @@ private:
 	bool m_appOpenGLDepthTesting = false;
 	Vector3 m_appOpenGLBackgroundColor;
 
-	EngineCore::Shader* m_appShaderCurrentShader = nullptr;
+	EngineCore::Shader* m_appShaderCurrentShader;
 
 	GLFWwindow* m_window = nullptr;
 };

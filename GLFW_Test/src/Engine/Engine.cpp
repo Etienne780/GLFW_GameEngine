@@ -8,7 +8,7 @@ namespace EngineCore {
 	int Engine::EngineStart() {
 		if(GLFWInit()) return EXIT_FAILURE;
 
-		if (app->m_appApplicationWindowHeader) {
+		if (app->m_appApplicationHeader) {
 			if (GLFWCreateWindow()) return EXIT_FAILURE;
 			if (GLADInit()) return EXIT_FAILURE;
 		}
@@ -18,7 +18,7 @@ namespace EngineCore {
 
 		String msg = Log::GetFormattedString("Starts application: \"{}\", version: \"{}\"", app->m_appApplicationName, app->m_appApplicationVersion);
 		Log::Info(msg);
-		if (!app->m_appApplicationWindowHeader) {
+		if (!app->m_appApplicationHeader) {
 			Log::Info("Application is Headerless");
 		}
 		String seperator;
@@ -108,14 +108,19 @@ namespace EngineCore {
 	}
 
 	int Engine::GLFWCreateWindow() {
-		if (!app->m_appApplicationWindowHeader) return 0;
+		if (!app->m_appApplicationHeader) return 0;
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, app->m_appOpenGLVersionMajor);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, app->m_appOpenGLVersionMinor);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		#ifdef __APPLE__
-			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		#endif
+#ifdef __APPLE__
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+		glfwWindowHint(GLFW_RESIZABLE, app->m_appApplicationWindowResizable);
+		glfwWindowHint(GLFW_DECORATED, app->m_appApplicationWindowDecoration);
+		glfwWindowHint(GLFW_FLOATING, app->m_appApplicationWindowFloating);
+		glfwWindowHint(GLFW_VISIBLE, app->m_appApplicationWindowVisibility);
 
 		m_window = glfwCreateWindow(app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight, app->m_appApplicationName.c_str(), NULL, NULL);
 		
