@@ -10,7 +10,7 @@ class Matrix;
 class Vector4 {
 public:
     static const Vector4 one; ///< Vector with all components set to one (1, 1, 1, 1)
-    static const Vector4 zero; ///< Vector with all components set to one (0, 0, 0, 0)
+    static const Vector4 zero; ///< Vector with all components set to zero (0, 0, 0, 0)
 
     float x = 0; ///< X component of the vector
     float y = 0; ///< Y component of the vector

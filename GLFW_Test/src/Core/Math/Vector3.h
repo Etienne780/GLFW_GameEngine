@@ -17,7 +17,7 @@ public:
     static const Vector3 left;     ///< Unit vector pointing left (-1, 0, 0)
     static const Vector3 right;    ///< Unit vector pointing right (1, 0, 0)
     static const Vector3 one;      ///< Vector with all components set to one (1, 1, 1)
-    static const Vector3 zero;      ///< Vector with all components set to one (0, 0, 0)
+    static const Vector3 zero;      ///< Vector with all components set to zero (0, 0, 0)
 
     float x = 0; ///< X component of the vector
     float y = 0; ///< Y component of the vector
