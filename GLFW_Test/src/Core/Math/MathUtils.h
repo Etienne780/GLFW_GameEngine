@@ -35,24 +35,44 @@ public:
 	}
 
 	template<typename A, typename B, typename C>
+	static auto Clamp(A a, B min, C max) {
+		static_assert(std::is_arithmetic<A>::value &&
+			std::is_arithmetic<B>::value &&
+			std::is_arithmetic<C>::value,
+			"Clamp requires arithmetic types");
+
+		if (min > max)
+			std::swap(min, max);
+		
+		using Result = std::common_type_t<A, B, C>;
+		Result result;
+		if (a < min) {
+			result = min;
+		}
+		else if (a > max) {
+			result = max;
+		}
+		else {
+			result = a;
+		}
+		return result;
+	}
+
+	template<typename A, typename B, typename C>
 	static void Clamp(A& a, B min, C max) {
 		static_assert(std::is_arithmetic<A>::value &&
 			std::is_arithmetic<B>::value &&
 			std::is_arithmetic<C>::value,
 			"Clamp requires arithmetic types");
 
-		using Result = std::common_type_t<A, B, C>;
-		Result minVal = static_cast<Result>(min);
-		Result maxVal = static_cast<Result>(max);
+		if (min > max)
+			std::swap(min, max);
 
-		if (minVal > maxVal)
-			std::swap(minVal, maxVal);
-
-		if (a < minVal) {
-			a = static_cast<A>(minVal);
+		if (a < min) {
+			a = static_cast<A>(min);
 		}
-		else if (a > maxVal) {
-			a = static_cast<A>(maxVal);
+		else if (a > max) {
+			a = static_cast<A>(max);
 		}
 	}
 

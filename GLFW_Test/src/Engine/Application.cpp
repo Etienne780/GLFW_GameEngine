@@ -5,11 +5,9 @@
 #include "..\Core\Log.h"
 #include "..\Core\Math.h"
 
-Application* Application::s_instance = nullptr;
 
 Application::Application(String name, String version)
     : m_appApplicationName(name), m_appApplicationVersion(version) {
-    s_instance = this;
     m_appOpenGLBackgroundColor = Vector3(0.2f, 0.3f, 0.3f);
 }
 
@@ -22,10 +20,6 @@ void Application::OnWindowFocusLost() {}
 void Application::OnWindowFocusGain() {}
 
 #pragma region get_funcs
-
-Application* Application::Get() {
-    return s_instance;
-}
 
 // Application
 const String& Application::App_Application_Get_Name() const {
@@ -168,9 +162,9 @@ void Application::App_Application_Set_CloseAppOnWindowClose(bool value) {
 }
 
 void Application::App_OpenGL_Set_DepthTesting(bool value) {
-    m_appOpenGLDepthTesting = value;
-
     if (m_window == nullptr) return;
+
+    m_appOpenGLDepthTesting = value;
     if(value)
         glEnable(GL_DEPTH_TEST);
     else 
