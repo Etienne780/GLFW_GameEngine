@@ -74,4 +74,28 @@ public:
     // Converts an angle in degrees to radians.
     // Example: 180 degrees ≈ π radians.
     static float ToRadians(float degrees);
+
+    // Converts an angle in radians to degrees.
+    // Example: π radians ≈ 180 degrees.
+    static float ToDegrees(double radians);
+
+    // Converts an angle in degrees to radians.
+    // Example: 180 degrees ≈ π radians.
+    static float ToRadians(double degrees);
+
+    // Converts an angle in radians to degrees.
+    // Example: π radians ≈ 180 degrees.
+    static double ToDegreesDouble(float radians);
+
+    // Converts an angle in degrees to radians.
+    // Example: 180 degrees ≈ π radians.
+    static double ToRadiansDouble(float degrees);
+
+    // Converts an angle in radians to degrees.
+    // Example: π radians ≈ 180 degrees.
+    static double ToDegreesDouble(double radians);
+
+    // Converts an angle in degrees to radians.
+    // Example: 180 degrees ≈ π radians.
+    static double ToRadiansDouble(double degrees);
 };
