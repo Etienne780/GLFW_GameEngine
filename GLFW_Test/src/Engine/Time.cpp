@@ -1,25 +1,33 @@
 #include "Time.h"
 
 namespace EngineCore {
-	double Time::timeSec = 0.0;
-	double Time::deltaTimeSec = 0.0;
+	double Time::m_timeSec = 0.0;
+	double Time::m_deltaTimeSec = 0.0;
 	
 	Time::Time() {}
 
 	void Time::UpdateTime(double currentTimeSec) {
 		CalculateDeltaTime(currentTimeSec);
-		timeSec = currentTimeSec;
+		m_timeSec = currentTimeSec;
 	}
 
 	void Time::CalculateDeltaTime(double currentTimeSec) {
-		deltaTimeSec = currentTimeSec - timeSec;
+		m_deltaTimeSec = currentTimeSec - m_timeSec;
 	}
 
-	double Time::GetTimeSec() {
-		return timeSec;
+	float Time::GetTime() {
+		return static_cast<float>(m_timeSec);
 	}
 
-	double Time::GetDeltaTimeSec() {
-		return deltaTimeSec;
+	float Time::GetDeltaTime() {
+		return static_cast<float>(m_deltaTimeSec);
+	}
+
+	double Time::GetTimeDouble() {
+		return m_timeSec;
+	}
+
+	double Time::GetDeltaTimeDouble() {
+		return m_deltaTimeSec;
 	}
 }
