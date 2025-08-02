@@ -11,4 +11,6 @@ protected:
 	void OnShutdown() override;
 
 	void OnWindowResize(int newWidth, int newHeight) override;
+	void OnWindowFocusLost() override;
+	void OnWindowFocusGain() override;
 };
