@@ -16,6 +16,8 @@ void Application::OnUpdate() {}
 void Application::OnShutdown() {}
 
 void Application::OnWindowResize(int newWidth, int newHeight) {}
+void Application::OnWindowFocusLost() {}
+void Application::OnWindowFocusGain() {}
 
 #pragma region get_funcs
 
@@ -54,6 +56,14 @@ bool Application::App_Application_Get_Window_Floating() const {
 
 bool Application::App_Application_Get_Window_Visibility() const {
     return m_appApplicationWindowVisibility;
+}
+
+bool Application::App_Application_Get_Window_Cursor_Lock() const {
+    return m_appApplicationWindowCursorLock;
+}
+
+bool Application::App_Application_Get_Window_Cursor_Hidden() const {
+    return m_appApplicationWindowCursorHidden;
 }
 
 int Application::App_Application_Get_FrameCount() const {
@@ -130,6 +140,21 @@ void Application::App_Application_Set_Window_Floating(bool value) {
 
 void Application::App_Application_Set_Window_Visibility(bool value) {
     m_appApplicationWindowVisibility = value;
+}
+
+void Application::App_Application_Set_Window_Cursor_LockHidden(bool value) {
+    m_appApplicationWindowCursorLock = value;
+    m_appApplicationWindowCursorHidden = value;
+
+    if (m_window != nullptr)
+        glfwSetInputMode(m_window, GLFW_CURSOR, value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
+void Application::App_Application_Set_Window_Cursor_Hidden(bool value) {
+    m_appApplicationWindowCursorHidden = value;
+
+    if (m_window != nullptr)
+        glfwSetInputMode(m_window, GLFW_CURSOR, value ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
 }
 
 void Application::App_Application_Set_CloseAppOnWindowClose(bool value) {

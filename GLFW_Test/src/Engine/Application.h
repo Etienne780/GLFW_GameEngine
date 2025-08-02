@@ -37,6 +37,8 @@ public:
 	virtual void OnShutdown();
 
 	virtual void OnWindowResize(int newWidth, int newHeight);
+	virtual void OnWindowFocusLost();
+	virtual void OnWindowFocusGain();
 
 	const String& App_Application_Get_Name() const;
 	const String& App_Application_Get_Version() const;
@@ -47,6 +49,8 @@ public:
 	bool App_Application_Get_Window_Decoration() const;
 	bool App_Application_Get_Window_Floating() const;
 	bool App_Application_Get_Window_Visibility() const;
+	bool App_Application_Get_Window_Cursor_Lock() const;
+	bool App_Application_Get_Window_Cursor_Hidden() const;
 	int App_Application_Get_FrameCount() const;
 	int App_Application_Get_FramesPerSecond() const;
 	bool App_Application_Get_Header() const;
@@ -59,8 +63,10 @@ public:
 	void App_Application_Set_Window_Decoration(bool value);
 	void App_Application_Set_Window_Floating(bool value);
 	void App_Application_Set_Window_Visibility(bool value);
+	void App_Application_Set_Window_Cursor_LockHidden(bool value);
+	void App_Application_Set_Window_Cursor_Hidden(bool value);
 	void App_Application_Set_CloseAppOnWindowClose(bool value);
-
+	
 
 	void App_OpenGL_Get_Version(int& major, int& minor) const;
 	bool App_OpenGL_Get_DepthTesting() const;
@@ -95,6 +101,8 @@ private:
 	bool m_appApplicationWindowDecoration = true;
 	bool m_appApplicationWindowFloating = false;
 	bool m_appApplicationWindowVisibility = true;
+	bool m_appApplicationWindowCursorLock = false;
+	bool m_appApplicationWindowCursorHidden = false;
 	WindowState m_appApplicationWindowState = WindowState::Restored;// not implementedasdflkdgs;
 	bool m_appApplicationCloseAppOnWindowClose = true;
 
