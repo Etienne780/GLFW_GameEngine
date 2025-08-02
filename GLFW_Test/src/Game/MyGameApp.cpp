@@ -9,19 +9,25 @@ MyGameApp::MyGameApp()
 	App_Application_Set_CloseAppOnWindowClose(true);
 	App_Application_Set_Window_Resizable(true);
 	App_Application_Set_Window_Decoration(true);
-	App_Application_Set_Window_Floating(true);
+	App_Application_Set_Window_Floating(false);
+	App_Application_Set_Window_Cursor_LockHidden(true);
 
 	App_OpenGL_Set_Version(3, 3);
+	App_OpenGL_Set_DepthTesting(true);
 }
+
+Vector3 cameraPosition(0, 0, 20), cameraRotation(0, 0, 0);
+float cameraSpeed = 10.0f;
+float cameraSprintMultiplier = 1.6f;
+float cameraSpeedVerMultiplier = 1.2f;
+Vector2 lastFrameMousePos;
 
 unsigned int EBO, VBO, VAO;
 Shader DefaultShader;
 Texture2D texture1;
-Matrix model, view, projection;
-Vector3 modelPos;
+Matrix model, projection;
 void MyGameApp::OnStart() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
-	App_OpenGL_Set_DepthTesting(true);
 
 	DefaultShader = Shader("shader/Default.vert", "shader/Default.frag");
 	texture1.Create("assets/stone.jpg das funktioniert save");
@@ -116,72 +122,128 @@ void MyGameApp::OnStart() {
 	{ 
 		using namespace GLTransform;
 		
-		modelPos.Set(0, 0, -5);
 		model = RotationXYZ(ConversionUtils::ToRadians(-55.0f), 0, 0);
-		Translation(model, modelPos);
-		view = Translation(0, 0, -3.0f);
 		//projection = Orthographic(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 10.0f);
-		projection = Perspective(ConversionUtils::ToRadians(45.0f), static_cast<float>(App_Application_Get_Window_Width() / App_Application_Get_Window_Height()), 0.1f, 100.0f);
+		projection = Perspective(ConversionUtils::ToRadians(66.0f), static_cast<float>(App_Application_Get_Window_Width() / App_Application_Get_Window_Height()), 0.1f, 100.0f);
 	}
 
 	App_Shader_Bind(&DefaultShader);
+	Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + Vector3::back, Vector3::up);
+	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
 	DefaultShader.SetInt("texture1", 0);
+
+	lastFrameMousePos = Input::GetMousePosition();
 }
 
-struct Vertex {
-	Vector3 position;
-	Vector3 normal;
-	Vector2 uv;
+Vector3 cubePositions[] = {
+	Vector3(0.0f, 0.0f, 0.0f),
+	Vector3(2.0f, 5.0f, -15.0f),
+	Vector3(-1.5f, -2.2f, -2.5f),
+	Vector3(-3.8f, -2.0f, -12.3f),
+	Vector3(2.4f, -0.4f, -3.5f),
+	Vector3(-1.7f, 3.0f, -7.5f),
+	Vector3(1.3f, -2.0f, -2.5f),
+	Vector3(1.5f, 2.0f, -2.5f),
+	Vector3(1.5f, 0.2f, -1.5f),
+	Vector3(-1.3f, 1.0f, -1.5f)
 };
-float t = 0;
 
+void DrawCube(int index);
+void CameraMove();
+float t = 0;
 void MyGameApp::OnUpdate() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 
-	if (Input::KeyJustPressed(GLFW_KEY_J)) {
-		App_Application_Set_Window_Resizable(!App_Application_Get_Window_Resizable());
-	}
-
 	if (Input::KeyJustPressed(GLFW_KEY_K)) {
-		App_Application_Set_Window_Visibility(!App_Application_Get_Window_Visibility());
+		App_Application_Set_Window_Resizable(!App_Application_Get_Window_Resizable());
 	}
 
 	if (Input::KeyJustPressed(GLFW_KEY_L)) {
 		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
 	}
 
+	CameraMove();
+
 	App_OpenGL_BackgroundColor();
 	App_Shader_Bind(&DefaultShader);
-
-	{
-		using namespace GLTransform;
-
-		t += 0.7f * Time::GetDeltaTimeSec();
-		modelPos.x = sin(t);
-		Vector3 rotation(
-			ConversionUtils::ToRadians(t * 80),
-			ConversionUtils::ToRadians(t * 80),
-			0
-		);
-
-		Matrix mat = Identity();
-		RotationXYZ(mat, rotation);
-		Translation(mat, modelPos);
-
-		model = mat;
-	}
-
 	texture1.Bind(0);
-	DefaultShader.SetMatrix4("model", model.ToOpenGLData());
-	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
+
+	//DefaultShader.SetMatrix4("view", view.ToOpenGLData());
 	DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	for (int i = 0; i < 10; i++) {
+		DrawCube(i);
+	}
 
 	texture1.Unbind(0);
 	glBindVertexArray(0);
+}
+
+const float sensitivity = 0.1f;
+void CameraMove() {
+	static Vector3 lookDir;
+	static bool first = true;
+	Vector3 moveDir;
+	float moveDirY = 0;
+
+	if (Input::KeyPressed(GLFW_KEY_W)) moveDir.z += 1;
+	if (Input::KeyPressed(GLFW_KEY_S)) moveDir.z -= 1;
+	if (Input::KeyPressed(GLFW_KEY_A)) moveDir.x += 1;
+	if (Input::KeyPressed(GLFW_KEY_D)) moveDir.x -= 1;
+	if (Input::KeyPressed(GLFW_KEY_SPACE)) moveDirY += 1;
+	if (Input::KeyPressed(GLFW_KEY_LEFT_CONTROL)) moveDirY -= 1;
+
+	Vector2 mousePos = Input::GetMousePosition();
+	Vector2 mouseDiff(
+		mousePos.x - lastFrameMousePos.x,
+		lastFrameMousePos.y - mousePos.y
+	);
+	if (moveDirY != 0 || moveDir.SquaredMagnitude() > 0 || mouseDiff.SquaredMagnitude() > 0 || first) {
+		mouseDiff *= sensitivity;
+		cameraRotation.y += mouseDiff.x; // yaw (horizontal)
+		cameraRotation.x += mouseDiff.y; // pitch (vertikal)
+		lastFrameMousePos = mousePos;
+
+		MathUtil::Clamp(cameraRotation.x, -89.0f, 89.0f);
+
+		lookDir.x = sin(ConversionUtils::ToRadians(cameraRotation.y)) * cos(ConversionUtils::ToRadians(cameraRotation.x));
+		lookDir.y = sin(ConversionUtils::ToRadians(cameraRotation.x));
+		lookDir.z = cos(ConversionUtils::ToRadians(cameraRotation.y)) * cos(ConversionUtils::ToRadians(cameraRotation.x));
+		lookDir.Normalize();
+
+		moveDir.Normalize();
+
+		Vector3 right = lookDir.Cross(Vector3::up).Normalize();
+		Vector3 up = right.Cross(lookDir).Normalize();
+
+		Vector3 worldMoveDir =
+			right * moveDir.x +
+			up * moveDir.y +
+			lookDir * moveDir.z;
+
+		worldMoveDir.y += moveDirY * cameraSpeedVerMultiplier;
+
+		float multiplier = (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT)) ? cameraSprintMultiplier: 1;
+		cameraPosition += worldMoveDir * cameraSpeed * multiplier * Time::GetDeltaTime();
+
+		Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + lookDir, Vector3::up);
+		DefaultShader.SetMatrix4("view", view.ToOpenGLData());
+	}
+
+	first = false;
+}
+
+void DrawCube(int index) {
+	using namespace GLTransform;
+	
+	Matrix mat = Translation(cubePositions[index]);
+	float angle = ConversionUtils::ToRadians(20.0f * index);
+	RotationXYZ(mat, angle, angle * 0.3f, angle * 0.5f);
+
+	DefaultShader.SetMatrix4("model", mat.ToOpenGLData());
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 void MyGameApp::OnShutdown() {
@@ -193,4 +255,10 @@ void MyGameApp::OnShutdown() {
 }
 
 void MyGameApp::OnWindowResize(int newWidth, int newHeight) {
+}
+
+void MyGameApp::OnWindowFocusLost() {
+}
+
+void MyGameApp::OnWindowFocusGain() {
 }
