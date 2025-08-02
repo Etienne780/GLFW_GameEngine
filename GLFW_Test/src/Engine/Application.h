@@ -40,6 +40,8 @@ public:
 	virtual void OnWindowFocusLost();
 	virtual void OnWindowFocusGain();
 
+	static Application* Get();
+
 	const String& App_Application_Get_Name() const;
 	const String& App_Application_Get_Version() const;
 	GLFWwindow* App_Application_Get_Window() const;
@@ -90,6 +92,8 @@ public:
 	void App_Shader_Delete(EngineCore::Shader* shader);
 
 private:
+	static Application* s_instance;
+
 	const String m_appApplicationName;
 	const String m_appApplicationVersion;
 	bool m_appApplicationHeader = true;
