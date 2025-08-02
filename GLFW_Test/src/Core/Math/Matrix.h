@@ -216,6 +216,7 @@ namespace GLTransform {
      */
     Matrix Perspective(float fovy, float aspect, float zNear, float zFar);
 
+    Matrix LookAt(const Vector3& position, const Vector3& target, const Vector3& up);
 
     void Identity(Matrix& out);
     
