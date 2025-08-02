@@ -63,7 +63,6 @@ namespace EngineCore {
 		Input::frameCount = m_frameCount;
 
 		Time::UpdateTime(currentTimeSec);
-		Input::Update(m_window);
 
 		m_fpsCounter += Time::GetDeltaTime();
 		if (m_fpsCounter >= 1) {
@@ -134,8 +133,17 @@ namespace EngineCore {
 		glfwMakeContextCurrent(m_window);
 		glfwSetWindowUserPointer(m_window, this);
 		glfwSetFramebufferSizeCallback(m_window, GLFWFramebufferSizeCallback);
+		glfwSetWindowFocusCallback(m_window, GLFWFocusCallback);
 
 		glfwSwapInterval(1);
+
+		auto cursorMode = GLFW_CURSOR_NORMAL;
+		if (app->m_appApplicationWindowCursorHidden)
+			cursorMode = GLFW_CURSOR_HIDDEN;
+		if (app->m_appApplicationWindowCursorLock)
+			cursorMode = GLFW_CURSOR_DISABLED;
+
+		glfwSetInputMode(m_window, GLFW_CURSOR, cursorMode);
 
 		return 0;
 	}
@@ -155,8 +163,20 @@ namespace EngineCore {
 		glViewport(0, 0, width, height);
 
 		Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
-		if (engine)
-			engine->OnWindowResize(width, height);
+		if (!engine) return;
+		engine->OnWindowResize(width, height);
+	}
+
+	void Engine::GLFWFocusCallback(GLFWwindow* window, int focused) {
+		Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+		if (!engine) return;
+
+		if (focused) {
+			engine->app->OnWindowFocusGain();
+		}
+		else {
+			engine->app->OnWindowFocusLost();
+		}
 	}
 
 	int Engine::GLADInit() {
@@ -170,6 +190,10 @@ namespace EngineCore {
 		}
 
 		glViewport(0, 0, app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
+		if (app->m_appOpenGLDepthTesting)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
 		return 0;
 	}
 }

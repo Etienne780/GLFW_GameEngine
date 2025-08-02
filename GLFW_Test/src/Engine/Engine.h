@@ -49,6 +49,7 @@ namespace EngineCore {
 		void GLFWCloseWindow();
 		static void GLFWErrorCallback(int error, const char* description);
 		static void GLFWFramebufferSizeCallback(GLFWwindow* window, int width, int height);
+		static void GLFWFocusCallback(GLFWwindow* window, int focused);
 
 		int GLADInit();
 	};
