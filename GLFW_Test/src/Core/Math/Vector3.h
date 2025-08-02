@@ -59,6 +59,13 @@ public:
     void Normalize();
 
     /**
+    * @brief Normalizes a vector to have length 1.
+    * @param vec the vector that gets Normalized.
+    * @return Normalized vector
+    */
+    static Vector3 Normalize(const Vector3& vec);
+
+    /**
      * @brief Calculates the magnitude (length) of the vector.
      * @return Length as a float.
      */
@@ -79,43 +86,43 @@ public:
     float Dot(const Vector3& other) const;
 
     /**
-     * @brief Computes the cross product with another vector.
-     * @param other The other vector.
-     * @return New vector orthogonal to this and other.
-     */
-    Vector3 Cross(const Vector3& other) const;
-
-    /**
-     * @brief Static dot product between two vectors.
-     * @param a First vector.
-     * @param b Second vector.
-     * @return Scalar dot product result.
-     */
+    * @brief Static dot product between two vectors.
+    * @param a First vector.
+    * @param b Second vector.
+    * @return Scalar dot product result.
+    */
     static float Dot(const Vector3& a, const Vector3& b);
 
     /**
-     * @brief Static cross product between two vectors.
-     * @param a First vector.
-     * @param b Second vector.
-     * @return Vector orthogonal to a and b.
-     */
+    * @brief Computes the cross product with another vector.
+    * @param other The other vector.
+    * @return New vector orthogonal to this and other.
+    */
+    Vector3 Cross(const Vector3& other) const;
+
+    /**
+    * @brief Static cross product between two vectors.
+    * @param a First vector.
+    * @param b Second vector.
+    * @return Vector orthogonal to a and b.
+    */
     static Vector3 Cross(const Vector3& a, const Vector3& b);
 
     /**
-     * @brief Linearly interpolates between two vectors.
-     * @param a Start vector.
-     * @param b End vector.
-     * @param t Interpolation factor in [0, 1].
-     * @return Interpolated vector.
-     */
+    * @brief Linearly interpolates between two vectors.
+    * @param a Start vector.
+    * @param b End vector.
+    * @param t Interpolation factor in [0, 1].
+    * @return Interpolated vector.
+    */
     static Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
 
     /**
-     * @brief Computes the Euclidean distance between two vectors.
-     * @param a First vector.
-     * @param b Second vector.
-     * @return Distance as a float.
-     */
+    * @brief Computes the Euclidean distance between two vectors.
+    * @param a First vector.
+    * @param b Second vector.
+    * @return Distance as a float.
+    */
     static float Distance(const Vector3& a, const Vector3& b);
 
     // Compound assignment operators modifying this vector

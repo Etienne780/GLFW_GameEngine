@@ -40,6 +40,14 @@ void Vector2::Normalize() {
     }
 }
 
+Vector2 Vector2::Normalize(const Vector2& vec) {
+    float len = vec.Magnitude();
+    if (len > 0) {
+        return vec / len;
+    }
+    return vec;
+}
+
 float Vector2::Magnitude() const {
     return std::sqrt(SquaredMagnitude());
 }

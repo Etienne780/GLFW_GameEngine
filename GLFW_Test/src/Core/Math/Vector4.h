@@ -48,54 +48,61 @@ public:
     Vector4& Set(float x, float y, float z, float w);
 
     /**
-     * @brief Normalizes the vector to have length 1.
-     * Modifies the vector in place.
-     */
+    * @brief Normalizes the vector to have length 1.
+    * Modifies the vector in place.
+    */
     void Normalize();
 
     /**
-     * @brief Calculates the magnitude (length) of the vector.
-     * @return Length as a float.
-     */
+    * @brief Normalizes a vector to have length 1.
+    * @param vec the vector that gets Normalized.
+    * @return Normalized vector
+    */
+    static Vector4 Normalize(const Vector4& vec);
+
+    /**
+    * @brief Calculates the magnitude (length) of the vector.
+    * @return Length as a float.
+    */
     float Magnitude() const;
 
     /**
-     * @brief Calculates the squared magnitude of the vector.
-     * Avoids costly square root operation.
-     * @return Squared length as a float.
-     */
+    * @brief Calculates the squared magnitude of the vector.
+    * Avoids costly square root operation.
+    * @return Squared length as a float.
+    */
     float SquaredMagnitude() const;
 
     /**
-     * @brief Computes the dot product with another vector.
-     * @param other The other vector.
-     * @return Scalar dot product result.
-     */
+    * @brief Computes the dot product with another vector.
+    * @param other The other vector.
+    * @return Scalar dot product result.
+    */
     float Dot(const Vector4& other) const;
 
     /**
-     * @brief Static dot product between two vectors.
-     * @param a First vector.
-     * @param b Second vector.
-     * @return Scalar dot product result.
-     */
+    * @brief Static dot product between two vectors.
+    * @param a First vector.
+    * @param b Second vector.
+    * @return Scalar dot product result.
+    */
     static float Dot(const Vector4& a, const Vector4& b);
 
     /**
-     * @brief Linearly interpolates between two vectors.
-     * @param a Start vector.
-     * @param b End vector.
-     * @param t Interpolation factor in [0, 1].
-     * @return Interpolated vector.
-     */
+    * @brief Linearly interpolates between two vectors.
+    * @param a Start vector.
+    * @param b End vector.
+    * @param t Interpolation factor in [0, 1].
+    * @return Interpolated vector.
+    */
     static Vector4 Lerp(const Vector4& a, const Vector4& b, float t);
 
     /**
-     * @brief Computes the Euclidean distance between two vectors.
-     * @param a First vector.
-     * @param b Second vector.
-     * @return Distance as a float.
-     */
+    * @brief Computes the Euclidean distance between two vectors.
+    * @param a First vector.
+    * @param b Second vector.
+    * @return Distance as a float.
+    */
     static float Distance(const Vector4& a, const Vector4& b);
 
     // Compound assignment operators modifying this vector

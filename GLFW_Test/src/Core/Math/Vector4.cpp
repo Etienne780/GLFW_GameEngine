@@ -37,6 +37,14 @@ void Vector4::Normalize() {
     }
 }
 
+static Vector4 Normalize(const Vector4& vec) {
+    float len = vec.Magnitude();
+    if (len > 0) {
+        return vec / len;
+    }
+    return vec;
+}
+
 float Vector4::Magnitude() const {
     return std::sqrt(SquaredMagnitude());
 }
