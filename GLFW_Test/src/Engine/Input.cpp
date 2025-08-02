@@ -9,20 +9,25 @@ namespace EngineCore {
 	Vector2 Input::m_mousePosition;
 	std::unordered_map<int, Key> Input::keyStates;
 
+	void Input::GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		if (keyStates.find(key) == keyStates.end()) {
+			keyStates[key] = Key();
+		}
+
+		keyStates[key].setState(action);
+	}
+
+	void Input::GLFWMouseCallBack(GLFWwindow* window, double xpos, double ypos) {
+		m_mousePosition.x = static_cast<float>(xpos);
+		m_mousePosition.y =	static_cast<float>(ypos);
+	}
+
 	Input::Input() {}
 
 	void Input::Init(GLFWwindow* window) {
 		if (window == nullptr) return;
 
-		glfwSetKeyCallback(window, Input::KeyCallback);
-	}
-
-	void Input::Update(GLFWwindow* window) {
-		if (window == nullptr) return;
-
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		m_mousePosition = Vector2(static_cast<float>(xpos), static_cast<float>(ypos));
+		glfwSetKeyCallback(window, Input::GLFWKeyCallback);
 	}
 
 	void Input::LateUpdate() {
@@ -126,14 +131,6 @@ namespace EngineCore {
 		}
 
 		return keys;
-	}
-
-	void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-		if (keyStates.find(key) == keyStates.end()) {
-			keyStates[key] = Key();
-		}
-
-		keyStates[key].setState(action);
 	}
 
 	void Key::update() {

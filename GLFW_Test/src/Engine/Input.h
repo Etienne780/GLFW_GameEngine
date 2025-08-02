@@ -26,7 +26,6 @@ namespace EngineCore {
 		static int frameCount;
 
 		static void Init(GLFWwindow* window);
-		static void Update(GLFWwindow* window);
 		static void LateUpdate();
 
 		// is only one frame true
@@ -62,7 +61,8 @@ namespace EngineCore {
 		static std::unordered_map<int, Key> keyStates;
 		static Vector2 m_mousePosition;
 
-		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void GLFWMouseCallBack(GLFWwindow* window, double xpos, double ypos);
 
 		static bool getAnyKeyState(bool keyPressed, bool justPressed);
 		static std::vector<int> getKeysState(bool keyPressed, bool justPressed);
