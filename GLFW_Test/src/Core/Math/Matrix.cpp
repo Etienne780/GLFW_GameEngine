@@ -532,10 +532,10 @@ namespace GLTransform {
         Vector3 u = f.Cross(r);                        // true up
 
         float data[16] = {
-            r.x,  u.x, -f.x, 0.0f,
-            r.y,  u.y, -f.y, 0.0f,
-            r.z,  u.z, -f.z, 0.0f,
-            -r.Dot(position), -u.Dot(position), f.Dot(position), 1.0f
+            r.x,  r.y,  r.z, -r.Dot(position),
+            u.x,  u.y,  u.z, -u.Dot(position),
+           -f.x, -f.y, -f.z,  f.Dot(position),
+            0,    0,    0,    1
         };
 
         return Matrix(4, 4, data); // oder was auch immer dein Konstruktor ist
