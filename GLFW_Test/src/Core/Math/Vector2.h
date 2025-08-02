@@ -24,19 +24,19 @@ public:
     Vector2(float x, float y) : x(x), y(y) {} ///< Constructs vector with given components
 
     /**
-     * @brief Converts the vector to a string representation.
-     * @return String in the format "(x, y)".
-     */
+    * @brief Converts the vector to a string representation.
+    * @return String in the format "(x, y)".
+    */
     std::string ToString() const;
     /**
-     * @brief Converts this vector to a 2x1 column matrix.
-     * @return A Matrix with 2 rows and 1 column representing this vector.
-     */
+    * @brief Converts this vector to a 2x1 column matrix.
+    * @return A Matrix with 2 rows and 1 column representing this vector.
+    */
     Matrix ToMatrix2x1() const;
     /**
-     * @brief Converts this vector to a 1x2 row matrix.
-     * @return A Matrix with 1 row and 2 columns representing this vector.
-     */
+    * @brief Converts this vector to a 1x2 row matrix.
+    * @return A Matrix with 1 row and 2 columns representing this vector.
+    */
     Matrix ToMatrix1x2() const;
 
     /**
@@ -52,8 +52,10 @@ public:
     /**
     * @brief Normalizes the vector to have length 1.
     * Modifies the vector in place.
+    * 
+    * @return this vector
     */
-    void Normalize();
+    Vector2& Normalize();
 
     /**
     * @brief Normalizes a vector to have length 1.

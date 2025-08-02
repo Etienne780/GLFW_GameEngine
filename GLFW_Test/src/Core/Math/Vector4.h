@@ -51,8 +51,10 @@ public:
     /**
     * @brief Normalizes the vector to have length 1.
     * Modifies the vector in place.
+    * 
+    * @return this vector
     */
-    void Normalize();
+    Vector4& Normalize();
 
     /**
     * @brief Normalizes a vector to have length 1.

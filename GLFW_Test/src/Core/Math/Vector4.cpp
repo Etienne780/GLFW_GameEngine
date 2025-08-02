@@ -31,11 +31,12 @@ Vector4& Vector4::Set(float _x, float _y, float _z, float _w) {
     return *this;
 }
 
-void Vector4::Normalize() {
+Vector4& Vector4::Normalize() {
     float len = Magnitude();
     if (len > 0) {
         *this /= len;
     }
+    return *this;
 }
 
 static Vector4 Normalize(const Vector4& vec) {

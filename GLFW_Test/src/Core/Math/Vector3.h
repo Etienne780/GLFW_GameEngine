@@ -54,10 +54,12 @@ public:
     Vector3& Set(float x, float y, float z);
 
     /**
-     * @brief Normalizes the vector to have length 1.
-     * Modifies the vector in place.
-     */
-    void Normalize();
+    * @brief Normalizes the vector to have length 1.
+    * Modifies the vector in place.
+    *
+    * @return this vector
+    */
+    Vector3& Normalize();
 
     /**
     * @brief Normalizes a vector to have length 1.

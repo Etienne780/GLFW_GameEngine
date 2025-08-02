@@ -34,11 +34,12 @@ Vector2& Vector2::Set(float _x, float _y) {
     return *this;
 }
 
-void Vector2::Normalize() {
+Vector2& Vector2::Normalize() {
     float len = Magnitude();
     if (len > 0) {
         *this /= len;
     }
+    return *this;
 }
 
 Vector2 Vector2::Normalize(const Vector2& vec) {

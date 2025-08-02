@@ -38,11 +38,12 @@ Vector3& Vector3::Set(float _x, float _y, float _z) {
     return *this;
 }
 
-void Vector3::Normalize() {
+Vector3& Vector3::Normalize() {
     float len = Magnitude();
     if (len > 0) {
         *this /= len;
     }
+    return *this;
 }
 
 Vector3 Vector3::Normalize(const Vector3& vec) {
