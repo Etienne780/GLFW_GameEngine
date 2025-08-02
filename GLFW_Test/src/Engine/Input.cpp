@@ -1,6 +1,7 @@
 ﻿#include "Input.h"
 
 #include "..\Core\Math\Vector2.h"
+#include "..\Core\Log.h"
 
 namespace EngineCore {
 
@@ -28,6 +29,7 @@ namespace EngineCore {
 		if (window == nullptr) return;
 
 		glfwSetKeyCallback(window, Input::GLFWKeyCallback);
+		glfwSetCursorPosCallback(window, Input::GLFWMouseCallBack);
 	}
 
 	void Input::LateUpdate() {
