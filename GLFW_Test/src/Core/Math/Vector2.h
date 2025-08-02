@@ -15,6 +15,7 @@ public:
     static const Vector2 left;   ///< Unit vector pointing left (-1, 0)
     static const Vector2 right;  ///< Unit vector pointing right (1, 0)
     static const Vector2 one;    ///< Vector with both components set to one (1, 1)
+    static const Vector2 zero;    ///< Vector with both components set to one (0, 0)
 
     float x = 0; ///< X component of the vector
     float y = 0; ///< Y component of the vector

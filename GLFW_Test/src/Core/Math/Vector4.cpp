@@ -8,6 +8,7 @@
 #include "..\FormatUtils.h"
 
 const Vector4 Vector4::one(1, 1, 1, 1);
+const Vector4 Vector4::zero(0, 0, 0, 0);
 
 std::string Vector4::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}, {}]", x, y, z, w);
