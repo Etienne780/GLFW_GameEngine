@@ -20,4 +20,4 @@ This project is a personal learning exercise aimed at gaining a deeper understan
 
 - **C++20 or higher**
 - **GLFW** (linked manually or via package manager)  
-- **CMake** or **Visual Studio 2019+**
+- **Visual Studio 2022** (must learn **CMake**)
