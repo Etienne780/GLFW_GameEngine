@@ -14,9 +14,11 @@ namespace EngineCore {
 		m_parentObjPtr = nullptr;
 	}
 
+	#pragma region Static
+
 	GameObject* GameObject::Create(const std::string& name) {
 		#ifndef NDEBUG
-		if (GameObjectManager::IsNameUnique(name)) {
+		if (!GameObjectManager::IsNameUnique(name)) {
 			Log::Warn("GameObject: name is not unique");
 		}
 		#endif
@@ -25,6 +27,20 @@ namespace EngineCore {
 		GameObjectManager::AddGameObject(go);
 		return go;
 	}
+
+	bool GameObject::Delete(GameObject* gameObjectPtr) {
+		return GameObjectManager::DeleteGameObject(gameObjectPtr);
+	}
+
+	bool GameObject::Delete(unsigned int id) {
+		return GameObjectManager::DeleteGameObject(id);
+	}
+
+	bool GameObject::Delete(const std::string& name) {
+		return GameObjectManager::DeleteGameObject(name);
+	}
+
+	#pragma endregion
 
 	bool GameObject::HasParent() const {
 		return (m_parentObjPtr != nullptr);
@@ -57,8 +73,7 @@ namespace EngineCore {
 		
 		// remove self form parents child list
 		if (m_parentObjPtr) {
-			auto& siblings = m_parentObjPtr->m_childObjPtrs;
-			siblings.erase(std::remove(siblings.begin(), siblings.end(), this), siblings.end());
+			m_parentObjPtr->RemoveChild(this);
 		}
 
 		m_parentObjPtr = parentPtr;
@@ -71,4 +86,10 @@ namespace EngineCore {
 	void GameObject::Detach() {
 		SetParent(nullptr);
 	}
+
+	void GameObject::RemoveChild(GameObject* child) {
+		auto& children = m_childObjPtrs;
+		children.erase(std::remove(children.begin(), children.end(), child), children.end());
+	}
+
 }

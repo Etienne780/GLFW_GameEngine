@@ -143,6 +143,11 @@ void Project::Start() {
 	Log::Info("Camera Test: {}, time {}", c->GetTest(), Time::GetTime());
 	Camera* gc = go->GetComponent<Camera>();
 	Log::Info("Camera Test: {}, time {}", gc->GetTest(), Time::GetTime());
+
+	unsigned int goID = go->GetID();
+	std::string goName = go->GetName();
+
+	GameObject::Delete(go);
 }
 
 Vector3 cubePositions[] = {
@@ -162,6 +167,8 @@ void DrawCube(int index);
 void CameraMove();
 float t = 0;
 void Project::Update() {
+
+	// return;
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 

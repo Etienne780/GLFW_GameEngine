@@ -17,6 +17,7 @@ namespace EngineCore {
 
 		static void AddGameObject(GameObject* gameObjectPtr);
 		static bool DeleteGameObject(GameObject* gameObjectPtr);
+		static bool DeleteGameObject(unsigned int id);
 		static bool DeleteGameObject(const std::string& name);
 
 		static unsigned int GetNewUniqueIdentifier();

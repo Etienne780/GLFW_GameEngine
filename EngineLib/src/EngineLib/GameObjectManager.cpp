@@ -19,6 +19,8 @@ namespace EngineCore {
 		m_gameObjects.emplace_back(std::unique_ptr<GameObject>(gameObjectPtr));
 	}
 
+	#pragma region Delete
+
 	bool GameObjectManager::DeleteGameObject(GameObject* gameObjectPtr) {
 		#ifndef NDEBUG
 		if (gameObjectPtr == nullptr) {
@@ -32,8 +34,32 @@ namespace EngineCore {
 			DeleteGameObject(child);
 		}
 
+		if (gameObjectPtr->GetParent()) {
+			gameObjectPtr->Detach();
+		}
+
 		for (auto it = m_gameObjects.begin(); it != m_gameObjects.end(); ++it) {
 			if (it->get() == gameObjectPtr) {
+				m_gameObjects.erase(it);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool GameObjectManager::DeleteGameObject(unsigned int id) {
+		for (auto it = m_gameObjects.begin(); it != m_gameObjects.end(); ++it) {
+			if ((*it)->GetID() == id) {
+				// delete all the child GO
+				auto children = (*it)->m_childObjPtrs;
+				for (GameObject* child : children) {
+					DeleteGameObject(child);
+				}
+
+				if ((*it)->GetParent()) {
+					(*it)->Detach();
+				}
+
 				m_gameObjects.erase(it);
 				return true;
 			}
@@ -44,10 +70,14 @@ namespace EngineCore {
 	bool GameObjectManager::DeleteGameObject(const std::string& name) {
 		for (auto it = m_gameObjects.begin(); it != m_gameObjects.end(); ++it) {
 			if ((*it)->GetName() == name) {
-
 				// delete all the child GO
-				for (GameObject* child : (*it)->m_childObjPtrs) {
+				auto children = (*it)->m_childObjPtrs;
+				for (GameObject* child : children) {
 					DeleteGameObject(child);
+				}
+
+				if ((*it)->GetParent()) {
+					(*it)->Detach();
 				}
 
 				m_gameObjects.erase(it);
@@ -56,6 +86,8 @@ namespace EngineCore {
 		}
 		return false;
 	}
+
+	#pragma endregion
 
 	unsigned int GameObjectManager::GetNewUniqueIdentifier() {
 		return m_idCounter++;

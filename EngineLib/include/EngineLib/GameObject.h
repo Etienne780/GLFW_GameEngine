@@ -13,7 +13,12 @@ namespace EngineCore {
 	class GameObject {
 	friend class GameObjectManager;
 	public:
+		~GameObject();
+
 		static GameObject* Create(const std::string& name = "");
+		static bool Delete(GameObject* gameObjectPtr);
+		static bool Delete(unsigned int id);
+		static bool Delete(const std::string& name);
 
 		template<typename C, typename... Args>
 		C* AddComponent(Args&&... args);
@@ -37,7 +42,6 @@ namespace EngineCore {
 
 	private:
 		GameObject(const std::string& name);
-		~GameObject();
 
 		unsigned int m_id = -1;
 		std::string m_name;
@@ -46,6 +50,8 @@ namespace EngineCore {
 
 		Transform m_transform;
 		std::vector<std::unique_ptr<Component>> m_components;
+
+		void RemoveChild(GameObject* child);
 	};
 
 }
