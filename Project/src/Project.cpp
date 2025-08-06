@@ -32,8 +32,8 @@ Matrix model, projection;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 
-	DefaultShader = Shader("assets/shader/Default.vert", "assets/shader/Default.frag");
-	texture1.Create("assets/stone.jpg das funktioniert save");
+	DefaultShader = Shader("assets\\shaders\\Default.vert", "assets\\shaders\\Default.frag");
+	texture1.Create("assets\\textures\\stone.jpg das funktioniert save");
 	
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -137,12 +137,15 @@ void Project::Start() {
 
 	lastFrameMousePos = Input::GetMousePosition();
 
-	GameObject go;
-	Camera* c = go.AddComponent<Camera>();
+	GameObject* go = GameObject::Create("New GameObject");
+	Camera* c = go->AddComponent<Camera>();
+
+	go->AddComponent<Camera>();
+
 	c->SetTest(10);
 	Log::Info("Camera Test: {}, time {}", c->GetTest(), Time::GetTime());
-	Camera* cd = go.GetComponent<Camera>();
-	Log::Info("Camera Test: {}, time {}", cd->GetTest(), Time::GetTime());
+	Camera* gc = go->GetComponent<Camera>();
+	Log::Info("Camera Test: {}, time {}", gc->GetTest(), Time::GetTime());
 }
 
 Vector3 cubePositions[] = {

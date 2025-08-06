@@ -1,16 +1,19 @@
 #pragma once
+#include <string>
+
 #include "..\Component.h"
 
 namespace EngineCore {
-	// class Component;
-	
+
 	class Camera : public Component {
 	public:
-		Camera() = default;
+		Camera();
 		void SetTest(int i);
 		int GetTest();
 
 	private:
+		static const std::string compName;
+
 		int m_test = 0;
 
 	};

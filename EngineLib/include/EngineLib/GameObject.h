@@ -4,14 +4,15 @@
 #include <memory>
 #include <type_traits>
 
+#include "Components/Transform_C.h"
+
 namespace EngineCore {
 
 	class Component;
 
 	class GameObject {
 	public:
-		GameObject() = default;
-		GameObject(const std::string& name);
+		static GameObject* Create(const std::string& name = "");
 
 		template<typename C, typename... Args>
 		C* AddComponent(Args&&... args);
@@ -19,8 +20,19 @@ namespace EngineCore {
 		template<typename C>
 		C* GetComponent() const;
 
+		template<typename C>
+		bool TryGetComponent(C*& outComponent) const;
+
+		template<typename C>
+		bool HasComponent() const;
+
+		std::string GetName() const;
+
 	private:
+		GameObject(const std::string& name);
+
 		std::string m_name;
+		Transform m_transform;
 		std::vector<std::unique_ptr<Component>> m_components;
 	};
 

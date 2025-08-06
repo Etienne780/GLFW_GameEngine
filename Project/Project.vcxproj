@@ -26,8 +26,8 @@
     <ClCompile Include="src\Project.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shader\Default.frag" />
-    <None Include="assets\shader\Default.vert" />
+    <None Include="assets\shaders\Default.frag" />
+    <None Include="assets\shaders\Default.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
