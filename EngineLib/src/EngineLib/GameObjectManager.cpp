@@ -5,7 +5,6 @@
 namespace EngineCore {
 
 	unsigned int GameObjectManager::m_idCounter = 0;
-	std::string GameObjectManager::s_hierarchyString;
 	std::vector<std::unique_ptr<GameObject>> GameObjectManager::m_gameObjects;
 
 	GameObjectManager::GameObjectManager() {}
@@ -93,17 +92,17 @@ namespace EngineCore {
 
 	#pragma region Get
 
-	std::string& GameObjectManager::GetHierarchy() {
-		s_hierarchyString.clear();
-		s_hierarchyString.append("GameObject Hierarchy:\n");
+	std::string GameObjectManager::GetHierarchy() {
+		std::string hierarchyString;
+		hierarchyString.append("GameObject Hierarchy:\n");
 		// Find all root GOs
 		for (const auto& goPtr : m_gameObjects) {
 			if (!goPtr->HasParent()) {
-				BuildHierarchyString(goPtr.get(), s_hierarchyString, 0);
+				BuildHierarchyString(goPtr.get(), hierarchyString, 0);
 			}
 		}
 
-		return s_hierarchyString;
+		return hierarchyString;
 	}
 
 	unsigned int GameObjectManager::GetNewUniqueIdentifier() {
@@ -147,9 +146,10 @@ namespace EngineCore {
 	void GameObjectManager::BuildHierarchyString(const GameObject* obj, std::string& outStr, int level) {
 		outStr.append("|- ");
 		outStr.append(obj->GetName());
+		outStr.append(FormatUtils::formatString(" ({})", obj->GetID()));
 		outStr.append("\n");
 
-		// Alle Kinder rekursiv hinzufügen
+		// Adds Children recursively
 		for (GameObject* child : obj->GetChildren()) {
 			for (int i = 0; i < (level + 1); i++) {
 				outStr.append("|  ");

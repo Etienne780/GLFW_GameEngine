@@ -16,7 +16,7 @@ namespace EngineCore {
 
 	#pragma region Static
 
-	std::string& GameObject::GetHierarchy() {
+	std::string GameObject::GetHierarchyString() {
 		return GameObjectManager::GetHierarchy();
 	}
 
@@ -66,6 +66,24 @@ namespace EngineCore {
 
 	const std::vector<GameObject*>& GameObject::GetChildren() const {
 		return m_childObjPtrs;
+	}
+
+	std::string GameObject::GetComponentListString() const {
+		return GetComponentListString(false);
+	}
+
+	std::string GameObject::GetComponentListString(bool moreDetail) const {
+		std::string listString;
+		listString.append(FormatUtils::formatString("{}:\n", m_name));
+
+		m_transform.GetComponentString("  - ", listString, moreDetail);
+		for (const auto& comp : m_components) {
+			if (comp) {
+				comp->GetComponentString("  - ", listString, moreDetail);
+			}
+		}
+
+		return listString;
 	}
 
 	#pragma endregion

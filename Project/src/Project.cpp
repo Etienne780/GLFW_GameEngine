@@ -131,44 +131,44 @@ void Project::Start() {
 	}
 
 	App_Shader_Bind(&DefaultShader);
-	Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + Vector3::back, Vector3::up);
+ 	Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + Vector3::back, Vector3::up);
 	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
 	DefaultShader.SetInt("texture1", 0);
 
 	lastFrameMousePos = Input::GetMousePosition();
 
-	GameObject* go = GameObject::Create("New GameObject");
-	Camera* c = go->AddComponent<Camera>();
-	c->SetTest(10);
-	Log::Info("Camera Test: {}, time {}", c->GetTest(), Time::GetTime());
-	Camera* gc = go->GetComponent<Camera>();
-	Log::Info("Camera Test: {}, time {}", gc->GetTest(), Time::GetTime());
+	GameObject::Create("das");
+	GameObject::Create("dagsdfs");
+	GameObject::Create("josef");
+	GameObject::Create("nein");
 
-	unsigned int goID = go->GetID();
-	std::string goName = go->GetName();
+	auto* container = GameObject::Create("WallContainer");
+	GameObject::Create("wall1")->SetParent(container);
+	GameObject::Create("wall2")->SetParent(container);
+	GameObject::Create("wall3")->SetParent(container);
 
-	GameObject::Delete(go);
+	auto* wall4 = GameObject::Create("wall4")->SetParent(container);
+	GameObject::Create("wall4.1")->SetParent(wall4);
+	GameObject::Create("wall4.2")->SetParent(wall4);
+
+	GameObject::Create("fd");
+	GameObject::Create("f");
+	GameObject::Create("nein");
+	Log::Print("");
+	Log::Print(GameObject::GetHierarchyString());
+
+	Log::Print("");
+	Log::Print(wall4->GetComponentListString());
+	Log::Print(wall4->GetComponent<Transform>()->GetComponentString());
+
+	GameObject::Delete(container);
+	Log::Print("new:");
+	Log::Print(GameObject::GetHierarchyString());
 }
 
-Vector3 cubePositions[] = {
-	Vector3(0.0f, 0.0f, 0.0f),
-	Vector3(2.0f, 5.0f, -15.0f),
-	Vector3(-1.5f, -2.2f, -2.5f),
-	Vector3(-3.8f, -2.0f, -12.3f),
-	Vector3(2.4f, -0.4f, -3.5f),
-	Vector3(-1.7f, 3.0f, -7.5f),
-	Vector3(1.3f, -2.0f, -2.5f),
-	Vector3(1.5f, 2.0f, -2.5f),
-	Vector3(1.5f, 0.2f, -1.5f),
-	Vector3(-1.3f, 1.0f, -1.5f)
-};
-
-void DrawCube(int index);
 void CameraMove();
 float t = 0;
 void Project::Update() {
-
-	// return;
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 
@@ -189,19 +189,15 @@ void Project::Update() {
 
 	CameraMove();
 
-	App_OpenGL_BackgroundColor();
 	App_Shader_Bind(&DefaultShader);
-	texture1.Bind(0);
+	// texture1.Bind(0);
+	// DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
+	// glBindVertexArray(VAO);
+	// glDrawArrays(GL_TRIANGLES, 0, 36);
+	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	//DefaultShader.SetMatrix4("view", view.ToOpenGLData());
-	DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
-	glBindVertexArray(VAO);
-	for (int i = 0; i < 10; i++) {
-		DrawCube(i);
-	}
-
-	texture1.Unbind(0);
-	glBindVertexArray(0);
+	// texture1.Unbind(0);
+	// glBindVertexArray(0);
 }
 
 void CameraMove() {
@@ -256,18 +252,6 @@ void CameraMove() {
 	}
 
 	first = false;
-}
-
-void DrawCube(int index) {
-	using namespace GLTransform;
-	
-	Matrix mat = Translation(cubePositions[index]);
-	float angle = ConversionUtils::ToRadians(20.0f * index);
-	RotationXYZ(mat, angle, angle * 0.3f, angle * 0.5f);
-
-	DefaultShader.SetMatrix4("model", mat.ToOpenGLData());
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 void Project::Shutdown() {
