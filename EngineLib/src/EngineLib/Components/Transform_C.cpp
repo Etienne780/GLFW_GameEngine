@@ -22,6 +22,22 @@ namespace EngineCore {
 		Translation(m_modeMat, m_position);
 	}
 
+	#pragma region Get
+
+	Vector3 Transform::GetPosition() const {
+		return m_position;
+	}
+
+	Vector3 Transform::GetRotation() const {
+		return m_rotation;
+	}
+
+	Vector3 Transform::GetScale() const {
+		return m_scale;
+	}
+
+	#pragma endregion
+
 	#pragma region Set
 
 	Transform& Transform::SetPosition(float x, float y, float z) {

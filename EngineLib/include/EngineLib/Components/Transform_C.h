@@ -10,6 +10,10 @@ namespace EngineCore {
 		Transform();
 		Transform(const Vector3& pos, const Vector3& rot, const Vector3& scale);
 
+		Vector3 GetPosition() const;
+		Vector3 GetRotation() const;
+		Vector3 GetScale() const;
+
 		Transform& SetPosition(float x, float y, float z);
 		Transform& SetRotation(float x, float y, float z);
 		Transform& SetScale(float x, float y, float z);

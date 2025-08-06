@@ -11,7 +11,7 @@ namespace EngineCore {
 		// Cant add transform component. is already a member of GO
 		if constexpr (std::is_same<C, Transform>::value) {
 			#ifndef NDEBUG
-			Log::Warn("Cannot add Transform via AddComponent. It is already part of the GameObject.");
+			Log::Warn("GameObject: Cannot add Transform via AddComponent. It is already part of the GameObject.");
 			#endif
 			return nullptr;
 		}
@@ -20,7 +20,7 @@ namespace EngineCore {
 		for (const auto& comp : m_components) {
 			if (dynamic_cast<C*>(comp.get())) {
 				#ifndef NDEBUG
-				Log::Warn("Component '{}' already exists on GameObject.", comp.get()->GetName());
+				Log::Warn("GameObject: Component '{}' already exists on GameObject.", comp.get()->GetName());
 				#endif
 				return nullptr;
 			}

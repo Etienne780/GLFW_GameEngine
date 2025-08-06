@@ -139,9 +139,6 @@ void Project::Start() {
 
 	GameObject* go = GameObject::Create("New GameObject");
 	Camera* c = go->AddComponent<Camera>();
-
-	go->AddComponent<Camera>();
-
 	c->SetTest(10);
 	Log::Info("Camera Test: {}, time {}", c->GetTest(), Time::GetTime());
 	Camera* gc = go->GetComponent<Camera>();
