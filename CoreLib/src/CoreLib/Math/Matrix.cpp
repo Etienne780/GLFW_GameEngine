@@ -200,7 +200,7 @@ Matrix& Matrix::operator*=(const Matrix& other) {
 
     m_isDataDirty = true;
 
-    *this = other * (*this);
+    *this = (*this) * other;
     return *this;
 }
 
@@ -539,7 +539,7 @@ namespace GLTransform {
             0,    0,    0,    1
         };
 
-        return Matrix(4, 4, data); // oder was auch immer dein Konstruktor ist
+        return Matrix(4, 4, data);
     }
 
     void Identity(Matrix& out) {
@@ -570,7 +570,7 @@ namespace GLTransform {
         s[1 * 4 + 1] = y;
         s[2 * 4 + 2] = z;
 
-        out *= scale;
+        out = scale * out;
     }
 
     void ScaleNonUniform(Matrix& out, const Vector3& scalar) {
@@ -595,7 +595,7 @@ namespace GLTransform {
         t[1 * 4 + 3] = y;
         t[2 * 4 + 3] = z;
 
-        out *= trans;
+        out = trans * out;
     }
 
     void Translation(Matrix& out, const Vector3& translation) {
@@ -619,7 +619,7 @@ namespace GLTransform {
         r[2 * 4 + 2] = c;
         r[3 * 4 + 3] = 1;
 
-        out *= rot;
+        out = rot * out;
     }
 
     void RotationY(Matrix& out, float radians) {
@@ -639,7 +639,7 @@ namespace GLTransform {
         r[2 * 4 + 2] = c;
         r[3 * 4 + 3] = 1;
 
-        out *= rot;
+        out = rot * out;
     }
 
     void RotationZ(Matrix& out, float radians) {
@@ -659,7 +659,7 @@ namespace GLTransform {
         r[2 * 4 + 2] = 1;
         r[3 * 4 + 3] = 1;
 
-        out *= rot;
+        out = rot * out;
     }
 
     void RotationXYZ(Matrix& out, float rx, float ry, float rz) {
@@ -673,7 +673,7 @@ namespace GLTransform {
         RotationX(rotX, rx);
         RotationY(rotY, ry);
         RotationZ(rotZ, rz);
-        out *= rotZ * rotY * rotX;
+        out = (rotZ * rotY * rotX) * out;
     }
 
     void RotationXYZ(Matrix& out, const Vector3& radians) {
