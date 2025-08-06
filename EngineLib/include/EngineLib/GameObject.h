@@ -39,8 +39,8 @@ namespace EngineCore {
 		GameObject* GetParent() const;
 		const std::vector<GameObject*>& GetChildren() const;
 
-		GameObject& SetParent(GameObject* parentPtr);
-		GameObject& Detach();
+		GameObject* SetParent(GameObject* parentPtr);
+		GameObject* Detach();
 
 	private:
 		GameObject(const std::string& name);

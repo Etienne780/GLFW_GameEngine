@@ -1,4 +1,4 @@
-#include "CoreLib\Log.h"
+ï»¿#include "CoreLib\Log.h"
 
 #include "EngineLib\GameObjectManager.h"
 
@@ -31,7 +31,8 @@ namespace EngineCore {
 		#endif
 
 		// delete all the child GO
-		for (GameObject* child : gameObjectPtr->m_childObjPtrs) {
+		std::vector<GameObject*> childrenCopy = gameObjectPtr->m_childObjPtrs;
+		for (GameObject* child : childrenCopy) {
 			DeleteGameObject(child);
 		}
 
@@ -52,7 +53,7 @@ namespace EngineCore {
 		for (auto it = m_gameObjects.begin(); it != m_gameObjects.end(); ++it) {
 			if ((*it)->GetID() == id) {
 				// delete all the child GO
-				auto children = (*it)->m_childObjPtrs;
+				std::vector<GameObject*> children = (*it)->m_childObjPtrs;
 				for (GameObject* child : children) {
 					DeleteGameObject(child);
 				}
@@ -72,7 +73,7 @@ namespace EngineCore {
 		for (auto it = m_gameObjects.begin(); it != m_gameObjects.end(); ++it) {
 			if ((*it)->GetName() == name) {
 				// delete all the child GO
-				auto children = (*it)->m_childObjPtrs;
+				std::vector<GameObject*> children = (*it)->m_childObjPtrs;
 				for (GameObject* child : children) {
 					DeleteGameObject(child);
 				}
@@ -94,8 +95,8 @@ namespace EngineCore {
 
 	std::string& GameObjectManager::GetHierarchy() {
 		s_hierarchyString.clear();
-
-		// Alle Root-GameObjects finden (keinen Parent)
+		s_hierarchyString.append("GameObject Hierarchy:\n");
+		// Find all root GOs
 		for (const auto& goPtr : m_gameObjects) {
 			if (!goPtr->HasParent()) {
 				BuildHierarchyString(goPtr.get(), s_hierarchyString, 0);
@@ -144,12 +145,15 @@ namespace EngineCore {
 	}
 
 	void GameObjectManager::BuildHierarchyString(const GameObject* obj, std::string& outStr, int level) {
-		outStr.append(std::string(level * 2, ' '));  // Einrückung, z.B. 2 Leerzeichen pro Ebene
+		outStr.append("|- ");
 		outStr.append(obj->GetName());
 		outStr.append("\n");
 
-		// Alle Kinder rekursiv hinzufügen
+		// Alle Kinder rekursiv hinzufÃ¼gen
 		for (GameObject* child : obj->GetChildren()) {
+			for (int i = 0; i < (level + 1); i++) {
+				outStr.append("|  ");
+			}
 			BuildHierarchyString(child, outStr, level + 1);
 		}
 	}
