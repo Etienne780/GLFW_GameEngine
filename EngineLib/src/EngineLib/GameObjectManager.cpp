@@ -5,6 +5,7 @@
 namespace EngineCore {
 
 	unsigned int GameObjectManager::m_idCounter = 0;
+	std::string GameObjectManager::s_hierarchyString;
 	std::vector<std::unique_ptr<GameObject>> GameObjectManager::m_gameObjects;
 
 	GameObjectManager::GameObjectManager() {}
@@ -89,6 +90,21 @@ namespace EngineCore {
 
 	#pragma endregion
 
+	#pragma region Get
+
+	std::string& GameObjectManager::GetHierarchy() {
+		s_hierarchyString.clear();
+
+		// Alle Root-GameObjects finden (keinen Parent)
+		for (const auto& goPtr : m_gameObjects) {
+			if (!goPtr->HasParent()) {
+				BuildHierarchyString(goPtr.get(), s_hierarchyString, 0);
+			}
+		}
+
+		return s_hierarchyString;
+	}
+
 	unsigned int GameObjectManager::GetNewUniqueIdentifier() {
 		return m_idCounter++;
 	}
@@ -117,11 +133,24 @@ namespace EngineCore {
 		return result;
 	}
 
+	#pragma endregion
+
 	bool GameObjectManager::IsNameUnique(const std::string& name) {
 		for (const auto& go : m_gameObjects) {
 			if (go->GetName() == name)
 				return false;
 		}
 		return true;
+	}
+
+	void GameObjectManager::BuildHierarchyString(const GameObject* obj, std::string& outStr, int level) {
+		outStr.append(std::string(level * 2, ' '));  // Einrückung, z.B. 2 Leerzeichen pro Ebene
+		outStr.append(obj->GetName());
+		outStr.append("\n");
+
+		// Alle Kinder rekursiv hinzufügen
+		for (GameObject* child : obj->GetChildren()) {
+			BuildHierarchyString(child, outStr, level + 1);
+		}
 	}
 }

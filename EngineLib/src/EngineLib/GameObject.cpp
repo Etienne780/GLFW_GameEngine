@@ -16,6 +16,10 @@ namespace EngineCore {
 
 	#pragma region Static
 
+	std::string& GameObject::GetHierarchy() {
+		return GameObjectManager::GetHierarchy();
+	}
+
 	GameObject* GameObject::Create(const std::string& name) {
 		#ifndef NDEBUG
 		if (!GameObjectManager::IsNameUnique(name)) {
@@ -60,9 +64,13 @@ namespace EngineCore {
 		return m_parentObjPtr;
 	}
 
+	const std::vector<GameObject*>& GameObject::GetChildren() const {
+		return m_childObjPtrs;
+	}
+
 	#pragma endregion
 
-	void GameObject::SetParent(GameObject * parentPtr) {
+	GameObject& GameObject::SetParent(GameObject * parentPtr) {
 		if (m_parentObjPtr == parentPtr)
 			return;
 
@@ -81,10 +89,12 @@ namespace EngineCore {
 		if (m_parentObjPtr) {
 			m_parentObjPtr->m_childObjPtrs.push_back(this);
 		}
+		return *this;
 	}
 
-	void GameObject::Detach() {
+	GameObject& GameObject::Detach() {
 		SetParent(nullptr);
+		return *this;
 	}
 
 	void GameObject::RemoveChild(GameObject* child) {

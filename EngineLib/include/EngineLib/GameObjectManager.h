@@ -13,6 +13,7 @@ namespace EngineCore {
 		GameObjectManager();
 
 		static unsigned int m_idCounter;
+		static std::string s_hierarchyString;
 		static std::vector<std::unique_ptr<GameObject>> m_gameObjects;
 
 		static void AddGameObject(GameObject* gameObjectPtr);
@@ -26,6 +27,9 @@ namespace EngineCore {
 		static std::vector<GameObject*> GetAllGameObjects();
 
 		static bool IsNameUnique(const std::string& name);
+
+		static std::string& GetHierarchy();
+		static void BuildHierarchyString(const GameObject* obj, std::string& outStr, int level);
 	};
 
 }
