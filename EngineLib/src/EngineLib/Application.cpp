@@ -198,13 +198,6 @@ void Application::App_OpenGL_Set_BackgroundColor(const Vector3& color) {
 
 #pragma region other_funcs
 
-void Application::App_OpenGL_BackgroundColor() {
-    if (m_window == nullptr) return;
-
-    glClearColor(m_appOpenGLBackgroundColor.x, m_appOpenGLBackgroundColor.y, m_appOpenGLBackgroundColor.z, 1.0f);
-    glClear(((m_appOpenGLDepthTesting) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
-}
-
 void Application::App_Shader_Bind(EngineCore::Shader* shader) {
     if (shader == nullptr || m_window == nullptr) return;
 

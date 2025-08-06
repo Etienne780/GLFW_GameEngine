@@ -56,6 +56,14 @@ namespace EngineCore {
 			m_fpsCounter -= 1.0;
 		}
 
+		// cleares the window each frame
+		if (m_window != nullptr) {
+			glClearColor(app->m_appOpenGLBackgroundColor.x, 
+						 app->m_appOpenGLBackgroundColor.y, 
+						 app->m_appOpenGLBackgroundColor.z, 
+						 1.0f);
+			glClear(((app->m_appOpenGLDepthTesting) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
+		}
 		app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 		app->Update();
 

@@ -78,8 +78,6 @@ public:
 	void App_OpenGL_Set_BackgroundColor(float r, float g, float b);
 	void App_OpenGL_Set_BackgroundColor(float brightness);
 	void App_OpenGL_Set_BackgroundColor(const Vector3& color);
-	// needs a window
-	void App_OpenGL_BackgroundColor();
 
 	// needs a window
 	void App_Shader_Bind(EngineCore::Shader* shader);
