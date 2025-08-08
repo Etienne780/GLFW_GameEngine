@@ -14,6 +14,7 @@
 #include "EngineLib\Application.h"
 #include "EngineLib\Time.h"
 #include "EngineLib\Input.h"
+#include "EngineLib\File.h"
 #include "EngineLib\Shader.h"
 #include "EngineLib\Texture2D.h"
 #include "EngineLib\GameObjectManager.h"
