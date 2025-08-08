@@ -9,6 +9,7 @@
 #include "CoreLib\File.h"
 #include <CoreLib\FormatUtils.h>
 #include <CoreLib\ColorUtils.h>
+#include <CoreLib\TimeUtils.h>
 #include <CoreLib\ConversionUtils.h>
 #include <CoreLib\stb_image.h>
 
