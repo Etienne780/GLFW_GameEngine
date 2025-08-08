@@ -16,7 +16,7 @@ namespace EngineCore {
 		~GameObject();
 
 		static std::string GetHierarchyString();
-		static GameObject* Create(const std::string& name = "");
+		static GameObject* Create(const std::string& name);
 		static bool Delete(GameObject* gameObjectPtr);
 		static bool Delete(unsigned int id);
 		static bool Delete(const std::string& name);
@@ -41,6 +41,7 @@ namespace EngineCore {
 		std::string GetComponentListString() const;
 		std::string GetComponentListString(bool moreDetail) const;
 
+		GameObject* SetName(const std::string& name);
 		GameObject* SetParent(GameObject* parentPtr);
 		GameObject* Detach();
 

@@ -88,6 +88,11 @@ namespace EngineCore {
 
 	#pragma endregion
 
+	GameObject* GameObject::SetName(const std::string& name) {
+		m_name = name;
+		return this;
+	}
+
 	GameObject* GameObject::SetParent(GameObject * parentPtr) {
 		if (m_parentObjPtr == parentPtr)
 			return nullptr;

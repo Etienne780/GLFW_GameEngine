@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="src\CoreLib\ColorUtils.cpp" />
     <ClCompile Include="src\CoreLib\ConversionUtils.cpp" />
+    <ClCompile Include="src\CoreLib\File.cpp" />
     <ClCompile Include="src\CoreLib\Log.cpp" />
     <ClCompile Include="src\CoreLib\Math\Matrix.cpp" />
     <ClCompile Include="src\CoreLib\Math\Vector2.cpp" />
@@ -171,6 +172,7 @@
   <ItemGroup>
     <ClInclude Include="include\CoreLib\ColorUtils.h" />
     <ClInclude Include="include\CoreLib\ConversionUtils.h" />
+    <ClInclude Include="include\CoreLib\File.h" />
     <ClInclude Include="include\CoreLib\Math.h" />
     <ClInclude Include="include\CoreLib\FormatUtils.h" />
     <ClInclude Include="include\CoreLib\Log.h" />

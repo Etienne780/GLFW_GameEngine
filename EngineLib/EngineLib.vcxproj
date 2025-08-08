@@ -28,13 +28,11 @@
     <ClInclude Include="include\EngineLib\GameObject.h" />
     <ClInclude Include="include\EngineLib\GameObjectManager.h" />
     <ClInclude Include="include\EngineLib\Input.h" />
-    <ClInclude Include="include\EngineLib\File.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\EngineLib\File.cpp" />
     <ClCompile Include="src\EngineLib\Components\Transform_C.cpp" />
     <ClCompile Include="src\EngineLib\GameObjectManager.cpp" />
     <ClCompile Include="src\EngineLib\Application.cpp" />

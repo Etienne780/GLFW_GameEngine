@@ -1,10 +1,5 @@
 #pragma once
-
-namespace std {
-    class string;
-    class ifstream;
-    class ofstream;
-}
+#include <fstream>
 
 namespace EngineCore {
 
