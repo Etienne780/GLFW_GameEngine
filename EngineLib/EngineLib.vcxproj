@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -28,11 +28,13 @@
     <ClInclude Include="include\EngineLib\GameObject.h" />
     <ClInclude Include="include\EngineLib\GameObjectManager.h" />
     <ClInclude Include="include\EngineLib\Input.h" />
+    <ClInclude Include="include\EngineLib\File.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\EngineLib\File.cpp" />
     <ClCompile Include="src\EngineLib\Components\Transform_C.cpp" />
     <ClCompile Include="src\EngineLib\GameObjectManager.cpp" />
     <ClCompile Include="src\EngineLib\Application.cpp" />
