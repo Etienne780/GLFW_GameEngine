@@ -167,6 +167,11 @@ void Application::App_Application_Set_CloseAppOnWindowClose(bool value) {
     m_appApplicationCloseAppOnWindowClose = value;
 }
 
+void Application::App_Application_Set_WindowClose() {
+    if (m_window != nullptr)
+     glfwSetWindowShouldClose(m_window, true);
+}
+
 void Application::App_OpenGL_Set_DepthTesting(bool value) {
     m_appOpenGLDepthTesting = value;
 

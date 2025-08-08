@@ -166,6 +166,10 @@ namespace EngineCore {
         return true;
     }
 
+    bool CreateDir(const std::string& dir) {
+        return std::filesystem::create_directories(dir);
+    }
+
     #pragma endregion
 
 }

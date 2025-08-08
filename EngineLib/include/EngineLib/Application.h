@@ -65,7 +65,7 @@ public:
 	void App_Application_Set_Window_Cursor_LockHidden(bool value);
 	void App_Application_Set_Window_Cursor_Hidden(bool value);
 	void App_Application_Set_CloseAppOnWindowClose(bool value);
-	
+	void App_Application_Set_WindowClose();
 
 	void App_OpenGL_Get_Version(int& major, int& minor) const;
 	bool App_OpenGL_Get_DepthTesting() const;
