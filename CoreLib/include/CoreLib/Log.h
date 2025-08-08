@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <memory>
 #include <string>
 #include "FormatUtils.h"
 
@@ -11,6 +12,9 @@
  * placeholders. Logging levels can be enabled or disabled at runtime.
  */
 class Log {
+private:
+    class AsyncLogger;
+
 public:
     // Logging severity levels.
     enum Level : short {
@@ -49,6 +53,12 @@ public:
             }
         }
     }
+
+    /**
+    * @brief Saves the logs to a given path
+    * @param path needs to be so path/name. no extension
+    */
+    static void SaveLogs(const std::string& path);
 
     // ------------------------- Logging Methods -------------------------
 
@@ -171,13 +181,16 @@ public:
     }
 
 private:
-    Log();
+    Log() = delete;
 
     // Flags to track active log levels.
     static bool m_levelError;
     static bool m_levelWarning;
     static bool m_levelInfo;
     static bool m_levelDebug;
+
+    static bool m_saveLogs;
+    static std::unique_ptr<AsyncLogger> m_asyncLogger;
 
     /// Low-level printer implementation (console output).
     static void m_print(const std::string& message);
@@ -187,4 +200,17 @@ private:
     static void m_print(const std::string& message, Args&&... args) {
         m_print(FormatUtils::formatString(0, message, std::forward<Args>(args)...));
     }
+
+    class AsyncLogger {
+    public:
+        AsyncLogger(const std::string& filename);
+        ~AsyncLogger();
+        void Log(const std::string& message);
+
+    private:
+        void ProcessQueue();
+        // Hier nur Deklaration der Member, Implementierung im cpp
+        class Impl;
+        std::unique_ptr<Impl> pImpl;
+    };
 };

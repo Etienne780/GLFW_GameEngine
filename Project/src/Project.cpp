@@ -14,6 +14,10 @@ Project::Project()
 
 	App_OpenGL_Set_Version(3, 3);
 	App_OpenGL_Set_DepthTesting(true);
+
+	App_Application_Set_Header(false);
+
+	Log::SaveLogs("Logs/");
 }
 
 const float sensitivity = 0.1f;
@@ -31,7 +35,7 @@ Texture2D texture1;
 Matrix model, projection;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
-
+	/*
 	DefaultShader = Shader("assets\\shaders\\Default.vert", "assets\\shaders\\Default.frag");
 	texture1.Create("assets\\textures\\stone.jpg das funktioniert save");
 	
@@ -134,13 +138,8 @@ void Project::Start() {
  	Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + Vector3::back, Vector3::up);
 	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
 	DefaultShader.SetInt("texture1", 0);
-
+	*/
 	lastFrameMousePos = Input::GetMousePosition();
-
-	GameObject::Create("das");
-	GameObject::Create("dagsdfs");
-	GameObject::Create("josef");
-	GameObject::Create("nein");
 
 	auto* container = GameObject::Create("WallContainer");
 	GameObject::Create("wall1")->SetParent(container);
@@ -152,23 +151,18 @@ void Project::Start() {
 	GameObject::Create("wall4.2")->SetParent(wall4);
 
 	GameObject::Create("fd");
-	GameObject::Create("f");
-	GameObject::Create("nein");
 	Log::Print("");
 	Log::Print(GameObject::GetHierarchyString());
 
 	Log::Print("");
-	Log::Print(wall4->GetComponentListString());
-	Log::Print(wall4->GetComponent<Transform>()->GetComponentString());
-
-	GameObject::Delete(container);
-	Log::Print("new:");
-	Log::Print(GameObject::GetHierarchyString());
+	Log::Print(container->GetComponentListString());
+	Log::Print(container->GetComponent<Transform>()->GetComponentString());
 }
 
 void CameraMove();
 float t = 0;
 void Project::Update() {
+	/*
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 
@@ -198,9 +192,12 @@ void Project::Update() {
 
 	// texture1.Unbind(0);
 	// glBindVertexArray(0);
+	*/
 }
 
 void CameraMove() {
+	return;
+
 	static Vector3 lookDir;
 	static bool first = true;
 	Vector3 moveDir;

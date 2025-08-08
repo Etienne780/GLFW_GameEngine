@@ -5,16 +5,12 @@
 #include <optional_header.h>
 #endif
 
-class Project : public Application {
+class EngineViewer : public Application {
 public:
-	Project();
+	EngineViewer();
 
 protected:
 	void Start() override;
 	void Update() override;
 	void Shutdown() override;
-
-	void OnWindowResize(int newWidth, int newHeight) override;
-	void OnWindowFocusLost() override;
-	void OnWindowFocusGain() override;
 };

@@ -23,6 +23,7 @@
     <ClInclude Include="include\EngineLib\Application.h" />
     <ClInclude Include="include\EngineLib\Component.h" />
     <ClInclude Include="include\EngineLib\Components\Camera_C.h" />
+    <ClInclude Include="include\EngineLib\Components\Mesh_C.h" />
     <ClInclude Include="include\EngineLib\Components\Transform_C.h" />
     <ClInclude Include="include\EngineLib\Engine.h" />
     <ClInclude Include="include\EngineLib\GameObject.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="include\EngineLib\Time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\EngineLib\Components\Mesh_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\Transform_C.cpp" />
     <ClCompile Include="src\EngineLib\GameObjectManager.cpp" />
     <ClCompile Include="src\EngineLib\Application.cpp" />
@@ -127,6 +129,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -146,6 +149,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -163,6 +167,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -182,6 +187,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>

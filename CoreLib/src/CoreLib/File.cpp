@@ -1,4 +1,6 @@
 #include <fstream>
+#include <filesystem>
+
 #include <CoreLib\Log.h>
 #include "CoreLib\File.h" 
 
@@ -33,15 +35,20 @@ namespace EngineCore {
                 mode |= std::ios::app;
             m_ofstream.open(m_path, mode);
             if (!m_ofstream.is_open()) {
-                Log::Error("File: Could not open for writing: {}!", m_path);
-                m_fileState = FileState::FILE_CLOSE;
-                return false;
+                std::filesystem::create_directories(std::filesystem::path(m_path).parent_path());
+                m_ofstream.open(m_path, mode);
+
+                if (!m_ofstream.is_open()) {
+                    Log::Error("File: Could not open file '{}' for writing!", m_path);
+                    m_fileState = FileState::FILE_CLOSE;
+                    return false;
+                }
             }
         }
         else {
             m_ifstream.open(m_path, std::ios::in);
             if (!m_ifstream.is_open()) {
-                Log::Error("File: Could not open for reading: {}!", m_path);
+                Log::Error("File: Could not open file '{}' for reading!", m_path);
                 m_fileState = FileState::FILE_CLOSE;
                 return false;
             }
