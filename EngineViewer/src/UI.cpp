@@ -2,6 +2,7 @@
 #include "imgui\imgui_impl_glfw.h"
 #include "imgui\imgui_impl_opengl3.h"
 
+#include "UIHelper.h"
 #include "UI.h"
 
 std::unordered_map<UI::UIParamName, UI::UIParam> UI::params;
@@ -21,9 +22,9 @@ void UI::Setup(GLFWwindow* window, GLFWmonitor* primaryMonitor) {
 	m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-	// m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Docking aktivieren
-	// // Optional: Multi-Viewport (Fenster außerhalb der Haupt-Render-Fläche)
-	// m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Docking aktivieren
+	// Optional: Multi-Viewport (Fenster außerhalb der Haupt-Render-Fläche)
+	m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -39,80 +40,25 @@ void UI::Setup(GLFWwindow* window, GLFWmonitor* primaryMonitor) {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 }
-void DrawHierarchyInspector();
+
+void DrawUI() {
+	ImGui::Begin("AssetsManager");
+	ImGui::End();
+
+	ImGui::Begin("Fenster A");
+	ImGui::Text("Ich kann gedockt werden");
+	ImGui::End();
+
+	ImGui::Begin("Fenster B");
+	ImGui::Text("Mich kannst du auch andocken");
+	ImGui::End();
+}
 
 void UI::Draw() {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	// ImGui::Begin("AssetsManager");
-	// ImGui::End();
-	// 
-	// DrawHierarchyInspector();
-
-	// static bool dockspaceOpen = true;
-	// static bool opt_fullscreen_persistant = true;
-	// bool opt_fullscreen = opt_fullscreen_persistant;
-	// static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-	// 
-	// // Fenster-Flags
-	// ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-	// if (opt_fullscreen)
-	// {
-	// 	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	// 	ImGui::SetNextWindowPos(viewport->WorkPos);
-	// 	ImGui::SetNextWindowSize(viewport->WorkSize);
-	// 	ImGui::SetNextWindowViewport(viewport->ID);
-	// 	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	// 	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	// }
-	// 
-	// // Haupt-Dockspace Fenster
-	// ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
-	// 
-	// // Dockspace erzeugen
-	// ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-	// ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-	// 
-	// ImGui::End();
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void ToggleLogic(const char* name, bool& isHierarchy, bool& windowSwitched, ImVec2& lastWinPos, ImVec2& lastWinSize);
-void DrawHierarchyInspector() {
-	static bool isHierarchy = false;
-	static bool windowSwitched = false;
-	static ImVec2 lasWinPosition;
-	static ImVec2 lasWinSize;
-
-	if (windowSwitched) {
-		windowSwitched = false;
-		ImGui::SetNextWindowPos(lasWinPosition);
-		ImGui::SetNextWindowSize(lasWinSize);
-	}
-
-	if (isHierarchy) {
-		ImGui::Begin("Hierarchy");
-		ToggleLogic("Inspector", isHierarchy, windowSwitched, lasWinPosition, lasWinSize);
-		ImGui::End();
-	}
-	else {
-		ImGui::Begin("Inspector");
-		ToggleLogic("Hierarchy", isHierarchy, windowSwitched, lasWinPosition, lasWinSize);
-		ImGui::End();
-	}
-}
-
-void ToggleLogic(const char* name, bool& isHierarchy, bool& windowSwitched, ImVec2& lastWinPos, ImVec2& lastWinSize) {
-	if (ImGui::Button(name)) {
-		isHierarchy = !isHierarchy;
-		windowSwitched = true;
-	}
-	lastWinPos = ImGui::GetWindowPos();
-	lastWinSize = ImGui::GetWindowSize();
+	UIHelper::StartDraw();
+	UIHelper::CreateDockingArea();
+	DrawUI();
+	UIHelper::EndDraw();
 }
 
 void UI::Shutdown() {

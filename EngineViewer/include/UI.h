@@ -13,7 +13,7 @@ public:
     enum UIParamName;
 
 	static void Setup(GLFWwindow* window, GLFWmonitor* primaryMonitor);
-	static void Draw();
+    static void Draw();
 	static void Shutdown();
 
     template<typename T>

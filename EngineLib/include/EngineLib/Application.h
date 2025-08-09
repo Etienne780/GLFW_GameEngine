@@ -17,6 +17,9 @@ namespace EngineCore {
 class Application {
 	friend class EngineCore::Engine;
 
+protected:
+	Application(std::string name, std::string version);
+
 public:
 	enum class WindowState {
 		Minimized,
@@ -26,7 +29,6 @@ public:
 		Hidden
 	};
 
-	Application(std::string name, std::string version);
 	virtual ~Application() = default;
 
 	virtual void Start();
