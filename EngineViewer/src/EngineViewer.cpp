@@ -1,8 +1,10 @@
-#include "EngineViewer.h"
+#include "EngineViewerDataStruct.h"
 #include "UI.h"
+#include "EngineViewer.h"
 
 using namespace EngineCore;
 
+EngineViewerData engineViewerData;
 EngineViewer::EngineViewer()
 	: Application("Engine Viewer", "1.0.0") {
 
@@ -18,15 +20,18 @@ EngineViewer::EngineViewer()
 	// Log::SaveLogs("Logs/");
 }
 
+
 void EngineViewer::Start() {
-	UI::Setup(App_Application_Get_Window(), glfwGetPrimaryMonitor());
+	UI::Setup(&engineViewerData, App_Application_Get_Window(), glfwGetPrimaryMonitor());
 }
 
 void EngineViewer::Update() {
     if (Input::KeyJustPressed(GLFW_KEY_ESCAPE))
         App_Application_Set_WindowClose();
 
-	UI::Draw();
+	UI::StartDraw();
+	// RenderGame
+	UI::EndDraw();// Renders UI
 }
 
 void EngineViewer::Shutdown() {

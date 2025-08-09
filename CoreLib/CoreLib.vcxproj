@@ -173,6 +173,7 @@
     <ClCompile Include="src\CoreLib\Math\Vector4.cpp" />
     <ClCompile Include="src\CoreLib\stb_image.cpp" />
     <ClCompile Include="src\CoreLib\TimeUtils.cpp" />
+    <ClCompile Include="src\CoreLib\tinyfiledialogs.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreLib\ColorUtils.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="include\CoreLib\Math\Vector4.h" />
     <ClInclude Include="include\CoreLib\stb_image.h" />
     <ClInclude Include="include\CoreLib\TimeUtils.h" />
+    <ClInclude Include="include\CoreLib\tinyfiledialogs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

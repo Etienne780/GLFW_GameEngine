@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\UIHelper.cpp" />
-    <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\imgui\imgui.cpp" />
     <ClCompile Include="src\imgui\imgui_demo.cpp" />
     <ClCompile Include="src\imgui\imgui_draw.cpp" />
@@ -32,11 +31,10 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\EngineViewer.cpp" />
     <ClCompile Include="src\UI.cpp" />
-    <ClCompile Include="src\Windows\AssetManager_W.cpp" />
-    <ClCompile Include="src\Windows\EngineWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\EngineViewer.h" />
+    <ClInclude Include="include\EngineViewerDataStruct.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
     <ClInclude Include="include\imgui\imgui.h" />
     <ClInclude Include="include\imgui\imgui_impl_glfw.h" />
@@ -49,10 +47,6 @@
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="include\UI.h" />
     <ClInclude Include="include\UIHelper.h" />
-    <ClInclude Include="include\Window.h" />
-    <ClInclude Include="include\Windows\AllWindows.h" />
-    <ClInclude Include="include\Windows\AssetManager_W.h" />
-    <ClInclude Include="include\Windows\EngineWindow.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

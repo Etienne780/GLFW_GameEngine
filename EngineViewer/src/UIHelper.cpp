@@ -2,8 +2,12 @@
 #include "imgui\imgui_impl_glfw.h"
 #include "imgui\imgui_impl_opengl3.h"
 
+#include "EngineViewerDataStruct.h"
 #include "UIHelper.h"
+
+
 namespace UIHelper {
+	ImGuiIO* imGuiIo;
 	void StartDraw() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -13,6 +17,35 @@ namespace UIHelper {
 	void EndDraw() {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void SetupImGui(GLFWwindow* window, GLFWmonitor* primaryMonitor) {
+		float windowScaler = 1.4;
+		float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(primaryMonitor);
+		main_scale *= windowScaler;
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		imGuiIo = &ImGui::GetIO(); (void)imGuiIo;
+		imGuiIo->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+		imGuiIo->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+		imGuiIo->ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Docking aktivieren
+		// Optional: Multi-Viewport (Fenster außerhalb der Haupt-Render-Fläche)
+		imGuiIo->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
+
+		// Setup scaling
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.ScaleAllSizes(main_scale);// Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+		style.FontScaleDpi = main_scale;
+
+		const char* glsl_version = "#version 150";
+		// Setup Platform/Renderer backends
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init(glsl_version);
 	}
 
 	void CreateDockingArea() {
@@ -41,5 +74,36 @@ namespace UIHelper {
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
 		ImGui::End();
+	}
+
+	void DrawProjectSelectPopUp(EngineViewerData* engineViewerData) {
+		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 130), ImVec2(FLT_MAX, FLT_MAX));
+		if (ImGui::BeginPopupModal("Select ProjectPath", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));  // Abstand oben
+
+			ImGui::Text("Path: %s", engineViewerData->projectPath.c_str());
+
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+			// Buttons mittig mit Abstand
+			float windowWidth = ImGui::GetWindowWidth();
+			float buttonWidth = 100.0f;
+			float buttonSpacing = 20.0f;
+			float buttonsTotalWidth = buttonWidth * 2 + buttonSpacing;
+			ImGui::SetCursorPosX((windowWidth - buttonsTotalWidth) * 0.5f);
+
+			if (ImGui::Button("Select", ImVec2(buttonWidth, 0))) {
+				// Select logic
+			}
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + buttonSpacing);
+			if (ImGui::Button("Confirm", ImVec2(buttonWidth, 0)) && !engineViewerData->projectPath.empty()) {
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));  // Abstand unten
+
+			ImGui::EndPopup();
+		}
 	}
 }
