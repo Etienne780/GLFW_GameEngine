@@ -1,6 +1,7 @@
 #include <fstream>
 #include <filesystem>
 
+#include "CoreLib\tinyfiledialogs.h"
 #include <CoreLib\Log.h>
 #include "CoreLib\File.h" 
 
@@ -166,8 +167,57 @@ namespace EngineCore {
         return true;
     }
 
-    bool CreateDir(const std::string& dir) {
+    bool  File::CreateDir(const std::string& dir) {
         return std::filesystem::create_directories(dir);
+    }
+
+    std::string File::OpenFileDialog(const std::string& title, const std::string& defaultPath) {
+        static const char filter[] = "All Files\0*.*\0";
+        return OpenFileDialog(title, defaultPath, filter);
+    }
+
+    std::string File::OpenFileDialog(const std::string& title, const std::string& defaultPath, const char* filter) {
+        const char* filterPatterns[1] = { filter ? filter + strlen("All Files") + 1 : "*.*" };
+
+        const char* result = tinyfd_openFileDialog(
+            title.c_str(),
+            defaultPath.empty() ? nullptr : defaultPath.c_str(),
+            1,
+            filterPatterns,
+            nullptr,
+            0
+        );
+
+        return result ? std::string(result) : std::string();
+    }
+
+    std::string File::ConvertFilterString(const std::string& extensions) {
+        std::string result = "Custom Files";
+        result.push_back('\0');
+        std::string pattern;
+
+        size_t start = 0;
+        while (start < extensions.size()) {
+            size_t end = extensions.find(',', start);
+            if (end == std::string::npos) end = extensions.size();
+
+            std::string ext = extensions.substr(start, end - start);
+            // Trim whitespace
+            ext.erase(0, ext.find_first_not_of(" \t"));
+            ext.erase(ext.find_last_not_of(" \t") + 1);
+
+            if (!ext.empty()) {
+                if (!pattern.empty()) pattern += ';';
+                // Ensure extension starts with '*'
+                if (ext[0] != '*')
+                    pattern += '*';
+                pattern += ext;
+            }
+            start = end + 1;
+        }
+        result += pattern;
+        result.push_back('\0');
+        return result;
     }
 
     #pragma endregion

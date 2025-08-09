@@ -120,6 +120,40 @@ namespace EngineCore {
          */
         static bool CreateDir(const std::string& dir);
 
+        /**
+        * @brief Opens a file open dialog with a given window title and default path.
+        *        Uses a default filter to show all files.
+        *
+        * @param title The title of the file open dialog window.
+        * @param defaultPath The initial directory or file path shown in the dialog.
+        * @return std::string The full path of the selected file, or empty string if cancelled.
+        */
+        static std::string OpenFileDialog(const std::string& title, const std::string& defaultPath);
+
+        /**
+        * @brief Opens a file open dialog with a given window title, default path and file filter.
+        *        The filter is a null-separated list of description and patterns, e.g.:
+        *        "All Files\0*.*\0Text Files\0*.txt\0"
+        *
+        * @param title The title of the file open dialog window.
+        * @param defaultPath The initial directory or file path shown in the dialog.
+        * @param filter A null-separated C-string defining file filters. See tinyfiledialogs docs for details or use the File::ConvertFilterString func.
+        * @return std::string The full path of the selected file, or empty string if cancelled.
+        */
+        static std::string OpenFileDialog(const std::string& title, const std::string& defaultPath = "", const char* filter = "All Files\0*.*\0");
+
+        /**
+        * @brief Converts a simplified filter string like ".txt, .png" into the null-separated
+        *        filter string required by tinyfiledialogs.
+        *
+        * This creates a filter description "Custom Files" with all extensions combined.
+        * Example: ".txt, .png" -> "Custom Files\0*.txt;*.png\0"
+        *
+        * @param extensions Comma-separated extensions, e.g. ".txt, .png, .jpg"
+        * @return std::string Filter string in tinyfiledialogs format.
+        */
+        static std::string ConvertFilterString(const std::string& extensions);
+
     private:
         std::string m_path;         // Path to the file
         std::ifstream m_ifstream;   // Input file stream (for reading)
