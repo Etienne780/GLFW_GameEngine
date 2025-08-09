@@ -4,7 +4,12 @@
 
 #include "UI.h"
 
-std::unordered_map<std::string, UI::UIParam> UI::params;
+std::unordered_map<UI::UIParamName, UI::UIParam> UI::params;
+
+enum UI::UIParamName {
+	PARAM = 0,
+	PARAMda
+};
 
 ImGuiIO* m_io;
 float d = 10.0f;
@@ -15,6 +20,10 @@ void UI::Setup(GLFWwindow* window, GLFWmonitor* primaryMonitor) {
 	m_io = &ImGui::GetIO(); (void)m_io;
 	m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Docking aktivieren
+	// // Optional: Multi-Viewport (Fenster außerhalb der Haupt-Render-Fläche)
+	// m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -37,10 +46,36 @@ void UI::Draw() {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("AssetsManager");
-	ImGui::End();
+	// ImGui::Begin("AssetsManager");
+	// ImGui::End();
+	// 
+	// DrawHierarchyInspector();
 
-	DrawHierarchyInspector();
+	// static bool dockspaceOpen = true;
+	// static bool opt_fullscreen_persistant = true;
+	// bool opt_fullscreen = opt_fullscreen_persistant;
+	// static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+	// 
+	// // Fenster-Flags
+	// ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	// if (opt_fullscreen)
+	// {
+	// 	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	// 	ImGui::SetNextWindowPos(viewport->WorkPos);
+	// 	ImGui::SetNextWindowSize(viewport->WorkSize);
+	// 	ImGui::SetNextWindowViewport(viewport->ID);
+	// 	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	// 	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	// }
+	// 
+	// // Haupt-Dockspace Fenster
+	// ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+	// 
+	// // Dockspace erzeugen
+	// ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+	// ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	// 
+	// ImGui::End();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

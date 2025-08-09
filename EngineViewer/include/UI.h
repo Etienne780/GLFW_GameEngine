@@ -10,21 +10,23 @@ struct GLFWmonitor;
 
 class UI {
 public:
+    enum UIParamName;
+
 	static void Setup(GLFWwindow* window, GLFWmonitor* primaryMonitor);
 	static void Draw();
 	static void Shutdown();
 
     template<typename T>
-    static void AddParam(const std::string& name, T* value) {
-        params.emplace(name, UIParam(value));
+    static void AddParam(UIParamName paramName, T* value) {
+        params.emplace(paramName, UIParam(value));
     }
 
     template<typename T>
-    static bool TryGetParam(const std::string& name, T** value) {
-        auto it = params.find(name);
+    static bool TryGetParam(UIParamName paramName, T* value) {
+        auto it = params.find(paramName);
         if (it != params.end()) {
             if (it->second.type == std::type_index(typeid(T))) {
-                *value = static_cast<T*>(it->second.ptr);
+                *value = *static_cast<T*>(it->second.ptr);
                 return true;
             }
             else {
@@ -33,7 +35,7 @@ public:
             }
         }
 
-        Log::Warn("Parameter '{}' not found!", name);
+        Log::Warn("Parameter (ID: {}) doesn't exist! ", static_cast<int>(paramName));
         return false;
     }
 
@@ -49,5 +51,5 @@ private:
         }
     };
 
-    static std::unordered_map<std::string, UIParam> params;
+    static std::unordered_map<UIParamName, UIParam> params;
 };
