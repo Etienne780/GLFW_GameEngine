@@ -1,10 +1,12 @@
 #pragma once
-#include "Window.h"
+#include "EngineWindow.h"
 
-class AssetManagerWindow : public Window {
+class AssetManagerWindow : public EngineWindow {
 public:
 	AssetManagerWindow();
 
-private:
+	void DrawInter() override;
 
+private:
+	
 };

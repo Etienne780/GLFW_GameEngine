@@ -32,6 +32,8 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\EngineViewer.cpp" />
     <ClCompile Include="src\UI.cpp" />
+    <ClCompile Include="src\Windows\AssetManager_W.cpp" />
+    <ClCompile Include="src\Windows\EngineWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\EngineViewer.h" />
@@ -48,6 +50,9 @@
     <ClInclude Include="include\UI.h" />
     <ClInclude Include="include\UIHelper.h" />
     <ClInclude Include="include\Window.h" />
+    <ClInclude Include="include\Windows\AllWindows.h" />
+    <ClInclude Include="include\Windows\AssetManager_W.h" />
+    <ClInclude Include="include\Windows\EngineWindow.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
