@@ -120,27 +120,44 @@ namespace EngineCore {
          */
         static bool CreateDir(const std::string& dir);
 
-        /**
-        * @brief Opens a file open dialog with a given window title and default path.
-        *        Uses a default filter to show all files.
-        *
-        * @param title The title of the file open dialog window.
-        * @param defaultPath The initial directory or file path shown in the dialog.
-        * @return std::string The full path of the selected file, or empty string if cancelled.
-        */
-        static std::string OpenFileDialog(const std::string& title, const std::string& defaultPath);
+        static std::string SelectFolderDialog(const std::string& title, const std::string& defaultPath = "");
 
         /**
-        * @brief Opens a file open dialog with a given window title, default path and file filter.
-        *        The filter is a null-separated list of description and patterns, e.g.:
-        *        "All Files\0*.*\0Text Files\0*.txt\0"
+        * @brief Opens a native file open dialog with an optional file filter.
+        *        By default, the filter is set to "All Files".
+        * 
+        * Example:
+        * @code
+        * std::string path = File::OpenFileDialog(
+        *     "Select document",
+        *     "Text Files\0*.txt;*.md\0"
+        * );
+        * @endcode
+        * 
+        * @param title The title of the file open dialog window.
+        * @param filter A null-separated C-string defining file filters. See tinyfiledialogs documentation for details, or use File::ConvertFilterString().
+        * @return std::string The full path of the selected file, or empty string if cancelled.
+        */
+        static std::string OpenFileDialog(const std::string& title, const char* filter = "All Files\0*.*\0");
+
+        /**
+        * @brief Opens a native file open dialog with an initial directory and file filter.
+        *
+        * Example:
+        * @code
+        * std::string path = File::OpenFileDialog(
+        *     "Select document",
+        *     "Text Files\0*.txt;*.md\0",
+        *     "C:/Users/Documents"
+        * );
+        * @endcode
         *
         * @param title The title of the file open dialog window.
         * @param defaultPath The initial directory or file path shown in the dialog.
-        * @param filter A null-separated C-string defining file filters. See tinyfiledialogs docs for details or use the File::ConvertFilterString func.
+        * @param filter A null-separated C-string defining file filters. Can be nullptr to show all files. See tinyfiledialogs documentation for details, or use File::ConvertFilterString().
         * @return std::string The full path of the selected file, or empty string if cancelled.
         */
-        static std::string OpenFileDialog(const std::string& title, const std::string& defaultPath = "", const char* filter = "All Files\0*.*\0");
+        static std::string OpenFileDialog(const std::string& title, const char* filter, const std::string& defaultPath);
 
         /**
         * @brief Converts a simplified filter string like ".txt, .png" into the null-separated
@@ -154,11 +171,21 @@ namespace EngineCore {
         */
         static std::string ConvertFilterString(const std::string& extensions);
 
+        /**
+         * @brief Returns the directory path where the application executable resides.
+         *
+         * This function works across Windows, Linux, and macOS.
+         * @return Absolute path to the executable's directory, without a trailing slash.
+         */
+        static std::string GetExecutableDir();
+
     private:
         std::string m_path;         // Path to the file
         std::ifstream m_ifstream;   // Input file stream (for reading)
         std::ofstream m_ofstream;   // Output file stream (for writing)
         FileState m_fileState = FileState::FILE_CLOSE; // Current state of the file
+
+        static std::string GetExecutablePath();
     };
 
 }

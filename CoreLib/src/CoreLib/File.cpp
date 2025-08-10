@@ -1,3 +1,13 @@
+#ifdef _WIN32
+#include <windows.h>
+#elif __linux__
+#include <unistd.h>
+#include <limits.h>
+#elif __APPLE__
+#include <mach-o/dyld.h>
+#include <limits.h>
+#endif
+
 #include <fstream>
 #include <filesystem>
 
@@ -151,6 +161,28 @@ namespace EngineCore {
         m_path = path;
         return *this;
     }
+    
+    std::string File::GetExecutablePath() {
+#ifdef _WIN32
+        char buffer[MAX_PATH];
+        DWORD size = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+        return std::string(buffer, size);
+#elif __linux__
+        char buffer[PATH_MAX];
+        ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+        if (len != -1) {
+            buffer[len] = '\0';
+            return std::string(buffer);
+        }
+#elif __APPLE__
+        char buffer[PATH_MAX];
+        uint32_t size = sizeof(buffer);
+        if (_NSGetExecutablePath(buffer, &size) == 0) {
+            return std::string(buffer);
+        }
+#endif
+        return {};
+    }
 
     #pragma region static
     
@@ -171,19 +203,36 @@ namespace EngineCore {
         return std::filesystem::create_directories(dir);
     }
 
-    std::string File::OpenFileDialog(const std::string& title, const std::string& defaultPath) {
-        static const char filter[] = "All Files\0*.*\0";
-        return OpenFileDialog(title, defaultPath, filter);
+    std::string File::SelectFolderDialog(const std::string& title, const std::string& defaultPath) {
+        const char* result = tinyfd_selectFolderDialog(
+            title.c_str(),
+            defaultPath.empty() ? nullptr : defaultPath.c_str()
+        );
+        return result ? std::string(result) : std::string();
     }
 
-    std::string File::OpenFileDialog(const std::string& title, const std::string& defaultPath, const char* filter) {
-        const char* filterPatterns[1] = { filter ? filter + strlen("All Files") + 1 : "*.*" };
+    std::string File::OpenFileDialog(const std::string& title, const char* filter) {
+        return OpenFileDialog(title, nullptr, filter);
+    }
+
+    std::string File::OpenFileDialog(const std::string& title, const char* filter, const std::string& defaultPath) {
+        const char* filterPatterns[1] = { nullptr };
+        int patternCount = 0;
+
+        if (filter && std::strlen(filter) > 0) {
+            // Angenommen, filter ist im Format "Description\0*.ext\0"
+            // -> Zweiten Teil extrahieren
+            const char* pattern = filter;
+            pattern += std::strlen(pattern) + 1; // Beschreibung überspringen
+            filterPatterns[0] = pattern;
+            patternCount = 1;
+        }
 
         const char* result = tinyfd_openFileDialog(
             title.c_str(),
             defaultPath.empty() ? nullptr : defaultPath.c_str(),
-            1,
-            filterPatterns,
+            patternCount,
+            patternCount > 0 ? filterPatterns : nullptr,
             nullptr,
             0
         );
@@ -218,6 +267,10 @@ namespace EngineCore {
         result += pattern;
         result.push_back('\0');
         return result;
+    }
+
+    std::string File::GetExecutableDir() {
+        return std::filesystem::path(GetExecutablePath()).parent_path().string();
     }
 
     #pragma endregion
