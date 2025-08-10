@@ -1,7 +1,6 @@
 #include "EngineLib\Application.h"
 
 #include "EngineLib\Shader.h"
-
 #include "CoreLib\Log.h"
 #include "CoreLib\Math.h"
 
