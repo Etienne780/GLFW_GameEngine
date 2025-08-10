@@ -2,6 +2,8 @@
 #include "imgui\imgui_impl_glfw.h"
 #include "imgui\imgui_impl_opengl3.h"
 
+#include "CoreLib\File.h"
+#include "EngineLib\Application.h"
 #include "EngineViewerDataStruct.h"
 #include "UIHelper.h"
 
@@ -74,26 +76,42 @@ namespace UIHelper {
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
 		ImGui::End();
+
 	}
 
+	const float popMinWidth = 300;
+	const float popMinHeight = 110;
+	float popWidth = popMinWidth;
+	float popHeight = popMinHeight;
 	void DrawProjectSelectPopUp(EngineViewerData* engineViewerData) {
-		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 130), ImVec2(FLT_MAX, FLT_MAX));
+
+		{
+			// center window
+			Application* app = Application::Get();
+			int w = app->App_Application_Get_Window_Width();
+			int h = app->App_Application_Get_Window_Height();
+
+			ImGui::SetNextWindowPos(ImVec2(w/2 - popWidth/2, h/2 - popHeight/2));
+		}
+
+		ImGui::SetNextWindowSizeConstraints(ImVec2(popMinWidth, popMinHeight), ImVec2(FLT_MAX, FLT_MAX));
 		if (ImGui::BeginPopupModal("Select ProjectPath", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-			ImGui::Dummy(ImVec2(0.0f, 10.0f));  // Abstand oben
+			ImGui::Dummy(ImVec2(0.0f, 2.0f));
 
 			ImGui::Text("Path: %s", engineViewerData->projectPath.c_str());
 
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 			// Buttons mittig mit Abstand
-			float windowWidth = ImGui::GetWindowWidth();
+			popWidth = ImGui::GetWindowWidth();
+			popHeight = ImGui::GetWindowHeight();
 			float buttonWidth = 100.0f;
 			float buttonSpacing = 20.0f;
 			float buttonsTotalWidth = buttonWidth * 2 + buttonSpacing;
-			ImGui::SetCursorPosX((windowWidth - buttonsTotalWidth) * 0.5f);
+			ImGui::SetCursorPosX((popWidth - buttonsTotalWidth) * 0.5f);
 
 			if (ImGui::Button("Select", ImVec2(buttonWidth, 0))) {
-				// Select logic
+				engineViewerData->projectPath = File::SelectFolderDialog("Select project folder");
 			}
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + buttonSpacing);
