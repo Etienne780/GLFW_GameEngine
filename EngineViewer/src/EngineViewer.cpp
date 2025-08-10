@@ -20,7 +20,6 @@ EngineViewer::EngineViewer()
 	// Log::SaveLogs("Logs/");
 }
 
-
 void EngineViewer::Start() {
 	UI::Setup(&engineViewerData, App_Application_Get_Window(), glfwGetPrimaryMonitor());
 }

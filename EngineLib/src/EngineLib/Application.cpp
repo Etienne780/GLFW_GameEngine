@@ -106,6 +106,10 @@ const Vector3& Application::App_OpenGL_Get_BackgroundColor() const {
     return m_appOpenGLBackgroundColor;
 }
 
+bool Application::App_OpenGL_Get_ManuallyClearBackground() const {
+    return m_appOpenGLManuallyClearBackground;
+}
+
 #pragma endregion
 
 #pragma region set_funcs
@@ -198,9 +202,24 @@ void Application::App_OpenGL_Set_BackgroundColor(const Vector3& color) {
     m_appOpenGLBackgroundColor = color;
 }
 
+void Application::App_OpenGL_Set_ManuallyClearBackground(bool value) {
+    m_appOpenGLManuallyClearBackground = value;
+}
+
 #pragma endregion
 
 #pragma region other_funcs
+
+void Application::App_OpenGL_BackgroundColor() const {
+    if (m_window != nullptr) {
+        Log::Debug("Cleare background2");
+        glClearColor(m_appOpenGLBackgroundColor.x,
+            m_appOpenGLBackgroundColor.y,
+            m_appOpenGLBackgroundColor.z,
+            1.0f);
+        glClear(((m_appOpenGLDepthTesting) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
+    }
+}
 
 void Application::App_Shader_Bind(EngineCore::Shader* shader) {
     if (shader == nullptr || m_window == nullptr) return;

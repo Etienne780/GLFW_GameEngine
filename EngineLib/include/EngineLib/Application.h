@@ -73,6 +73,7 @@ public:
 	bool App_OpenGL_Get_DepthTesting() const;
 	void App_OpenGL_Get_BackgroundColor(float& r, float& g, float& b) const;
 	const Vector3& App_OpenGL_Get_BackgroundColor() const;
+	bool App_OpenGL_Get_ManuallyClearBackground() const;
 
 	void App_OpenGL_Set_Version(int major, int minor);
 	// cant be called in the constructor. needs a window
@@ -80,6 +81,9 @@ public:
 	void App_OpenGL_Set_BackgroundColor(float r, float g, float b);
 	void App_OpenGL_Set_BackgroundColor(float brightness);
 	void App_OpenGL_Set_BackgroundColor(const Vector3& color);
+	void App_OpenGL_Set_ManuallyClearBackground(bool value);
+
+	void App_OpenGL_BackgroundColor() const;
 
 	// needs a window
 	void App_Shader_Bind(EngineCore::Shader* shader);
@@ -111,6 +115,7 @@ private:
 	int m_appOpenGLVersionMinor = 3;
 	bool m_appOpenGLDepthTesting = false;
 	Vector3 m_appOpenGLBackgroundColor;
+	bool m_appOpenGLManuallyClearBackground = false;
 
 	EngineCore::Shader* m_appShaderCurrentShader = nullptr;
 
