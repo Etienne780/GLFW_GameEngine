@@ -13,19 +13,18 @@
 #include <CoreLib\ConversionUtils.h>
 #include <CoreLib\stb_image.h>
 
+#include "EngineLib\EngineTypes.h"
 #include "EngineLib\Application.h"
 #include "EngineLib\Time.h"
 #include "EngineLib\Input.h"
 #include "EngineLib\Shader.h"
 #include "EngineLib\Texture2D.h"
+#include "EngineLib\Scene.h"
 #include "EngineLib\GameObjectManager.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\AllComponents.h"
 
 namespace EngineCore {
-
-	constexpr int ENGINE_SUCCESS = 0;
-	constexpr int ENGINE_FAILURE = 1;
 
 	class Engine {
 	public:

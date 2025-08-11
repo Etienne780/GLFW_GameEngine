@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "Components/Transform_C.h"
+#include "EngineTypes.h"
 
 namespace EngineCore {
 
@@ -46,14 +47,15 @@ namespace EngineCore {
 		GameObject* Detach();
 
 	private:
-		GameObject(const std::string& name);
+		GameObject(unsigned int id, const std::string& name);
 
-		unsigned int m_id = -1;
+		unsigned int m_id = ENGINE_INVALID_ID;
 		std::string m_name;
 		GameObject* m_parentObjPtr = nullptr;
 		std::vector<GameObject*> m_childObjPtrs;
 
 		Transform m_transform;
+
 		std::vector<std::unique_ptr<Component>> m_components;
 
 		void RemoveChild(GameObject* child);

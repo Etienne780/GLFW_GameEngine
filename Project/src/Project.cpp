@@ -35,7 +35,7 @@ Texture2D texture1;
 Matrix model, projection;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
-	/*
+	
 	DefaultShader = Shader("assets\\shaders\\Default.vert", "assets\\shaders\\Default.frag");
 	texture1.Create("assets\\textures\\stone.jpg das funktioniert save");
 	
@@ -138,7 +138,7 @@ void Project::Start() {
  	Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + Vector3::back, Vector3::up);
 	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
 	DefaultShader.SetInt("texture1", 0);
-	*/
+	
 	lastFrameMousePos = Input::GetMousePosition();
 
 	auto* container = GameObject::Create("WallContainer");
@@ -162,10 +162,10 @@ void Project::Start() {
 void CameraMove();
 float t = 0;
 void Project::Update() {
-	/*
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
-
+	
+	
 	if (Input::KeyJustPressed(GLFW_KEY_K)) {
 		App_Application_Set_Window_Resizable(!App_Application_Get_Window_Resizable());
 	}
@@ -184,15 +184,15 @@ void Project::Update() {
 	CameraMove();
 
 	App_Shader_Bind(&DefaultShader);
-	// texture1.Bind(0);
-	// DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
-	// glBindVertexArray(VAO);
-	// glDrawArrays(GL_TRIANGLES, 0, 36);
-	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	// texture1.Unbind(0);
-	// glBindVertexArray(0);
-	*/
+	texture1.Bind(0);
+	DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
+	texture1.Unbind(0);
+	glBindVertexArray(0);
+	
 }
 
 void CameraMove() {

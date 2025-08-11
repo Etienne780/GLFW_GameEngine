@@ -1,0 +1,72 @@
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
+#include "CoreLib\Log.h"
+#include "EngineLib\Vertex.h"
+
+#include "EngineLib\Mesh.h"
+
+
+namespace EngineCore {
+
+    Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) 
+        : m_vertices(vertices), m_indices(indices) {
+        m_indexCount = static_cast<GLsizei>(m_indices.size());
+        Create();
+    }
+
+    Mesh::~Mesh() {
+       Delete();
+    }
+
+    void Mesh::Draw() const {
+        if (!m_exists) {
+            Log::Warn("Cant draw mesh, mesh is was not Created!");
+            return;
+        }
+        glBindVertexArray(m_vao);
+        glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
+    }
+
+    void Mesh::Create() {
+        if (m_exists) return;
+
+        glGenVertexArrays(1, &m_vao);
+        glGenBuffers(1, &m_vbo);
+        glGenBuffers(1, &m_ebo);
+
+        glBindVertexArray(m_vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), m_indices.data(), GL_STATIC_DRAW);
+
+        // Attribute setzen (Position, UV, Normals etc.)
+        GLsizei vertexSize = 5 * sizeof(float);
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
+        glEnableVertexAttribArray(0);
+        // UV attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        glBindVertexArray(0);
+
+        m_exists = true;
+    }
+
+    void Mesh::Delete() {
+        if (!m_exists) return;
+
+        glDeleteVertexArrays(1, &m_vao);
+        glDeleteBuffers(1, &m_vbo);
+        glDeleteBuffers(1, &m_ebo);
+
+        m_exists = false;
+    }
+
+}

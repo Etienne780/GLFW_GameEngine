@@ -4,8 +4,8 @@
 
 namespace EngineCore {
 
-	GameObject::GameObject(const std::string& name)
-		: m_name(name) {
+	GameObject::GameObject(unsigned int id, const std::string& name)
+		: m_id(id), m_name(name) {
 	}
 
 	GameObject::~GameObject() {
@@ -21,16 +21,18 @@ namespace EngineCore {
 	}
 
 	GameObject* GameObject::Create(const std::string& name) {
-		GameObject* go = new GameObject(name);
-		go->m_id = GameObjectManager::GetNewUniqueIdentifier();
 		#ifndef NDEBUG
 		if (!GameObjectManager::IsNameUnique(name)) {
-			Log::Warn("GameObject: ID '{}' name '{}' is not unique", go->m_id, name);
+			Log::Warn("GameObject: Name '{}' is not unique", name);
 		}
 		#endif
-		GameObjectManager::AddGameObject(go);
-		return go;
+		auto go = std::make_unique<GameObject>(GameObjectManager::GetNewUniqueIdentifier(), name);
+		GameObject* goPtr = go.get();
+		GameObjectManager::AddGameObject(std::move(go));
+		return goPtr;
 	}
+
+	 
 
 	bool GameObject::Delete(GameObject* gameObjectPtr) {
 		return GameObjectManager::DeleteGameObject(gameObjectPtr);

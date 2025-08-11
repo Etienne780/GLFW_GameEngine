@@ -28,9 +28,11 @@ void EngineViewer::Update() {
     if (Input::KeyJustPressed(GLFW_KEY_ESCAPE))
         App_Application_Set_WindowClose();
 
-	UI::StartDraw();
-	// RenderGame
-	UI::EndDraw();// Renders UI
+
+
+	// UI::StartDraw();
+	// // RenderGame
+	// UI::EndDraw();// Renders UI
 }
 
 void EngineViewer::Shutdown() {

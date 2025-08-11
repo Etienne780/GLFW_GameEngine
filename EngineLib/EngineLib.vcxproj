@@ -23,18 +23,24 @@
     <ClInclude Include="include\EngineLib\Application.h" />
     <ClInclude Include="include\EngineLib\Component.h" />
     <ClInclude Include="include\EngineLib\Components\Camera_C.h" />
-    <ClInclude Include="include\EngineLib\Components\Mesh_C.h" />
+    <ClInclude Include="include\EngineLib\Components\MeshRenderer_C.h" />
     <ClInclude Include="include\EngineLib\Components\Transform_C.h" />
     <ClInclude Include="include\EngineLib\Engine.h" />
+    <ClInclude Include="include\EngineLib\EngineTypes.h" />
     <ClInclude Include="include\EngineLib\GameObject.h" />
     <ClInclude Include="include\EngineLib\GameObjectManager.h" />
     <ClInclude Include="include\EngineLib\Input.h" />
+    <ClInclude Include="include\EngineLib\Mesh.h" />
+    <ClInclude Include="include\EngineLib\ResourceManager.h" />
+    <ClInclude Include="include\EngineLib\Scene.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
+    <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\EngineLib\Components\Mesh_C.cpp" />
+    <ClCompile Include="src\EngineLib\Mesh.cpp" />
+    <ClCompile Include="src\EngineLib\Components\MeshRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\Transform_C.cpp" />
     <ClCompile Include="src\EngineLib\GameObjectManager.cpp" />
     <ClCompile Include="src\EngineLib\Application.cpp" />
@@ -44,9 +50,12 @@
     <ClCompile Include="src\EngineLib\GameObject.cpp" />
     <ClCompile Include="src\EngineLib\glad.c" />
     <ClCompile Include="src\EngineLib\Input.cpp" />
+    <ClCompile Include="src\EngineLib\ResourceManager.cpp" />
+    <ClCompile Include="src\EngineLib\Scene.cpp" />
     <ClCompile Include="src\EngineLib\Shader.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />
     <ClCompile Include="src\EngineLib\Time.cpp" />
+    <ClCompile Include="src\EngineLib\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl" />

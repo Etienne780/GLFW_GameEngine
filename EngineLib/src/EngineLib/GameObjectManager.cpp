@@ -1,5 +1,6 @@
 ﻿#include "CoreLib\Log.h"
 
+#include "EngineLib\EngineTypes.h"
 #include "EngineLib\GameObjectManager.h"
 
 namespace EngineCore {
@@ -9,14 +10,14 @@ namespace EngineCore {
 
 	GameObjectManager::GameObjectManager() {}
 
-	void GameObjectManager::AddGameObject(GameObject* gameObjectPtr) {
+	void GameObjectManager::AddGameObject(std::unique_ptr<GameObject> gameObject) {
 		#ifndef NDEBUG
-		if (gameObjectPtr == nullptr) {
+		if (!gameObject) {
 			Log::Warn("GameObjectManager: could not add gameObject, ptr is nullptr!");
 			return;
 		}
 		#endif
-		m_gameObjects.emplace_back(std::unique_ptr<GameObject>(gameObjectPtr));
+		m_gameObjects.emplace_back(std::move(gameObject));
 	}
 
 	#pragma region Delete
@@ -88,6 +89,10 @@ namespace EngineCore {
 		return false;
 	}
 
+	static void CleareGameObjects() {
+		
+	}
+
 	#pragma endregion
 
 	#pragma region Get
@@ -146,7 +151,11 @@ namespace EngineCore {
 	void GameObjectManager::BuildHierarchyString(const GameObject* obj, std::string& outStr, int level) {
 		outStr.append("|- ");
 		outStr.append(obj->GetName());
-		outStr.append(FormatUtils::formatString(" ({})", obj->GetID()));
+		unsigned int id = obj->GetID();
+		if (id == ENGINE_INVALID_ID)
+			outStr.append("(INVALID_ID)");
+		else 
+			outStr.append(FormatUtils::formatString(" ({})", id));
 		outStr.append("\n");
 
 		// Adds Children recursively
