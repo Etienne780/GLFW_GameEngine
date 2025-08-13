@@ -141,10 +141,9 @@ void Project::Start() {
 		projection = Perspective(ConversionUtils::ToRadians(cameraFOV), static_cast<float>(App_Application_Get_Window_Width() / App_Application_Get_Window_Height()), 0.1f, 100.0f);
 	}
 
-	App_Shader_Bind(&DefaultShader);
+	DefaultShader.Bind();
  	Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + Vector3::back, Vector3::up);
 	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
-	DefaultShader.SetInt("texture1", 0);
 	
 	lastFrameMousePos = Input::GetMousePosition();
 
@@ -174,7 +173,6 @@ void Project::Update() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 	
-	
 	if (Input::KeyJustPressed(GLFW_KEY_K)) {
 		App_Application_Set_Window_Resizable(!App_Application_Get_Window_Resizable());
 	}
@@ -192,7 +190,7 @@ void Project::Update() {
 
 	CameraMove();
 
-	App_Shader_Bind(&DefaultShader);
+	DefaultShader.Bind();
 	texture1.Bind(0);
 	DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
 	glBindVertexArray(VAO);
@@ -264,7 +262,7 @@ void Project::Shutdown() {
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	App_Shader_Delete(&DefaultShader);
+	DefaultShader.DeleteGL();
 }
 
 void Project::OnWindowResize(int newWidth, int newHeight) {
