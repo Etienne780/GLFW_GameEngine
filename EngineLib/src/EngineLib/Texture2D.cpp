@@ -154,6 +154,8 @@ namespace EngineCore {
 	}
 
 	void Texture2D::CreateGL() {
+		if (m_opengGLID != ENGINE_INVALID_ID) return;
+
 		if (m_path.empty()) {
 			Log::Error("Texture2D: Texture could not be created, there was no path set");
 			return;
