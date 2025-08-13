@@ -27,7 +27,7 @@ namespace EngineCore {
 
     void ResourceManager::CreateMesh(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant create Texture2D, id is invalid!");
+            Log::Warn("ResourceManager: Cant create Mesh, id is invalid!");
             return;
         }
 
@@ -42,7 +42,7 @@ namespace EngineCore {
 
     void ResourceManager::DeleteTexture2D(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant create Texture2D, id is invalid!");
+            Log::Warn("ResourceManager: Cant delete Texture2D, id is invalid!");
             return;
         }
 
@@ -57,13 +57,13 @@ namespace EngineCore {
 
     void ResourceManager::DeleteMesh(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant create Texture2D, id is invalid!");
+            Log::Warn("ResourceManager: Cant delete Mesh, id is invalid!");
             return;
         }
 
         auto it = m_meshes.find(id);
         if (it == m_meshes.end()) {
-            Log::Warn("ResourceManager: Cant create Mesh, id '{}' not found!", id);
+            Log::Warn("ResourceManager: Cant delete Mesh, id '{}' not found!", id);
             return;
         }
 
@@ -72,7 +72,7 @@ namespace EngineCore {
 
     Texture2D* ResourceManager::GetTexture2D(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant create Texture2D, id is invalid!");
+            Log::Warn("ResourceManager: Cant get Texture2D, id is invalid!");
             return nullptr;
         }
 
@@ -86,7 +86,7 @@ namespace EngineCore {
 
     Mesh* ResourceManager::GetMesh(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant create Texture2D, id is invalid!");
+            Log::Warn("ResourceManager: Cant get Mesh, id is invalid!");
             return nullptr;
         }
 
@@ -103,7 +103,7 @@ namespace EngineCore {
         unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant add texture2D, there are no ids left");
+            Log::Warn("ResourceManager: Cant add Texture2D, there are no ids left");
             return ENGINE_INVALID_ID;
         }
         #endif
@@ -115,7 +115,7 @@ namespace EngineCore {
         unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant add texture2D, there are no ids left");
+            Log::Warn("ResourceManager: Cant add Texture2D, there are no ids left");
             return ENGINE_INVALID_ID;
         }
         #endif
@@ -127,7 +127,7 @@ namespace EngineCore {
         unsigned int id = GetNewUniqueId(ASSET_Mesh);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant add texture2D, there are no ids left");
+            Log::Warn("ResourceManager: Cant add Mesh, there are no ids left");
             return ENGINE_INVALID_ID;
         }
         #endif
