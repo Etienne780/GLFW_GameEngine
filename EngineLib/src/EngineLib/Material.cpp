@@ -16,13 +16,13 @@ namespace EngineCore {
 	Shader* Material::BindToShader() const {
 		if (m_shaderID == ENGINE_INVALID_ID) {
 			Log::Error("Material: Cant apply params to shader, shaderID is invalid!");
-			return;
+			return nullptr;
 		}
 		auto& rm = ResourceManager::GetInstance();
 		Shader* shader = rm.GetShader(m_shaderID);
 		if (!shader) {
 			Log::Error("Material: Cant apply params to shader, shader is nullptr");
-			return;
+			return nullptr;
 		}
 
 		if (shader->GetID() == ENGINE_INVALID_ID)
