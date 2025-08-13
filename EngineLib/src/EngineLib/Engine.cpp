@@ -17,6 +17,7 @@ namespace EngineCore {
 
 		Input::Init(m_window);
 		app->m_window = m_window;
+		Material::m_maxTextureUnits = m_maxTextureUnits;
 
 		PrintApplicationHeader();
 		stbi_set_flip_vertically_on_load(true);
@@ -190,6 +191,7 @@ namespace EngineCore {
 		}
 
 		glViewport(0, 0, app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
 		if (app->m_appOpenGLDepthTesting)
 			glEnable(GL_DEPTH_TEST);
 		else
