@@ -6,6 +6,25 @@ class Vector2;
 class Vector3;
 class Vector4;
 
+/**
+ * @brief A row-major matrix class.
+ *
+ * This matrix stores its elements in row-major order, meaning all elements of
+ * the first row are stored first in memory, followed by all elements of the second row, etc.
+ *
+ * Example:
+ * Matrix m = {
+ *     {1, 2, 3},
+ *     {4, 5, 6}
+ * };
+ * Storage layout in m_data:
+ * [1, 2, 3, 4, 5, 6]
+ *
+ * Note:
+ * OpenGL uses column-major layout for matrices by default.
+ * When passing this matrix to OpenGL, it must be converted to column-major
+ * order (see ToColMajorData()).
+ */
 class Matrix {
 public:
     Matrix();
