@@ -39,7 +39,7 @@ namespace EngineCore {
         */
         int GetUniformLocation(const std::string& name) const;
 
-        bool IsActive();
+        bool IsActive() const;
 
         // --- Uniform setters ---
 
@@ -159,19 +159,18 @@ namespace EngineCore {
         void Unbind();
 
         /**
-        * @brief Creates the shader program.
+        * @brief Creates the OpenGL shader program.
         */
         void CreateGL();
 
         /**
-        * @brief Deletes the shader program.
+        * @brief Deletes the OpenGL shader program.
         */
         void DeleteGL();
 
     private:
         /// OpenGL shader program ID
         unsigned int m_ID = ENGINE_INVALID_ID;
-        bool m_IsActive = false;
         std::string m_vertexCode, m_fragmentCode;
 
         /**

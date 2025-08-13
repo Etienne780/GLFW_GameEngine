@@ -14,16 +14,11 @@ namespace EngineCore {
 		return m_ID;
 	}
 
-	bool Shader::IsActive() {
+	bool Shader::IsActive() const {
 		GLint currentProgram = 0;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 
-		if (static_cast<GLint>(m_ID) != currentProgram)
-			m_IsActive = false;
-		else
-			m_IsActive = true;
-
-		return m_IsActive;
+		return (static_cast<GLint>(m_ID) == currentProgram);
 	}
 
 	Shader::Shader() {
@@ -70,20 +65,11 @@ namespace EngineCore {
 			Log::Warn("Shader: Could not Use Shader. Shader was not initialized");
 			return;
 		}
-		m_IsActive = true;
 		glUseProgram(m_ID);
 	}
 
 	void Shader::Unbind() {
-		if (!m_IsActive) return;
-
-		GLint currentProgram = 0;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-
-		if (static_cast<GLint>(m_ID) != currentProgram)
-			return;
-
-		m_IsActive = false;
+		if (!IsActive()) return;
 		glUseProgram(0);
 	}
 
@@ -145,7 +131,6 @@ namespace EngineCore {
 			Log::Warn("Shader: Could not delete Shader. Shader was not created");
 			return;
 		}
-		m_IsActive = false;
 		glDeleteProgram(m_ID);
 	}
 
@@ -154,7 +139,7 @@ namespace EngineCore {
 			Log::Warn("Shader: Could not {} ({}). Shader was not created", funcName, paramName);
 			return false;
 		}
-		if (!m_IsActive) {
+		if (!IsActive()) {
 			Log::Warn("Shader: Could not {} ({}). Shader is not active", funcName, paramName);
 			return false;
 		}
