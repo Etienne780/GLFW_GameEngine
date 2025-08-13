@@ -66,6 +66,12 @@
     <ClInclude Include="include\EngineLib\ResourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EngineLib\AssetRepository.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EngineLib\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EngineLib\Application.cpp">
@@ -116,9 +122,18 @@
     <ClCompile Include="src\EngineLib\ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\EngineLib\AssetRepository.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\EngineLib\Material.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\EngineLib\AllComponents.h" />
     <ClInclude Include="include\EngineLib\Application.h" />
+    <ClInclude Include="include\EngineLib\AssetRepository.h" />
     <ClInclude Include="include\EngineLib\ComponentBase.h" />
     <ClInclude Include="include\EngineLib\Components\Camera_C.h" />
     <ClInclude Include="include\EngineLib\Components\MeshRenderer_C.h" />
@@ -30,6 +31,7 @@
     <ClInclude Include="include\EngineLib\GameObject.h" />
     <ClInclude Include="include\EngineLib\GameObjectManager.h" />
     <ClInclude Include="include\EngineLib\Input.h" />
+    <ClInclude Include="include\EngineLib\Material.h" />
     <ClInclude Include="include\EngineLib\Mesh.h" />
     <ClInclude Include="include\EngineLib\ResourceManager.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
@@ -38,6 +40,8 @@
     <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
+    <ClCompile Include="src\EngineLib\Material.cpp" />
     <ClCompile Include="src\EngineLib\Mesh.cpp" />
     <ClCompile Include="src\EngineLib\Components\MeshRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\Transform_C.cpp" />
@@ -57,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl" />
+    <None Include="include\EngineLib\Material.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
