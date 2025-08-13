@@ -8,6 +8,7 @@ namespace EngineCore {
 	public:
 		Vertex(const Vector3& position);
 		Vertex(const Vector3& position, const Vector2& uv);
+		Vertex(float x, float y, float z, float u, float v);
 
 		// Position of the vertex (x, y, z)
 		Vector3 position;

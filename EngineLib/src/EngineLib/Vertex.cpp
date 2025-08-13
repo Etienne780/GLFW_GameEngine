@@ -11,4 +11,9 @@ namespace EngineCore {
 		uv = _uv;
 	}
 
+	Vertex::Vertex(float x, float y, float z, float u, float v) {
+		position = {x, y, z};
+		uv = { u, v };
+	}
+
 }
