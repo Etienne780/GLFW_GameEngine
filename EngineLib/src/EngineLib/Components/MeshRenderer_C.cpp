@@ -15,8 +15,6 @@ namespace EngineCore {
 		}
 
 		void MeshRenderer::Draw() {
-			Log::Info("Draw Mesh");
-
 			// Hole mesh mit id
 			Mesh* m = ResourceManager::GetInstance().GetMesh(m_meshID);
 			if (!m) return;
