@@ -15,8 +15,10 @@ namespace EngineCore {
         Log::Info("Mesh(std::string) is not implemented");
     }
 
-    Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) 
-        : m_vertices(vertices), m_indices(indices) {
+    Mesh::Mesh(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize) {
+        m_vertices.assign(vertices, vertices + verticesSize);
+        m_indices.assign(indices, indices + indicesSize);
+
         m_indexCount = static_cast<GLsizei>(m_indices.size());
         CreateGL();
     }

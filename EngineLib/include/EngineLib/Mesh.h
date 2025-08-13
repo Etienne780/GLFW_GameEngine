@@ -16,7 +16,7 @@ namespace EngineCore {
     friend class Component::MeshRenderer;
     public:
         Mesh(const std::string& path);
-        Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
+        Mesh(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);
         ~Mesh();
 
         void CreateGL();

@@ -183,20 +183,32 @@ namespace EngineCore {
         return id;
     }
 
-    unsigned int ResourceManager::AddMesh(Mesh& mesh) {
-        unsigned int id = GetNewUniqueId(ASSET_Mesh);
+    unsigned int ResourceManager::AddMeshFromFile(const std::string& path) {
+        unsigned int id = GetNewUniqueId(ASSET_MESH);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
             Log::Error("ResourceManager: Cant add Mesh, there are no ids left");
             return ENGINE_INVALID_ID;
         }
         #endif
-        // m_texture2Ds.emplace(id, std::make_unique<Mesh>(mesh));
+        m_meshes.emplace(id, std::make_unique<Mesh>(path));
+        return id;
+    }
+
+    unsigned int ResourceManager::AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize) {
+        unsigned int id = GetNewUniqueId(ASSET_MESH);
+        #ifndef NDEBUG
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant add Mesh, there are no ids left");
+            return ENGINE_INVALID_ID;
+        }
+        #endif
+        m_meshes.emplace(id, std::make_unique<Mesh>(vertices, verticesSize, indices, indicesSize));
         return id;
     }
 
     unsigned int ResourceManager::AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath) {
-        unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
+        unsigned int id = GetNewUniqueId(ASSET_SHADER);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
             Log::Error("ResourceManager: Cant add Shader, there are no ids left");
@@ -208,7 +220,7 @@ namespace EngineCore {
     }
 
     unsigned int ResourceManager::AddShaderFromMemory(const std::string& vertexCode, const std::string& fragmentCode) {
-        unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
+        unsigned int id = GetNewUniqueId(ASSET_SHADER);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
             Log::Error("ResourceManager: Cant add Shader, there are no ids left");
@@ -220,7 +232,7 @@ namespace EngineCore {
     }
 
     unsigned int ResourceManager::AddMaterial(unsigned int shaderID) {
-        unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
+        unsigned int id = GetNewUniqueId(ASSET_MATERIAL);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
             Log::Error("ResourceManager: Cant add Material, there are no ids left");

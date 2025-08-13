@@ -37,24 +37,30 @@ namespace EngineCore {
 
         unsigned int AddTexture2DFromFile(const std::string& path);
         unsigned int AddTextureFromMemory(const unsigned char* data, int width, int height, int channels);
-        unsigned int AddMesh(Mesh& mesh);
+        unsigned int AddMeshFromFile(const std::string& path);
+        unsigned int AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);
         unsigned int AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
         unsigned int AddShaderFromMemory(const std::string& vertexCode, const std::string& fragmentCode);
         unsigned int AddMaterial(unsigned int shaderID);
 
     private:
-        int ASSET_TEXTURE2D = 0;
-        int ASSET_Mesh = 1;
+        unsigned int ASSET_TEXTURE2D = 0;
+        unsigned int ASSET_MESH = 1;
+        unsigned int ASSET_SHADER = 2;
+        unsigned int ASSET_MATERIAL = 3;
         struct IDCounters {
             unsigned int m_texture2DIDCounter = 0;
-            unsigned int m_MeshIDCounter = 0;
+            unsigned int m_meshIDCounter = 0;
+            unsigned int m_shaderIDCounter = 0;
+            unsigned int m_materialsIDCounter = 0;
 
             IDCounters() = default;
-
-            unsigned int& operator[](int index) {
+            unsigned int& operator[](unsigned int index) {
                 switch (index) {
                 case 0: return m_texture2DIDCounter;
-                case 1: return m_MeshIDCounter;
+                case 1: return m_meshIDCounter;
+                case 2: return m_shaderIDCounter;
+                case 3: return m_materialsIDCounter;
                 }
             }
         };
