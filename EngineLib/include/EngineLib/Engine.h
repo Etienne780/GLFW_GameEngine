@@ -44,6 +44,8 @@ namespace EngineCore {
 		double m_fpsCounter = 0;// checks if a second has passed
 		int m_lastFrameCount = 0;// is the frame count from the last sec 
 
+		GLint m_maxTextureUnits = 0;
+
 		GLFWwindow* m_window = nullptr;
 		GameObjectManager* m_gameObjectManager = nullptr;
 

@@ -7,17 +7,19 @@
 
 namespace EngineCore {
 
+	GLuint Material::m_maxTextureUnits = 0;
+
 	Material::Material(unsigned int shaderID) 
 		: m_shaderID(shaderID){
 	}
 
-	void Material::ApplyToShader() const {
+	Shader* Material::BindToShader() const {
 		if (m_shaderID == ENGINE_INVALID_ID) {
 			Log::Error("Material: Cant apply params to shader, shaderID is invalid!");
 			return;
 		}
-
-		Shader* shader = ResourceManager::GetInstance().GetShader(m_shaderID);
+		auto& rm = ResourceManager::GetInstance();
+		Shader* shader = rm.GetShader(m_shaderID);
 		if (!shader) {
 			Log::Error("Material: Cant apply params to shader, shader is nullptr");
 			return;
@@ -55,7 +57,17 @@ namespace EngineCore {
 			SetMatrixParam(shader, name, value);
 		}
 
-		shader->Unbind();
+		int counter = 0;
+		for (const auto& [name, value] : m_textureParams) {
+			if (counter >= m_maxTextureUnits) break;
+			Texture2D* texture = rm.GetTexture2D(value);
+			texture->CreateGL();
+			texture->Bind(counter);
+			counter++;
+		}
+		
+
+		return shader;
 	}
 
 	void Material::SetMatrixParam(Shader* shader, const std::string& name, Matrix m) const {

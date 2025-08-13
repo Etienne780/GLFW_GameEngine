@@ -11,6 +11,7 @@
 namespace EngineCore {
 
 	class Material {
+	friend class Engine;
 	public:
 		Material(unsigned int shaderID);
 
@@ -20,11 +21,12 @@ namespace EngineCore {
 		/**
 		* @brief Applys the params to the shader
 		*/
-		void ApplyToShader() const;
+		Shader* BindToShader() const;
 
 		std::string GetParamString() const;
 		
 	private:
+		static GLuint m_maxTextureUnits;
 		unsigned int m_shaderID = ENGINE_INVALID_ID;
 
 		std::unordered_map<std::string, bool> m_boolParams;
