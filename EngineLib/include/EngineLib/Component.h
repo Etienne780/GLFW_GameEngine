@@ -21,7 +21,7 @@ namespace EngineCore {
 		Component(const std::string& name);
 
 		std::string m_name;
-		GameObject* m_owner = nullptr;
+		GameObject* m_gameObject = nullptr;
 	};
 
 }

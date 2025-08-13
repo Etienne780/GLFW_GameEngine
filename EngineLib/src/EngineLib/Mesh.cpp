@@ -21,9 +21,9 @@ namespace EngineCore {
        Delete();
     }
 
-    void Mesh::Draw() const {
+    void Mesh::Draw() {
         if (!m_exists) {
-            Log::Warn("Cant draw mesh, mesh is was not Created!");
+            Create();
             return;
         }
         glBindVertexArray(m_vao);

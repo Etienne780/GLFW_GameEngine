@@ -1,5 +1,9 @@
 #pragma once
 #include <vector>
+#include "EngineLib\Vertex.h"
+
+typedef unsigned int GLuint;
+typedef int GLsizei;
 
 namespace EngineCore {
 
@@ -17,7 +21,7 @@ namespace EngineCore {
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
 
-        void Draw() const;
+        void Draw();
 
         void Create();
         void Delete();

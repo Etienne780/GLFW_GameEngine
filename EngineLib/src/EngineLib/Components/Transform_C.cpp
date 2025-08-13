@@ -1,3 +1,4 @@
+#include "EngineLib\GameObject.h"
 #include "EngineLib\Components\Transform_C.h"
 
 namespace EngineCore {
@@ -20,6 +21,10 @@ namespace EngineCore {
 		m_modeMat = ScaleNonUniform(m_scale);
 		RotationXYZ(m_modeMat, m_rotation);
 		Translation(m_modeMat, m_position);
+
+		if (m_gameObject->GetParent() != nullptr) {
+			m_modeMat = m_gameObject->GetParent()->GetTransform()->m_modeMat * m_modeMat;
+		}
 	}
 
 	#pragma region Get

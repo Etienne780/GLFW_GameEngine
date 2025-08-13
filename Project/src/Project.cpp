@@ -192,7 +192,6 @@ void Project::Update() {
 	
 	texture1.Unbind(0);
 	glBindVertexArray(0);
-	
 }
 
 void CameraMove() {

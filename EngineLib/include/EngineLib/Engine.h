@@ -19,7 +19,6 @@
 #include "EngineLib\Input.h"
 #include "EngineLib\Shader.h"
 #include "EngineLib\Texture2D.h"
-#include "EngineLib\Scene.h"
 #include "EngineLib\GameObjectManager.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\AllComponents.h"

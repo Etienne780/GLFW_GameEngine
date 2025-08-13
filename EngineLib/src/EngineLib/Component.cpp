@@ -9,7 +9,7 @@ namespace EngineCore {
 	}
 
 	GameObject* Component::GetGameObject() const {
-		return m_owner;
+		return m_gameObject;
 	}
 
 	std::string Component::GetName() const {

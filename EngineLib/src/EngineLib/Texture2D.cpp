@@ -23,10 +23,20 @@ namespace EngineCore {
 		m_filterMag = GL_LINEAR;
 	}
 
+	Texture2D::Texture2D(const char* path) {
+		m_format = GL_RGB;
+
+		m_wrappingX = GL_REPEAT;
+		m_wrappingY = GL_REPEAT;
+
+		m_filterMin = GL_LINEAR;
+		m_filterMag = GL_LINEAR;
+
+		Create(path);
+	}
+
 	Texture2D::~Texture2D() {
-		if (m_ID != -1) {
-			glDeleteTextures(1, &m_ID);
-		}
+		Delete();
 	}
 
 	void Texture2D::Cleanup() {
@@ -37,11 +47,12 @@ namespace EngineCore {
 	}
 
 	void Texture2D::Create(const char* path) {
+		m_exists = true;
 		m_path = path;
 
 		// create texture
-		glGenTextures(1, &m_ID);
-		glBindTexture(GL_TEXTURE_2D, m_ID);
+		glGenTextures(1, &m_opengGLID);
+		glBindTexture(GL_TEXTURE_2D, m_opengGLID);
 		// set the texture wrapping/filtering options (on currently bound texture)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_wrappingX);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_wrappingY);
@@ -78,6 +89,27 @@ namespace EngineCore {
 		stbi_image_free(imageData);
 	}
 
+	void Texture2D::Create() {
+		if (m_path.empty()) {
+			Log::Error("Texture2D: Texture could not be created, there was no path set");
+			return;
+		}
+
+		Create(m_path.c_str());
+	}
+
+	void Texture2D::Delete() {
+		if (!m_exists) return;
+
+		if (m_opengGLID != ENGINE_INVALID_ID) {
+			glDeleteTextures(1, &m_opengGLID);
+
+			m_opengGLID = ENGINE_INVALID_ID;
+		}
+
+		m_exists = false;
+	}
+
 	void Texture2D::LoadTextureFallback() {
 		if (missingTexture == nullptr) {
 			missingTexture = GenerateFallbackTexture();
@@ -87,7 +119,7 @@ namespace EngineCore {
 		m_height = 32;
 		m_format = GL_RGB;
 
-		glBindTexture(GL_TEXTURE_2D, m_ID);
+		glBindTexture(GL_TEXTURE_2D, m_opengGLID);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -129,18 +161,22 @@ namespace EngineCore {
 		return missingTexture;
 	}
 
-	void Texture2D::Bind(unsigned int unit) const {
+	void Texture2D::Bind(unsigned int unit) {
+		if (!m_exists || m_opengGLID == ENGINE_INVALID_ID) {
+			LoadTextureFallback();
+			Log::Warn("Texture2D: Texture could not be bound, the texture was not Created");
+		}
 		glActiveTexture(GL_TEXTURE0 + unit);
-		glBindTexture(GL_TEXTURE_2D, m_ID);
+		glBindTexture(GL_TEXTURE_2D, m_opengGLID);
 	}
 
-	void Texture2D::Unbind(unsigned int unit) const {
+	void Texture2D::Unbind(unsigned int unit) {
 		glActiveTexture(GL_TEXTURE0 + unit);
 
 		GLint boundTexture = 0;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &boundTexture);
 
-		if (static_cast<GLint>(m_ID) != boundTexture)
+		if (static_cast<GLint>(m_opengGLID) != boundTexture)
 			return;
 
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -177,7 +213,7 @@ namespace EngineCore {
 	}
 
 	int Texture2D::GetID() const {
-		return m_ID;
+		return m_opengGLID;
 	}
 
 	std::string Texture2D::GetPath() const {

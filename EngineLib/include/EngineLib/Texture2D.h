@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "EngineTypes.h"
 
 typedef unsigned int GLenum;
 
@@ -14,35 +15,50 @@ namespace EngineCore {
         friend class Engine;
     public:
         /**
-         * @brief Default constructor. Does not create or load a texture.
-         */
+        * @brief Default constructor. Does not create/load a texture.
+        */
         Texture2D();
+        /**
+        * @brief Creats/loads a texture with default settings
+        */
+        Texture2D(const char* path);
 
         /**
-         * @brief Destructor. Deletes the OpenGL texture if valid.
-         */
+        * @brief Destructor. Deletes the OpenGL texture if valid.
+        */
         ~Texture2D();
 
         /**
-         * @brief Loads an image from file and creates an OpenGL texture.
-         * @param path Path to the image file.
-         */
+        * @brief Loads an image from file and creates an OpenGL texture.
+        * @param path Path to the image file.
+        */
         void Create(const char* path);
 
         /**
-         * @brief Binds the texture to the given texture unit.
-         * @param unit The texture unit index (default: 0).
-         */
-        void Bind(unsigned int unit = 0) const;
+        * @brief Loads/creates an OpenGL texture. if the texture already has a path assigned
+        */
+        void Create();
 
         /**
-         * @brief Unbinds the texture from the given texture unit if currently bound.
-         * @param unit The texture unit index (default: 0).
-         */
-        void Unbind(unsigned int unit = 0) const;
+        * @brief Deletes the OpenGL object
+        */
+        void Delete();
 
         /**
-        * @brief Sets the same texture coordinate wrapping mode for both X and Y directions.
+        * @brief Binds the texture to the given texture unit.
+        * @param unit The texture unit index (default: 0).
+        */
+        void Bind(unsigned int unit = 0);
+
+        /**
+        * @brief Unbinds the texture from the given texture unit if currently bound.
+        * @param unit The texture unit index (default: 0).
+        */
+        void Unbind(unsigned int unit = 0);
+
+        /**
+        * @brief Sets the same texture coordinate wrapping mode for both X and Y directions. 
+        * Must be set before the texture is created
         *
         * Possible values:
         * - GL_REPEAT: Repeats the texture image (tiles it). Coordinates outside [0,1] wrap around.
@@ -55,20 +71,22 @@ namespace EngineCore {
         void SetWrapping(unsigned int wrappingMode);
 
         /**
-        * @brief Sets the wrapping mode for the X (S) axis.
+        * @brief Sets the wrapping mode for the X (S) axis. 
+        * Must be set before the texture is created
         * @param wrappingMode See SetWrapping for valid values.
         */
         void SetWrappingX(unsigned int wrappingMode);
 
         /**
         * @brief Sets the wrapping mode for the Y (T) axis.
+        * Must be set before the texture is created
         * @param wrappingMode See SetWrapping for valid values.
         */
         void SetWrappingY(unsigned int wrappingMode);
 
         /**
         * @brief Sets the same texture filtering mode for both minification and magnification.
-        *
+        * Must be set before the texture is created
         * Filtering determines how the texture is sampled when it's scaled.
         *
         * Possible values:
@@ -81,7 +99,8 @@ namespace EngineCore {
 
         /**
         * @brief Sets the texture filtering mode used when the texture is minified (scaled down).
-        *
+        * Must be set before the texture is created
+        * 
         * For minification only (SetFilterMin), mipmap-compatible options are also valid:
         * - GL_NEAREST_MIPMAP_NEAREST: Nearest mipmap, nearest texel.
         * - GL_LINEAR_MIPMAP_NEAREST: Nearest mipmap, linear sampling inside.
@@ -94,7 +113,8 @@ namespace EngineCore {
 
         /**
         * @brief Sets the texture filtering mode used when the texture is magnified (scaled up).
-        *
+        * Must be set before the texture is created
+        * 
         * Only GL_NEAREST and GL_LINEAR are valid for magnification.
         *
         * @param filterMode OpenGL filter mode enum.
@@ -104,6 +124,7 @@ namespace EngineCore {
 
         /**
          * @brief Enables or disables automatic mipmap generation after loading.
+         * Must be set before the texture is created
          */
         void SetGenerateMipmaps(bool enable);
 
@@ -138,9 +159,11 @@ namespace EngineCore {
         int GetNrChannels() const;
 
     private:
+        bool m_exists = false;
+
         static unsigned char* missingTexture;
 
-        unsigned int m_ID = -1;
+        unsigned int m_opengGLID = ENGINE_INVALID_ID;
         std::string m_path = "";
         int m_width = 0;
         int m_height = 0;

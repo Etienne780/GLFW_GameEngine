@@ -26,13 +26,11 @@ namespace EngineCore {
 			Log::Warn("GameObject: Name '{}' is not unique", name);
 		}
 		#endif
-		auto go = std::make_unique<GameObject>(GameObjectManager::GetNewUniqueIdentifier(), name);
+		auto go = std::unique_ptr<GameObject>(new GameObject(GameObjectManager::GetNewUniqueIdentifier(), name));
 		GameObject* goPtr = go.get();
 		GameObjectManager::AddGameObject(std::move(go));
 		return goPtr;
 	}
-
-	 
 
 	bool GameObject::Delete(GameObject* gameObjectPtr) {
 		return GameObjectManager::DeleteGameObject(gameObjectPtr);
@@ -53,6 +51,10 @@ namespace EngineCore {
 	}
 
 	#pragma region Get
+
+	Transform* GameObject::GetTransform() {
+		return &m_transform;
+	}
 
 	std::string GameObject::GetName() const {
 		return m_name;

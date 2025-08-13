@@ -35,6 +35,7 @@ namespace EngineCore {
 		bool HasComponent() const;
 		bool HasParent() const;
 
+		Transform* GetTransform();
 		std::string GetName() const;
 		unsigned int GetID() const;
 		GameObject* GetParent() const;
@@ -53,7 +54,6 @@ namespace EngineCore {
 		std::string m_name;
 		GameObject* m_parentObjPtr = nullptr;
 		std::vector<GameObject*> m_childObjPtrs;
-
 		Transform m_transform;
 
 		std::vector<std::unique_ptr<Component>> m_components;

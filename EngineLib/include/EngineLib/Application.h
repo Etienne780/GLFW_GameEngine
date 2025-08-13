@@ -117,7 +117,6 @@ private:
 	Vector3 m_appOpenGLBackgroundColor;
 	bool m_appOpenGLManuallyClearBackground = false;
 
-	EngineCore::Scene* m_appEngineCurrentScene = nullptr;
 	EngineCore::Shader* m_appShaderCurrentShader = nullptr;
 
 	GLFWwindow* m_window = nullptr;
