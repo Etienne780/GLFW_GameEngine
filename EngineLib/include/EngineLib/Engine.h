@@ -21,6 +21,7 @@
 #include "EngineLib\Texture2D.h"
 #include "EngineLib\Material.h"
 #include "EngineLib\ResourceManager.h"
+#include "EngineLib\AssetRepository.h"
 #include "EngineLib\GameObjectManager.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\AllComponents.h"
