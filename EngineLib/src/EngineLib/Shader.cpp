@@ -48,7 +48,7 @@ namespace EngineCore {
 		}
 		catch (std::ifstream::failure e)
 		{
-			Log::Error("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
+			Log::Error("Shader: FILE_NOT_SUCCESFULLY_READ");
 			Log::Print(Log::levelError, "Vertex: {}", vertexPath);
 			Log::Print(Log::levelError, "Fragment: {}", fragmentPath);
 			return;
@@ -69,7 +69,7 @@ namespace EngineCore {
 		if (!success)
 		{
 			glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-			Log::Error("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n{}", infoLog);
+			Log::Error("Shader: VERTEX::COMPILATION_FAILED\n{}", infoLog);
 		};
 
 		// fragment Shader
@@ -81,7 +81,7 @@ namespace EngineCore {
 		if (!success)
 		{
 			glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-			Log::Error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n{}", infoLog);
+			Log::Error("Shader: FRAGMENT::COMPILATION_FAILED\n{}", infoLog);
 		};
 
 		m_ID = glCreateProgram();
@@ -93,7 +93,7 @@ namespace EngineCore {
 		if (!success)
 		{
 			glGetProgramInfoLog(m_ID, 512, NULL, infoLog);
-			Log::Error("ERROR::SHADER::PROGRAM::LINKING_FAILED\n{}", infoLog);
+			Log::Error("Shader: PROGRAM::LINKING_FAILED\n{}", infoLog);
 		}
 		// delete shaders; they’re linked into our program and no longer necessary
 		glDeleteShader(vertex);
