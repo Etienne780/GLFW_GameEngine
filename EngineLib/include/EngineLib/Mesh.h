@@ -1,14 +1,19 @@
 #pragma once
 #include <vector>
 #include "EngineLib\Vertex.h"
+// #include "Components\MeshRenderer_C.h"
 
 typedef unsigned int GLuint;
 typedef int GLsizei;
 
 namespace EngineCore {
 
+    namespace Component {
+        class MeshRenderer;
+    }
+
     class Mesh {
-    friend class MeshRenderer;
+    friend class Component::MeshRenderer;
     public:
         Mesh(const std::string& path);
         Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
