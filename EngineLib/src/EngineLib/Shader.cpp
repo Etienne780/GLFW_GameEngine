@@ -15,6 +15,14 @@ namespace EngineCore {
 	}
 
 	bool Shader::IsActive() {
+		GLint currentProgram = 0;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+
+		if (static_cast<GLint>(m_ID) != currentProgram)
+			m_IsActive = false;
+		else
+			m_IsActive = true;
+
 		return m_IsActive;
 	}
 
