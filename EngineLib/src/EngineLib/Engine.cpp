@@ -1,3 +1,4 @@
+#include "EngineLib\AssetRepository.h"
 #include "EngineLib\Engine.h"
 
 namespace EngineCore {
