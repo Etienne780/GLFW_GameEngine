@@ -81,6 +81,8 @@ namespace EngineCore {
 	}
 
 	void Shader::CreateGL() {
+		if (m_ID != ENGINE_INVALID_ID) return;
+
 		if (m_vertexCode.empty() || m_fragmentCode.empty()) {
 			Log::Warn("Shader: Could not create Shader. Shader code '{}' was empty!",
 				(m_vertexCode.empty()) ? "vertex" : "fragment");
@@ -134,11 +136,9 @@ namespace EngineCore {
 	}
 
 	void Shader::DeleteGL() {
-		if (m_ID == ENGINE_INVALID_ID) {
-			Log::Warn("Shader: Could not delete Shader. Shader was not created");
-			return;
-		}
+		if (m_ID == ENGINE_INVALID_ID) return;
 		glDeleteProgram(m_ID);
+		m_ID = ENGINE_INVALID_ID;
 	}
 
 	bool Shader::CanSetValue(const std::string& funcName, const std::string& paramName) const {
