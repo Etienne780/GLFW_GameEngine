@@ -17,31 +17,31 @@ namespace EngineCore {
 	#pragma region Static
 
 	std::string GameObject::GetHierarchyString() {
-		return GameObjectManager::GetHierarchy();
+		return m_gameObjectManager->GetHierarchy();
 	}
 
 	GameObject* GameObject::Create(const std::string& name) {
 		#ifndef NDEBUG
-		if (!GameObjectManager::IsNameUnique(name)) {
+		if (!m_gameObjectManager->IsNameUnique(name)) {
 			Log::Warn("GameObject: Name '{}' is not unique", name);
 		}
 		#endif
-		auto go = std::unique_ptr<GameObject>(new GameObject(GameObjectManager::GetNewUniqueIdentifier(), name));
+		auto go = std::unique_ptr<GameObject>(new GameObject(m_gameObjectManager->GetNewUniqueIdentifier(), name));
 		GameObject* goPtr = go.get();
-		GameObjectManager::AddGameObject(std::move(go));
+		m_gameObjectManager->AddGameObject(std::move(go));
 		return goPtr;
 	}
 
 	bool GameObject::Delete(GameObject* gameObjectPtr) {
-		return GameObjectManager::DeleteGameObject(gameObjectPtr);
+		return m_gameObjectManager->DeleteGameObject(gameObjectPtr);
 	}
 
 	bool GameObject::Delete(unsigned int id) {
-		return GameObjectManager::DeleteGameObject(id);
+		return m_gameObjectManager->DeleteGameObject(id);
 	}
 
 	bool GameObject::Delete(const std::string& name) {
-		return GameObjectManager::DeleteGameObject(name);
+		return m_gameObjectManager->DeleteGameObject(name);
 	}
 
 	#pragma endregion

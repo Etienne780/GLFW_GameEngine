@@ -5,10 +5,14 @@
 
 namespace EngineCore {
 
-	unsigned int GameObjectManager::m_idCounter = 0;
-	std::vector<std::unique_ptr<GameObject>> GameObjectManager::m_gameObjects;
+	GameObjectManager::GameObjectManager() {
+		GameObject::m_gameObjectManager = this;
+	}
 
-	GameObjectManager::GameObjectManager() {}
+	GameObjectManager& GameObjectManager::GetInstance() {
+		static GameObjectManager instance;
+		return instance;
+	}
 
 	void GameObjectManager::AddGameObject(std::unique_ptr<GameObject> gameObject) {
 		#ifndef NDEBUG

@@ -7,33 +7,38 @@
 
 namespace EngineCore {
 
-	class Scene;
+	class Engine;
 
 	class GameObjectManager {
 	friend class GameObject;
-	friend class Scene;
+	friend class Engine;
 	private:
 		GameObjectManager();
 
-		static unsigned int m_idCounter;
-		static std::vector<std::unique_ptr<GameObject>> m_gameObjects;
+		GameObjectManager(const GameObjectManager&) = delete;
+		GameObjectManager& operator=(const GameObjectManager&) = delete;
 
-		static void AddGameObject(std::unique_ptr<GameObject> gameObject);
-		static bool DeleteGameObject(GameObject* gameObjectPtr);
-		static bool DeleteGameObject(unsigned int id);
-		static bool DeleteGameObject(const std::string& name);
+		static GameObjectManager& GetInstance();
+
+		unsigned int m_idCounter = 0;
+		std::vector<std::unique_ptr<GameObject>> m_gameObjects;
+
+		void AddGameObject(std::unique_ptr<GameObject> gameObject);
+		bool DeleteGameObject(GameObject* gameObjectPtr);
+		bool DeleteGameObject(unsigned int id);
+		bool DeleteGameObject(const std::string& name);
 		// Deletes all GameObjects that currently in the GameObjectManager
-		static void CleareGameObjects();
+		void CleareGameObjects();
 
-		static unsigned int GetNewUniqueIdentifier();
-		static GameObject* GetGameObject(unsigned int id);
-		static GameObject* GetGameObject(const std::string& name);
-		static std::vector<GameObject*> GetAllGameObjects();
+		unsigned int GetNewUniqueIdentifier();
+		GameObject* GetGameObject(unsigned int id);
+		GameObject* GetGameObject(const std::string& name);
+		std::vector<GameObject*> GetAllGameObjects();
 
-		static bool IsNameUnique(const std::string& name);
+		bool IsNameUnique(const std::string& name);
 
-		static std::string GetHierarchy();
-		static void BuildHierarchyString(const GameObject* obj, std::string& outStr, int level);
+		std::string GetHierarchy();
+		void BuildHierarchyString(const GameObject* obj, std::string& outStr, int level);
 	};
 
 }

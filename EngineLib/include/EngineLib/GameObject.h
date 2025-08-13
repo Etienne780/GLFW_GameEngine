@@ -50,6 +50,8 @@ namespace EngineCore {
 	private:
 		GameObject(unsigned int id, const std::string& name);
 
+		static GameObjectManager* m_gameObjectManager;
+
 		unsigned int m_id = ENGINE_INVALID_ID;
 		std::string m_name;
 		GameObject* m_parentObjPtr = nullptr;

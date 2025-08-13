@@ -3,6 +3,8 @@
 namespace EngineCore {
 	Engine::Engine(std::unique_ptr<Application> app)
 		: app(std::move(app)) {
+
+		m_gameObjectManager = &GameObjectManager::GetInstance();
 	}
 
 	int Engine::EngineStart() {
@@ -67,6 +69,8 @@ namespace EngineCore {
 		}
 		app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 		app->Update();
+
+		
 
 		LateUpdate();
 	}

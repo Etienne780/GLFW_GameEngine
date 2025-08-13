@@ -43,6 +43,7 @@ namespace EngineCore {
 		int m_lastFrameCount = 0;// is the frame count from the last sec 
 
 		GLFWwindow* m_window = nullptr;
+		GameObjectManager* m_gameObjectManager = nullptr;
 
 		void Update(double currentTimeSec);
 		void LateUpdate();
