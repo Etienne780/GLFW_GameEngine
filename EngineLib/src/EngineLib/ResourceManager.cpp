@@ -10,60 +10,90 @@ namespace EngineCore {
         return instance;
     }
 
-    void ResourceManager::CreateTexture2D(unsigned int id) {
+    void ResourceManager::CreateGLTexture2D(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant create Texture2D, id is invalid!");
+            Log::Error("ResourceManager: Cant create Texture2D GL object, id is invalid!");
             return;
         }
 
         auto it = m_texture2Ds.find(id);
         if (it == m_texture2Ds.end()) {
-            Log::Warn("ResourceManager: Cant create Texture2D, id '{}' not found!", id);
-            return;
+            Log::Error("ResourceManager: Cant create Texture2D GL object, id '{}' not found!", id);
+            return; 
         }
 
         it->second->CreateGL();
     }
 
-    void ResourceManager::CreateMesh(unsigned int id) {
+    void ResourceManager::CreateGLMesh(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant create Mesh, id is invalid!");
+            Log::Error("ResourceManager: Cant create Mesh GL object, id is invalid!");
             return;
         }
 
         auto it = m_meshes.find(id);
         if (it == m_meshes.end()) {
-            Log::Warn("ResourceManager: Cant create Mesh, id '{}' not found!", id);
+            Log::Error("ResourceManager: Cant create Mesh GL object, id '{}' not found!", id);
             return;
         }
 
         it->second->CreateGL();
     }
 
-    void ResourceManager::DeleteTexture2D(unsigned int id) {
+    void ResourceManager::CreateGLShader(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant delete Texture2D, id is invalid!");
+            Log::Error("ResourceManager: Cant create GL ShaderProgramm, id is invalid!");
+            return;
+        }
+
+        auto it = m_shaders.find(id);
+        if (it == m_shaders.end()) {
+            Log::Error("ResourceManager: Cant create GL ShaderProgramm, id '{}' not found!", id);
+            return;
+        }
+
+        it->second->CreateGL();
+    }
+
+    void ResourceManager::DeleteGLTexture2D(unsigned int id) {
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant delete Texture2D GL object, id is invalid!");
             return;
         }
 
         auto it = m_texture2Ds.find(id);
         if (it == m_texture2Ds.end()) {
-            Log::Warn("ResourceManager: Cant delete Texture2D, id '{}' not found!", id);
+            Log::Error("ResourceManager: Cant delete Texture2D GL object, id '{}' not found!", id);
             return;
         }
 
         it->second->DeleteGL();
     }
 
-    void ResourceManager::DeleteMesh(unsigned int id) {
+    void ResourceManager::DeleteGLMesh(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant delete Mesh, id is invalid!");
+            Log::Error("ResourceManager: Cant delete Mesh GL object, id is invalid!");
             return;
         }
 
         auto it = m_meshes.find(id);
         if (it == m_meshes.end()) {
-            Log::Warn("ResourceManager: Cant delete Mesh, id '{}' not found!", id);
+            Log::Error("ResourceManager: Cant delete Mesh GL object, id '{}' not found!", id);
+            return;
+        }
+
+        it->second->DeleteGL();
+    }
+
+    void ResourceManager::DeleteGLShader(unsigned int id) {
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant delete GL ShaderProgramm, id is invalid!");
+            return;
+        }
+
+        auto it = m_shaders.find(id);
+        if (it == m_shaders.end()) {
+            Log::Error("ResourceManager: Cant delete GL ShaderProgramm, id '{}' not found!", id);
             return;
         }
 
@@ -72,13 +102,13 @@ namespace EngineCore {
 
     Texture2D* ResourceManager::GetTexture2D(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant get Texture2D, id is invalid!");
+            Log::Error("ResourceManager: Cant get Texture2D, id is invalid!");
             return nullptr;
         }
 
         auto it = m_texture2Ds.find(id);
         if (it == m_texture2Ds.end()) {
-            Log::Warn("ResourceManager: Cant get Texture2D, id '{}' not found!", id);
+            Log::Error("ResourceManager: Cant get Texture2D, id '{}' not found!", id);
             return nullptr;
         }
         return it->second.get();
@@ -86,13 +116,43 @@ namespace EngineCore {
 
     Mesh* ResourceManager::GetMesh(unsigned int id) {
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant get Mesh, id is invalid!");
+            Log::Error("ResourceManager: Cant get Mesh, id is invalid!");
             return nullptr;
         }
 
         auto it = m_meshes.find(id);
         if (it == m_meshes.end()) {
-            Log::Warn("ResourceManager: Cant get Mesh, id '{}' not found!", id);
+            Log::Error("ResourceManager: Cant get Mesh, id '{}' not found!", id);
+            return nullptr;
+        }
+
+        return it->second.get();
+    }
+
+    Shader* ResourceManager::GetShader(unsigned int id) {
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant get Shader, id is invalid!");
+            return nullptr;
+        }
+
+        auto it = m_shaders.find(id);
+        if (it == m_shaders.end()) {
+            Log::Error("ResourceManager: Cant get Shader, id '{}' not found!", id);
+            return nullptr;
+        }
+
+        return it->second.get();
+    }
+
+    Material* ResourceManager::GetMaterial(unsigned int id) {
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant get Material, id is invalid!");
+            return nullptr;
+        }
+
+        auto it = m_materials.find(id);
+        if (it == m_materials.end()) {
+            Log::Error("ResourceManager: Cant get Material, id '{}' not found!", id);
             return nullptr;
         }
 
@@ -103,7 +163,7 @@ namespace EngineCore {
         unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant add Texture2D, there are no ids left");
+            Log::Error("ResourceManager: Cant add Texture2D, there are no ids left");
             return ENGINE_INVALID_ID;
         }
         #endif
@@ -115,7 +175,7 @@ namespace EngineCore {
         unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant add Texture2D, there are no ids left");
+            Log::Error("ResourceManager: Cant add Texture2D, there are no ids left");
             return ENGINE_INVALID_ID;
         }
         #endif
@@ -127,11 +187,54 @@ namespace EngineCore {
         unsigned int id = GetNewUniqueId(ASSET_Mesh);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
-            Log::Warn("ResourceManager: Cant add Mesh, there are no ids left");
+            Log::Error("ResourceManager: Cant add Mesh, there are no ids left");
             return ENGINE_INVALID_ID;
         }
         #endif
         // m_texture2Ds.emplace(id, std::make_unique<Mesh>(mesh));
+        return id;
+    }
+
+    unsigned int ResourceManager::AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath) {
+        unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
+        #ifndef NDEBUG
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant add Shader, there are no ids left");
+            return ENGINE_INVALID_ID;
+        }
+        #endif
+        m_shaders.emplace(id, std::make_unique<Shader>(vertexPath, fragmentPath));
+        return id;
+    }
+
+    unsigned int ResourceManager::AddShaderFromMemory(const std::string& vertexCode, const std::string& fragmentCode) {
+        unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
+        #ifndef NDEBUG
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant add Shader, there are no ids left");
+            return ENGINE_INVALID_ID;
+        }
+        #endif
+        m_shaders.emplace(id, std::make_unique<Shader>(vertexCode, fragmentCode, SHADER_IsShaderCode));
+        return id;
+    }
+
+    unsigned int ResourceManager::AddMaterial(unsigned int shaderID) {
+        unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
+        #ifndef NDEBUG
+        if (id == ENGINE_INVALID_ID) {
+            Log::Error("ResourceManager: Cant add Material, there are no ids left");
+            return ENGINE_INVALID_ID;
+        }
+        #endif
+
+        Shader* s = GetShader(shaderID);
+        if (!s) {
+            Log::Error("ResourceManager: Cant add Material, invalid shader ID was '{}'", shaderID);
+            return ENGINE_INVALID_ID;
+        }
+
+        m_materials.emplace(id, std::make_unique<Material>(shaderID));
         return id;
     }
 
