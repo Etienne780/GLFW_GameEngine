@@ -11,26 +11,31 @@
 
 namespace EngineCore {
 
+    Mesh::Mesh(const std::string& path) {
+        Log::Info("Mesh(std::string) is not implemented");
+    }
+
     Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) 
         : m_vertices(vertices), m_indices(indices) {
         m_indexCount = static_cast<GLsizei>(m_indices.size());
-        Create();
+        CreateGL();
     }
 
     Mesh::~Mesh() {
-       Delete();
+       DeleteGL();
     }
 
     void Mesh::Draw() {
         if (!m_exists) {
-            Create();
+            CreateGL();
             return;
         }
         glBindVertexArray(m_vao);
         glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
     }
 
-    void Mesh::Create() {
+    void Mesh::CreateGL() {
         if (m_exists) return;
 
         glGenVertexArrays(1, &m_vao);
@@ -59,7 +64,7 @@ namespace EngineCore {
         m_exists = true;
     }
 
-    void Mesh::Delete() {
+    void Mesh::DeleteGL() {
         if (!m_exists) return;
 
         glDeleteVertexArrays(1, &m_vao);

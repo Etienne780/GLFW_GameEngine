@@ -36,6 +36,13 @@ Matrix model, projection;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	
+	// auto& rm = ResourceManager::GetInstance();
+	// unsigned int id = rm.AddTexture2DFromFile("texture");
+	// 
+	// Texture2D* tex = rm.GetTexture2D(id);
+	// tex->SetWrapping(GL_REPEAT);
+	// tex->CreateGL();
+
 	DefaultShader = Shader("assets\\shaders\\Default.vert", "assets\\shaders\\Default.frag");
 	texture1.Create("assets\\textures\\stone.jpg das funktioniert save");
 	

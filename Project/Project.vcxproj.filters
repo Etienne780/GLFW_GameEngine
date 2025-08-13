@@ -26,9 +26,6 @@
     <ClCompile Include="src\Project.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="backedjfdg%3bklb.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\Default.frag" />

@@ -1,5 +1,7 @@
 #include <CoreLib\Log.h>
 
+#include "EngineLib\Mesh.h"
+#include "EngineLib\ResourceManager.h"
 #include "EngineLib\Components\MeshRenderer_C.h"
 
 namespace EngineCore {
@@ -14,6 +16,18 @@ namespace EngineCore {
 
 		void MeshRenderer::Draw() {
 			Log::Info("Draw Mesh");
+
+			// Hole mesh mit id
+			Mesh* m = ResourceManager::GetInstance().GetMesh(m_meshID);
+			if (!m) return;
+
+			// hole material
+			//		hat daten wie textures und shaders
+
+			// binde die textures und shaders
+			// binde the modelmatrix to the shader
+			// Get main camera and use the view matrix
+			// mesh draw
 		}
 
 	}

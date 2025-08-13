@@ -22,7 +22,6 @@
     <ClInclude Include="include\Project.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="backedjfdg%3bklb.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Project.cpp" />
   </ItemGroup>

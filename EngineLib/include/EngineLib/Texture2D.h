@@ -24,6 +24,15 @@ namespace EngineCore {
         Texture2D(const char* path);
 
         /**
+        * @brief Creats an image with the raw data.
+        * @param data is the raw image data
+        * @param width of the image
+        * @param height of the image
+        * @param nrChannels of the image (GL_RED, GL_RGB, GL_RGBA)
+        */
+        Texture2D(const unsigned char* data, int width, int height, int nrChannels);
+
+        /**
         * @brief Destructor. Deletes the OpenGL texture if valid.
         */
         ~Texture2D();
@@ -35,7 +44,7 @@ namespace EngineCore {
         void Create(const char* path);
 
         /**
-        * @brief Creats an image with the raw data
+        * @brief Creats an image with the raw data.
         * @param data is the raw image data
         * @param width of the image
         * @param height of the image
@@ -46,12 +55,12 @@ namespace EngineCore {
         /**
         * @brief Loads/creates an OpenGL texture. if the texture already has a path assigned
         */
-        void Create();
+        void CreateGL();
 
         /**
         * @brief Deletes the OpenGL object
         */
-        void Delete();
+        void DeleteGL();
 
         /**
         * @brief Binds the texture to the given texture unit.
@@ -140,7 +149,7 @@ namespace EngineCore {
         /**
          * @return The OpenGL texture ID.
          */
-        int GetID() const;
+        unsigned int GetID() const;
 
         /**
          * @return The file path from which the texture was loaded.
@@ -170,10 +179,11 @@ namespace EngineCore {
     private:
         bool m_exists = false;
 
-        static unsigned char* missingTexture;
+        static unsigned char* m_missingTexture;
 
         unsigned int m_opengGLID = ENGINE_INVALID_ID;
         std::string m_path = "";
+        unsigned char* m_imageData = nullptr;// gets only set if the constructor is used where the data is set manully
         int m_width = 0;
         int m_height = 0;
         int m_nrChannels = -1;

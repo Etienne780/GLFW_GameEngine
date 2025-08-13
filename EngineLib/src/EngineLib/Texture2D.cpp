@@ -11,7 +11,7 @@
 
 namespace EngineCore {
 
-	unsigned char* Texture2D::missingTexture = nullptr;
+	unsigned char* Texture2D::m_missingTexture = nullptr;
 
 	Texture2D::Texture2D() {
 		m_format = GL_RGB;
@@ -32,17 +32,38 @@ namespace EngineCore {
 		m_filterMin = GL_LINEAR;
 		m_filterMag = GL_LINEAR;
 
-		Create(path);
+		m_path = path;
+	}
+
+	Texture2D::Texture2D(const unsigned char* data, int width, int height, int nrChannels) {
+		m_format = GL_RGB;
+
+		m_wrappingX = GL_REPEAT;
+		m_wrappingY = GL_REPEAT;
+
+		m_filterMin = GL_LINEAR;
+		m_filterMag = GL_LINEAR;
+
+		m_imageData = new unsigned char[width * height * nrChannels];
+		std::memcpy(m_imageData, data, width * height * nrChannels);
+
+		m_width = width;
+		m_height = height;
+		m_nrChannels = nrChannels;
 	}
 
 	Texture2D::~Texture2D() {
-		Delete();
+		DeleteGL();
+		if (m_imageData != nullptr) {
+			delete[] m_imageData;
+			m_imageData = nullptr;
+		}
 	}
 
 	void Texture2D::Cleanup() {
-		if (missingTexture != nullptr) {
-			delete[] missingTexture;
-			missingTexture = nullptr;
+		if (m_missingTexture != nullptr) {
+			delete[] m_missingTexture;
+			m_missingTexture = nullptr;
 		}
 	}
 
@@ -92,6 +113,9 @@ namespace EngineCore {
 	void Texture2D::Create(unsigned char* data, int width, int height, int nrChannels) {
 		m_exists = true;
 
+		m_imageData = new unsigned char[width * height * nrChannels];
+		std::memcpy(m_imageData, data, width * height * nrChannels);
+
 		// create texture
 		glGenTextures(1, &m_opengGLID);
 		glBindTexture(GL_TEXTURE_2D, m_opengGLID);
@@ -129,21 +153,23 @@ namespace EngineCore {
 		}
 	}
 
-	void Texture2D::Create() {
+	void Texture2D::CreateGL() {
 		if (m_path.empty()) {
 			Log::Error("Texture2D: Texture could not be created, there was no path set");
 			return;
 		}
 
-		Create(m_path.c_str());
+		if (m_path.empty())
+			Create(m_imageData, m_width, m_height, m_nrChannels);
+		else
+			Create(m_path.c_str());
 	}
 
-	void Texture2D::Delete() {
+	void Texture2D::DeleteGL() {
 		if (!m_exists) return;
 
 		if (m_opengGLID != ENGINE_INVALID_ID) {
 			glDeleteTextures(1, &m_opengGLID);
-
 			m_opengGLID = ENGINE_INVALID_ID;
 		}
 
@@ -151,8 +177,8 @@ namespace EngineCore {
 	}
 
 	void Texture2D::LoadTextureFallback() {
-		if (missingTexture == nullptr) {
-			missingTexture = GenerateFallbackTexture();
+		if (m_missingTexture == nullptr) {
+			m_missingTexture = GenerateFallbackTexture();
 		}
 
 		m_width = 32;
@@ -166,7 +192,7 @@ namespace EngineCore {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, GL_UNSIGNED_BYTE, missingTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, GL_UNSIGNED_BYTE, m_missingTexture);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
@@ -179,32 +205,31 @@ namespace EngineCore {
 
 		const int size = sizeof(unsigned char) * 3;
 
-		missingTexture = new unsigned char[height * width * size];
+		m_missingTexture = new unsigned char[height * width * size];
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int offset = (y * width + x) * size;
 
 				if ((x < width / 2 && y < height / 2) || (x >= width / 2 && y >= height / 2)) {
-					missingTexture[offset] = colorA[0];
-					missingTexture[offset + 1] = colorA[1];
-					missingTexture[offset + 2] = colorA[2];
+					m_missingTexture[offset] = colorA[0];
+					m_missingTexture[offset + 1] = colorA[1];
+					m_missingTexture[offset + 2] = colorA[2];
 				}
 				else {
-					missingTexture[offset] = colorB[0];
-					missingTexture[offset + 1] = colorB[1];
-					missingTexture[offset + 2] = colorB[2];
+					m_missingTexture[offset] = colorB[0];
+					m_missingTexture[offset + 1] = colorB[1];
+					m_missingTexture[offset + 2] = colorB[2];
 				}
 			}
 		}
 
-		return missingTexture;
+		return m_missingTexture;
 	}
 
 	void Texture2D::Bind(unsigned int unit) {
 		if (!m_exists || m_opengGLID == ENGINE_INVALID_ID) {
-			LoadTextureFallback();
-			Log::Warn("Texture2D: Texture could not be bound, the texture was not Created");
+			CreateGL();
 		}
 		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_2D, m_opengGLID);
@@ -252,7 +277,7 @@ namespace EngineCore {
 		m_createMipmaps = enable;
 	}
 
-	int Texture2D::GetID() const {
+	unsigned int Texture2D::GetID() const {
 		return m_opengGLID;
 	}
 
