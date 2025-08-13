@@ -35,6 +35,8 @@ namespace EngineCore {
 		std::unordered_map<std::string, Vector4> m_vector4Params;
 		std::unordered_map<std::string, Matrix> m_matrixParams;
 		std::unordered_map<std::string, unsigned int> m_textureParams;
+
+		void SetMatrixParam(Shader* shader, const std::string& name, Matrix m) const;
 	};
 
 }
