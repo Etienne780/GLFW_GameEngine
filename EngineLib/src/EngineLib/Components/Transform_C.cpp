@@ -37,6 +37,10 @@ namespace EngineCore {
 			return m_scale;
 		}
 
+		Matrix Transform::GetModelMat() const {
+			return m_modeMat;
+		}
+
 		#pragma endregion
 
 		#pragma region Set

@@ -14,6 +14,7 @@ namespace EngineCore {
 			Vector3 GetPosition() const;
 			Vector3 GetRotation() const;
 			Vector3 GetScale() const;
+			Matrix GetModelMat() const;
 
 			Transform& SetPosition(float x, float y, float z);
 			Transform& SetRotation(float x, float y, float z);
