@@ -14,6 +14,12 @@ namespace EngineCore {
 		return instance;
 	}
 
+	void GameObjectManager::DrawGameObjects() {
+		for (auto& go : m_gameObjects) {
+			go->Draw();
+		}
+	}
+
 	void GameObjectManager::AddGameObject(std::unique_ptr<GameObject> gameObject) {
 		#ifndef NDEBUG
 		if (!gameObject) {
@@ -93,8 +99,11 @@ namespace EngineCore {
 		return false;
 	}
 
-	static void CleareGameObjects() {
-		
+	void GameObjectManager::CleareAllGameObjects() {
+		#ifndef NDEBUG
+		Log::Debug("Clearing {} game objects", m_gameObjects.size());
+		#endif
+		m_gameObjects.clear();
 	}
 
 	#pragma endregion

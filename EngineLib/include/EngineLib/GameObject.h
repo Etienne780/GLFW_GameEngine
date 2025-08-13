@@ -9,7 +9,7 @@
 
 namespace EngineCore {
 
-	class Component;
+	class ComponentBase;
 
 	class GameObject {
 	friend class GameObjectManager;
@@ -26,6 +26,9 @@ namespace EngineCore {
 		C* AddComponent(Args&&... args);
 
 		template<typename C>
+		GameObject* RemoveComponent();
+
+		template<typename C>
 		C* GetComponent() const;
 
 		template<typename C>
@@ -35,7 +38,7 @@ namespace EngineCore {
 		bool HasComponent() const;
 		bool HasParent() const;
 
-		Transform* GetTransform();
+		Component::Transform * GetTransform();
 		std::string GetName() const;
 		unsigned int GetID() const;
 		GameObject* GetParent() const;
@@ -56,11 +59,12 @@ namespace EngineCore {
 		std::string m_name;
 		GameObject* m_parentObjPtr = nullptr;
 		std::vector<GameObject*> m_childObjPtrs;
-		Transform m_transform;
+		Component::Transform m_transform;
 
-		std::vector<std::unique_ptr<Component>> m_components;
+		std::vector<std::unique_ptr<ComponentBase>> m_components;
 
 		void RemoveChild(GameObject* child);
+		void Draw();
 	};
 
 }

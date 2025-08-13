@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\EngineLib\AllComponents.h" />
     <ClInclude Include="include\EngineLib\Application.h" />
-    <ClInclude Include="include\EngineLib\Component.h" />
+    <ClInclude Include="include\EngineLib\ComponentBase.h" />
     <ClInclude Include="include\EngineLib\Components\Camera_C.h" />
     <ClInclude Include="include\EngineLib\Components\MeshRenderer_C.h" />
     <ClInclude Include="include\EngineLib\Components\Transform_C.h" />
@@ -43,7 +43,7 @@
     <ClCompile Include="src\EngineLib\Components\Transform_C.cpp" />
     <ClCompile Include="src\EngineLib\GameObjectManager.cpp" />
     <ClCompile Include="src\EngineLib\Application.cpp" />
-    <ClCompile Include="src\EngineLib\Component.cpp" />
+    <ClCompile Include="src\EngineLib\ComponentBase.cpp" />
     <ClCompile Include="src\EngineLib\Components\Camera_C.cpp" />
     <ClCompile Include="src\EngineLib\Engine.cpp" />
     <ClCompile Include="src\EngineLib\GameObject.cpp" />

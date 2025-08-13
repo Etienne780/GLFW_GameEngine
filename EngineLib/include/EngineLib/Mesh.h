@@ -9,6 +9,7 @@ namespace EngineCore {
 
     class Mesh {
     public:
+        Mesh(const std::string& path);
         Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
         ~Mesh();
 

@@ -15,9 +15,9 @@ Project::Project()
 	App_OpenGL_Set_Version(3, 3);
 	App_OpenGL_Set_DepthTesting(true);
 
-	App_Application_Set_Header(false);
+	App_Application_Set_Header(true);
 
-	Log::SaveLogs("Logs/");
+	// Log::SaveLogs("Logs/");
 }
 
 const float sensitivity = 0.1f;
@@ -150,13 +150,15 @@ void Project::Start() {
 	GameObject::Create("wall4.1")->SetParent(wall4);
 	GameObject::Create("wall4.2")->SetParent(wall4);
 
+	wall4->AddComponent<Component::MeshRenderer>();
+
 	GameObject::Create("fd");
 	Log::Print("");
 	Log::Print(GameObject::GetHierarchyString());
 
 	Log::Print("");
 	Log::Print(container->GetComponentListString());
-	Log::Print(container->GetComponent<Transform>()->GetComponentString());
+	Log::Print(container->GetComponent<Component::Transform>()->GetComponentString());
 }
 
 void CameraMove();
@@ -188,7 +190,7 @@ void Project::Update() {
 	DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
 	texture1.Unbind(0);
 	glBindVertexArray(0);

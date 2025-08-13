@@ -60,7 +60,6 @@ namespace EngineCore {
 
 		// cleares the window each frame
 		if (m_window != nullptr && !app->m_appOpenGLManuallyClearBackground) {
-			Log::Debug("Cleare background1 {}", m_frameCount);
 			glClearColor(app->m_appOpenGLBackgroundColor.x, 
 						 app->m_appOpenGLBackgroundColor.y, 
 						 app->m_appOpenGLBackgroundColor.z, 
@@ -69,7 +68,7 @@ namespace EngineCore {
 		}
 		app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 		app->Update();
-
+		m_gameObjectManager->DrawGameObjects();
 		
 
 		LateUpdate();

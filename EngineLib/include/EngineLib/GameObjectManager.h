@@ -7,8 +7,6 @@
 
 namespace EngineCore {
 
-	class Engine;
-
 	class GameObjectManager {
 	friend class GameObject;
 	friend class Engine;
@@ -23,12 +21,14 @@ namespace EngineCore {
 		unsigned int m_idCounter = 0;
 		std::vector<std::unique_ptr<GameObject>> m_gameObjects;
 
+		void DrawGameObjects();
+
 		void AddGameObject(std::unique_ptr<GameObject> gameObject);
 		bool DeleteGameObject(GameObject* gameObjectPtr);
 		bool DeleteGameObject(unsigned int id);
 		bool DeleteGameObject(const std::string& name);
 		// Deletes all GameObjects that currently in the GameObjectManager
-		void CleareGameObjects();
+		void CleareAllGameObjects();
 
 		unsigned int GetNewUniqueIdentifier();
 		GameObject* GetGameObject(unsigned int id);

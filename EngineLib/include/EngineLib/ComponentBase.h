@@ -5,11 +5,14 @@ namespace EngineCore {
 
 	class GameObject;
 
-	class Component {
-	friend class GameObject;
+	class ComponentBase {
+		friend class GameObject;
 	public:
-		virtual ~Component() = default;
+		virtual ~ComponentBase() = default;
 		virtual void OnUpdate(float deltaTime) {}
+		virtual bool IsDrawable() const { return false; }
+		virtual void Draw() {}
+
 		std::string GetComponentString() const;
 		std::string GetComponentString(bool moreDetail) const;
 		virtual void GetComponentString(const std::string& prefix, std::string& outStr, bool moreDetail) const;
@@ -18,7 +21,7 @@ namespace EngineCore {
 		std::string GetName() const;
 
 	protected:
-		Component(const std::string& name);
+		ComponentBase(const std::string& name, GameObject* gameObject);
 
 		std::string m_name;
 		GameObject* m_gameObject = nullptr;

@@ -14,7 +14,7 @@ namespace EngineCore {
 
     void ResourceManager::AddMesh(Mesh& texture) {
         unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
-        m_texture2Ds.emplace(id, std::make_unique<Texture2DAsset>(texture, texture.GetPath()));
+        //m_texture2Ds.emplace(id, std::make_unique<Texture2DAsset>(texture, texture.GetPath()));
     }
 
     unsigned int ResourceManager::GetNewUniqueId(int assetIndex) {

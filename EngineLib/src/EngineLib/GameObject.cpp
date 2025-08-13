@@ -1,11 +1,13 @@
 #include "EngineLib\GameObjectManager.h"
 #include "EngineLib\GameObject.h"
-#include "EngineLib\Component.h"
+#include "EngineLib\ComponentBase.h"
 
 namespace EngineCore {
 
+	GameObjectManager* GameObject::m_gameObjectManager = nullptr;
+
 	GameObject::GameObject(unsigned int id, const std::string& name)
-		: m_id(id), m_name(name) {
+		: m_id(id), m_name(name), m_transform(this){
 	}
 
 	GameObject::~GameObject() {
@@ -52,7 +54,7 @@ namespace EngineCore {
 
 	#pragma region Get
 
-	Transform* GameObject::GetTransform() {
+	Component::Transform* GameObject::GetTransform() {
 		return &m_transform;
 	}
 
@@ -128,4 +130,11 @@ namespace EngineCore {
 		children.erase(std::remove(children.begin(), children.end(), child), children.end());
 	}
 
+	void GameObject::Draw() {
+		for (auto& comp : m_components) {
+			if (comp->IsDrawable()) {
+				comp->Draw();
+			}
+		}
+	}
 }

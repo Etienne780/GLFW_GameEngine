@@ -1,11 +1,21 @@
+#include <CoreLib\Log.h>
+
 #include "EngineLib\Components\MeshRenderer_C.h"
 
 namespace EngineCore {
 
-	const std::string compName = "MeshRenderer";
+	namespace Component {
 
-	MeshRenderer::MeshRenderer() :
-		Component(compName) {
+		const std::string compName = "MeshRenderer";
+
+		MeshRenderer::MeshRenderer(GameObject* gameObject) :
+			ComponentBase(compName, gameObject) {
+		}
+
+		void MeshRenderer::Draw() {
+			Log::Info("Draw Mesh");
+		}
+
 	}
 
 }

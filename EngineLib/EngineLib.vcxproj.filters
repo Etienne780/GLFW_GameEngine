@@ -36,7 +36,7 @@
     <ClInclude Include="include\EngineLib\AllComponents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EngineLib\Component.h">
+    <ClInclude Include="include\EngineLib\ComponentBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EngineLib\GameObject.h">
@@ -89,7 +89,7 @@
     <ClCompile Include="src\EngineLib\Texture2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EngineLib\Component.cpp">
+    <ClCompile Include="src\EngineLib\ComponentBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EngineLib\GameObject.cpp">

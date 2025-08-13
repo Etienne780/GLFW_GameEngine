@@ -1,21 +1,25 @@
 #pragma once
 #include <string>
 
-#include "..\Component.h"
+#include "..\ComponentBase.h"
 
 namespace EngineCore {
 
-	class Camera : public Component {
-	public:
-		Camera();
-		void SetTest(int i);
-		int GetTest();
+	namespace Component {
 
-	private:
-		static const std::string compName;
+		class Camera : public EngineCore::ComponentBase {
+		public:
+			Camera(GameObject* gameObject);
+			void SetTest(int i);
+			int GetTest();
 
-		int m_test = 0;
+		private:
+			static const std::string compName;
 
-	};
+			int m_test = 0;
+
+		};
+
+	}
 
 }

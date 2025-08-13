@@ -2,18 +2,22 @@
 
 namespace EngineCore {
 
-	const std::string Camera::compName = "Camera";
+	namespace Component {
 
-	Camera::Camera() : 
-		Component(compName) {
-	}
+		const std::string Camera::compName = "Camera";
 
-	void Camera::SetTest(int i) {
-		m_test = i;
-	}
+		Camera::Camera(GameObject* gameObject) :
+			ComponentBase(compName, gameObject) {
+		}
 
-	int Camera::GetTest() {
-		return m_test;
+		void Camera::SetTest(int i) {
+			m_test = i;
+		}
+
+		int Camera::GetTest() {
+			return m_test;
+		}
+
 	}
 
 }

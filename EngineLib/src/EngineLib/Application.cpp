@@ -212,7 +212,6 @@ void Application::App_OpenGL_Set_ManuallyClearBackground(bool value) {
 
 void Application::App_OpenGL_BackgroundColor() const {
     if (m_window != nullptr) {
-        Log::Debug("Cleare background2");
         glClearColor(m_appOpenGLBackgroundColor.x,
             m_appOpenGLBackgroundColor.y,
             m_appOpenGLBackgroundColor.z,

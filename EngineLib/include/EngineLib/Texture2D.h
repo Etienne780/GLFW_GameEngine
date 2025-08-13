@@ -35,6 +35,15 @@ namespace EngineCore {
         void Create(const char* path);
 
         /**
+        * @brief Creats an image with the raw data
+        * @param data is the raw image data
+        * @param width of the image
+        * @param height of the image
+        * @param nrChannels of the image (GL_RED, GL_RGB, GL_RGBA)
+        */
+        void Create(unsigned char* data, int width, int height, int nrChannels);
+
+        /**
         * @brief Loads/creates an OpenGL texture. if the texture already has a path assigned
         */
         void Create();

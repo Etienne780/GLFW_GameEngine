@@ -89,6 +89,46 @@ namespace EngineCore {
 		stbi_image_free(imageData);
 	}
 
+	void Texture2D::Create(unsigned char* data, int width, int height, int nrChannels) {
+		m_exists = true;
+
+		// create texture
+		glGenTextures(1, &m_opengGLID);
+		glBindTexture(GL_TEXTURE_2D, m_opengGLID);
+		// set the texture wrapping/filtering options (on currently bound texture)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_wrappingX);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_wrappingY);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_filterMin);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_filterMag);
+
+		m_width = width;
+		m_height = height;
+		m_nrChannels = nrChannels;
+
+		if (data) {
+			if (m_nrChannels == 1)
+				m_format = GL_RED;
+			else if (m_nrChannels == 3)
+				m_format = GL_RGB;
+			else if (m_nrChannels == 4)
+				m_format = GL_RGBA;
+			else {
+				Log::Error("Texture2D: Unsupported number of channels: {}!", m_nrChannels);
+				LoadTextureFallback();
+				return;
+			}
+
+			glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, GL_UNSIGNED_BYTE, data);
+			if (m_createMipmaps) {
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+		}
+		else {
+			Log::Error("Texture2D: Failed to Create texture, no data was provided!");
+			LoadTextureFallback();
+		}
+	}
+
 	void Texture2D::Create() {
 		if (m_path.empty()) {
 			Log::Error("Texture2D: Texture could not be created, there was no path set");
