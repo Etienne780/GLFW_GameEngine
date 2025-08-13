@@ -65,10 +65,17 @@ public:
     const float* ToOpenGLData() const;
 
     /**
-    * @brief Converts the matrix to a human-readable string.
+    * @brief Converts the matrix to a readable string.
     * @return A string representing the matrix content.
     */
     std::string ToString() const;
+
+    /**
+    * @brief Converts the matrix to a readable string
+    * @param prefix is a prefix that gets writen before every row
+    * @return A string representing the matrix content.
+    */
+    std::string ToString(const std::string& prefix) const;
 
     /**
     * @brief Converts this matrix to a Vector2 if dimensions are compatible (2x1 or 1x2).

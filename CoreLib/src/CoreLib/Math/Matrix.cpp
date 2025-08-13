@@ -84,14 +84,26 @@ const float* Matrix::ToOpenGLData() const {
 }
 
 std::string Matrix::ToString() const {
-    std::string result;
+    std::ostringstream oss;
     for (int i = 0; i < GetRowCount(); ++i) {
         for (int j = 0; j < GetColCount(); ++j) {
-            result += FormatUtils::toString((*this)(i, j)) + " ";
+            oss << FormatUtils::toString((*this)(i, j)) << " ";
         }
-        result += "\n";
+        oss << "\n";
     }
-    return result;
+    return oss.str();
+}
+
+std::string Matrix::ToString(const std::string& prefix) const {
+    std::ostringstream oss;
+    for (int i = 0; i < GetRowCount(); ++i) {
+        oss << prefix;
+        for (int j = 0; j < GetColCount(); ++j) {
+            oss << FormatUtils::toString((*this)(i, j)) << " ";
+        }
+        oss << "\n";
+    }
+    return oss.str();
 }
 
 Vector2 Matrix::ToVector2() const {
