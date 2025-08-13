@@ -1,5 +1,6 @@
 #include <CoreLib\Log.h>
 
+#include "EngineLib\GameObject.h"
 #include "EngineLib\Mesh.h"
 #include "EngineLib\ResourceManager.h"
 #include "EngineLib\Components\MeshRenderer_C.h"
@@ -15,17 +16,23 @@ namespace EngineCore {
 		}
 
 		void MeshRenderer::Draw() {
-			// Hole mesh mit id
-			Mesh* m = ResourceManager::GetInstance().GetMesh(m_meshID);
-			if (!m) return;
+			auto& rm = ResourceManager::GetInstance();
+			Mesh* mesh = rm.GetMesh(m_meshID);
+			if (!mesh) {
+				Log::Warn("MeshRenderer: Cant draw mesh, mesh is nullptr!");
+				return;
+			}
 
-			// hole material
-			//		hat daten wie textures und shaders
+			Material* mat = rm.GetMaterial(m_materialID);
+			if (!mesh) {
+				Log::Warn("MeshRenderer: Cant draw mesh, material is nullptr!");
+				return;
+			}
 
-			// binde die textures und shaders
-			// binde the modelmatrix to the shader
-			// Get main camera and use the view matrix
-			// mesh draw
+			Shader* shader = mat->BindToShader();
+			Transform* trans = m_gameObject->GetComponent<Transform>();
+			shader->SetMatrix4("model", trans->GetModelMat().ToOpenGLData());
+			mesh->Draw();
 		}
 
 	}

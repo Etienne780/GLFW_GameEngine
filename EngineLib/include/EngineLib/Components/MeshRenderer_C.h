@@ -7,6 +7,7 @@ namespace EngineCore {
 	namespace Component {
 
 		class MeshRenderer : public EngineCore::ComponentBase {
+		
 		public:
 			MeshRenderer(GameObject* gameObject);
 
@@ -15,6 +16,7 @@ namespace EngineCore {
 
 		private:
 			unsigned int m_meshID = ENGINE_INVALID_ID;
+			unsigned int m_materialID = ENGINE_INVALID_ID;
 		};
 
 	}
