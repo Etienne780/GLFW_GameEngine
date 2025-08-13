@@ -220,34 +220,4 @@ void Application::App_OpenGL_BackgroundColor() const {
     }
 }
 
-void Application::App_Shader_Bind(EngineCore::Shader* shader) {
-    if (shader == nullptr || m_window == nullptr) return;
-
-    if (m_appShaderCurrentShader != nullptr && m_appShaderCurrentShader != shader) {
-        m_appShaderCurrentShader->Unbind();
-    }
-
-    m_appShaderCurrentShader = shader;
-    m_appShaderCurrentShader->Bind();
-}
-
-void Application::App_Shader_Unbind(EngineCore::Shader* shader) {
-    if (shader == nullptr || m_window == nullptr) return;
-
-    if (m_appShaderCurrentShader != nullptr && m_appShaderCurrentShader == shader) {
-        shader->Unbind();
-        m_appShaderCurrentShader = nullptr;
-    }
-}
-
-void Application::App_Shader_Delete(EngineCore::Shader* shader) {
-    if (shader == nullptr || m_window == nullptr) return;
-
-    if (m_appShaderCurrentShader != nullptr && m_appShaderCurrentShader == shader) {
-        m_appShaderCurrentShader = nullptr;
-    }
-
-    shader->Delete();
-}
-
 #pragma endregion

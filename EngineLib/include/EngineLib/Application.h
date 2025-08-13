@@ -85,13 +85,6 @@ public:
 
 	void App_OpenGL_BackgroundColor() const;
 
-	// needs a window
-	void App_Shader_Bind(EngineCore::Shader* shader);
-	// needs a window
-	void App_Shader_Unbind(EngineCore::Shader* shader);
-	// needs a window
-	void App_Shader_Delete(EngineCore::Shader* shader);
-
 private:
 	static Application* s_instance;
 
@@ -116,8 +109,6 @@ private:
 	bool m_appOpenGLDepthTesting = false;
 	Vector3 m_appOpenGLBackgroundColor;
 	bool m_appOpenGLManuallyClearBackground = false;
-
-	EngineCore::Shader* m_appShaderCurrentShader = nullptr;
 
 	GLFWwindow* m_window = nullptr;
 };
