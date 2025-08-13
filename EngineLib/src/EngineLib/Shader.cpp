@@ -24,37 +24,44 @@ namespace EngineCore {
 	Shader::Shader() {
 	}
 
-	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
-		// 1. retrieve the vertex/fragment source code from filePath
-		std::string vertexCode;
-		std::string fragmentCode;
-		std::ifstream vShaderFile;
-		std::ifstream fShaderFile;
-		// ensure ifstream objects can throw exceptions:
-		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		try
-		{
-			// open files
-			vShaderFile.open(vertexPath);
-			fShaderFile.open(fragmentPath);
-			std::stringstream vShaderStream, fShaderStream;
-			// read file’s buffer contents into streams
-			vShaderStream << vShaderFile.rdbuf();
-			fShaderStream << fShaderFile.rdbuf();
-			// close file handlers
-			vShaderFile.close();
-			fShaderFile.close();
-			// convert stream into string
-			m_vertexCode = vShaderStream.str();
-			m_fragmentCode = fShaderStream.str();
+	Shader::Shader(const std::string& vertex, const std::string& fragment, bool IsShaderCode) {
+		// check if the given strings is code or file paths
+		if (!IsShaderCode) {
+			// retrieve the vertex/fragment source code from filePath
+			std::string vertexCode;
+			std::string fragmentCode;
+			std::ifstream vShaderFile;
+			std::ifstream fShaderFile;
+			// ensure ifstream objects can throw exceptions:
+			vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+			fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+			try
+			{
+				// open files
+				vShaderFile.open(vertex);
+				fShaderFile.open(fragment);
+				std::stringstream vShaderStream, fShaderStream;
+				// read file’s buffer contents into streams
+				vShaderStream << vShaderFile.rdbuf();
+				fShaderStream << fShaderFile.rdbuf();
+				// close file handlers
+				vShaderFile.close();
+				fShaderFile.close();
+				// convert stream into string
+				m_vertexCode = vShaderStream.str();
+				m_fragmentCode = fShaderStream.str();
+			}
+			catch (std::ifstream::failure e)
+			{
+				Log::Error("Shader: FILE_NOT_SUCCESFULLY_READ");
+				Log::Print(Log::levelError, "Vertex: {}", vertex);
+				Log::Print(Log::levelError, "Fragment: {}", fragment);
+				return;
+			}
 		}
-		catch (std::ifstream::failure e)
-		{
-			Log::Error("Shader: FILE_NOT_SUCCESFULLY_READ");
-			Log::Print(Log::levelError, "Vertex: {}", vertexPath);
-			Log::Print(Log::levelError, "Fragment: {}", fragmentPath);
-			return;
+		else {
+			m_vertexCode = vertex;
+			m_fragmentCode = fragment;
 		}
 
 		CreateGL();

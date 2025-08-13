@@ -10,6 +10,9 @@ class Vector4;
 
 namespace EngineCore {
 
+    // Constant to improve code readability when passing 'IsShaderCode' mode.
+    const bool SHADER_IsShaderCode = true;
+
     /**
      * @brief A utility class for loading, compiling, linking, and using GLSL shader programs.
      *
@@ -26,10 +29,11 @@ namespace EngineCore {
         /**
          * @brief Constructs a shader program by loading, compiling, and linking vertex and fragment shaders from file.
          *
-         * @param vertexPath Path to the vertex shader source file.
-         * @param fragmentPath Path to the fragment shader source file.
+         * @param vertex Path\Code Path to the vertex shader source file, or code of the vertex shader
+         * @param fragment Path\Code Path to the fragment shader source file, or code of the fragment shader
+         * @param IsShaderCode definies if the strings are file paths or source code. default = false
          */
-        Shader(const std::string& vertexPath, const std::string& fragmentPath);
+        Shader(const std::string& vertex, const std::string& fragment, bool IsShaderCode = false);
 
         unsigned int GetID();
 
