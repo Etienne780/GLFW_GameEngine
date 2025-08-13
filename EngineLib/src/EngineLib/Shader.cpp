@@ -68,8 +68,8 @@ namespace EngineCore {
 	}
 
 	void Shader::Bind() {
-		if (m_ID == -1) {
-			Log::Warn("Shader: Could not Use Shader. Shader was not initialized");
+		if (m_ID == ENGINE_INVALID_ID) {
+			Log::Warn("Shader: Could not Use Shader. GL ShaderProgram was not created");
 			return;
 		}
 		glUseProgram(m_ID);
@@ -142,7 +142,7 @@ namespace EngineCore {
 	}
 
 	bool Shader::CanSetValue(const std::string& funcName, const std::string& paramName) const {
-		if (m_ID == -1) {
+		if (m_ID == ENGINE_INVALID_ID) {
 			Log::Warn("Shader: Could not {} ({}). Shader was not created", funcName, paramName);
 			return false;
 		}
