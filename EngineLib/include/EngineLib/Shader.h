@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+#include "EngineLib\EngineTypes.h"
+
 class Matrix;
 class Vector2;
 class Vector3;
@@ -15,7 +17,6 @@ namespace EngineCore {
      * create a shader program, and set uniform values easily.
      */
     class Shader {
-        friend class Application;
     public:
         /**
          * @brief Default constructor. Does not initialize any shader program.
@@ -28,7 +29,7 @@ namespace EngineCore {
          * @param vertexPath Path to the vertex shader source file.
          * @param fragmentPath Path to the fragment shader source file.
          */
-        Shader(const char* vertexPath, const char* fragmentPath);
+        Shader(const std::string& vertexPath, const std::string& fragmentPath);
 
         unsigned int GetID();
 
@@ -147,11 +148,6 @@ namespace EngineCore {
          */
         void SetMatrix4x3(const std::string& name, const float* data) const;
 
-    private:
-        /// OpenGL shader program ID
-        unsigned int m_ID = -1;
-        bool m_IsActive = false;
-
         /**
         * @brief Activates the shader program for use in the current OpenGL context.
         */
@@ -163,9 +159,20 @@ namespace EngineCore {
         void Unbind();
 
         /**
-        * @brief Deletes the shader program. Should be called during cleanup.
+        * @brief Creates the shader program.
         */
-        void Delete();
+        void CreateGL();
+
+        /**
+        * @brief Deletes the shader program.
+        */
+        void DeleteGL();
+
+    private:
+        /// OpenGL shader program ID
+        unsigned int m_ID = ENGINE_INVALID_ID;
+        bool m_IsActive = false;
+        std::string m_vertexCode, m_fragmentCode;
 
         /**
         * @brief Checks if a value can be set. if not print warnings

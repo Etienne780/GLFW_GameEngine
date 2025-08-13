@@ -29,7 +29,7 @@ namespace EngineCore {
 	Shader::Shader() {
 	}
 
-	Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
 		// 1. retrieve the vertex/fragment source code from filePath
 		std::string vertexCode;
 		std::string fragmentCode;
@@ -51,8 +51,8 @@ namespace EngineCore {
 			vShaderFile.close();
 			fShaderFile.close();
 			// convert stream into string
-			vertexCode = vShaderStream.str();
-			fragmentCode = fShaderStream.str();
+			m_vertexCode = vShaderStream.str();
+			m_fragmentCode = fShaderStream.str();
 		}
 		catch (std::ifstream::failure e)
 		{
@@ -62,8 +62,40 @@ namespace EngineCore {
 			return;
 		}
 
-		const char* vShaderCode = vertexCode.c_str();
-		const char* fShaderCode = fragmentCode.c_str();
+		CreateGL();
+	}
+
+	void Shader::Bind() {
+		if (m_ID == -1) {
+			Log::Warn("Shader: Could not Use Shader. Shader was not initialized");
+			return;
+		}
+		m_IsActive = true;
+		glUseProgram(m_ID);
+	}
+
+	void Shader::Unbind() {
+		if (!m_IsActive) return;
+
+		GLint currentProgram = 0;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+
+		if (static_cast<GLint>(m_ID) != currentProgram)
+			return;
+
+		m_IsActive = false;
+		glUseProgram(0);
+	}
+
+	void Shader::CreateGL() {
+		if (m_vertexCode.empty() || m_fragmentCode.empty()) {
+			Log::Warn("Shader: Could not create Shader. Shader code '{}' was empty!",
+				(m_vertexCode.empty()) ? "vertex" : "fragment");
+			return;
+		}
+
+		const char* vShaderCode = m_vertexCode.c_str();
+		const char* fShaderCode = m_fragmentCode.c_str();
 
 		unsigned int vertex, fragment;
 		int success;
@@ -108,31 +140,9 @@ namespace EngineCore {
 		glDeleteShader(fragment);
 	}
 
-	void Shader::Bind() {
-		if (m_ID == -1) {
-			Log::Warn("Shader: Could not Use Shader. Shader was not initialized");
-			return;
-		}
-		m_IsActive = true;
-		glUseProgram(m_ID);
-	}
-
-	void Shader::Unbind() {
-		if (!m_IsActive) return;
-
-		GLint currentProgram = 0;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-
-		if (static_cast<GLint>(m_ID) != currentProgram)
-			return;
-
-		m_IsActive = false;
-		glUseProgram(0);
-	}
-
-	void Shader::Delete() {
-		if (m_ID == -1) {
-			Log::Warn("Shader: Could not Delete Shader. Shader was not initialized");
+	void Shader::DeleteGL() {
+		if (m_ID == ENGINE_INVALID_ID) {
+			Log::Warn("Shader: Could not delete Shader. Shader was not created");
 			return;
 		}
 		m_IsActive = false;
@@ -141,7 +151,7 @@ namespace EngineCore {
 
 	bool Shader::CanSetValue(const std::string& funcName, const std::string& paramName) const {
 		if (m_ID == -1) {
-			Log::Warn("Shader: Could not {} ({}). Shader was not initialized", funcName, paramName);
+			Log::Warn("Shader: Could not {} ({}). Shader was not created", funcName, paramName);
 			return false;
 		}
 		if (!m_IsActive) {
