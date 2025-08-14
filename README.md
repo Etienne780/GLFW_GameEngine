@@ -23,9 +23,9 @@ This project is a personal learning exercise aimed at gaining a deeper understan
 - **GLAD**
 - **Visual Studio 2022** (must learn **CMake**)
 
-  ## External Dependencies
+## External Dependencies
 
-  - **GLFW**
-  - **GLAD**
-  - **ImGUI**
-  - **Tinyfiledialogs**
+- **GLFW**
+- **GLAD**
+- **ImGUI**
+- **Tinyfiledialogs**
