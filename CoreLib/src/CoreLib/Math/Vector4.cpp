@@ -1,14 +1,28 @@
 #include <stdexcept>
 #include <cmath>
 
-#include "CoreLib\Math\Vector4.h"
-
+#include "CoreLib\Math\Vector2.h"
+#include "CoreLib\Math\Vector3.h"
 #include "CoreLib\Math\Matrix.h"
 #include "CoreLib\Math\MathUtils.h"
 #include "CoreLib\FormatUtils.h"
 
+#include "CoreLib\Math\Vector4.h"
+
 const Vector4 Vector4::one(1, 1, 1, 1);
 const Vector4 Vector4::zero(0, 0, 0, 0);
+
+Vector4::Vector4() {
+}
+Vector4::Vector4(float x, float y, float z, float w) 
+    : x(x), y(y), z(z), w(w) {
+} 
+Vector4::Vector4(const Vector2& vec, float z, float w) 
+    : x(vec.x), y(vec.y), z(z), w(w) {
+}
+Vector4::Vector4(const Vector3& vec, float w) 
+    : x(vec.x), y(vec.y), z(vec.z), w(w) {
+}
 
 std::string Vector4::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}, {}]", x, y, z, w);

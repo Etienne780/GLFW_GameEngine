@@ -2,6 +2,8 @@
 #include <stdexcept>
 
 class Matrix;
+class Vector2;
+class Vector3;
 
 /**
  * @class Vector4
@@ -18,7 +20,9 @@ public:
     float w = 0; ///< W component of the vector
 
     Vector4() {} ///< Default constructor initializes to (0, 0, 0, 0)
-    Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {} ///< Constructs vector with given components
+    Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+    Vector4(const Vector2& vec, float z, float w);
+    Vector4(const Vector3& vec, float w);
 
     /**
      * @brief Converts the vector to a string representation.

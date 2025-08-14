@@ -1,10 +1,10 @@
 #include <cmath>
 
-#include "CoreLib\Math\Vector2.h"
-
 #include "CoreLib\Math\Matrix.h"
 #include "CoreLib\Math\MathUtils.h"
 #include "CoreLib\FormatUtils.h"
+
+#include "CoreLib\Math\Vector2.h"
 
 const Vector2 Vector2::up(0, 1);
 const Vector2 Vector2::down(0, -1);

@@ -1,11 +1,12 @@
 #include <stdexcept>
 #include <cmath>
 
-#include "CoreLib\Math\Vector3.h"
-
+#include "CoreLib\Math\Vector2.h"
 #include "CoreLib\Math\Matrix.h"
 #include "CoreLib\Math\MathUtils.h"
 #include "CoreLib\FormatUtils.h"
+
+#include "CoreLib\Math\Vector3.h"
 
 const Vector3 Vector3::forward(0, 0, 1);
 const Vector3 Vector3::back(0, 0, -1);
@@ -15,6 +16,15 @@ const Vector3 Vector3::left(-1, 0, 0);
 const Vector3 Vector3::right(1, 0, 0);
 const Vector3 Vector3::one(1, 1, 1);
 const Vector3 Vector3::zero(0, 0, 0);
+
+Vector3::Vector3() {
+}
+Vector3::Vector3(float x, float y, float z)
+    : x(x), y(y), z(z) {
+}
+Vector3::Vector3(const Vector2& vec, float z) 
+    : x(vec.x), y(vec.y), z(z) {
+}
 
 std::string Vector3::ToString() const {
     return FormatUtils::formatString("[{}, {}, {}]", x, y, z);
