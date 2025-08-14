@@ -14,6 +14,9 @@ namespace EngineCore {
 			bool IsDrawable() const override { return true; }
 			void Draw() override;
 
+			MeshRenderer* SetMesh(unsigned int id);
+			MeshRenderer* SetMaterial(unsigned int id);
+
 		private:
 			unsigned int m_meshID = ENGINE_INVALID_ID;
 			unsigned int m_materialID = ENGINE_INVALID_ID;
