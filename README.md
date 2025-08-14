@@ -7,8 +7,8 @@ This project is a personal learning exercise aimed at gaining a deeper understan
 - Window creation using GLFW  
 - Basic input system (keyboard and mouse)  
 - Time management (delta time, total time)  
-- Math utilities (vectors, interpolation, etc.)  
-- Modular structure with custom engine and application classes
+- Math (VectorN, and Matrix class)
+- GameObject Component system
 
 ## Goals
 
@@ -18,6 +18,14 @@ This project is a personal learning exercise aimed at gaining a deeper understan
 
 ## Build Requirements
 
-- **C++20 or higher**
-- **GLFW** (linked manually or via package manager)  
+- Tested with **C++20**
+- **GLFW**
+- **GLAD**
 - **Visual Studio 2022** (must learn **CMake**)
+
+  ## External Dependencies
+
+  - **GLFW**
+  - **GLAD**
+  - **ImGUI**
+  - **Tinyfiledialogs**
