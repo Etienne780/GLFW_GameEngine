@@ -171,7 +171,7 @@ namespace EngineCore {
         return id;
     }
 
-    unsigned int ResourceManager::AddTextureFromMemory(const unsigned char* data, int width, int height, int channels) {
+    unsigned int ResourceManager::AddTexture2DFromMemory(const unsigned char* data, int width, int height, int channels) {
         unsigned int id = GetNewUniqueId(ASSET_TEXTURE2D);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
@@ -214,6 +214,18 @@ namespace EngineCore {
             Log::Error("ResourceManager: Cant add Shader, there are no ids left");
             return ENGINE_INVALID_ID;
         }
+
+        if (!vertexPath.ends_with(".vert")) {
+            Log::Error("ResourceManager: Cant add Shader, Vertex shader doesnt end with .vert");
+            Log::Print(Log::levelError, "         {}", vertexPath);
+            return ENGINE_INVALID_ID;
+        }
+
+        if (!fragmentPath.ends_with(".frag")) { // hier fragmentPath prüfen
+            Log::Error("ResourceManager: Cant add Shader, Fragment shader doesnt end with .frag");
+            Log::Print(Log::levelError, "         {}", fragmentPath);
+            return ENGINE_INVALID_ID;
+        }
         #endif
         m_shaders.emplace(id, std::make_unique<Shader>(vertexPath, fragmentPath));
         return id;
@@ -242,8 +254,9 @@ namespace EngineCore {
 
         Shader* s = GetShader(shaderID);
         if (!s) {
-            Log::Error("ResourceManager: Cant add Material, invalid shader ID was '{}'", shaderID);
-            return ENGINE_INVALID_ID;
+            Log::Error("ResourceManager: Material was created without shader, shader ID was invalid '{}'", shaderID);
+            m_materials.emplace(id, std::make_unique<Material>());
+            return id;
         }
 
         m_materials.emplace(id, std::make_unique<Material>(shaderID));
@@ -251,7 +264,7 @@ namespace EngineCore {
     }
 
     unsigned int ResourceManager::GetNewUniqueId(int assetIndex) {
-        return m_idCounters[assetIndex];
+        return m_idCounters[assetIndex]++;
     }
 
 }

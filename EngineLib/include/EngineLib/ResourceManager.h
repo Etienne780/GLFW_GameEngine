@@ -36,7 +36,7 @@ namespace EngineCore {
         Material* GetMaterial(unsigned int id);
 
         unsigned int AddTexture2DFromFile(const std::string& path);
-        unsigned int AddTextureFromMemory(const unsigned char* data, int width, int height, int channels);
+        unsigned int AddTexture2DFromMemory(const unsigned char* data, int width, int height, int channels);
         unsigned int AddMeshFromFile(const std::string& path);
         unsigned int AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);
         unsigned int AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
