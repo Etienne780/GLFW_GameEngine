@@ -13,6 +13,7 @@ namespace EngineCore {
 	class Material {
 	friend class Engine;
 	public:
+		Material() = default;
 		Material(unsigned int shaderID);
 
 		template<typename T>
