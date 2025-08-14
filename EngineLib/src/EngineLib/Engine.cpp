@@ -16,9 +16,11 @@ namespace EngineCore {
 			if (GLADInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
 		}
 
-		Input::Init(m_window);
 		app->m_window = m_window;
+		Input::Init(m_window);
 		Material::m_maxTextureUnits = m_maxTextureUnits;
+
+		LoadBaseAsset();
 
 		PrintApplicationHeader();
 		stbi_set_flip_vertically_on_load(true);
@@ -190,6 +192,7 @@ namespace EngineCore {
 			glfwTerminate();
 			return ENGINE_FAILURE;
 		}
+		Log::Info("Engine::GLAD: Initialized GLAD successfully");
 
 		glViewport(0, 0, app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
