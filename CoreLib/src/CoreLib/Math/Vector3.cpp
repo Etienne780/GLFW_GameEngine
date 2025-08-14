@@ -122,6 +122,25 @@ Vector3& Vector3::operator-=(const Vector3& other) {
     return *this;
 }
 
+Vector3& Vector3::operator*=(const Vector3& other) {
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+    return *this;
+}
+
+Vector3& Vector3::operator/=(const Vector3& other) {
+    if (other.x == 0 || other.y == 0 || other.z == 0) {
+        std::ostringstream oss;
+        oss << "Vector3: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ")";
+        throw std::runtime_error(oss.str());
+    }
+    x /= other.x;
+    y /= other.y;
+    z /= other.z;
+    return *this;
+}
+
 Vector3& Vector3::operator+=(float scalar) {
     x += scalar;
     y += scalar;
@@ -145,7 +164,7 @@ Vector3& Vector3::operator*=(float scalar) {
 
 Vector3& Vector3::operator/=(float scalar) {
     if (scalar == 0) {
-        throw std::runtime_error("Division by zero is not possible");
+        throw std::runtime_error("Vector3: Division by zero is not possible");
     }
     x /= scalar; 
     y /= scalar;
@@ -159,6 +178,19 @@ Vector3 Vector3::operator+(const Vector3& other) const {
 
 Vector3 Vector3::operator-(const Vector3& other) const {
     return Vector3(x - other.x, y - other.y, z - other.z);
+}
+
+Vector3 Vector3::operator*(const Vector3& other) const {
+    return Vector3(x * other.x, y * other.y, z * other.z);
+}
+
+Vector3 Vector3::operator/(const Vector3& other) const {
+    if (other.x == 0 || other.y == 0 || other.z == 0) {
+        std::ostringstream oss;
+        oss << "Vector3: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ")";
+        throw std::runtime_error(oss.str());
+    }
+    return Vector3(x / other.x, y / other.y, z / other.z);
 }
 
 Vector3 Vector3::operator+(float scalar) const {
@@ -175,24 +207,23 @@ Vector3 Vector3::operator*(float scalar) const {
 
 Vector3 Vector3::operator/(float scalar) const {
     if (scalar == 0) {
-        throw std::runtime_error("Division by zero is not possible");
+        throw std::runtime_error("Vector3: Division by zero is not possible");
     }
     return Vector3(x / scalar, y / scalar, z / scalar);
 }
-
 
 float& Vector3::operator[](int index) {
     if (index == 0) return x;
     if (index == 1) return y;
     if (index == 2) return z;
-    throw std::out_of_range("Vector3 index out of range");
+    throw std::out_of_range("Vector3: index out of range");
 }
 
 const float& Vector3::operator[](int index) const {
     if (index == 0) return x;
     if (index == 1) return y;
     if (index == 2) return z;
-    throw std::out_of_range("Vector3 index out of range");
+    throw std::out_of_range("Vector3: index out of range");
 }
 
 Vector3 operator+(float scalar, const Vector3& other) {
@@ -208,9 +239,9 @@ Vector3 operator*(float scalar, const Vector3& other) {
 }
 
 Vector3 operator/(float scalar, const Vector3& other) {
-    if (other.x == 0 || other.y == 0) {
+    if (other.x == 0 || other.y == 0 || other.z == 0) {
         std::ostringstream oss;
-        oss << "Division by zero (" << other.x << ", " << other.y << ", " << other.z << ")";
+        oss << "Vector3: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ")";
         throw std::runtime_error(oss.str());
     }
     return Vector3(scalar / other.x, scalar / other.y, scalar / other.z);

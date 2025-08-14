@@ -19,8 +19,8 @@ public:
     float z = 0; ///< Z component of the vector
     float w = 0; ///< W component of the vector
 
-    Vector4() {} ///< Default constructor initializes to (0, 0, 0, 0)
-    Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+    Vector4(); ///< Default constructor initializes to (0, 0, 0, 0)
+    Vector4(float x, float y, float z, float w);
     Vector4(const Vector2& vec, float z, float w);
     Vector4(const Vector3& vec, float w);
 
@@ -114,21 +114,25 @@ public:
 
     // Compound assignment operators modifying this vector
 
-    Vector4& operator+=(const Vector4& other); ///< Add another vector
-    Vector4& operator-=(const Vector4& other); ///< Subtract another vector
-    Vector4& operator+=(float scalar);         ///< Add scalar to all components
-    Vector4& operator-=(float scalar);         ///< Subtract scalar from all components
-    Vector4& operator*=(float scalar);         ///< Multiply all components by scalar
-    Vector4& operator/=(float scalar);         ///< Divide all components by scalar
+    Vector4& operator+=(const Vector4& other); 
+    Vector4& operator-=(const Vector4& other); 
+    Vector4& operator*=(const Vector4& other);
+    Vector4& operator/=(const Vector4& other);
+    Vector4& operator+=(float scalar);
+    Vector4& operator-=(float scalar);
+    Vector4& operator*=(float scalar);
+    Vector4& operator/=(float scalar);
 
     // Binary operators returning new vectors
 
-    Vector4 operator+(const Vector4& other) const; ///< Vector addition
-    Vector4 operator-(const Vector4& other) const; ///< Vector subtraction
-    Vector4 operator+(float scalar) const;         ///< Add scalar to vector
-    Vector4 operator-(float scalar) const;         ///< Subtract scalar from vector
-    Vector4 operator*(float scalar) const;         ///< Multiply vector by scalar
-    Vector4 operator/(float scalar) const;         ///< Divide vector by scalar
+    Vector4 operator+(const Vector4& other) const;
+    Vector4 operator-(const Vector4& other) const;
+    Vector4 operator*(const Vector4& other) const;
+    Vector4 operator/(const Vector4& other) const;
+    Vector4 operator+(float scalar) const;
+    Vector4 operator-(float scalar) const;
+    Vector4 operator*(float scalar) const;
+    Vector4 operator/(float scalar) const;
 
     /**
      * @brief Index operator for accessing vector components.

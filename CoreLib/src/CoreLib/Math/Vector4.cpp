@@ -102,6 +102,23 @@ Vector4& Vector4::operator-=(const Vector4& other) {
     return *this;
 }
 
+Vector4& Vector4::operator*=(const Vector4& other) {
+    x *= other.x; y *= other.y;
+    z *= other.z; w *= other.w;
+    return *this;
+}
+
+Vector4& Vector4::operator/=(const Vector4& other) {
+    if (other.x == 0 || other.y == 0, other.z == 0, other.w == 0) {
+        std::ostringstream oss;
+        oss << "Vector4: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ", " << other.w << ")";
+        throw std::runtime_error(oss.str());
+    }
+    x /= other.x; y /= other.y;
+    z /= other.z; w /= other.w;
+    return *this;
+}
+
 Vector4& Vector4::operator+=(float scalar) {
     x += scalar;
     y += scalar;
@@ -126,7 +143,7 @@ Vector4& Vector4::operator*=(float scalar) {
 
 Vector4& Vector4::operator/=(float scalar) {
     if (scalar == 0) {
-        throw std::runtime_error("Division by zero is not possible");
+        throw std::runtime_error("Vector4: Division by zero is not possible");
     }
     x /= scalar; y /= scalar;
     z /= scalar; w /= scalar;
@@ -139,6 +156,19 @@ Vector4 Vector4::operator+(const Vector4& other) const {
 
 Vector4 Vector4::operator-(const Vector4& other) const {
     return Vector4(x - other.x, y - other.y, z - other.z, w - other.w);
+}
+
+Vector4 Vector4::operator*(const Vector4& other) const {
+    return Vector4(x * other.x, y * other.y, z * other.z, w * other.w);
+}
+
+Vector4 Vector4::operator/(const Vector4& other) const {
+    if (other.x == 0 || other.y == 0, other.z == 0, other.w == 0) {
+        std::ostringstream oss;
+        oss << "Vector4: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ", " << other.w << ")";
+        throw std::runtime_error(oss.str());
+    }
+    return Vector4(x / other.x, y / other.y, z / other.z, w / other.w);
 }
 
 Vector4 Vector4::operator+(float scalar) const {
@@ -155,7 +185,7 @@ Vector4 Vector4::operator*(float scalar) const {
 
 Vector4 Vector4::operator/(float scalar) const {
     if (scalar == 0) {
-        throw std::runtime_error("Division by zero is not allowed");
+        throw std::runtime_error("Vector4: Division by zero is not allowed");
     }
     return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
 }
@@ -165,7 +195,7 @@ float& Vector4::operator[](int index) {
     if (index == 1) return y;
     if (index == 2) return z;
     if (index == 3) return w;
-    throw std::out_of_range("Vector4 index out of range");
+    throw std::out_of_range("Vector4: index out of range");
 }
 
 const float& Vector4::operator[](int index) const {
@@ -173,7 +203,7 @@ const float& Vector4::operator[](int index) const {
     if (index == 1) return y;
     if (index == 2) return z;
     if (index == 3) return w;
-    throw std::out_of_range("Vector4 index out of range");
+    throw std::out_of_range("Vector4: index out of range");
 }
 
 Vector4 operator+(float scalar, const Vector4& other) {
@@ -189,9 +219,9 @@ Vector4 operator*(float scalar, const Vector4& other) {
 }
 
 Vector4 operator/(float scalar, const Vector4& other) {
-    if (other.x == 0 || other.y == 0) {
+    if (other.x == 0 || other.y == 0, other.z == 0, other.w == 0) {
         std::ostringstream oss;
-        oss << "Division by zero (" << other.x << ", " << other.y << ", " << other.z << ", " << other.w << ")";
+        oss << "Vector4: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ", " << other.w << ")";
         throw std::runtime_error(oss.str());
     }
     return Vector4(scalar / other.x, scalar / other.y, scalar / other.z, scalar / other.w);

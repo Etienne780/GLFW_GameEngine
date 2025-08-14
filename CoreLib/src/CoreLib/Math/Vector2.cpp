@@ -97,6 +97,23 @@ Vector2& Vector2::operator-=(const Vector2& other) {
     return *this;
 }
 
+Vector2& Vector2::operator*=(const Vector2& other) {
+    x *= other.x;
+    y *= other.y;
+    return *this;
+}
+
+Vector2& Vector2::operator/=(const Vector2& other) {
+    if (other.x == 0 || other.y == 0) {
+        std::ostringstream oss;
+        oss << "Vector2: Division by zero (" << other.x << ", " << other.y << ")";
+        throw std::runtime_error(oss.str());
+    }
+    x /= other.x;
+    y /= other.y;
+    return *this;
+}
+
 Vector2& Vector2::operator+=(float scalar) {
     x += scalar;
     y += scalar;
@@ -117,7 +134,7 @@ Vector2& Vector2::operator*=(float scalar) {
 
 Vector2& Vector2::operator/=(float scalar) {
     if (scalar == 0) {
-        throw std::runtime_error("Division by zero is not possible");
+        throw std::runtime_error("Vector2: Division by zero is not possible");
     }
     x /= scalar;
     y /= scalar;
@@ -130,6 +147,19 @@ Vector2 Vector2::operator+(const Vector2& other) const {
 
 Vector2 Vector2::operator-(const Vector2& other) const {
     return Vector2(x - other.x, y - other.y);
+}
+
+Vector2 Vector2::operator*(const Vector2& other) const {
+    return Vector2(x * other.x, y * other.y);
+}
+
+Vector2 Vector2::operator/(const Vector2& other) const {
+    if (other.x == 0 || other.y == 0) {
+        std::ostringstream oss;
+        oss << "Vector2: Division by zero (" << other.x << ", " << other.y << ")";
+        throw std::runtime_error(oss.str());
+    }
+    return Vector2(x / other.x, y / other.y);
 }
 
 Vector2 Vector2::operator+(float scalar) const {
@@ -146,7 +176,7 @@ Vector2 Vector2::operator*(float scalar) const {
 
 Vector2 Vector2::operator/(float scalar) const {
     if (scalar == 0) {
-        throw std::runtime_error("Division by zero is not possible");
+        throw std::runtime_error("Vector2: Division by zero is not possible");
     }
     return Vector2(x / scalar, y / scalar);
 }
@@ -154,13 +184,13 @@ Vector2 Vector2::operator/(float scalar) const {
 float& Vector2::operator[](int index) {
     if (index == 0) return x;
     if (index == 1) return y;
-    throw std::out_of_range("Vector2 index out of range");
+    throw std::out_of_range("Vector2: index out of range");
 }
 
 const float& Vector2::operator[](int index) const {
     if (index == 0) return x;
     if (index == 1) return y;
-    throw std::out_of_range("Vector2 index out of range");
+    throw std::out_of_range("Vector2: index out of range");
 }
 
 Vector2 operator+(float scalar, const Vector2& other) {
@@ -178,7 +208,7 @@ Vector2 operator*(float scalar, const Vector2& other) {
 Vector2 operator/(float scalar, const Vector2& other) {
     if (other.x == 0 || other.y == 0) {
         std::ostringstream oss;
-        oss << "Division by zero (" << other.x << ", " << other.y << ")";
+        oss << "Vector2: Division by zero (" << other.x << ", " << other.y << ")";
         throw std::runtime_error(oss.str());
     }
     return Vector2(scalar / other.x, scalar / other.y);

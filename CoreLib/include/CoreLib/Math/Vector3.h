@@ -132,21 +132,25 @@ public:
 
     // Compound assignment operators modifying this vector
 
-    Vector3& operator+=(const Vector3& other); ///< Add another vector
-    Vector3& operator-=(const Vector3& other); ///< Subtract another vector
-    Vector3& operator+=(float scalar);          ///< Add scalar to all components
-    Vector3& operator-=(float scalar);          ///< Subtract scalar from all components
-    Vector3& operator*=(float scalar);          ///< Multiply all components by scalar
-    Vector3& operator/=(float scalar);          ///< Divide all components by scalar
+    Vector3& operator+=(const Vector3& other);
+    Vector3& operator-=(const Vector3& other);
+    Vector3& operator*=(const Vector3& other);
+    Vector3& operator/=(const Vector3& other);
+    Vector3& operator+=(float scalar);
+    Vector3& operator-=(float scalar);
+    Vector3& operator*=(float scalar);
+    Vector3& operator/=(float scalar);
 
     // Binary operators returning new vectors
 
-    Vector3 operator+(const Vector3& other) const; ///< Vector addition
-    Vector3 operator-(const Vector3& other) const; ///< Vector subtraction
-    Vector3 operator+(float scalar) const;         ///< Add scalar to vector
-    Vector3 operator-(float scalar) const;         ///< Subtract scalar from vector
-    Vector3 operator*(float scalar) const;         ///< Multiply vector by scalar
-    Vector3 operator/(float scalar) const;         ///< Divide vector by scalar
+    Vector3 operator+(const Vector3& other) const;
+    Vector3 operator-(const Vector3& other) const;
+    Vector3 operator*(const Vector3& other) const;
+    Vector3 operator/(const Vector3& other) const;
+    Vector3 operator+(float scalar) const;
+    Vector3 operator-(float scalar) const;
+    Vector3 operator*(float scalar) const;
+    Vector3 operator/(float scalar) const;
 
     /**
      * @brief Index operator for accessing vector components.
