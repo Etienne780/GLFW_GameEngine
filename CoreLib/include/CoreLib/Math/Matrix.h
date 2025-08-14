@@ -61,6 +61,25 @@ public:
     */
     const float* GetData() const;
 
+    /*
+     * @brief Gets the translation component from a 4x4 transformation matrix.
+     * @return Vector3 containing the X, Y, Z translation values.
+     */
+    Vector3 GetTranslation() const;
+
+    /*
+     * @brief Extracts the rotation component from a 4x4 transformation matrix.
+     * @details The returned vector contains Euler angles (in radians)
+     * @return Vector3 containing rotation angles around X, Y, Z axes.
+     */
+    Vector3 GetRotation() const;
+
+    /*
+     * @brief Extracts the scale component from a 4x4 transformation matrix.
+     * @return Vector3 containing the scale factors along X, Y, Z axes.
+     */
+    Vector3 GetScale() const;
+
     Matrix& SetData(float value);
 
     Matrix& SetDataDirty();
@@ -157,11 +176,11 @@ public:
     // Matrix multiplication with another matrix
     Matrix operator*(const Matrix& other) const;
     // Matrix-vector multiplication (Vector2)
-    Matrix operator*(const Vector2& other) const;
+    Vector2 operator*(const Vector2& other) const;
     // Matrix-vector multiplication (Vector3)
-    Matrix operator*(const Vector3& other) const;
+    Vector3 operator*(const Vector3& other) const;
     // Matrix-vector multiplication (Vector4)
-    Matrix operator*(const Vector4& other) const;
+    Vector4 operator*(const Vector4& other) const;
     // Matrix-scalar multiplication
     Matrix operator*(float scalar) const;
     // Matrix-scalar division

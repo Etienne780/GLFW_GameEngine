@@ -46,6 +46,61 @@ const float* Matrix::GetData() const {
     return m_data.data();
 }
 
+Vector3 Matrix::GetTranslation() const {
+#ifndef NDEBUG
+    if (GetRowCount() != 4 || GetColCount() != 4) {
+        throw std::runtime_error("Matrix must be 4x4 to extract Translation");
+    }
+#endif
+    return Vector3((*this)(3, 0), (*this)(3, 1), (*this)(3, 2));
+}
+
+Vector3 Matrix::GetRotation() const {
+#ifndef NDEBUG
+    if (GetRowCount() != 4 || GetColCount() != 4) {
+        throw std::runtime_error("Matrix must be 4x4 to extract Rotation");
+    }
+#endif
+    // First remove scale
+    Vector3 scale = GetScale();
+    Matrix rotMat = *this;
+    rotMat(0, 0) /= scale.x; rotMat(0, 1) /= scale.x; rotMat(0, 2) /= scale.x;
+    rotMat(1, 0) /= scale.y; rotMat(1, 1) /= scale.y; rotMat(1, 2) /= scale.y;
+    rotMat(2, 0) /= scale.z; rotMat(2, 1) /= scale.z; rotMat(2, 2) /= scale.z;
+
+    // Extract Euler angles from rotation matrix (row-major, YXZ order)
+    float sy = -rotMat(0, 2);
+    float cy = std::sqrt(1 - sy * sy);
+
+    float x, y, z;
+    if (cy > 1e-6f) {
+        x = std::atan2(rotMat(1, 2), rotMat(2, 2));
+        y = std::asin(sy);
+        z = std::atan2(rotMat(0, 1), rotMat(0, 0));
+    }
+    else {
+        // Gimbal lock
+        x = std::atan2(-rotMat(2, 1), rotMat(1, 1));
+        y = std::asin(sy);
+        z = 0.0f;
+    }
+
+    return Vector3(x, y, z);
+}
+
+Vector3 Matrix::GetScale() const {
+#ifndef NDEBUG
+    if (GetRowCount() != 4 || GetColCount() != 4) {
+        throw std::runtime_error("Matrix must be 4x4 to extract Scale");
+    }
+#endif
+    // Extract scale as length of the first 3 column vectors (row-major indexing)
+    float scaleX = Vector3((*this)(0, 0), (*this)(0, 1), (*this)(0, 2)).Magnitude();
+    float scaleY = Vector3((*this)(1, 0), (*this)(1, 1), (*this)(1, 2)).Magnitude();
+    float scaleZ = Vector3((*this)(2, 0), (*this)(2, 1), (*this)(2, 2)).Magnitude();
+    return Vector3(scaleX, scaleY, scaleZ);
+}
+
 Matrix& Matrix::SetData(float value) {
     m_isDataDirty = true;
     std::fill(m_data.begin(), m_data.end(), value);
@@ -306,49 +361,46 @@ Matrix Matrix::operator*(const Matrix& other) const {
     return result;
 }
 
-Matrix Matrix::operator*(const Vector2& other) const {
+Vector2 Matrix::operator*(const Vector2& other) const {
     if (m_cols != 2)
         throw std::runtime_error("Matrix column count must match Vector2 size (2)");
 
-    Matrix result(m_rows, 1);
+    Vector2 result{};
     const float* a = GetData();
-    float* r = result.GetData();
 
-    for (int i = 0; i < m_rows; ++i)
-        r[i] = a[i * m_cols + 0] * other.x + a[i * m_cols + 1] * other.y;
+    // Nur die ersten zwei Zeilen verwenden
+    result.x = a[0 * m_cols + 0] * other.x + a[0 * m_cols + 1] * other.y;
+    result.y = a[1 * m_cols + 0] * other.x + a[1 * m_cols + 1] * other.y;
 
     return result;
 }
 
-Matrix Matrix::operator*(const Vector3& other) const {
+Vector3 Matrix::operator*(const Vector3& other) const {
     if (m_cols != 3)
         throw std::runtime_error("Matrix column count must match Vector3 size (3)");
 
-    Matrix result(m_rows, 1);
+    Vector3 result{};
     const float* a = GetData();
-    float* r = result.GetData();
 
-    for (int i = 0; i < m_rows; ++i)
-        r[i] = a[i * m_cols + 0] * other.x
-        + a[i * m_cols + 1] * other.y
-        + a[i * m_cols + 2] * other.z;
+    result.x = a[0 * m_cols + 0] * other.x + a[0 * m_cols + 1] * other.y + a[0 * m_cols + 2] * other.z;
+    result.y = a[1 * m_cols + 0] * other.x + a[1 * m_cols + 1] * other.y + a[1 * m_cols + 2] * other.z;
+    result.z = a[2 * m_cols + 0] * other.x + a[2 * m_cols + 1] * other.y + a[2 * m_cols + 2] * other.z;
 
     return result;
 }
 
-Matrix Matrix::operator*(const Vector4& other) const {
+
+Vector4 Matrix::operator*(const Vector4& other) const {
     if (m_cols != 4)
         throw std::runtime_error("Matrix column count must match Vector4 size (4)");
 
-    Matrix result(m_rows, 1);
+    Vector4 result;
     const float* a = GetData();
-    float* r = result.GetData();
 
-    for (int i = 0; i < m_rows; ++i)
-        r[i] = a[i * m_cols + 0] * other.x
-        + a[i * m_cols + 1] * other.y
-        + a[i * m_cols + 2] * other.z
-        + a[i * m_cols + 3] * other.w;
+    result.x = a[0] * other.x + a[1] * other.y + a[2] * other.z + a[3] * other.w;
+    result.y = a[4] * other.x + a[5] * other.y + a[6] * other.z + a[7] * other.w;
+    result.z = a[8] * other.x + a[9] * other.y + a[10] * other.z + a[11] * other.w;
+    result.w = a[12] * other.x + a[13] * other.y + a[14] * other.z + a[15] * other.w;
 
     return result;
 }
