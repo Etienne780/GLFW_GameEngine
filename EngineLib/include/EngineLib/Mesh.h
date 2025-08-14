@@ -28,7 +28,7 @@ namespace EngineCore {
         GLuint m_vao, m_vbo, m_ebo;
         GLsizei m_indexCount;
 
-        std::string m_path = "";
+        std::string m_path;
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
 

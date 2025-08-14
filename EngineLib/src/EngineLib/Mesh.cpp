@@ -16,8 +16,19 @@ namespace EngineCore {
     }
 
     Mesh::Mesh(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize) {
-        m_vertices.assign(vertices, vertices + verticesSize);
-        m_indices.assign(indices, indices + indicesSize);
+        if (vertices && verticesSize > 0) {
+            m_vertices.assign(vertices, vertices + verticesSize);
+        }
+        else {
+            m_vertices.clear();
+        }
+
+        if (indices && indicesSize > 0) {
+            m_indices.assign(indices, indices + indicesSize);
+        }
+        else {
+            m_indices.clear();
+        }
 
         m_indexCount = static_cast<GLsizei>(m_indices.size());
         CreateGL();
