@@ -11,16 +11,19 @@
 
 namespace EngineCore {
 
-	unsigned char* Texture2D::m_missingTexture = nullptr;
+	Texture2D::Texture2D(bool useFallBack) {
+		if (!useFallBack) {
+			m_format = GL_RGB;
 
-	Texture2D::Texture2D() {
-		m_format = GL_RGB;
+			m_wrappingX = GL_REPEAT;
+			m_wrappingY = GL_REPEAT;
 
-		m_wrappingX = GL_REPEAT;
-		m_wrappingY = GL_REPEAT;
-
-		m_filterMin = GL_LINEAR;
-		m_filterMag = GL_LINEAR;
+			m_filterMin = GL_LINEAR;
+			m_filterMag = GL_LINEAR;
+		}
+		else {
+			LoadTextureFallback();
+		}
 	}
 
 	Texture2D::Texture2D(const char* path) {
@@ -60,13 +63,6 @@ namespace EngineCore {
 		}
 	}
 
-	void Texture2D::Cleanup() {
-		if (m_missingTexture != nullptr) {
-			delete[] m_missingTexture;
-			m_missingTexture = nullptr;
-		}
-	}
-
 	void Texture2D::Create(const char* path) {
 		m_exists = true;
 		m_path = path;
@@ -93,6 +89,7 @@ namespace EngineCore {
 				Log::Error("Texture2D: Unsupported number of channels: {}!", m_nrChannels);
 				LoadTextureFallback();
 				stbi_image_free(imageData);
+				m_exists = false;
 				return;
 			}
 
@@ -106,6 +103,7 @@ namespace EngineCore {
 			Log::Error(path);
 
 			LoadTextureFallback();
+			m_exists = false;
 		}
 		stbi_image_free(imageData);
 	}
@@ -139,6 +137,7 @@ namespace EngineCore {
 			else {
 				Log::Error("Texture2D: Unsupported number of channels: {}!", m_nrChannels);
 				LoadTextureFallback();
+				m_exists = false;
 				return;
 			}
 
@@ -150,16 +149,12 @@ namespace EngineCore {
 		else {
 			Log::Error("Texture2D: Failed to Create texture, no data was provided!");
 			LoadTextureFallback();
+			m_exists = false;
 		}
 	}
 
 	void Texture2D::CreateGL() {
-		if (m_opengGLID != ENGINE_INVALID_ID) return;
-
-		if (m_path.empty()) {
-			Log::Error("Texture2D: Texture could not be created, there was no path set");
-			return;
-		}
+		if (m_exists) return;
 
 		if (m_path.empty())
 			Create(m_imageData, m_width, m_height, m_nrChannels);
@@ -179,23 +174,21 @@ namespace EngineCore {
 	}
 
 	void Texture2D::LoadTextureFallback() {
-		if (m_missingTexture == nullptr) {
-			m_missingTexture = GenerateFallbackTexture();
-		}
+		m_imageData = GenerateFallbackTexture();
 
 		m_width = 32;
 		m_height = 32;
 		m_format = GL_RGB;
 
-		glBindTexture(GL_TEXTURE_2D, m_opengGLID);
+		m_wrappingX = GL_REPEAT;
+		m_wrappingY = GL_REPEAT;
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, GL_UNSIGNED_BYTE, m_missingTexture);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		m_filterMin = GL_NEAREST;
+		m_filterMag = GL_NEAREST;
+		m_createMipmaps = true;
+		m_path = "";
+		
+		CreateGL();
 	}
 
 	unsigned char* Texture2D::GenerateFallbackTexture() {
@@ -207,26 +200,26 @@ namespace EngineCore {
 
 		const int size = sizeof(unsigned char) * 3;
 
-		m_missingTexture = new unsigned char[height * width * size];
+		unsigned char* data = new unsigned char[height * width * size];
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int offset = (y * width + x) * size;
 
 				if ((x < width / 2 && y < height / 2) || (x >= width / 2 && y >= height / 2)) {
-					m_missingTexture[offset] = colorA[0];
-					m_missingTexture[offset + 1] = colorA[1];
-					m_missingTexture[offset + 2] = colorA[2];
+					data[offset] = colorA[0];
+					data[offset + 1] = colorA[1];
+					data[offset + 2] = colorA[2];
 				}
 				else {
-					m_missingTexture[offset] = colorB[0];
-					m_missingTexture[offset + 1] = colorB[1];
-					m_missingTexture[offset + 2] = colorB[2];
+					data[offset] = colorB[0];
+					data[offset + 1] = colorB[1];
+					data[offset + 2] = colorB[2];
 				}
 			}
 		}
 
-		return m_missingTexture;
+		return data;
 	}
 
 	void Texture2D::Bind(unsigned int unit) {

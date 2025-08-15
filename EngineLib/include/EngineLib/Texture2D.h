@@ -8,16 +8,19 @@ class Vector2;
 
 namespace EngineCore {
 
+    // Constant to improve code readability when passing 'FALLBACK' mode.
+    const bool TEXTURE2D_FALLBACK = true;
+
     /**
-     * @brief Represents a 2D texture that can be loaded from file and used in OpenGL.
-     */
+    * @brief Represents a 2D texture that can be loaded from file and used in OpenGL.
+    */
     class Texture2D {
-        friend class Engine;
     public:
         /**
         * @brief Default constructor. Does not create/load a texture.
         */
-        Texture2D();
+        Texture2D(bool useFallBack = false);
+
         /**
         * @brief Creats/loads a texture with default settings
         */
@@ -179,8 +182,6 @@ namespace EngineCore {
     private:
         bool m_exists = false;
 
-        static unsigned char* m_missingTexture;
-
         unsigned int m_opengGLID = ENGINE_INVALID_ID;
         std::string m_path = "";
         unsigned char* m_imageData = nullptr;// gets only set if the constructor is used where the data is set manully
@@ -202,8 +203,6 @@ namespace EngineCore {
 
         void LoadTextureFallback();
         unsigned char* GenerateFallbackTexture();
-
-        static void Cleanup();
     };
 
 }
