@@ -72,6 +72,9 @@
     <ClInclude Include="include\EngineLib\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EngineLib\ComponentTypeID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EngineLib\Application.cpp">

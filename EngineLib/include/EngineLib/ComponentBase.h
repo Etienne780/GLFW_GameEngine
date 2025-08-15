@@ -1,5 +1,10 @@
 #pragma once
 #include <string>
+#include "ComponentTypeID.h"
+
+#define COMPONENT_TYPE_DEFINITION(T) \
+    static ComponentTypeID StaticTypeID() { return GetComponentTypeID<T>(); } \
+    ComponentTypeID GetTypeID() const override { return StaticTypeID(); }
 
 namespace EngineCore {
 
@@ -9,6 +14,7 @@ namespace EngineCore {
 		friend class GameObject;
 	public:
 		virtual ~ComponentBase() = default;
+
 		virtual void OnUpdate(float deltaTime) {}
 		virtual bool IsDrawable() const { return false; }
 		virtual void Draw() {}
@@ -17,8 +23,15 @@ namespace EngineCore {
 		std::string GetComponentString(bool moreDetail) const;
 		virtual void GetComponentString(const std::string& prefix, std::string& outStr, bool moreDetail) const;
 
-		GameObject* GetGameObject() const;
 		std::string GetName() const;
+		GameObject* GetGameObject() const;
+
+		virtual ComponentTypeID GetTypeID() const { return 0; }
+
+		template<typename T>
+		bool IsType() const {
+			return GetTypeID() == GetComponentTypeID<T>();
+		}
 
 	protected:
 		ComponentBase(const std::string& name, GameObject* gameObject);
