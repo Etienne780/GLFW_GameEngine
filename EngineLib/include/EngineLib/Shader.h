@@ -35,6 +35,8 @@ namespace EngineCore {
          */
         Shader(const std::string& vertex, const std::string& fragment, bool IsShaderCode = false);
 
+        ~Shader();
+
         unsigned int GetID();
 
         /**

@@ -179,6 +179,7 @@ void Application::App_OpenGL_Set_DepthTesting(bool value) {
         glEnable(GL_DEPTH_TEST);
     else 
         glDisable(GL_DEPTH_TEST);
+    Log::Debug("Application: OpenGL: Depth testing set: ", value);
 }
 
 void Application::App_OpenGL_Set_Version(int major, int minor) {
@@ -200,6 +201,39 @@ void Application::App_OpenGL_Set_BackgroundColor(const Vector3& color) {
 
 void Application::App_OpenGL_Set_ManuallyClearBackground(bool value) {
     m_appOpenGLManuallyClearBackground = value;
+}
+
+void Application::App_OpenGL_Set_PolygonMode(GLenum face, GLenum mode) {
+    // Setzt den Polygonmodus für die angegebenen Faces
+    glPolygonMode(face, mode);
+
+    std::string faceStr;
+    switch (face) {
+    case GL_FRONT: faceStr = "FRONT"; break;
+    case GL_BACK: faceStr = "BACK"; break;
+    case GL_FRONT_AND_BACK: faceStr = "FRONT_AND_BACK"; break;
+    default: faceStr = "UNKNOWN"; break;
+    }
+
+    std::string modeStr;
+    switch (mode) {
+    case GL_FILL:  modeStr = "FILL"; break;
+    case GL_LINE:  modeStr = "LINE"; break;
+    case GL_POINT: modeStr = "POINT"; break;
+    default:       modeStr = "UNKNOWN"; break;
+    }
+
+    Log::Debug("Application: OpenGL: PolygonMode set: Face = {}, Mode = {}", faceStr, modeStr);
+}
+
+
+void Application::App_OpenGL_Set_FaceCulling(bool value) {
+    if (value)
+        glEnable(GL_CULL_FACE);
+    else
+        glDisable(GL_CULL_FACE);
+
+    Log::Debug("Application: OpenGL: Face culling set: {}", value);
 }
 
 #pragma endregion

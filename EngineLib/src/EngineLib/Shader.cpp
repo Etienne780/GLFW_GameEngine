@@ -67,6 +67,10 @@ namespace EngineCore {
 		CreateGL();
 	}
 
+	Shader::~Shader() {
+		DeleteGL();
+	}
+
 	void Shader::Bind() {
 		if (m_ID == ENGINE_INVALID_ID) {
 			Log::Warn("Shader: Could not Use Shader. GL ShaderProgram was not created");

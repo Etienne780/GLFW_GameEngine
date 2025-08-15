@@ -60,10 +60,14 @@ namespace EngineCore {
 		int counter = 0;
 		for (const auto& [name, value] : m_textureParams) {
 			if (counter >= m_maxTextureUnits) break;
+			if (value == ENGINE_INVALID_ID) continue;
+
 			Texture2D* texture = rm.GetTexture2D(value);
-			texture->CreateGL();
-			texture->Bind(counter);
-			counter++;
+			if (texture) {
+				texture->CreateGL();
+				texture->Bind(counter);
+				counter++;
+			}
 		}
 		
 

@@ -188,7 +188,6 @@ namespace EngineCore {
         int m_width = 0;
         int m_height = 0;
         int m_nrChannels = -1;
-        GLenum m_format;
 
         unsigned int m_wrappingX;
         unsigned int m_wrappingY;

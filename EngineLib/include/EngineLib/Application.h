@@ -81,6 +81,13 @@ public:
 	void App_OpenGL_Set_BackgroundColor(float brightness);
 	void App_OpenGL_Set_BackgroundColor(const Vector3& color);
 	void App_OpenGL_Set_ManuallyClearBackground(bool value);
+	/**
+	* @brief sets the opengl polygon mode (Wireframe)
+	* @param face GL_FRONT_AND_BACK, GL_FRONT, GL_BACK
+	* @param mode GL_FILL, GL_LINE, GL_POINT
+	*/
+	void App_OpenGL_Set_PolygonMode(GLenum face, GLenum mode);
+	void App_OpenGL_Set_FaceCulling(bool value);
 
 	void App_OpenGL_BackgroundColor() const;
 

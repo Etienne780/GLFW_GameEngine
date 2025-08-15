@@ -1,41 +1,40 @@
 #pragma once
-#include "ComponentBase.h"
 #include "CoreLib\Log.h"
+#include "ComponentBase.h"
 
 namespace EngineCore {
 
 	template<typename C, typename... Args>
-	C* GameObject::AddComponent(Args&&... args) {
+	std::shared_ptr<C> GameObject::AddComponent(Args&&... args) {
 		static_assert(std::is_base_of<ComponentBase, C>::value, "C must derive from ComponentBase");
+		if (IsDead("Cant add component")) return nullptr;
 
-		// Cant add transform component. is already a member of GO
-		if constexpr (std::is_same<C, Component::Transform>::value) {
-			#ifndef NDEBUG
-			Log::Warn("GameObject: Cannot add Transform via AddComponent. It is already part of the GameObject.");
-			#endif
+		if constexpr (std::is_same_v<C, Component::Transform>) {
+			Log::Warn("Transform is already part of the GameObject.");
 			return nullptr;
 		}
 
-		// Check if the GO has the componentn already
-		for (const auto& comp : m_components) {
-			if (dynamic_cast<C*>(comp.get())) {
-				#ifndef NDEBUG
-				Log::Warn("GameObject: Component '{}' already exists on GameObject.", comp.get()->GetName());
-				#endif
-				return nullptr;
-			}
+		if (HasComponent<C>()) {
+			Log::Warn("Component already exists.");
+			return nullptr;
 		}
 
-		// Creates/Adds the component
-		auto comp = std::make_unique<C>(this, std::forward<Args>(args)...);
-		C* ptr = comp.get();
-		m_components.emplace_back(std::move(comp));
-		return ptr;
+		auto comp = std::make_shared<C>(this, std::forward<Args>(args)...);
+		if (auto cam = std::dynamic_pointer_cast<Component::Camera>(comp)) {
+			m_hasCamera = true;
+			RegisterCamera(cam);
+		}
+
+		m_components.emplace_back(comp);
+		return comp;
 	}
 
 	template<typename C>
 	GameObject* GameObject::RemoveComponent() {
 		static_assert(std::is_base_of<ComponentBase, C>::value, "C must derive from ComponentBase");
+		if (IsDead("Cant remove component")) {
+			return this;
+		}
 
 		// Cant remove transform component
 		if constexpr (std::is_same<C, Component::Transform>::value) {
@@ -46,8 +45,14 @@ namespace EngineCore {
 		}
 
 		for (auto it = m_components.begin(); it != m_components.end(); ++it) {
-			if (dynamic_cast<C*>(it->get())) {
-				m_components.erase(it); // unique_ptr deletes the rest
+			if (it->get()->IsType<C>()) {
+				// if component is a camera give it to the GameObjectManager
+				if (auto cameraPtr = std::dynamic_pointer_cast<Component::Camera>(*it)) {
+					m_hasCamera = false;
+					UnregisterCamera(std::weak_ptr<Component::Camera>(cameraPtr));
+				}
+				it->get()->m_alive = false;
+				m_components.erase(it); // unique_ptr deletes the component
 				break;
 			}
 		}
@@ -55,28 +60,39 @@ namespace EngineCore {
 	}
 
 	template<typename C>
-	C* GameObject::GetComponent() const {
+	std::shared_ptr<C> GameObject::GetComponent() const {
 		static_assert(std::is_base_of<ComponentBase, C>::value, "C must derive from ComponentBase");
+		if (IsDead("Cant get component")) {
+			return nullptr;
+		}
 
 		if constexpr (std::is_same<C, Component::Transform>::value) {
-			return const_cast<Component::Transform*>(&m_transform);
+			return m_transform;
 		}
 
 		for (const auto& comp : m_components) {
-			if (auto casted = dynamic_cast<C*>(comp.get()))
-				return casted;
+			if (auto casted = dynamic_cast<C*>(comp.get())) {
+				return std::static_pointer_cast<C>(comp);
+			}
 		}
+
 		return nullptr;
 	}
 
 	template<typename C>
 	bool GameObject::TryGetComponent(C*& outComponent) const {
+		if (IsDead("Cant try get component")) {
+			return false;
+		}
 		outComponent = (*this).GetComponent<C>();
 		return outComponent != nullptr;
 	}
 
 	template<typename C>
 	bool GameObject::HasComponent() const {
+		if (IsDead("Cant check if GO has component")) {
+			return false;
+		}
 		return (*this).GetComponent<C>() != nullptr;
 	}
 

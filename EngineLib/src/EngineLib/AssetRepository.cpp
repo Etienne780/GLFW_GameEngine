@@ -1,30 +1,33 @@
 #include <vector>
+#include <glad/glad.h>
+#include <CoreLib\Log.h>
 
 #include "EngineLib\ResourceManager.h"
 #include "EngineLib\Vertex.h"
+#include "EngineLib\EngineTypes.h"
 #include "EngineLib\AssetRepository.h"
 
 namespace {
-    unsigned int g_textureNoId = 0;
-	unsigned int g_meshCubeId = 0;
-    unsigned int g_shaderDefaultId = 0;
-    unsigned int g_materialDefaultId = 0;
+    unsigned int g_textureEngineMissingId = EngineCore::ENGINE_INVALID_ID;
+	unsigned int g_meshEngineCubeId = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_shaderEngineDefaultId = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_materialEngineDefaultId = EngineCore::ENGINE_INVALID_ID;
 }
 
-namespace EngineCore::ID::TEXTURE {
-    unsigned int No() { return g_textureNoId; }
+namespace EngineCore::ID::TEXTURE::ENGINE {
+    unsigned int Missing() { return g_textureEngineMissingId; }
 }
 
-namespace EngineCore::ID::MESH {
-	unsigned int Cube() { return g_meshCubeId; }
+namespace EngineCore::ID::MESH::ENGINE {
+	unsigned int Cube() { return g_meshEngineCubeId; }
 }
 
-namespace EngineCore::ID::SHADER {
-    unsigned int Default() { return g_shaderDefaultId; }
+namespace EngineCore::ID::SHADER::ENGINE {
+    unsigned int Default() { return g_shaderEngineDefaultId; }
 }
 
-namespace EngineCore::ID::MATERIAL {
-    unsigned int Default() { return g_materialDefaultId; }
+namespace EngineCore::ID::MATERIAL::ENGINE {
+    unsigned int Default() { return g_materialEngineDefaultId; }
 }
 
 namespace EngineCore {
@@ -32,13 +35,13 @@ namespace EngineCore {
 	void LoadBaseAsset() {
 		auto& rm = ResourceManager::GetInstance();
 
-        #pragma region TEXTURE::No
+        #pragma region TEXTURE::ENGINE::Missing
         {
-            g_textureNoId = rm.AddTexture2DFromFile("no");
+            g_textureEngineMissingId = rm.AddTexture2DFromMemory(nullptr, 0, 0, 0);
         }
         #pragma endregion
 
-        #pragma region MESH::Cube
+        #pragma region MESH::ENGINE::Cube
 		{
             Vertex vertices[] = {
                 // Back
@@ -79,44 +82,43 @@ namespace EngineCore {
             };
 
             unsigned int indices[] = {
-                // Back
-                0, 1, 2, 2, 3, 0,
+                // Back (Z-)
+                0, 1, 2, 0, 2, 3,
 
-                // Front
-                4, 5, 6, 6, 7, 4,
+                // Front (Z+)
+                4, 6, 5, 4, 7, 6,
 
-                // Left
-                8, 9, 10, 10, 11, 8,
+                // Left (X-)
+                8, 10, 9, 8, 11, 10,
 
-                // Right
-                12, 13, 14, 14, 15, 12,
+                // Right (X+)
+                12, 13, 14, 12, 14, 15,
 
-                // Down
-                16, 17, 18, 18, 19, 16,
+                // Down (Y-)
+                16, 18, 17, 16, 19, 18,
 
-                // Up
-                20, 21, 22, 22, 23, 20
+                // Up (Y+)
+                20, 21, 22, 20, 22, 23
             };
 
             size_t verticesSize = sizeof(vertices) / sizeof(vertices[0]);
             size_t indicesSize = sizeof(indices) / sizeof(indices[0]);
 
-            g_meshCubeId = rm.AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
-
+            g_meshEngineCubeId = rm.AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
 		}
         #pragma endregion
 
-        #pragma region SHADER::Default
+        #pragma region SHADER::ENGINE::Default
         {
-            g_shaderDefaultId = rm.AddShaderFromFile("assets/shaders/Default.vert", "assets/shaders/Default.frag");
+            g_shaderEngineDefaultId = rm.AddShaderFromFile("assets/shaders/Default.vert", "assets/shaders/Default.frag");
         }
         #pragma endregion
 
-        #pragma region MATERIAL::Default
+        #pragma region MATERIAL::ENGINE::Default
         {
-            g_materialDefaultId = rm.AddMaterial(ID::SHADER::Default());
-            Material* mat = rm.GetMaterial(g_materialDefaultId);
-            mat->SetParam("texture", g_textureNoId);
+            g_materialEngineDefaultId = rm.AddMaterial(g_shaderEngineDefaultId);
+            Material* mat = rm.GetMaterial(g_materialEngineDefaultId);
+            mat->SetParam("texture", g_textureEngineMissingId);
         }
         #pragma endregion
 

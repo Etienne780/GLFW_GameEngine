@@ -41,8 +41,8 @@ namespace EngineCore {
     void Mesh::Draw() {
         if (!m_exists) {
             CreateGL();
-            return;
         }
+
         glBindVertexArray(m_vao);
         glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
@@ -64,7 +64,7 @@ namespace EngineCore {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), m_indices.data(), GL_STATIC_DRAW);
 
         // Attribute setzen (Position, UV, Normals etc.)
-        GLsizei vertexSize = 5 * sizeof(float);
+        GLsizei vertexSize = 8 * sizeof(float);
         // position attribute
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
         glEnableVertexAttribArray(0);

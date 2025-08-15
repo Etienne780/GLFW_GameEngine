@@ -5,6 +5,8 @@
 
 namespace EngineCore {
 	Vector2 Input::m_mousePosition;
+	Vector2 Input::m_mouseDelta;
+
 	int Input::m_scrollDir = 0;
 	std::unordered_map<int, Key> Input::keyStates;
 
@@ -17,6 +19,9 @@ namespace EngineCore {
 	}
 
 	void Input::GLFWMouseCallBack(GLFWwindow* window, double xpos, double ypos) {
+		m_mouseDelta.x = xpos - m_mousePosition.x;
+		m_mouseDelta.y = m_mousePosition.y - ypos;
+
 		m_mousePosition.x = static_cast<float>(xpos);
 		m_mousePosition.y =	static_cast<float>(ypos);
 	}
@@ -41,6 +46,10 @@ namespace EngineCore {
 		for (auto& [_, key] : keyStates) {
 			key.update();
 		}
+	}
+
+	Vector2 Input::GetMousePositionDelta() {
+		return m_mouseDelta;
 	}
 
 	int Input::GetScrollDir() {

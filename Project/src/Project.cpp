@@ -21,150 +21,30 @@ Project::Project()
 }
 
 const float sensitivity = 0.1f;
-Vector3 cameraPosition(0, 0, 5), cameraRotation(180, 5, 0);
+Vector3 cameraPosition(0, 0, 5), cameraRotation(0, 5, 0);
 float cameraSpeed = 10.0f;
 float cameraSprintMultiplier = 1.8f;
 float cameraSlowMultiplier = 0.4f;
 float cameraSpeedVerMultiplier = 1.2f;
-Vector2 lastFrameMousePos;
 float cameraFOV = 66.0f;
 
-unsigned int EBO, VBO, VAO;
-Shader DefaultShader;
-Texture2D texture1;
-Matrix model, projection;
+std::shared_ptr<GameObject> cameraGO = nullptr;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
+	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
-	// auto& rm = ResourceManager::GetInstance();
-	// unsigned int id = rm.AddTexture2DFromFile("texture");
-	// 
-	// Texture2D* tex = rm.GetTexture2D(id);
-	// tex->SetWrapping(GL_REPEAT);
-	// tex->CreateGL();
+	App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	App_OpenGL_Set_FaceCulling(true);
 
-	DefaultShader = Shader("assets\\shaders\\Default.vert", "assets\\shaders\\Default.frag");
-	texture1.Create("assets\\textures\\stone.jpg das funktioniert save");
-	
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	// ------------------------------------------------------------------
-	float vertices[] = {
-		// Rückseite
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	cameraGO = GameObject::Create("MainCamera");
+	auto cam = cameraGO->AddComponent<Component::Camera>();
 
-		// Vorderseite
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	auto cubeGO = GameObject::Create("TestCube");
+	auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
+	mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
 
-		// Linke Seite
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		// Rechte Seite
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		 // Unterseite
-		 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		  0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		  0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-		 // Oberseite
-		 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		  0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
-
-	unsigned int indices[] = {
-		1, 0, 3,
-		3, 2, 1
-	};
-	
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	//glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	GLsizei vertexSize = 5 * sizeof(float);
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
-	glEnableVertexAttribArray(0);
-	// UV attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-	glBindVertexArray(0);
-
-	// wireframe polygons.
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	{ 
-		using namespace GLTransform;
-		
-		model = RotationXYZ(ConversionUtils::ToRadians(-55.0f), 0, 0);
-		//projection = Orthographic(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 10.0f);
-		projection = Perspective(ConversionUtils::ToRadians(cameraFOV), static_cast<float>(App_Application_Get_Window_Width() / App_Application_Get_Window_Height()), 0.1f, 100.0f);
-	}
-
-	DefaultShader.Bind();
- 	Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + Vector3::back, Vector3::up);
-	DefaultShader.SetMatrix4("view", view.ToOpenGLData());
-	
-	lastFrameMousePos = Input::GetMousePosition();
-
-	auto* container = GameObject::Create("WallContainer");
-	GameObject::Create("wall1")->SetParent(container);
-	GameObject::Create("wall2")->SetParent(container);
-	GameObject::Create("wall3")->SetParent(container);
-
-	auto* wall4 = GameObject::Create("wall4")->SetParent(container);
-	GameObject::Create("wall4.1")->SetParent(wall4);
-	GameObject::Create("wall4.2")->SetParent(wall4);
-
-	wall4->AddComponent<Component::MeshRenderer>();
-
-	GameObject::Create("fd");
-	Log::Print("");
-	Log::Print(GameObject::GetHierarchyString());
-
-	Log::Print("");
-	Log::Print(container->GetComponentListString());
-	Log::Print(container->GetComponent<Component::Transform>()->GetComponentString());
+	cubeGO->GetTransform()->SetPosition(0, 0, 15);
+	cubeGO->GetTransform()->SetScale(10, 10, 10);
 }
 
 void CameraMove();
@@ -185,26 +65,14 @@ void Project::Update() {
 	if (Input::GetScrollDir(dir)) {
 		cameraFOV -= static_cast<float>(dir) * 2;
 		MathUtil::Clamp(cameraFOV, 1.0f, 120.0f);
-		projection = GLTransform::Perspective(ConversionUtils::ToRadians(cameraFOV), static_cast<float>(App_Application_Get_Window_Width() / App_Application_Get_Window_Height()), 0.1f, 100.0f);
+		cameraGO->GetComponent<Component::Camera>()->SetFOV(cameraFOV);
 	}
 
 	CameraMove();
-
-	DefaultShader.Bind();
-	texture1.Bind(0);
-	DefaultShader.SetMatrix4("projection", projection.ToOpenGLData());
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	
-	texture1.Unbind(0);
-	glBindVertexArray(0);
 }
 
 void CameraMove() {
-	return;
-
-	static Vector3 lookDir;
+	static Vector3 forward;
 	static bool first = true;
 	Vector3 moveDir;
 	float moveDirY = 0;
@@ -216,53 +84,41 @@ void CameraMove() {
 	if (Input::KeyPressed(GLFW_KEY_SPACE)) moveDirY += 1;
 	if (Input::KeyPressed(GLFW_KEY_LEFT_CONTROL)) moveDirY -= 1;
 
-	Vector2 mousePos = Input::GetMousePosition();
-	Vector2 mouseDiff(
-		mousePos.x - lastFrameMousePos.x,
-		lastFrameMousePos.y - mousePos.y
-	);
-	if (moveDirY != 0 || moveDir.SquaredMagnitude() > 0 || mouseDiff.SquaredMagnitude() > 0 || first) {
-		mouseDiff *= sensitivity;
-		cameraRotation.y += mouseDiff.x; // yaw (horizontal)
-		cameraRotation.x += mouseDiff.y; // pitch (vertikal)
-		lastFrameMousePos = mousePos;
+	Vector2 mouseDelta = Input::GetMousePositionDelta();
+
+	if (moveDirY != 0 || moveDir.SquaredMagnitude() > 0 || mouseDelta.SquaredMagnitude() > 0 || first) {
+		mouseDelta *= sensitivity;
+		cameraRotation.y += mouseDelta.x; // yaw (horizontal)
+		cameraRotation.x += mouseDelta.y; // pitch (vertikal)
 
 		MathUtil::Clamp(cameraRotation.x, -89.0f, 89.0f);
 
-		lookDir.x = sin(ConversionUtils::ToRadians(cameraRotation.y)) * cos(ConversionUtils::ToRadians(cameraRotation.x));
-		lookDir.y = sin(ConversionUtils::ToRadians(cameraRotation.x));
-		lookDir.z = cos(ConversionUtils::ToRadians(cameraRotation.y)) * cos(ConversionUtils::ToRadians(cameraRotation.x));
-		lookDir.Normalize();
-
+		auto trans = cameraGO->GetTransform();
+		forward = trans->GetForward();
 		moveDir.Normalize();
 
-		Vector3 right = lookDir.Cross(Vector3::up).Normalize();
-		Vector3 up = right.Cross(lookDir).Normalize();
+		Vector3 right = trans->GetRight(forward);
+		Vector3 up = trans->GetUp(forward, right);
 
 		Vector3 worldMoveDir =
 			right * moveDir.x +
 			up * moveDir.y +
-			lookDir * moveDir.z;
+			forward * moveDir.z;
 
 		worldMoveDir.y += moveDirY * cameraSpeedVerMultiplier;
 
 		float multiplier = (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT)) ? cameraSprintMultiplier: 1;
 		multiplier *= (Input::KeyPressed(GLFW_KEY_LEFT_ALT)) ? cameraSlowMultiplier : 1;
 		cameraPosition += worldMoveDir * cameraSpeed * multiplier * Time::GetDeltaTime();
-
-		Matrix view = GLTransform::LookAt(cameraPosition, cameraPosition + lookDir, Vector3::up);
-		DefaultShader.SetMatrix4("view", view.ToOpenGLData());
+		
+		trans->SetPosition(cameraPosition);
+		trans->SetRotation(cameraRotation);
 	}
 
 	first = false;
 }
 
 void Project::Shutdown() {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-
-	DefaultShader.DeleteGL();
 }
 
 void Project::OnWindowResize(int newWidth, int newHeight) {

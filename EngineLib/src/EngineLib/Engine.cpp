@@ -72,7 +72,7 @@ namespace EngineCore {
 		Component::Camera::SetWindowDimensions(app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
 		app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 		app->Update();
-		if (m_gameObjectManager->m_mainCamera) {
+		if (m_gameObjectManager->m_mainCamera.lock()) {
 			m_gameObjectManager->DrawGameObjects();
 		}
 		else {
@@ -89,7 +89,8 @@ namespace EngineCore {
 	void Engine::Shutdown() {
 		app->Shutdown();
 
-		Texture2D::Cleanup();
+		ResourceManager& rm = ResourceManager::GetInstance();
+		rm.Cleanup();
 		glfwTerminate();
 	}
 
@@ -198,6 +199,7 @@ namespace EngineCore {
 		}
 		Log::Info("Engine::GLAD: Initialized GLAD successfully");
 
+		glPolygonMode(GL_FRONT, GL_FILL);
 		glViewport(0, 0, app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
 		if (app->m_appOpenGLDepthTesting)

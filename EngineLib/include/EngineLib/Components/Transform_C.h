@@ -98,7 +98,7 @@ namespace EngineCore {
 			// Local rotation
 			Vector3 m_rotation;
 			// Local scale
-			Vector3 m_scale;
+			Vector3 m_scale{1, 1, 1};
 
 			// Local model matrix
 			Matrix m_modeMat;

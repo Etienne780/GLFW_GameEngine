@@ -13,7 +13,7 @@ namespace EngineCore {
 
 	Texture2D::Texture2D(bool useFallBack) {
 		if (!useFallBack) {
-			m_format = GL_RGB;
+			m_nrChannels = 3;
 
 			m_wrappingX = GL_REPEAT;
 			m_wrappingY = GL_REPEAT;
@@ -27,7 +27,7 @@ namespace EngineCore {
 	}
 
 	Texture2D::Texture2D(const char* path) {
-		m_format = GL_RGB;
+		m_nrChannels = 3;
 
 		m_wrappingX = GL_REPEAT;
 		m_wrappingY = GL_REPEAT;
@@ -39,20 +39,25 @@ namespace EngineCore {
 	}
 
 	Texture2D::Texture2D(const unsigned char* data, int width, int height, int nrChannels) {
-		m_format = GL_RGB;
+		if (data && width > 0 && height > 0 && nrChannels > 0) {
+			m_nrChannels = 3;
 
-		m_wrappingX = GL_REPEAT;
-		m_wrappingY = GL_REPEAT;
+			m_wrappingX = GL_REPEAT;
+			m_wrappingY = GL_REPEAT;
 
-		m_filterMin = GL_LINEAR;
-		m_filterMag = GL_LINEAR;
+			m_filterMin = GL_LINEAR;
+			m_filterMag = GL_LINEAR;
 
-		m_imageData = new unsigned char[width * height * nrChannels];
-		std::memcpy(m_imageData, data, width * height * nrChannels);
+			m_imageData = new unsigned char[width * height * nrChannels];
+			std::memcpy(m_imageData, data, width * height * nrChannels);
 
-		m_width = width;
-		m_height = height;
-		m_nrChannels = nrChannels;
+			m_width = width;
+			m_height = height;
+			m_nrChannels = nrChannels;
+		}
+		else {
+			LoadTextureFallback();
+		}
 	}
 
 	Texture2D::~Texture2D() {
@@ -78,13 +83,14 @@ namespace EngineCore {
 		// load and generate the texture
 		unsigned char* imageData = stbi_load(path, &m_width, &m_height, &m_nrChannels, 0);
 
+		GLenum format;
 		if (imageData) {
 			if (m_nrChannels == 1)
-				m_format = GL_RED;
+				format = GL_RED;
 			else if (m_nrChannels == 3)
-				m_format = GL_RGB;
+				format = GL_RGB;
 			else if (m_nrChannels == 4)
-				m_format = GL_RGBA;
+				format = GL_RGBA;
 			else {
 				Log::Error("Texture2D: Unsupported number of channels: {}!", m_nrChannels);
 				LoadTextureFallback();
@@ -93,7 +99,7 @@ namespace EngineCore {
 				return;
 			}
 
-			glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, GL_UNSIGNED_BYTE, imageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, m_width, m_height, 0, format, GL_UNSIGNED_BYTE, imageData);
 			if (m_createMipmaps) {
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
@@ -111,6 +117,11 @@ namespace EngineCore {
 	void Texture2D::Create(unsigned char* data, int width, int height, int nrChannels) {
 		m_exists = true;
 
+		if (nrChannels < 1 || nrChannels > 4) {
+			Log::Error("Texture2D: Invalid number of channels ({}). Expected 1-4.", nrChannels);
+			return;
+		}
+
 		m_imageData = new unsigned char[width * height * nrChannels];
 		std::memcpy(m_imageData, data, width * height * nrChannels);
 
@@ -127,6 +138,7 @@ namespace EngineCore {
 		m_height = height;
 		m_nrChannels = nrChannels;
 
+		GLenum m_format;
 		if (data) {
 			if (m_nrChannels == 1)
 				m_format = GL_RED;
@@ -178,7 +190,7 @@ namespace EngineCore {
 
 		m_width = 32;
 		m_height = 32;
-		m_format = GL_RGB;
+		m_nrChannels = 3;
 
 		m_wrappingX = GL_REPEAT;
 		m_wrappingY = GL_REPEAT;

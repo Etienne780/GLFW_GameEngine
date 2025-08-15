@@ -10,6 +10,7 @@
 namespace EngineCore {
 
     class ResourceManager {
+    friend class Engine;
     public:
         static ResourceManager& GetInstance();
 
@@ -74,6 +75,8 @@ namespace EngineCore {
         std::unordered_map<unsigned int, std::unique_ptr<Mesh>> m_meshes;
         std::unordered_map<unsigned int, std::unique_ptr<Shader>> m_shaders;
         std::unordered_map<unsigned int, std::unique_ptr<Material>> m_materials;
+
+        void Cleanup();
     };
 
 }

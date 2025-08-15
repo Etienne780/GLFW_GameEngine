@@ -141,6 +141,7 @@ bool File::IsFileOpen() const {
     else if (m_fileState == FileState::FILE_READ) {
         return m_ifstream.is_open();
     }
+    return false;
 }
 
 size_t File::GetFileSize() const {

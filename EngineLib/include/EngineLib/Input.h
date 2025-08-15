@@ -26,6 +26,12 @@ namespace EngineCore {
 		static void Init(GLFWwindow* window);
 		static void LateUpdate();
 
+		/**
+		* @brief gets the diff of the current mouse pos and the last frame pose (inverts the y axies for convenietios)
+		* @return returns a new Vector2 that is the delta of the mouse position
+		*/
+		static Vector2 GetMousePositionDelta();
+
 		static int GetScrollDir();
 		static bool GetScrollDir(int& dir);
 
@@ -60,6 +66,7 @@ namespace EngineCore {
 		Input();
 		static std::unordered_map<int, Key> keyStates;
 		static Vector2 m_mousePosition;
+		static Vector2 m_mouseDelta;
 		static int m_scrollDir;
 
 		static void GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

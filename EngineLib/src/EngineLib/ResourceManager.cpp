@@ -267,4 +267,14 @@ namespace EngineCore {
         return m_idCounters[assetIndex]++;
     }
 
+    void ResourceManager::Cleanup() {
+        m_materials.clear();
+        for (auto& [id, texture] : m_texture2Ds) { texture->DeleteGL(); }
+        for (auto& [id, mesh] : m_meshes) { mesh->DeleteGL(); }
+        for (auto& [id, shader] : m_shaders) { shader->DeleteGL(); }
+        m_texture2Ds.clear();
+        m_meshes.clear();
+        m_shaders.clear();
+    }
+
 }

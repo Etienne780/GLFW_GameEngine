@@ -1,4 +1,5 @@
 #include "CoreLib\FormatUtils.h"
+#include "CoreLib\Log.h"
 
 #include "EngineLib\ComponentBase.h"
 
@@ -35,6 +36,14 @@ namespace EngineCore {
 		else {
 			outStr.append(FormatUtils::formatString("{}{}\n", prefix, GetName()));
 		}
+	}
+
+	bool ComponentBase::IsDead(const std::string& msg) const {
+		if (!m_alive) {
+			Log::Warn("{}: {}, Component was deleted!", m_name, msg);
+			return true;
+		}
+		return false;
 	}
 
 }

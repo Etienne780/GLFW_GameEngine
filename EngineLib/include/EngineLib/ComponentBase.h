@@ -36,8 +36,15 @@ namespace EngineCore {
 	protected:
 		ComponentBase(const std::string& name, GameObject* gameObject);
 
+		bool m_alive = true;
 		std::string m_name;
 		GameObject* m_gameObject = nullptr;
+		/**
+		* @brief checks if the gameobject is Dead
+		* @param msg if the func is true writes warn(GameObject: 'msg', GameObject was deleted!)
+		* @return returns true when the gameobject is dead
+		*/
+		bool IsDead(const std::string& msg) const;
 	};
 
 }
