@@ -11,6 +11,8 @@ namespace EngineCore {
 		public:
 			Transform(GameObject* gameObject);
 
+			COMPONENT_TYPE_DEFINITION(Transform);
+
 			/**
 			* @brief Gets the Position local to the parent GameObject if it has one
 			*/

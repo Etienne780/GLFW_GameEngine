@@ -79,6 +79,35 @@ namespace EngineCore {
 			}
 			return m_modeMat;
 		}
+		Vector3 Transform::GetForward() const {
+			Vector3 forward{
+				sin(ConversionUtils::ToRadians(m_rotation.y)) * cos(ConversionUtils::ToRadians(m_rotation.x)),
+				sin(ConversionUtils::ToRadians(m_rotation.x)),
+				cos(ConversionUtils::ToRadians(m_rotation.y)) * cos(ConversionUtils::ToRadians(m_rotation.x))
+			};
+			forward.Normalize();
+			return forward;
+		}
+
+		Vector3 Transform::GetRight() const {
+			return GetForward().Cross(Vector3::up).Normalized();
+		}
+
+		Vector3 Transform::GetRight(const Vector3& forward) const {
+			return forward.Cross(Vector3::up).Normalized();
+		}
+
+		Vector3 Transform::GetUp() const {
+			return GetRight().Cross(GetForward()).Normalized();
+		}
+
+		Vector3 Transform::GetUp(const Vector3& forward) const {
+			return GetRight().Cross(forward).Normalized();
+		}
+
+		Vector3 Transform::GetUp(const Vector3& forward, const Vector3& right) const {
+			return right.Cross(forward).Normalized();
+		}
 
 		#pragma endregion
 
