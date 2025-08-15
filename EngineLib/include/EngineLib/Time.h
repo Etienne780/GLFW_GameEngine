@@ -7,6 +7,8 @@ namespace EngineCore {
 		friend class Engine;
 
 	public:
+		// Gets the current frame count of the programm
+		static int GetFrameCount();
 		// Gets the time since the programm started in seconds
 		static float GetTime();
 		// Gets the time diff between current frame and last frame time in seconds
@@ -24,5 +26,6 @@ namespace EngineCore {
 
 		static double m_lastFrameTimeSec;
 		static double m_deltaTimeSec;
+		static int m_frameCount;
 	};
 }

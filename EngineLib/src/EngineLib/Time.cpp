@@ -8,16 +8,22 @@
 namespace EngineCore {
 	double Time::m_lastFrameTimeSec = 0.0;
 	double Time::m_deltaTimeSec = 0.0;
+	int Time::m_frameCount = 0;
 	
 	Time::Time() {}
 
 	void Time::UpdateTime(double currentTimeSec) {
 		CalculateDeltaTime(currentTimeSec);
 		m_lastFrameTimeSec = currentTimeSec;
+		m_frameCount++;
 	}
 
 	void Time::CalculateDeltaTime(double currentTimeSec) {
 		m_deltaTimeSec = currentTimeSec - m_lastFrameTimeSec;
+	}
+
+	int Time::GetFrameCount() {
+		return m_frameCount;
 	}
 
 	float Time::GetTime() {
