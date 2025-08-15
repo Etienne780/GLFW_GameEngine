@@ -71,10 +71,6 @@ bool Application::App_Application_Get_Window_Cursor_Hidden() const {
     return m_appApplicationWindowCursorHidden;
 }
 
-int Application::App_Application_Get_FrameCount() const {
-    return m_appApplicationFrameCount;
-}
-
 int Application::App_Application_Get_FramesPerSecond() const {
     return m_appApplicationFramesPerSecond;
 }

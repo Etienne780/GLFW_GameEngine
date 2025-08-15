@@ -52,7 +52,6 @@ public:
 	bool App_Application_Get_Window_Visibility() const;
 	bool App_Application_Get_Window_Cursor_Lock() const;
 	bool App_Application_Get_Window_Cursor_Hidden() const;
-	int App_Application_Get_FrameCount() const;
 	int App_Application_Get_FramesPerSecond() const;
 	bool App_Application_Get_Header() const;
 	bool App_Application_Get_CloseAppOnWindowClose() const;
@@ -93,7 +92,6 @@ private:
 	bool m_appApplicationHeader = true;
 	int m_appApplicationWindowHeight = 600;
 	int m_appApplicationWindowWidth = 800;
-	int m_appApplicationFrameCount = 0;
 	int m_appApplicationFramesPerSecond = 0;
 	bool m_appApplicationWindowResizable = true;
 	bool m_appApplicationWindowDecoration = true;
