@@ -47,6 +47,31 @@ namespace EngineCore {
 			*/
 			Matrix GetWorldModelMatrix();
 
+			// Returns the normalized forward direction vector based on the current rotation (in Euler angles).
+			// Forward is typically the direction the object is facing in world space.
+			Vector3 GetForward() const;
+
+			// Returns the normalized right direction vector based on the current rotation.
+			// Right is perpendicular to forward and points to the object's local right-hand side.
+			Vector3 GetRight() const;
+
+			// Returns the normalized right direction vector based on a given forward vector.
+			// This is useful when you already have a forward vector and want to avoid recalculating it from rotation.
+			Vector3 GetRight(const Vector3& forward) const;
+
+			// Returns the normalized up direction vector based on the current rotation.
+			// Up is perpendicular to both forward and right and points to the object's local upward direction.
+			Vector3 GetUp() const;
+
+			// Returns the normalized up direction vector based on a given forward vector.
+			// This is useful when you already have forward and want to calculate up without using rotation directly.
+			Vector3 GetUp(const Vector3& forward) const;
+
+			// Returns the normalized up direction vector based on given forward and right vectors.
+			// This is useful when you already have both forward and right vectors and want to avoid redundant calculations.
+			Vector3 GetUp(const Vector3& forward, const Vector3& right) const;
+
+
 			Transform& SetPosition(float x, float y, float z);
 			Transform& SetRotation(float x, float y, float z);
 			Transform& SetScale(float x, float y, float z);
