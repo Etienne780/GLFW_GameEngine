@@ -52,7 +52,6 @@ namespace EngineCore {
 
 	void Engine::Update(double currentTimeSec) {
 		m_frameCount++;
-		app->m_appApplicationFrameCount = m_frameCount;
 
 		Time::UpdateTime(currentTimeSec);
 		m_fpsCounter += Time::GetDeltaTime();
@@ -70,10 +69,15 @@ namespace EngineCore {
 						 1.0f);
 			glClear(((app->m_appOpenGLDepthTesting) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
 		}
+		Component::Camera::SetWindowDimensions(app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
 		app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 		app->Update();
-		m_gameObjectManager->DrawGameObjects();
-		
+		if (m_gameObjectManager->m_mainCamera) {
+			m_gameObjectManager->DrawGameObjects();
+		}
+		else {
+			Log::Warn("Engine: No camera available");
+		}
 
 		LateUpdate();
 	}
