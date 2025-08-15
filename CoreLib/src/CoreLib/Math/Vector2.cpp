@@ -41,6 +41,12 @@ Vector2& Vector2::Normalize() {
     return *this;
 }
 
+Vector2 Vector2::Normalized() const {
+    Vector2 copy = *this;
+    copy.Normalize();
+    return copy;
+}
+
 Vector2 Vector2::Normalize(const Vector2& vec) {
     float len = vec.Magnitude();
     if (len > 0) {

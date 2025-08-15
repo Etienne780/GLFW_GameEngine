@@ -53,7 +53,13 @@ Vector4& Vector4::Normalize() {
     return *this;
 }
 
-static Vector4 Normalize(const Vector4& vec) {
+Vector4 Vector4::Normalized() const {
+    Vector4 copy = *this;
+    copy.Normalize();
+    return copy;
+}
+
+Vector4 Vector4::Normalize(const Vector4& vec) {
     float len = vec.Magnitude();
     if (len > 0) {
         return vec / len;
@@ -109,7 +115,7 @@ Vector4& Vector4::operator*=(const Vector4& other) {
 }
 
 Vector4& Vector4::operator/=(const Vector4& other) {
-    if (other.x == 0 || other.y == 0, other.z == 0, other.w == 0) {
+    if (other.x == 0 || other.y == 0 || other.z == 0 || other.w == 0) {
         std::ostringstream oss;
         oss << "Vector4: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ", " << other.w << ")";
         throw std::runtime_error(oss.str());
@@ -163,7 +169,7 @@ Vector4 Vector4::operator*(const Vector4& other) const {
 }
 
 Vector4 Vector4::operator/(const Vector4& other) const {
-    if (other.x == 0 || other.y == 0, other.z == 0, other.w == 0) {
+    if (other.x == 0 || other.y == 0 || other.z == 0 || other.w == 0) {
         std::ostringstream oss;
         oss << "Vector4: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ", " << other.w << ")";
         throw std::runtime_error(oss.str());
@@ -219,7 +225,7 @@ Vector4 operator*(float scalar, const Vector4& other) {
 }
 
 Vector4 operator/(float scalar, const Vector4& other) {
-    if (other.x == 0 || other.y == 0, other.z == 0, other.w == 0) {
+    if (other.x == 0 || other.y == 0 || other.z == 0 || other.w == 0) {
         std::ostringstream oss;
         oss << "Vector4: Division by zero (" << other.x << ", " << other.y << ", " << other.z << ", " << other.w << ")";
         throw std::runtime_error(oss.str());

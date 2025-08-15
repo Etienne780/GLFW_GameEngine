@@ -61,6 +61,12 @@ public:
     Vector4& Normalize();
 
     /**
+    * @brief Normalizes the vector to have length 1.
+    * @return Normalized copy of the vector
+    */
+    Vector4 Normalized() const;
+
+    /**
     * @brief Normalizes a vector to have length 1.
     * @param vec the vector that gets Normalized.
     * @return Normalized vector
