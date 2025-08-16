@@ -70,6 +70,11 @@ namespace EngineCore {
 
 		std::vector<std::shared_ptr<ComponentBase>> m_components;
 
+		/**
+		* @brief calls the start and update methods of the components
+		*/
+		void Update(float deltaTime);
+
 		void RegisterCamera(std::weak_ptr<Component::Camera> camera);
 		void UnregisterCamera(std::weak_ptr<Component::Camera> camera);
 		void UnregisterCameraFromManager();

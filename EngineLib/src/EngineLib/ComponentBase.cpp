@@ -9,6 +9,20 @@ namespace EngineCore {
 		: m_name(name), m_gameObject(gameObject) {
 	}
 
+	void ComponentBase::Start() {
+		static bool once = false;
+		if (once) return;
+
+		Log::Info("Component {} start called", m_name);
+		StartImpl();
+
+		once = true;
+	}
+
+	void ComponentBase::Update(float deltaTime) {
+		UpdateImpl(deltaTime);
+	}
+
 	GameObject* ComponentBase::GetGameObject() const {
 		return m_gameObject;
 	}

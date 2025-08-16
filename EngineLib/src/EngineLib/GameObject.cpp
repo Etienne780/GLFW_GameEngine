@@ -173,6 +173,13 @@ namespace EngineCore {
 		return this;
 	}
 
+	void GameObject::Update(float deltaTime) {
+		for (auto& comp : m_components) {
+			comp->Start();
+			comp->Update(deltaTime);
+		}
+	}
+
 	void GameObject::RegisterCamera(std::weak_ptr<Component::Camera> camera) {
 		m_gameObjectManager->AddCamera(camera);
 	}

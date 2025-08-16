@@ -71,6 +71,8 @@ namespace EngineCore {
 		}
 		Component::Camera::SetWindowDimensions(app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
 		app->m_appApplicationFramesPerSecond = m_framesPerSecond;
+
+		m_gameObjectManager->UpdateGameObjects(Time::GetDeltaTime());
 		app->Update();
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			m_gameObjectManager->DrawGameObjects();
@@ -141,7 +143,7 @@ namespace EngineCore {
 		glfwSetFramebufferSizeCallback(m_window, GLFWFramebufferSizeCallback);
 		glfwSetWindowFocusCallback(m_window, GLFWFocusCallback);
 
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 
 		auto cursorMode = GLFW_CURSOR_NORMAL;
 		if (app->m_appApplicationWindowCursorHidden)

@@ -28,6 +28,13 @@ namespace EngineCore {
 		std::vector<std::weak_ptr<Component::Camera>> m_cameras;
 		std::weak_ptr<Component::Camera> m_mainCamera;
 
+		/**
+		* @brief calles the start and update func of the GameObjects
+		*/
+		void UpdateGameObjects(float deltaTime);
+		/**
+		* @brief Draws a Gameobject if it has a component that can be drawn
+		*/
 		void DrawGameObjects();
 
 		void AddGameObject(std::shared_ptr<GameObject> go);
