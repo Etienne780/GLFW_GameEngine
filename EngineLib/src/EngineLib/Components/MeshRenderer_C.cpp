@@ -1,6 +1,7 @@
 #include <CoreLib\Log.h>
 #include <glad\glad.h>
 
+#include "EngineLib\Time.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\Mesh.h"
 #include "EngineLib\ResourceManager.h"
@@ -51,6 +52,7 @@ namespace EngineCore {
 		}
 
 		void MeshRenderer::Draw() {
+			double prevTime = Time::GetTime();
 			auto& rm = ResourceManager::GetInstance();
 			Mesh* mesh = rm.GetMesh(m_meshID);
 			if (!mesh) {
@@ -86,6 +88,7 @@ namespace EngineCore {
 			glFrontFace(m_invertMesh ? GL_CW : GL_CCW);
 			shader->Bind();
 			mesh->Draw();
+			Log::Debug("Draw Meshrenderer Time: {} ms", (Time::GetTimeDouble() - prevTime) * 1000.0);
 		}
 
 	}

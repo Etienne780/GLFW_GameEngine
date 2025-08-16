@@ -22,13 +22,14 @@ Project::Project()
 
 const float sensitivity = 0.1f;
 Vector3 cameraPosition(0, 0, 5), cameraRotation(0, 5, 0);
-float cameraSpeed = 10.0f;
+float cameraSpeed = 25.0f;
 float cameraSprintMultiplier = 1.8f;
 float cameraSlowMultiplier = 0.4f;
 float cameraSpeedVerMultiplier = 1.2f;
 float cameraFOV = 66.0f;
 
 std::shared_ptr<GameObject> cameraGO = nullptr;
+std::vector<std::shared_ptr<GameObject>> cubes;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -39,12 +40,40 @@ void Project::Start() {
 	cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 
-	auto cubeGO = GameObject::Create("TestCube");
-	auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
+	auto c = GameObject::Create("TestCube");
+	auto mr = c->AddComponent<Component::MeshRenderer>();
 	mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
+	c->GetTransform()->SetScale(10, 10, 10);
 
-	cubeGO->GetTransform()->SetPosition(0, 0, 15);
-	cubeGO->GetTransform()->SetScale(10, 10, 10);
+	size_t cubeCount = 50;
+	cubes.reserve(cubeCount);
+	for (size_t i = 0; i < 50; i++) {
+		auto cubeGO = GameObject::Create(FormatUtils::formatString("TestCube_{}", i));
+		auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
+		mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
+
+		float angle = (static_cast<float>(i) / cubeCount) * 2.0f * CORE_PI;
+
+		float radius = 100.0f;
+		float x = cos(angle) * radius;
+		float z = sin(angle) * radius;
+		cubeGO->GetTransform()->SetPosition(x, 0.0f, z);
+
+		cubeGO->GetTransform()->SetScale(10, 10, 10);
+
+		cubes.push_back(std::move(cubeGO));
+	}
+}
+
+void UpdateCubes(std::vector<std::shared_ptr<GameObject>>& cubes, float time) {
+	float radius = 100.0f;
+	size_t cubeCount = cubes.size();
+	for (size_t i = 0; i < cubeCount; ++i) {
+		float angle = (static_cast<float>(i) / cubeCount) * 2.0f * CORE_PI + time;
+		float x = cos(angle) * radius;
+		float z = sin(angle) * radius;
+		cubes[i]->GetTransform()->SetPosition(x, 0.0f, z);
+	}
 }
 
 void CameraMove();
@@ -68,7 +97,10 @@ void Project::Update() {
 		cameraGO->GetComponent<Component::Camera>()->SetFOV(cameraFOV);
 	}
 
+	UpdateCubes(cubes, Time::GetTime());
 	CameraMove();
+
+	Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
 }
 
 void CameraMove() {
