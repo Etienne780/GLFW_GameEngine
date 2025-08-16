@@ -66,6 +66,7 @@ namespace EngineCore {
 		Input();
 		static std::unordered_map<int, Key> keyStates;
 		static Vector2 m_mousePosition;
+		static Vector2 m_lastFrameMousePosition;
 		static Vector2 m_mouseDelta;
 		static int m_scrollDir;
 

@@ -5,6 +5,7 @@
 
 namespace EngineCore {
 	Vector2 Input::m_mousePosition;
+	Vector2 Input::m_lastFrameMousePosition;
 	Vector2 Input::m_mouseDelta;
 
 	int Input::m_scrollDir = 0;
@@ -19,9 +20,7 @@ namespace EngineCore {
 	}
 
 	void Input::GLFWMouseCallBack(GLFWwindow* window, double xpos, double ypos) {
-		m_mouseDelta.x = xpos - m_mousePosition.x;
-		m_mouseDelta.y = m_mousePosition.y - ypos;
-
+		m_lastFrameMousePosition = m_mousePosition;
 		m_mousePosition.x = static_cast<float>(xpos);
 		m_mousePosition.y =	static_cast<float>(ypos);
 	}
@@ -41,6 +40,8 @@ namespace EngineCore {
 	}
 
 	void Input::LateUpdate() {
+		m_lastFrameMousePosition.x = m_mousePosition.x;
+		m_lastFrameMousePosition.y = m_mousePosition.y;
 		m_scrollDir = 0;
 		// resets the was pressed bools for the just methods
 		for (auto& [_, key] : keyStates) {
@@ -49,6 +50,9 @@ namespace EngineCore {
 	}
 
 	Vector2 Input::GetMousePositionDelta() {
+		m_mouseDelta.x = m_mousePosition.x - m_lastFrameMousePosition.x;
+		m_mouseDelta.y = m_lastFrameMousePosition.y - m_mousePosition.y;
+
 		return m_mouseDelta;
 	}
 
