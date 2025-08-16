@@ -18,7 +18,7 @@ namespace EngineCore {
 			COMPONENT_TYPE_DEFINITION(Camera);
 
 			float GetFOV() const;
-			bool GetIsOrthograpic() const;
+			bool GetOrthograpic() const;
 			float GetAspectRatio() const;
 			float GetNearPlane() const;
 			float GetFarPlane() const;

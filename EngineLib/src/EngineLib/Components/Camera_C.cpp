@@ -25,7 +25,7 @@ namespace EngineCore {
 			return m_fov;
 		}
 
-		bool Camera::GetIsOrthograpic() const {
+		bool Camera::GetOrthograpic() const {
 			if (IsDead("Cant get is Orthograpic")) {
 				return false;
 			}
