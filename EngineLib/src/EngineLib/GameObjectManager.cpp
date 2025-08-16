@@ -1,5 +1,7 @@
 ﻿#include "CoreLib\Log.h"
 
+#include "EngineLib\Time.h"
+#include "EngineLib\Renderer.h"
 #include "EngineLib\EngineTypes.h"
 #include "EngineLib\GameObjectManager.h"
 
@@ -21,9 +23,14 @@ namespace EngineCore {
 	}
 
 	void GameObjectManager::DrawGameObjects() {
+		float prevTime = Time::GetTimeDouble();
 		for (auto& go : m_gameObjects) {
-			go->Draw();
+			go->SubmitDrawCall();
 		}
+		Log::Debug("Submit time: {} ms", (Time::GetTimeDouble() - prevTime) * 1000.0);
+		prevTime = Time::GetTimeDouble();
+		Renderer::GetInstance().DrawAll();
+		Log::Debug("Draw time: {} ms", (Time::GetTimeDouble() - prevTime) * 1000.0);
 	}
 
 	void GameObjectManager::AddGameObject(std::shared_ptr<GameObject> go) {

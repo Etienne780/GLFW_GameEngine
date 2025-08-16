@@ -209,10 +209,10 @@ namespace EngineCore {
 			children.end());
 	}
 
-	void GameObject::Draw() {
+	void GameObject::SubmitDrawCall() {
 		for (auto& comp : m_components) {
 			if (comp->IsDrawable()) {
-				comp->Draw();
+				comp->SubmitDrawCall();
 			}
 		}
 	}

@@ -41,11 +41,11 @@ namespace EngineCore {
     void Mesh::Draw() {
         if (!m_exists) {
             CreateGL();
+            m_exists = true;
         }
 
         glBindVertexArray(m_vao);
         glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
     }
 
     void Mesh::CreateGL() {

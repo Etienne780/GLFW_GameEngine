@@ -20,7 +20,7 @@ namespace EngineCore {
 		virtual void StartImpl() {}
 		virtual void UpdateImpl(float deltaTime) {}
 		virtual bool IsDrawable() const { return false; }
-		virtual void Draw() {}
+		virtual void SubmitDrawCall() {}
 
 		std::string GetComponentString() const;
 		std::string GetComponentString(bool moreDetail) const;

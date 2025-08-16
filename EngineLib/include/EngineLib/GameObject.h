@@ -83,7 +83,7 @@ namespace EngineCore {
 		*/
 		void UnaliveComponents();
 		void RemoveChild(std::shared_ptr<GameObject> child);
-		void Draw();
+		void SubmitDrawCall();
 		/**
 		* @brief checks if the gameobject is Dead
 		* @param msg if the func is true writes warn(GameObject: 'msg', GameObject was deleted!)

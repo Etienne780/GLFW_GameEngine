@@ -7,7 +7,7 @@ namespace EngineCore {
 
 	namespace Component {
 		
-		const std::string Transform::compName = "Transform";
+		const std::string compName = "Transform";
 
 		Transform::Transform(GameObject* gameObject) :
 			ComponentBase(compName, gameObject) {

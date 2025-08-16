@@ -8,12 +8,8 @@ typedef int GLsizei;
 
 namespace EngineCore {
 
-    namespace Component {
-        class MeshRenderer;
-    }
-
     class Mesh {
-    friend class Component::MeshRenderer;
+    friend class Renderer;
     public:
         Mesh(const std::string& path);
         Mesh(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);

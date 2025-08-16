@@ -89,8 +89,6 @@ namespace EngineCore {
 			Transform& AddScale(const Vector3& scale);
 
 		private:
-			static const std::string compName;
-
 			// if the transform has changed
 			bool m_isTransformDirty = true;
 			// Local position

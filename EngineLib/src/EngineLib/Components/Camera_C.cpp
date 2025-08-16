@@ -8,7 +8,7 @@ namespace EngineCore {
 
 	namespace Component {
 
-		const std::string Camera::compName = "Camera";
+		const std::string compName = "Camera";
 		int Camera::m_windowWidth = 1;
 		int Camera::m_windowHeight = 1;
 

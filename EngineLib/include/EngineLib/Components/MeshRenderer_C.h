@@ -3,18 +3,18 @@
 #include "EngineLib\EngineTypes.h"
 
 namespace EngineCore {
+	class Renderer;
 
 	namespace Component {
 
 		class MeshRenderer : public EngineCore::ComponentBase {
-		
 		public:
 			MeshRenderer(GameObject* gameObject);
 
 			COMPONENT_TYPE_DEFINITION(MeshRenderer);
 
 			bool IsDrawable() const override { return true; }
-			void Draw() override;
+			void SubmitDrawCall() override;
 
 			MeshRenderer& SetMesh(unsigned int id);
 			MeshRenderer& SetMaterial(unsigned int id);
@@ -25,6 +25,7 @@ namespace EngineCore {
 			MeshRenderer& SetInvertMesh(bool value);
 
 		private:
+			static Renderer& renderer;
 			unsigned int m_meshID = ENGINE_INVALID_ID;
 			unsigned int m_materialID = ENGINE_INVALID_ID;
 

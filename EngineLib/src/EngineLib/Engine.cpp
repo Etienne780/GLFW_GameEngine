@@ -78,9 +78,7 @@ namespace EngineCore {
 		app->Update();
 		Log::Debug("Update Time: {} ms", (Time::GetTimeDouble() - prevTime) * 1000.0);
 		if (m_gameObjectManager->m_mainCamera.lock()) {
-			prevTime = Time::GetTimeDouble();
 			m_gameObjectManager->DrawGameObjects();
-			Log::Debug("Draw Time: {} ms", (Time::GetTimeDouble() - prevTime) * 1000.0);
 		}
 		else {
 			Log::Warn("Engine: No camera available");

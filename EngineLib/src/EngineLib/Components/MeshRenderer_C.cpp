@@ -1,7 +1,7 @@
 #include <CoreLib\Log.h>
 #include <glad\glad.h>
 
-#include "EngineLib\Time.h"
+#include "EngineLib\Renderer.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\Mesh.h"
 #include "EngineLib\ResourceManager.h"
@@ -10,7 +10,7 @@
 namespace EngineCore {
 
 	namespace Component {
-
+		Renderer& MeshRenderer::renderer = Renderer::GetInstance();
 		const std::string compName = "MeshRenderer";
 
 		MeshRenderer::MeshRenderer(GameObject* gameObject) :
@@ -51,44 +51,16 @@ namespace EngineCore {
 			m_invertMesh = value;
 		}
 
-		void MeshRenderer::Draw() {
-			double prevTime = Time::GetTime();
-			auto& rm = ResourceManager::GetInstance();
-			Mesh* mesh = rm.GetMesh(m_meshID);
-			if (!mesh) {
-				Log::Warn("MeshRenderer: Cant draw mesh, mesh is null!");
-				return;
-			}
+		void MeshRenderer::SubmitDrawCall() {
+			RenderCommand cmd;
+			cmd.materialID = m_materialID;
+			cmd.meshID = m_meshID;
+			memcpy(cmd.modelMatrixOpenGL,
+				m_gameObject->GetTransform()->GetWorldModelMatrix().ToOpenGLData(),
+				sizeof(float) * 16);
+			cmd.invertMesh = m_invertMesh;
 
-			Material* mat = rm.GetMaterial(m_materialID);
-			if (!mat) {
-				// info should add a default mat with a default shader and texture
-				Log::Warn("MeshRenderer: Cant draw mesh, material is null!");
-				return;
-			}
-
-			Shader* shader = mat->BindToShader();
-			if (!shader) {
-				Log::Warn("MeshRenderer: Cant draw mesh, shader of material is nullptr!");
-				return;
-			}
-
-			auto cam = GameObject::GetMainCamera();
-			auto camptr = cam.lock();
-			if (!camptr) {
-				Log::Warn("MeshRenderer: Cant draw mesh, cam is nullptr (idk how)!");
-				return;
-			}
-
-			auto trans = m_gameObject->GetTransform();
-			shader->SetMatrix4("projection", camptr->GetProjectionMatrix().ToOpenGLData());
-			shader->SetMatrix4("view", camptr->GetViewMatrix().ToOpenGLData());
-			shader->SetMatrix4("model", trans->GetWorldModelMatrix().ToOpenGLData());
-
-			glFrontFace(m_invertMesh ? GL_CW : GL_CCW);
-			shader->Bind();
-			mesh->Draw();
-			Log::Debug("Draw Meshrenderer Time: {} ms", (Time::GetTimeDouble() - prevTime) * 1000.0);
+			renderer.Submit(cmd);
 		}
 
 	}

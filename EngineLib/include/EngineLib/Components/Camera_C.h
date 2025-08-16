@@ -38,7 +38,6 @@ namespace EngineCore {
 			Camera& SetPlanes(float nearPlane, float farPlane);
 
 		private:
-			static const std::string compName;
 			// gets updatet in the engine loop (before the update loop of the application)
 			static int m_windowWidth, m_windowHeight;
 

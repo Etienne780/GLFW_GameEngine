@@ -7,7 +7,7 @@
 
 namespace EngineCore {
 
-	GLuint Material::m_maxTextureUnits = 0;
+	unsigned int Material::m_maxTextureUnits = 0;
 
 	Material::Material(unsigned int shaderID) 
 		: m_shaderID(shaderID){
@@ -28,6 +28,14 @@ namespace EngineCore {
 		if (shader->GetID() == ENGINE_INVALID_ID)
 			shader->CreateGL();
 		shader->Bind();
+
+		ApplyParamsOnly(shader);
+
+		return shader;
+	}
+
+	void Material::ApplyParamsOnly(Shader* shader) const {
+		auto& rm = ResourceManager::GetInstance();
 
 		for (const auto& [name, value] : m_boolParams) {
 			shader->SetBool(name, value);
@@ -57,7 +65,7 @@ namespace EngineCore {
 			SetMatrixParam(shader, name, value);
 		}
 
-		int counter = 0;
+		unsigned int counter = 0;
 		for (const auto& [name, value] : m_textureParams) {
 			if (counter >= m_maxTextureUnits) break;
 			if (value == ENGINE_INVALID_ID) continue;
@@ -69,9 +77,6 @@ namespace EngineCore {
 				counter++;
 			}
 		}
-		
-
-		return shader;
 	}
 
 	void Material::SetMatrixParam(Shader* shader, const std::string& name, Matrix m) const {
@@ -156,6 +161,10 @@ namespace EngineCore {
 		}
 
 		return pStr;
+	}
+
+	unsigned int Material::GetShaderID() const {
+		return m_shaderID;
 	}
 
 }

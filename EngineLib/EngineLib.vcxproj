@@ -34,6 +34,7 @@
     <ClInclude Include="include\EngineLib\Input.h" />
     <ClInclude Include="include\EngineLib\Material.h" />
     <ClInclude Include="include\EngineLib\Mesh.h" />
+    <ClInclude Include="include\EngineLib\Renderer.h" />
     <ClInclude Include="include\EngineLib\ResourceManager.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
     <ClInclude Include="include\EngineLib\Texture2D.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="src\EngineLib\GameObject.cpp" />
     <ClCompile Include="src\EngineLib\glad.c" />
     <ClCompile Include="src\EngineLib\Input.cpp" />
+    <ClCompile Include="src\EngineLib\Renderer.cpp" />
     <ClCompile Include="src\EngineLib\ResourceManager.cpp" />
     <ClCompile Include="src\EngineLib\Shader.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />
