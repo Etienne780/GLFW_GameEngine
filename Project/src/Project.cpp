@@ -30,11 +30,11 @@ float cameraFOV = 66.0f;
 
 std::shared_ptr<GameObject> cameraGO = nullptr;
 std::vector<std::shared_ptr<GameObject>> cubes;
+size_t cubeCountTheta = 20; // horizontale Segmente
+size_t cubeCountPhi = 20;   // vertikale Segmente
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
-	App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	App_OpenGL_Set_FaceCulling(true);
 
 	cameraGO = GameObject::Create("MainCamera");
@@ -45,34 +45,46 @@ void Project::Start() {
 	mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
 	c->GetTransform()->SetScale(10, 10, 10);
 
-	size_t cubeCount = 50;
-	cubes.reserve(cubeCount);
-	for (size_t i = 0; i < 50; i++) {
-		auto cubeGO = GameObject::Create(FormatUtils::formatString("TestCube_{}", i));
-		auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
-		mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
+	float radius = 100.0f;
 
-		float angle = (static_cast<float>(i) / cubeCount) * 2.0f * CORE_PI;
+	for (size_t i = 0; i < cubeCountTheta; ++i) {
+		float theta = (static_cast<float>(i) / cubeCountTheta) * 2.0f * CORE_PI;
 
-		float radius = 100.0f;
-		float x = cos(angle) * radius;
-		float z = sin(angle) * radius;
-		cubeGO->GetTransform()->SetPosition(x, 0.0f, z);
+		for (size_t j = 0; j < cubeCountPhi; ++j) {
+			float phi = (static_cast<float>(j) / cubeCountPhi) * CORE_PI;
 
-		cubeGO->GetTransform()->SetScale(10, 10, 10);
+			float x = radius * sin(phi) * cos(theta);
+			float y = radius * cos(phi);
+			float z = radius * sin(phi) * sin(theta);
 
-		cubes.push_back(std::move(cubeGO));
+			auto cubeGO = GameObject::Create(FormatUtils::formatString("Cube_{}_{}", i, j));
+			auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
+			mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
+
+			cubeGO->GetTransform()->SetPosition(x, y, z);
+			cubeGO->GetTransform()->SetScale(5, 5, 5);
+
+			cubes.push_back(std::move(cubeGO));
+		}
 	}
 }
 
-void UpdateCubes(std::vector<std::shared_ptr<GameObject>>& cubes, float time) {
+void UpdateCubes(std::vector<std::shared_ptr<GameObject>>& cubes, float time, size_t thetaCount, size_t phiCount) {
 	float radius = 100.0f;
-	size_t cubeCount = cubes.size();
-	for (size_t i = 0; i < cubeCount; ++i) {
-		float angle = (static_cast<float>(i) / cubeCount) * 2.0f * CORE_PI + time;
-		float x = cos(angle) * radius;
-		float z = sin(angle) * radius;
-		cubes[i]->GetTransform()->SetPosition(x, 0.0f, z);
+	size_t index = 0;
+
+	for (size_t i = 0; i < thetaCount; ++i) {
+		float theta = (static_cast<float>(i) / thetaCount) * 2.0f * CORE_PI + time;
+
+		for (size_t j = 0; j < phiCount; ++j) {
+			float phi = (static_cast<float>(j) / phiCount) * CORE_PI;
+
+			float x = radius * sin(phi) * cos(theta);
+			float y = radius * cos(phi);
+			float z = radius * sin(phi) * sin(theta);
+
+			cubes[index++]->GetTransform()->SetPosition(x, y, z);
+		}
 	}
 }
 
@@ -97,7 +109,7 @@ void Project::Update() {
 		cameraGO->GetComponent<Component::Camera>()->SetFOV(cameraFOV);
 	}
 
-	UpdateCubes(cubes, Time::GetTime());
+	UpdateCubes(cubes, Time::GetTime(), cubeCountTheta, cubeCountPhi);
 	CameraMove();
 
 	Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
