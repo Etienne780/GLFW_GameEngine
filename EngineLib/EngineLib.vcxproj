@@ -23,6 +23,7 @@
     <ClInclude Include="include\EngineLib\Application.h" />
     <ClInclude Include="include\EngineLib\AssetRepository.h" />
     <ClInclude Include="include\EngineLib\ComponentBase.h" />
+    <ClInclude Include="include\EngineLib\Components\CameraMovement_C.h" />
     <ClInclude Include="include\EngineLib\Components\Camera_C.h" />
     <ClInclude Include="include\EngineLib\Components\MeshRenderer_C.h" />
     <ClInclude Include="include\EngineLib\Components\Script_C.h" />
@@ -44,6 +45,7 @@
     <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\EngineLib\Components\CameraMovement_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\Script_C.cpp" />
     <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
     <ClCompile Include="src\EngineLib\Material.cpp" />
