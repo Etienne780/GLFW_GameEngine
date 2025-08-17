@@ -31,7 +31,7 @@ void Project::Start() {
 
 	cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
-	cameraGO->AddComponent<Component::CameraMovement>();
+	cameraGO->AddComponent<Component::FreeCameraController>();
 
 	auto c = GameObject::Create("TestCube");
 	auto mr = c->AddComponent<Component::MeshRenderer>();
