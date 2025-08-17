@@ -28,7 +28,6 @@ namespace EngineCore {
 		for (auto& go : m_gameObjects) {
 			go->SubmitDrawCall();
 		}
-		prevTime = Time::GetTimeDouble();
 		renderer.DrawAll();
 	}
 
