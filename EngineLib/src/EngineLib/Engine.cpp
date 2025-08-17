@@ -74,9 +74,7 @@ namespace EngineCore {
 
 		m_gameObjectManager->UpdateGameObjects(Time::GetDeltaTime());
 
-		double prevTime = Time::GetTimeDouble();
 		app->Update();
-		Log::Debug("Update Time: {} ms", (Time::GetTimeDouble() - prevTime) * 1000.0);
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			m_gameObjectManager->DrawGameObjects();
 		}
