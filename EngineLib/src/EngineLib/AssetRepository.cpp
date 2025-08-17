@@ -110,7 +110,35 @@ namespace EngineCore {
 
         #pragma region SHADER::ENGINE::Default
         {
-            g_shaderEngineDefaultId = rm.AddShaderFromFile("assets/shaders/Default.vert", "assets/shaders/Default.frag");
+            std::string vert = R"(
+                #version 330 core
+                layout(location = 0) in vec3 aPos;
+                layout(location = 1) in vec2 aTexCoord;
+                layout(location = 2) in vec2 aNormal;
+                layout(location = 3) in mat4 instanceModel;
+                
+                out vec2 TexCoord;
+                uniform mat4 view;
+                uniform mat4 projection;
+                
+                void main() {
+                    gl_Position = projection * view * instanceModel * vec4(aPos, 1.0);
+                    TexCoord = aTexCoord;
+                }
+            )";
+            std::string frag = R"(
+                #version 330 core
+                out vec4 FragColor;
+                in vec2 TexCoord;
+
+                uniform sampler2D utexture;
+
+                void main()
+                {
+                	FragColor = texture(utexture, TexCoord);
+                }
+            )";
+            g_shaderEngineDefaultId = rm.AddShaderFromMemory(vert, frag);
         }
         #pragma endregion
 
