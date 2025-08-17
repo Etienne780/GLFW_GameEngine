@@ -3,9 +3,10 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "CoreLib\Log.h"
-#include "EngineLib\Vertex.h"
+#include <CoreLib\Log.h>
+#include <CoreLib\Math\Matrix4x4.h>
 
+#include "EngineLib\Vertex.h"
 #include "EngineLib\Mesh.h"
 
 
@@ -38,15 +39,26 @@ namespace EngineCore {
        DeleteGL();
     }
 
-    void Mesh::Draw() {
+    void Mesh::DrawInstanced(int instanceCount, const std::vector<Matrix4x4>& matrices) {
         if (!m_exists) {
             CreateGL();
-            m_exists = true;
         }
 
+        std::vector<float> glMatrices;
+        glMatrices.reserve(instanceCount * 16);
+        for (const auto& m : matrices) {
+            const float* data = m.ToOpenGLData();
+            glMatrices.insert(glMatrices.end(), data, data + 16);
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
+        glBufferData(GL_ARRAY_BUFFER, glMatrices.size() * sizeof(float), glMatrices.data(), GL_DYNAMIC_DRAW);
+
         glBindVertexArray(m_vao);
-        glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
+        glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0, instanceCount);
     }
+
+
 
     void Mesh::CreateGL() {
         if (m_exists) return;
@@ -71,6 +83,25 @@ namespace EngineCore {
         // UV attribute
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
+        // Normal attribute
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)(5 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+
+        // Instance buffer fort modelMatrix (4x4)
+        glGenBuffers(1, &m_instanceVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
+        // reserve data (fill later)
+        glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+
+        // Attribut-Location 3..6 für die Matrix-Spalten
+        std::size_t vec4Size = sizeof(float) * 4;
+        std::size_t mat4Size = sizeof(float) * 16;
+
+        for (int i = 0; i < 4; i++) {
+            glEnableVertexAttribArray(3 + i);
+            glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, mat4Size, (void*)(i * vec4Size));
+            glVertexAttribDivisor(3 + i, 1); // per instance
+        }
 
         glBindVertexArray(0);
 

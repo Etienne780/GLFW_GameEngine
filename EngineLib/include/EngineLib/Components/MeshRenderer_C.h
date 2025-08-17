@@ -25,7 +25,8 @@ namespace EngineCore {
 			MeshRenderer& SetInvertMesh(bool value);
 
 		private:
-			static Renderer& renderer;
+			static Renderer& m_renderer;
+			RenderCommand m_cmd;
 			unsigned int m_meshID = ENGINE_INVALID_ID;
 			unsigned int m_materialID = ENGINE_INVALID_ID;
 

@@ -1,4 +1,5 @@
 #include <CoreLib\Log.h>
+#include <CoreLib\Math\Matrix4x4.h>
 
 #include "EngineLib\Time.h"
 #include "EngineLib\GameObject.h"
@@ -53,9 +54,9 @@ namespace EngineCore {
 			return m_farPlane;
 		}
 
-		Matrix Camera::GetProjectionMatrix() {
+		Matrix4x4 Camera::GetProjectionMatrix() {
 			if (IsDead("Cant get Projection-Matrix")) {
-				return Matrix();
+				return Matrix4x4();
 			}
 			float aspectRatio = CalculateAspectRatio();
 
@@ -69,9 +70,9 @@ namespace EngineCore {
 		}
 
 
-		Matrix Camera::GetViewMatrix() {
+		Matrix4x4 Camera::GetViewMatrix() {
 			if (IsDead("Cant get View-Matrix")) {
-				return Matrix();
+				return Matrix4x4();
 			}
 			static int lastFrame = -1;
 			if (lastFrame < Time::GetFrameCount()) {
@@ -172,7 +173,7 @@ namespace EngineCore {
 				float orthoHeight = m_fov; // Could treat FOV as "size" for ortho
 				float orthoWidth = orthoHeight * aspectRatio;
 
-				m_projection = GLTransform::Orthographic(
+				m_projection = GLTransform4x4::Orthographic(
 					-orthoWidth * 0.5f, orthoWidth * 0.5f,
 					-orthoHeight * 0.5f, orthoHeight * 0.5f,
 					m_nearPlane, m_farPlane
@@ -185,7 +186,7 @@ namespace EngineCore {
 				}
 				#endif
 
-				m_projection = GLTransform::Perspective(
+				m_projection = GLTransform4x4::Perspective(
 					ConversionUtils::ToRadians(m_fov), 
 					aspectRatio,
 					m_nearPlane, 
@@ -197,7 +198,7 @@ namespace EngineCore {
 			auto trans = m_gameObject->GetTransform();
 			Vector3 worldPos = trans->GetWorldPosition();
 			Vector3 forward = trans->GetForward();
-			m_view = GLTransform::LookAt(worldPos, worldPos + forward, trans->GetUp(forward));
+			m_view = GLTransform4x4::LookAt(worldPos, worldPos + forward, trans->GetUp(forward));
 		}
 
 		void Camera::SetWindowDimensions(int width, int height) {

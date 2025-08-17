@@ -20,42 +20,56 @@ namespace EngineCore {
         m_commands.push_back(cmd);
     }
 
-    void Renderer::DrawAll() {
-        // 1. Sortiere die Commands nach Material/Shader
-        //std::sort(m_commands.begin(), m_commands.end(), [](const auto& a, const auto& b) {
-        //    return a.material->GetShaderID() < b.material->GetShaderID();
-        //    });
+    void Renderer::ReserveCommands(size_t count) {
+        m_commands.reserve(count);
+        m_instanceMatrices.reserve(count);
+    }
 
+    void Renderer::DrawAll() {
+
+        std::sort(m_commands.begin(), m_commands.end(), [](const auto& a, const auto& b) {
+            if (a.materialID != b.materialID) return a.materialID < b.materialID;
+            if (a.meshID != b.meshID) return a.meshID < b.meshID;
+            return a.invertMesh < b.invertMesh;
+        });
+        
         Shader* currentShader = nullptr;
         unsigned int currentShaderID = ENGINE_INVALID_ID;
         Material* currentMaterial = nullptr;
         unsigned int currentMaterialID = ENGINE_INVALID_ID;
         Mesh* currentMesh = nullptr;
         unsigned int currentMeshID = ENGINE_INVALID_ID;
-
+        bool currentInvertMesh = false;
+        
         ResourceManager& rm = ResourceManager::GetInstance();
-
+        
         std::shared_ptr<Component::Camera> camptr = GameObject::GetMainCamera().lock();
-        Matrix cameraProjectionMat = camptr->GetProjectionMatrix();
-        Matrix cameraViewMat = camptr->GetViewMatrix();
-
+        Matrix4x4 cameraProjectionMat = camptr->GetProjectionMatrix();
+        Matrix4x4 cameraViewMat = camptr->GetViewMatrix();
+        
+        auto flushBatch = [&](Mesh* mesh, Shader* shader, bool invert, const std::vector<Matrix4x4>& matrices) {
+            if (mesh && shader && !matrices.empty()) {
+                shader->Bind();
+                glFrontFace(invert ? GL_CW : GL_CCW);
+                mesh->DrawInstanced((int)matrices.size(), matrices);
+            }
+        };
+        
         for (auto& cmd : m_commands) {
-
-            // Update material if change
+            // material change
             if (currentMaterialID != cmd.materialID) {
-                if (cmd.materialID == ENGINE_INVALID_ID) {
-                    // should Load default mat her
-                    continue;
-                }
-
+                flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
+                m_instanceMatrices.clear();
+        
+                if (cmd.materialID == ENGINE_INVALID_ID) continue;
+        
                 currentMaterialID = cmd.materialID;
                 currentMaterial = rm.GetMaterial(currentMaterialID);
-
                 if (!currentMaterial) {
                     currentMaterialID = ENGINE_INVALID_ID;
                     continue;
                 }
-
+        
                 unsigned int newShaderID = currentMaterial->GetShaderID();
                 if (currentShaderID != newShaderID) {
                     currentShaderID = newShaderID;
@@ -70,31 +84,36 @@ namespace EngineCore {
                 else {
                     currentMaterial->ApplyParamsOnly(currentShader);
                 }
-
             }
-
+        
             if (currentMaterialID == ENGINE_INVALID_ID ||
                 currentShaderID == ENGINE_INVALID_ID) {
                 continue;
             }
-            
-            if (currentMeshID != cmd.meshID) {
+        
+            if (currentMeshID != cmd.meshID || currentInvertMesh != cmd.invertMesh) {
+                flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
+                m_instanceMatrices.clear();
+        
                 currentMeshID = cmd.meshID;
                 currentMesh = rm.GetMesh(currentMeshID);
-
+                currentInvertMesh = cmd.invertMesh;
+        
                 if (!currentMesh) {
                     currentMeshID = ENGINE_INVALID_ID;
                     continue;
                 }
             }
-
-            currentShader->SetMatrix4("model", cmd.modelMatrixOpenGL);
-            glFrontFace(cmd.invertMesh ? GL_CW : GL_CCW);
-            currentShader->Bind();
-            currentMesh->Draw();
+        
+            if (cmd.modelMatrix) {
+                m_instanceMatrices.push_back(*cmd.modelMatrix);
+            }
         }
-
+        
+        flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
+        
         m_commands.clear();
+        m_instanceMatrices.clear();
     }
 
 }

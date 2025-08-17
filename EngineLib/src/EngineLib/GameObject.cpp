@@ -99,9 +99,10 @@ namespace EngineCore {
 		return m_parentObjPtr;
 	}
 
-	std::vector<std::shared_ptr<GameObject>> GameObject::GetChildren() const {
+	const std::vector<std::shared_ptr<GameObject>>& GameObject::GetChildren() const {
 		if (IsDead("Cant get children")) {
-			return {};
+			static const std::vector<std::shared_ptr<GameObject>> empty;
+			return empty;
 		}
 		return m_childObjPtrs;
 	}
@@ -210,10 +211,8 @@ namespace EngineCore {
 	}
 
 	void GameObject::SubmitDrawCall() {
-		for (auto& comp : m_components) {
-			if (comp->IsDrawable()) {
-				comp->SubmitDrawCall();
-			}
+		for (auto& comp : m_drawComponents) {
+			comp->SubmitDrawCall();
 		}
 	}
 

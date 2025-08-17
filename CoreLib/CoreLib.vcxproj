@@ -163,11 +163,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\CoreLib\Math\Matrix4x4.h" />
     <ClCompile Include="src\CoreLib\ColorUtils.cpp" />
     <ClCompile Include="src\CoreLib\ConversionUtils.cpp" />
     <ClCompile Include="src\CoreLib\File.cpp" />
     <ClCompile Include="src\CoreLib\Log.cpp" />
     <ClCompile Include="src\CoreLib\Math\Matrix.cpp" />
+    <ClCompile Include="src\CoreLib\Math\Matrix4x4.cpp" />
     <ClCompile Include="src\CoreLib\Math\Vector2.cpp" />
     <ClCompile Include="src\CoreLib\Math\Vector3.cpp" />
     <ClCompile Include="src\CoreLib\Math\Vector4.cpp" />

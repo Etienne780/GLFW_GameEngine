@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <CoreLib\ConversionUtils.h>
-#include <CoreLib\Math\Matrix.h>
+#include <CoreLib\Math\Matrix4x4.h>
 
 #include "..\ComponentBase.h"
 
@@ -22,8 +22,8 @@ namespace EngineCore {
 			float GetAspectRatio() const;
 			float GetNearPlane() const;
 			float GetFarPlane() const;
-			Matrix GetProjectionMatrix();
-			Matrix GetViewMatrix();
+			Matrix4x4 GetProjectionMatrix();
+			Matrix4x4 GetViewMatrix();
 
 			Camera& SetFOV(float fov);
 			Camera& SetOrthograpic(bool value);
@@ -51,8 +51,8 @@ namespace EngineCore {
 			float m_nearPlane = 0.1f;
 			float m_farPlane = 1000.0f;
 
-			Matrix m_projection;
-			Matrix m_view;
+			Matrix4x4 m_projection;
+			Matrix4x4 m_view;
 
 			float CalculateAspectRatio() const;
 			void CreateProjectionMatrix(float aspectRatio);

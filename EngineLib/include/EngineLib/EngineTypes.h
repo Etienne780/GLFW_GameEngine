@@ -1,7 +1,7 @@
 #pragma once
 #include <limits>
 
-class Matrix;
+#include <CoreLib\Math\Matrix4x4.h>
 
 namespace EngineCore {
 
@@ -13,12 +13,10 @@ namespace EngineCore {
 	constexpr int ENGINE_FAILURE = 1;
 
 	struct RenderCommand {
-		unsigned int materialID;
-		unsigned int meshID;
-		// column-major
-		float modelMatrixOpenGL[16];
-		bool invertMesh;
+		unsigned int materialID = 0;
+		unsigned int meshID = 0;
+		const Matrix4x4* modelMatrix = nullptr;
+		bool invertMesh = false;
 	};
-
 
 }

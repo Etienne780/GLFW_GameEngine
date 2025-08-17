@@ -10,7 +10,7 @@
 namespace EngineCore {
 
 	namespace Component {
-		Renderer& MeshRenderer::renderer = Renderer::GetInstance();
+		Renderer& MeshRenderer::m_renderer = Renderer::GetInstance();
 		const std::string compName = "MeshRenderer";
 
 		MeshRenderer::MeshRenderer(GameObject* gameObject) :
@@ -52,15 +52,12 @@ namespace EngineCore {
 		}
 
 		void MeshRenderer::SubmitDrawCall() {
-			RenderCommand cmd;
-			cmd.materialID = m_materialID;
-			cmd.meshID = m_meshID;
-			memcpy(cmd.modelMatrixOpenGL,
-				m_gameObject->GetTransform()->GetWorldModelMatrix().ToOpenGLData(),
-				sizeof(float) * 16);
-			cmd.invertMesh = m_invertMesh;
+			m_cmd.materialID = m_materialID;
+			m_cmd.meshID = m_meshID;
+			m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
+			m_cmd.invertMesh = m_invertMesh;;
 
-			renderer.Submit(cmd);
+			m_renderer.Submit(m_cmd);
 		}
 
 	}

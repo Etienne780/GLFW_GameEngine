@@ -1,7 +1,7 @@
 #pragma once
 #include "..\ComponentBase.h"
 #include "CoreLib\Math\Vector3.h"
-#include "CoreLib\Math\Matrix.h"
+#include "CoreLib\Math\Matrix4x4.h"
 
 namespace EngineCore {
 
@@ -28,7 +28,7 @@ namespace EngineCore {
 			/**
 			* @brief Gets the Model-Matrix local to the parent GameObject if it has one
 			*/
-			Matrix GetLocalModelMatrix();
+			Matrix4x4 GetLocalModelMatrix();
 
 			/**
 			* @brief Gets the world Position (local to world origin).
@@ -45,7 +45,12 @@ namespace EngineCore {
 			/**
 			* @brief Gets the world Model-Matrix (local to world origin).
 			*/
-			Matrix GetWorldModelMatrix();
+			Matrix4x4* GetWorldModelMatrixPtr();
+
+			/**
+			* @brief Gets the world Model-Matrix (local to world origin).
+			*/
+			const Matrix4x4& GetWorldModelMatrix();
 
 			// Returns the normalized forward direction vector based on the current rotation (in Euler angles).
 			// Forward is typically the direction the object is facing in world space.
@@ -71,7 +76,6 @@ namespace EngineCore {
 			// This is useful when you already have both forward and right vectors and want to avoid redundant calculations.
 			Vector3 GetUp(const Vector3& forward, const Vector3& right) const;
 
-
 			Transform& SetPosition(float x, float y, float z);
 			Transform& SetRotation(float x, float y, float z);
 			Transform& SetScale(float x, float y, float z);
@@ -87,10 +91,10 @@ namespace EngineCore {
 			Transform& AddPosition(const Vector3& pos);
 			Transform& AddRotation(const Vector3& rot);
 			Transform& AddScale(const Vector3& scale);
-
 		private:
 			// if the transform has changed
-			bool m_isTransformDirty = true;
+			bool m_localMatrixDirty = true;
+			bool m_worldMatrixDirty = true;
 			// Local position
 			Vector3 m_position;
 			// Local rotation
@@ -99,9 +103,15 @@ namespace EngineCore {
 			Vector3 m_scale{1, 1, 1};
 
 			// Local model matrix
-			Matrix m_modeMat;
+			Matrix4x4 m_localMatrix;
+			Matrix4x4 m_worldMatrix;
 
-			void CalculateModeMat();
+			void CalculateLocalModelMat();
+			void CalculateWorldModelMat();
+			/**
+			* @brief Marks this and children dirty
+			*/
+			void MarkDirty();
 		};
 
 	}

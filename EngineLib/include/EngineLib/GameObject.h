@@ -47,7 +47,7 @@ namespace EngineCore {
 		std::string GetName() const;
 		unsigned int GetID() const;
 		std::shared_ptr<GameObject> GetParent() const;
-		std::vector<std::shared_ptr<GameObject>> GetChildren() const;
+		const std::vector<std::shared_ptr<GameObject>>& GetChildren() const;
 		std::string GetComponentListString() const;
 		std::string GetComponentListString(bool moreDetail) const;
 
@@ -69,6 +69,7 @@ namespace EngineCore {
 		bool m_hasCamera = false;
 
 		std::vector<std::shared_ptr<ComponentBase>> m_components;
+		std::vector<std::shared_ptr<ComponentBase>> m_drawComponents;
 
 		/**
 		* @brief calls the start and update methods of the components

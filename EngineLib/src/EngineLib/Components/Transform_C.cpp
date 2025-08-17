@@ -13,12 +13,37 @@ namespace EngineCore {
 			ComponentBase(compName, gameObject) {
 		}
 
-		void Transform::CalculateModeMat() {
-			using namespace GLTransform;
+		void Transform::CalculateLocalModelMat() {
+			using namespace GLTransform4x4;
 
-			m_modeMat = ScaleNonUniform(m_scale);
-			RotationXYZ(m_modeMat, m_rotation);
-			Translation(m_modeMat, m_position);
+			m_localMatrix = Scale(m_scale);
+			MakeRotateXYZ(m_localMatrix, m_rotation);
+			MakeTranslate(m_localMatrix, m_position);
+		}
+
+		void Transform::CalculateWorldModelMat() {
+			using namespace GLTransform4x4;
+
+			if (m_localMatrixDirty) {
+				CalculateLocalModelMat();
+				m_localMatrixDirty = false;
+			}
+
+			if (auto parent = m_gameObject->GetParent()) {
+				Matrix4x4 parentMatrix = parent->GetTransform()->GetWorldModelMatrix();
+				m_worldMatrix = parentMatrix * m_localMatrix;
+			}
+			else {
+				m_worldMatrix = m_localMatrix;
+			}
+		}
+
+		void Transform::MarkDirty() {
+			m_localMatrixDirty = true;
+			m_worldMatrixDirty = true;
+			for (auto& child : m_gameObject->GetChildren()) {
+				child->GetTransform()->MarkDirty();
+			}
 		}
 
 		#pragma region Get
@@ -44,16 +69,16 @@ namespace EngineCore {
 			return m_scale;
 		}
 
-		Matrix Transform::GetLocalModelMatrix() {
+		Matrix4x4 Transform::GetLocalModelMatrix() {
 			if (IsDead("Cant get local Model-Matrix")) {
-				return Matrix();
+				return Matrix4x4();
 			}
-			if (m_isTransformDirty) {
-				CalculateModeMat();
-				m_isTransformDirty = false;
+			if (m_localMatrixDirty) {
+				CalculateLocalModelMat();
+				m_localMatrixDirty = false;
 			}
 
-			return m_modeMat;
+			return m_localMatrix;
 		}
 
 		Vector3 Transform::GetWorldPosition() const {
@@ -61,7 +86,7 @@ namespace EngineCore {
 				return Vector3::zero;
 			}
 			if (auto parent = m_gameObject->GetParent()) {
-				Matrix parentMatrix = parent->GetTransform()->GetWorldModelMatrix();
+				Matrix4x4 parentMatrix = parent->GetTransform()->GetWorldModelMatrix();
 				Vector4 transformedPos = parentMatrix * Vector4(m_position, 1.0f);
 				return Vector3(transformedPos.x, transformedPos.y, transformedPos.z);
 			}
@@ -88,21 +113,33 @@ namespace EngineCore {
 			return m_scale;
 		}
 
-		Matrix Transform::GetWorldModelMatrix() {
+		Matrix4x4* Transform::GetWorldModelMatrixPtr() {
 			if (IsDead("Cant get world Model-Matrix")) {
-				return Matrix();
-			}
-			if (m_isTransformDirty) {
-				CalculateModeMat();
-				m_isTransformDirty = false;
+				return nullptr;
 			}
 
-			if (auto parent = m_gameObject->GetParent()) {
-				Matrix parentMatrix = parent->GetTransform()->GetWorldModelMatrix();
-				return parentMatrix * m_modeMat;
+			if (m_worldMatrixDirty) {
+				CalculateWorldModelMat();
+				m_worldMatrixDirty = false;
 			}
-			return m_modeMat;
+
+			return &m_worldMatrix;
 		}
+
+		const Matrix4x4& Transform::GetWorldModelMatrix() {
+			if (IsDead("Cant get world Model-Matrix")) {
+				static Matrix4x4 identity;
+				return identity;
+			}
+
+			if (m_worldMatrixDirty) {
+				CalculateWorldModelMat();
+				m_worldMatrixDirty = false;
+			}
+
+			return m_worldMatrix;
+		}
+
 		Vector3 Transform::GetForward() const {
 			if (IsDead("Cant get forward")) {
 				return Vector3::zero;
@@ -160,7 +197,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_position.Set(x, y, z);
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -169,7 +206,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_rotation.Set(x, y, z);
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -178,7 +215,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_scale.Set(x, y, z);
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -187,7 +224,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_position = pos;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -196,7 +233,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_rotation = rot;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -205,7 +242,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_scale = scale;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -220,7 +257,7 @@ namespace EngineCore {
 			m_position.x += x;
 			m_position.y += y;
 			m_position.z += z;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -231,7 +268,7 @@ namespace EngineCore {
 			m_rotation.x += x;
 			m_rotation.y += y;
 			m_rotation.z += z;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -242,7 +279,7 @@ namespace EngineCore {
 			m_scale.x += x;
 			m_scale.y += y;
 			m_scale.z += z;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -251,7 +288,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_position += pos;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -260,7 +297,7 @@ namespace EngineCore {
 				return *this;
 			}
 			m_rotation += rot;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
@@ -269,11 +306,11 @@ namespace EngineCore {
 				return *this;
 			}
 			m_scale += scale;
-			m_isTransformDirty = true;
+			MarkDirty();
 			return *this;
 		}
 
 		#pragma endregion
-
+		
 	}
 }

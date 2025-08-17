@@ -5,6 +5,7 @@
 
 typedef unsigned int GLuint;
 typedef int GLsizei;
+class Matrix4x4;
 
 namespace EngineCore {
 
@@ -21,14 +22,15 @@ namespace EngineCore {
     private:
         bool m_exists = false;
 
-        GLuint m_vao, m_vbo, m_ebo;
-        GLsizei m_indexCount;
+        GLuint m_vao = 0, m_vbo = 0, m_ebo = 0;
+        GLuint m_instanceVBO = 0;
+        GLsizei m_indexCount = 0;
 
         std::string m_path;
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
 
-        void Draw();
+        void DrawInstanced(int instanceCount, const std::vector<Matrix4x4>& matrices);
     };
 
 }

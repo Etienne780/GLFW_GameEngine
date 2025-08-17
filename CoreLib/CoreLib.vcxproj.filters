@@ -48,6 +48,12 @@
     <ClCompile Include="src\CoreLib\tinyfiledialogs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CoreLib\Math\Matrix4x4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\CoreLib\Math\Matrix4x4.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CoreLib\FormatUtils.h">

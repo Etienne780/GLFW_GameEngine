@@ -25,7 +25,10 @@ namespace EngineCore {
 			RegisterCamera(cam);
 		}
 
-		m_components.emplace_back(comp);
+		if(!comp->IsDrawable())
+			m_components.emplace_back(comp);
+		else
+			m_drawComponents.emplace_back(comp);
 		return comp;
 	}
 
@@ -52,7 +55,10 @@ namespace EngineCore {
 					UnregisterCamera(std::weak_ptr<Component::Camera>(cameraPtr));
 				}
 				it->get()->m_alive = false;
-				m_components.erase(it); // unique_ptr deletes the component
+				if (!(*it)->IsDrawable())
+					m_components.erase(it);
+				else
+					m_drawComponents.emplace_back(it);
 				break;
 			}
 		}
@@ -71,6 +77,12 @@ namespace EngineCore {
 		}
 
 		for (const auto& comp : m_components) {
+			if (auto casted = dynamic_cast<C*>(comp.get())) {
+				return std::static_pointer_cast<C>(comp);
+			}
+		}
+
+		for (const auto& comp : m_drawComponents) {
 			if (auto casted = dynamic_cast<C*>(comp.get())) {
 				return std::static_pointer_cast<C>(comp);
 			}
