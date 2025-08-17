@@ -5,7 +5,6 @@
 
 namespace EngineCore {
 
-	class Material;
 	class Mesh;
 
 	constexpr unsigned int ENGINE_INVALID_ID = std::numeric_limits<unsigned int>::max();
@@ -15,6 +14,7 @@ namespace EngineCore {
 	struct RenderCommand {
 		unsigned int materialID = 0;
 		unsigned int meshID = 0;
+		Mesh* mesh;
 		const Matrix4x4* modelMatrix = nullptr;
 		bool invertMesh = false;
 	};
