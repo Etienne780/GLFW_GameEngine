@@ -32,6 +32,9 @@ namespace EngineCore {
 			* @param value 
 			*/
 			Camera& SetAspectRatioAuto(bool value);
+			/**
+			* @brief changes the aspect ratio, need to call SetAspectRatioAuto(true) to take effect
+			*/
 			Camera& SetAspectRatio(float aspectRatio);
 			Camera& SetNearPlane(float nearPlane);
 			Camera& SetFarPlane(float farPlane);
