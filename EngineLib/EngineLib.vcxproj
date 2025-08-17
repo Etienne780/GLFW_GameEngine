@@ -25,6 +25,7 @@
     <ClInclude Include="include\EngineLib\ComponentBase.h" />
     <ClInclude Include="include\EngineLib\Components\Camera_C.h" />
     <ClInclude Include="include\EngineLib\Components\MeshRenderer_C.h" />
+    <ClInclude Include="include\EngineLib\Components\Script_C.h" />
     <ClInclude Include="include\EngineLib\Components\Transform_C.h" />
     <ClInclude Include="include\EngineLib\ComponentTypeID.h" />
     <ClInclude Include="include\EngineLib\Engine.h" />
@@ -36,12 +37,14 @@
     <ClInclude Include="include\EngineLib\Mesh.h" />
     <ClInclude Include="include\EngineLib\Renderer.h" />
     <ClInclude Include="include\EngineLib\ResourceManager.h" />
+    <ClInclude Include="include\EngineLib\Script.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
     <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\EngineLib\Components\Script_C.cpp" />
     <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
     <ClCompile Include="src\EngineLib\Material.cpp" />
     <ClCompile Include="src\EngineLib\Mesh.cpp" />

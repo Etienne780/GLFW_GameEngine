@@ -15,9 +15,7 @@ namespace EngineCore {
 	public:
 		virtual ~ComponentBase() = default;
 
-		void Start();
-		void Update(float deltaTime);
-		virtual void StartImpl() {}
+		void CUpdate(float deltaTime);
 		virtual void UpdateImpl(float deltaTime) {}
 		virtual bool IsDrawable() const { return false; }
 		virtual void SubmitDrawCall() {}

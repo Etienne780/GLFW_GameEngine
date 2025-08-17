@@ -20,14 +20,6 @@ Project::Project()
 	// Log::SaveLogs("Logs/");
 }
 
-const float sensitivity = 0.1f;
-Vector3 cameraPosition(0, 0, 5), cameraRotation(0, 5, 0);
-float cameraSpeed = 25.0f;
-float cameraSprintMultiplier = 1.8f;
-float cameraSlowMultiplier = 0.4f;
-float cameraSpeedVerMultiplier = 1.2f;
-float cameraFOV = 66.0f;
-
 std::shared_ptr<GameObject> cameraGO = nullptr;
 std::vector<std::shared_ptr<GameObject>> cubes;
 size_t cubeCountTheta = 20; // horizontale Segmente
@@ -39,6 +31,7 @@ void Project::Start() {
 
 	cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
+	cameraGO->AddComponent<Component::CameraMovement>();
 
 	auto c = GameObject::Create("TestCube");
 	auto mr = c->AddComponent<Component::MeshRenderer>();
@@ -48,10 +41,10 @@ void Project::Start() {
 	float radius = 100.0f;
 
 	for (size_t i = 0; i < cubeCountTheta; ++i) {
-		float theta = (static_cast<float>(i) / cubeCountTheta) * 2.0f * CORE_PI;
+		float theta = static_cast<float>((static_cast<float>(i) / cubeCountTheta) * 2.0f * CORE_PI);
 
 		for (size_t j = 0; j < cubeCountPhi; ++j) {
-			float phi = (static_cast<float>(j) / cubeCountPhi) * CORE_PI;
+			float phi = static_cast<float>((static_cast<float>(j) / cubeCountPhi) * CORE_PI);
 
 			float x = radius * sin(phi) * cos(theta);
 			float y = radius * cos(phi);
@@ -74,10 +67,10 @@ void UpdateCubes(std::vector<std::shared_ptr<GameObject>>& cubes, float time, si
 	size_t index = 0;
 
 	for (size_t i = 0; i < thetaCount; ++i) {
-		float theta = (static_cast<float>(i) / thetaCount) * 2.0f * CORE_PI + time;
+		float theta = static_cast<float>((static_cast<float>(i) / thetaCount) * 2.0f * CORE_PI + time);
 
 		for (size_t j = 0; j < phiCount; ++j) {
-			float phi = (static_cast<float>(j) / phiCount) * CORE_PI;
+			float phi = static_cast<float>((static_cast<float>(j) / phiCount) * CORE_PI);
 
 			float x = radius * sin(phi) * cos(theta);
 			float y = radius * cos(phi);
@@ -88,8 +81,6 @@ void UpdateCubes(std::vector<std::shared_ptr<GameObject>>& cubes, float time, si
 	}
 }
 
-void CameraMove();
-float t = 0;
 void Project::Update() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
@@ -102,64 +93,9 @@ void Project::Update() {
 		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
 	}
 
-	int dir;
-	if (Input::GetScrollDir(dir)) {
-		cameraFOV -= static_cast<float>(dir) * 2;
-		MathUtil::Clamp(cameraFOV, 1.0f, 120.0f);
-		cameraGO->GetComponent<Component::Camera>()->SetFOV(cameraFOV);
-	}
-
 	UpdateCubes(cubes, Time::GetTime(), cubeCountTheta, cubeCountPhi);
-	CameraMove();
 
 	Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
-}
-
-void CameraMove() {
-	static Vector3 forward;
-	static bool first = true;
-	Vector3 moveDir;
-	float moveDirY = 0;
-
-	if (Input::KeyPressed(GLFW_KEY_W)) moveDir.z += 1;
-	if (Input::KeyPressed(GLFW_KEY_S)) moveDir.z -= 1;
-	if (Input::KeyPressed(GLFW_KEY_A)) moveDir.x += 1;
-	if (Input::KeyPressed(GLFW_KEY_D)) moveDir.x -= 1;
-	if (Input::KeyPressed(GLFW_KEY_SPACE)) moveDirY += 1;
-	if (Input::KeyPressed(GLFW_KEY_LEFT_CONTROL)) moveDirY -= 1;
-
-	Vector2 mouseDelta = Input::GetMousePositionDelta();
-
-	if (moveDirY != 0 || moveDir.SquaredMagnitude() > 0 || mouseDelta.SquaredMagnitude() > 0 || first) {
-		mouseDelta *= sensitivity;
-		cameraRotation.y += mouseDelta.x; // yaw (horizontal)
-		cameraRotation.x += mouseDelta.y; // pitch (vertikal)
-
-		MathUtil::Clamp(cameraRotation.x, -89.0f, 89.0f);
-
-		auto trans = cameraGO->GetTransform();
-		forward = trans->GetForward();
-		moveDir.Normalize();
-
-		Vector3 right = trans->GetRight(forward);
-		Vector3 up = trans->GetUp(forward, right);
-
-		Vector3 worldMoveDir =
-			right * moveDir.x +
-			up * moveDir.y +
-			forward * moveDir.z;
-
-		worldMoveDir.y += moveDirY * cameraSpeedVerMultiplier;
-
-		float multiplier = (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT)) ? cameraSprintMultiplier: 1;
-		multiplier *= (Input::KeyPressed(GLFW_KEY_LEFT_ALT)) ? cameraSlowMultiplier : 1;
-		cameraPosition += worldMoveDir * cameraSpeed * multiplier * Time::GetDeltaTime();
-		
-		trans->SetPosition(cameraPosition);
-		trans->SetRotation(cameraRotation);
-	}
-
-	first = false;
 }
 
 void Project::Shutdown() {

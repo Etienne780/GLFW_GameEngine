@@ -176,8 +176,7 @@ namespace EngineCore {
 
 	void GameObject::Update(float deltaTime) {
 		for (auto& comp : m_components) {
-			comp->Start();
-			comp->Update(deltaTime);
+			comp->CUpdate(deltaTime);
 		}
 	}
 

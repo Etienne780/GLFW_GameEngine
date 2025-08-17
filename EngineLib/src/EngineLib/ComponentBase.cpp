@@ -9,41 +9,46 @@ namespace EngineCore {
 		: m_name(name), m_gameObject(gameObject) {
 	}
 
-	void ComponentBase::Start() {
-		static bool once = false;
-		if (once) return;
-
-		Log::Info("Component {} start called", m_name);
-		StartImpl();
-
-		once = true;
-	}
-
-	void ComponentBase::Update(float deltaTime) {
+	void ComponentBase::CUpdate(float deltaTime) {
 		UpdateImpl(deltaTime);
 	}
 
 	GameObject* ComponentBase::GetGameObject() const {
+		if (IsDead("Cant get GameObject")) {
+			return nullptr;
+		}
 		return m_gameObject;
 	}
 
 	std::string ComponentBase::GetName() const {
+		if (IsDead("Cant get name")) {
+			return "INVALID";
+		}
 		return m_name.empty() ? "Unknown" : m_name;
 	}
 
 	std::string ComponentBase::GetComponentString() const {
+		if (IsDead("Cant get Component string")) {
+			return "INVALID";
+		}
 		std::string output;
 		GetComponentString("", output, false);
 		return output;
 	}
 
 	std::string ComponentBase::GetComponentString(bool moreDetail) const {
+		if (IsDead("Cant get Component string")) {
+			return "INVALID";
+		}
 		std::string output;
 		GetComponentString("", output, moreDetail);
 		return output;
 	}
 
 	void ComponentBase::GetComponentString(const std::string& prefix, std::string& outStr, bool moreDetail) const {
+		if (IsDead("Cant get Component string")) {
+			return;
+		}
 		if (prefix.empty()) {
 			outStr.append(FormatUtils::formatString("{}\n", GetName()));
 		}

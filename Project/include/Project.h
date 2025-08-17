@@ -1,8 +1,8 @@
 #pragma once
 #include "EngineLib\Engine.h"
 
-#if __has_include(<.h>)
-#include <optional_header.h>
+#if __has_include(<CustomComponents.h>)
+#include <CustomComponents.h>
 #endif
 
 class Project : public Application {
