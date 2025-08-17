@@ -23,6 +23,10 @@ namespace EngineCore {
 		return m_gameObjectManager->GetHierarchy();
 	}
 
+	int GameObject::GetGameObjectCount() {
+		return m_gameObjectManager->m_gameObjects.size();
+	}
+
 	std::shared_ptr<GameObject> GameObject::Create(const std::string& name) {
 		#ifndef NDEBUG
 		if (!m_gameObjectManager->IsNameUnique(name)) {

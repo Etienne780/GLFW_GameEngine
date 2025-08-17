@@ -18,6 +18,7 @@ namespace EngineCore {
 		~GameObject();
 
 		static std::string GetHierarchyString();
+		static int GetGameObjectCount();
 		static std::shared_ptr<GameObject> Create(const std::string& name);
 		static bool Delete(std::shared_ptr<GameObject> gameObjectPtr);
 		static bool Delete(unsigned int id);
