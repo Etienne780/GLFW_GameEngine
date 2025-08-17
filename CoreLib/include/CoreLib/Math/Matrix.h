@@ -37,6 +37,18 @@ public:
     // Constructs a matrix from a nested initializer list (e.g., {{1, 2}, {3, 4}}).
     Matrix(std::initializer_list<std::initializer_list<float>> values);
 
+    // OPTIMIZED: Copy constructor
+    Matrix(const Matrix& other);
+
+    // OPTIMIZED: Move constructor
+    Matrix(Matrix&& other) noexcept;
+
+    // OPTIMIZED: Copy assignment operator
+    Matrix& operator=(const Matrix& other);
+
+    // OPTIMIZED: Move assignment operator  
+    Matrix& operator=(Matrix&& other) noexcept;
+
     /**
     * @brief Returns the number of rows in the matrix.
     * @return Integer representing the row count.
@@ -197,6 +209,8 @@ private:
     
     // row-major layout
     int ToIndex(int row, int col) const;
+
+    void UpdateColMajorCache() const;
 };
 
 #pragma region non_member_operations
@@ -207,73 +221,3 @@ Matrix operator*(float scalar, const Matrix& matrix);
 Matrix operator/(float scalar, const Matrix& matrix);
 
 #pragma endregion
-
-/**
-* @brief GLTransform provides functions to create and manipulate 4x4 matrices, primarily for OpenGL use.
-*/
-namespace GLTransform {
-
-    Matrix Identity();
-
-    Matrix ScaleNonUniform(float x, float y, float z);
-    Matrix ScaleNonUniform(const Vector3& scalar);
-
-    Matrix ScaleUniform(float scalar);
-
-    Matrix Translation(float x, float y, float z);
-    Matrix Translation(const Vector3& translation);
-
-    Matrix RotationX(float radians);
-    Matrix RotationY(float radians);
-    Matrix RotationZ(float radians);
-    Matrix RotationXYZ(float rx, float ry, float rz);
-    Matrix RotationXYZ(const Vector3& radians);
-
-    /**
-     * @brief Creates an orthographic projection matrix (right-handed coordinate system).
-     *
-     * Maps a 3D volume defined by the left, right, bottom, top, near, and far planes into normalized device coordinates.
-     * This is typically used for 2D rendering or UI systems, where perspective distortion is not desired.
-     *
-     * @param left   The left plane of the view volume.
-     * @param right  The right plane of the view volume.
-     * @param bottom The bottom plane of the view volume.
-     * @param top    The top plane of the view volume.
-     * @param zNear  The near clipping plane distance.
-     * @param zFar   The far clipping plane distance.
-     * @return       A 4x4 orthographic projection matrix.
-     */
-    Matrix Orthographic(float left, float right, float bottom, float top, float zNear, float zFar);
-
-    /**
-     * @brief Creates a perspective projection matrix (right-handed coordinate system).
-     *
-     * Simulates a realistic perspective where distant objects appear smaller.
-     * This matrix is commonly used for 3D scenes with depth perception.
-     *
-     * @param fovy    Field of view in the y-direction, in radians.
-     * @param aspect  Aspect ratio of the viewport (width / height).
-     * @param zNear   The near clipping plane distance (must be > 0).
-     * @param zFar    The far clipping plane distance (must be > zNear).
-     * @return        A 4x4 perspective projection matrix.
-     */
-    Matrix Perspective(float fovy, float aspect, float zNear, float zFar);
-
-    Matrix LookAt(const Vector3& position, const Vector3& target, const Vector3& up);
-
-    void Identity(Matrix& out);
-    
-    void ScaleNonUniform(Matrix& out, float x, float y, float z);
-    void ScaleNonUniform(Matrix& out, const Vector3& scalar);
-    
-    void ScaleUniform(Matrix& out, float scalar);
-    
-    void Translation(Matrix& out, float x, float y, float z);
-    void Translation(Matrix& out, const Vector3& translation);
-    
-    void RotationX(Matrix& out, float radians);
-    void RotationY(Matrix& out, float radians);
-    void RotationZ(Matrix& out, float radians);
-    void RotationXYZ(Matrix& out, float rx, float ry, float rz);
-    void RotationXYZ(Matrix& out, const Vector3& radians);
-}
