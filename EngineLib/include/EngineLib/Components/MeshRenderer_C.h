@@ -16,6 +16,7 @@ namespace EngineCore {
 			bool IsDrawable() const override { return true; }
 			void SubmitDrawCall() override;
 
+			MeshRenderer& SetMesh(std::shared_ptr<Mesh> mesh);
 			MeshRenderer& SetMesh(unsigned int id);
 			MeshRenderer& SetMaterial(unsigned int id);
 			/**
@@ -27,6 +28,7 @@ namespace EngineCore {
 		private:
 			static Renderer& m_renderer;
 			RenderCommand m_cmd;
+			std::shared_ptr<Mesh> m_mesh = nullptr;
 			unsigned int m_meshID = ENGINE_INVALID_ID;
 			unsigned int m_materialID = ENGINE_INVALID_ID;
 
