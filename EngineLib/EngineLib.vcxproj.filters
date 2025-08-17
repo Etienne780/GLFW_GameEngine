@@ -84,7 +84,7 @@
     <ClInclude Include="include\EngineLib\Script.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EngineLib\Components\CameraMovement_C.h">
+    <ClInclude Include="include\EngineLib\Components\FreeCameraController_C.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -149,7 +149,7 @@
     <ClCompile Include="src\EngineLib\Components\Script_C.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EngineLib\Components\CameraMovement_C.cpp">
+    <ClCompile Include="src\EngineLib\Components\FreeCameraController_C.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

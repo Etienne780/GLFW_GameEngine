@@ -4,11 +4,11 @@ namespace EngineCore {
 
 	namespace Component {
 
-		CameraMovement::CameraMovement(GameObject* gameObject) : Script(gameObject){
+		FreeCameraController::FreeCameraController(GameObject* gameObject) : Script(gameObject){
 			m_camera = m_gameObject->GetComponent<Component::Camera>();
 		}
 
-		void CameraMovement::Update() {
+		void FreeCameraController::Update() {
 			int dir;
 			if (Input::GetScrollDir(dir)) {
 				m_fov -= static_cast<float>(dir) * 2;
@@ -31,7 +31,7 @@ namespace EngineCore {
 			first = false;
 		}
 
-		void CameraMovement::CalculateCameraRotation(Vector2 mouseDelta) {
+		void FreeCameraController::CalculateCameraRotation(Vector2 mouseDelta) {
 			if (moveDirY != 0 || moveDir.SquaredMagnitude() > 0 || mouseDelta.SquaredMagnitude() > 0 || first) {
 				mouseDelta *= m_sensitivity;
 				cameraRotation.y += mouseDelta.x; // yaw (horizontal)

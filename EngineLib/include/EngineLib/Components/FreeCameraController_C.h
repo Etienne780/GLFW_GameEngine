@@ -5,9 +5,9 @@ namespace EngineCore {
 
 	namespace Component {
 		
-		class CameraMovement : public EngineCore::Script {
+		class FreeCameraController : public EngineCore::Script {
 		public:
-			CameraMovement(GameObject* gameObject);
+			FreeCameraController(GameObject* gameObject);
 
 			void Update() override;
 			void CalculateCameraRotation(Vector2 mouseDelta);
