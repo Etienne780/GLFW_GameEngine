@@ -10,7 +10,13 @@ namespace EngineCore {
 	}
 
 	void ComponentBase::CUpdate() {
+		if (m_isDisabled) return;
 		UpdateImpl();
+	}
+
+	void ComponentBase::Disable(bool value) {
+		if (!CanDisalbe()) return;
+		m_isDisabled = value;
 	}
 
 	GameObject* ComponentBase::GetGameObject() const {

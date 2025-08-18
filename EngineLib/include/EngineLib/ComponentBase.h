@@ -18,8 +18,11 @@ namespace EngineCore {
 
 		void CUpdate();
 		virtual void UpdateImpl() {}
+		virtual bool CanDisalbe() const { return true; }
 		virtual bool IsDrawable() const { return false; }
 		virtual void SubmitDrawCall() {}
+
+		void Disable(bool value);
 
 		std::string GetComponentString() const;
 		std::string GetComponentString(bool moreDetail) const;
@@ -39,6 +42,7 @@ namespace EngineCore {
 		ComponentBase(const std::string& name, GameObject* gameObject);
 
 		bool m_alive = true;
+		bool m_isDisabled = true;
 		std::string m_name;
 		GameObject* m_gameObject = nullptr;
 		/**
