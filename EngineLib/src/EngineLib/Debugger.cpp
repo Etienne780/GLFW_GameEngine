@@ -14,8 +14,9 @@ namespace EngineCore {
 	Debugger::Debugger() {	
 	}
 
-	void Debugger::Init(GLFWwindow* window) {
+	void Debugger::Init(GLFWwindow* window, Application* app) {
 		m_window = window;
+		m_app = app;
 
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();

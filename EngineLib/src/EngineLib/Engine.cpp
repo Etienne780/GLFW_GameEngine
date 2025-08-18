@@ -92,7 +92,7 @@ namespace EngineCore {
 #ifndef NDEBUG
 		static bool isDebugModeInitCalled = false;
 		if (m_app->m_appApplicationDebugMode) {
-			if(!isDebugModeInitCalled) m_debugger.Init(m_window);
+			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app.get());
 			isDebugModeInitCalled = true;
 			m_debugger.Update();
 		}
