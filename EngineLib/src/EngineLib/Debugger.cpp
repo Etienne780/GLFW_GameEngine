@@ -32,18 +32,25 @@ namespace EngineCore {
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		
 		io.Fonts->AddFontDefault();
-		float baseFontSize = 24.0f; // 13.0f is the size of the default font. Change to the font size you use.
-		float iconFontSize = baseFontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
+		float baseFontSize = 24.0f;
+		float iconFontSize = baseFontSize * 2.0f / 3.0f;
 
-		// merge in icons from Font Awesome
 		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
 		ImFontConfig icons_config;
 		icons_config.MergeMode = true;
 		icons_config.PixelSnapH = true;
 		icons_config.GlyphMinAdvanceX = iconFontSize;
 
-		std::string path = "/assets/fonts/fa-solid-900.ttf";
-		io.Fonts->AddFontFromFileTTF((File::GetExecutableDir() + path).c_str(), iconFontSize, &icons_config, icons_ranges);
+		std::string fontPath = File::GetExecutableDir() + "/assets/fonts/fa-solid-900.ttf";
+		ImFont* smallIconFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), iconFontSize, &icons_config, icons_ranges);
+		ImFont* largeIconFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 128.0f, &icons_config, icons_ranges);
+
+		if (!smallIconFont || !largeIconFont) {
+			Log::Error("Debugger: could not load FontAwesome fonts!");
+		}
+		else {
+			DebugWindow::SetIconFonts(smallIconFont, largeIconFont);
+		}
 
 		ImGui::StyleColorsDark();
 
