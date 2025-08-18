@@ -18,8 +18,8 @@ namespace EngineCore {
 			bool m_canRotateWithArrow = true;
 			bool m_canRotateWithMouse = true;
 
-			float m_arrowSensitivity = 0.5f;
-			float m_mouseSensitivity = 0.1f;
+			float m_arrowSensitivity = 0.8f;
+			float m_mouseSensitivity = 0.3f;
 
 			float m_movementSpeed = 30.0f;
 			float m_sprintMultiplier = 2.5f;

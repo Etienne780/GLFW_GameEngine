@@ -37,7 +37,7 @@ namespace EngineCore {
 					if (Input::KeyPressed(GLFW_KEY_LEFT)) secondaryLookDir.y -= 1;
 					if (Input::KeyPressed(GLFW_KEY_RIGHT)) secondaryLookDir.y += 1;
 
-					secondaryLookDir *= m_arrowSensitivity;
+					secondaryLookDir *= m_arrowSensitivity * Time::GetDeltaTime() * 100;
 					cameraRotation.y += secondaryLookDir.y;
 					cameraRotation.x += secondaryLookDir.x;
 				}
@@ -47,6 +47,31 @@ namespace EngineCore {
 
 			CameraMovement();
 			first = false;
+		}
+
+		void FreeCameraController::CalculateCameraRotation(Vector2 mouseDelta) {
+			if (moveDirY != 0 || 
+				moveDir.SquaredMagnitude() > 0 || 
+				secondaryLookDir.SquaredMagnitude() > 0 || 
+				mouseDelta.SquaredMagnitude() > 0 || 
+				first) {
+				if (m_canRotateWithMouse) {
+					mouseDelta *= m_mouseSensitivity * Time::GetDeltaTime() * 100;
+					cameraRotation.y += mouseDelta.x; // yaw (horizontal)
+					cameraRotation.x += mouseDelta.y; // pitch (vertikal)	
+				}
+
+				MathUtil::Clamp(cameraRotation.x, -89.0f, 89.0f);
+			}
+		}
+
+		void FreeCameraController::CameraZoom() {
+			int dir;
+			if (Input::GetScrollDir(dir)) {
+				m_fov -= static_cast<float>(dir) * 2;
+				MathUtil::Clamp(m_fov, m_minFov, m_maxFov);
+				m_camera->SetFOV(m_fov);
+			}
 		}
 
 		void FreeCameraController::CameraMovement() {
@@ -69,31 +94,6 @@ namespace EngineCore {
 
 			trans->SetPosition(cameraPosition);
 			trans->SetRotation(cameraRotation);
-		}
-
-		void FreeCameraController::CalculateCameraRotation(Vector2 mouseDelta) {
-			if (moveDirY != 0 || 
-				moveDir.SquaredMagnitude() > 0 || 
-				secondaryLookDir.SquaredMagnitude() > 0 || 
-				mouseDelta.SquaredMagnitude() > 0 || 
-				first) {
-				if (m_canRotateWithMouse) {
-					mouseDelta *= m_mouseSensitivity;
-					cameraRotation.y += mouseDelta.x; // yaw (horizontal)
-					cameraRotation.x += mouseDelta.y; // pitch (vertikal)	
-				}
-
-				MathUtil::Clamp(cameraRotation.x, -89.0f, 89.0f);
-			}
-		}
-
-		void FreeCameraController::CameraZoom() {
-			int dir;
-			if (Input::GetScrollDir(dir)) {
-				m_fov -= static_cast<float>(dir) * 2;
-				MathUtil::Clamp(m_fov, m_minFov, m_maxFov);
-				m_camera->SetFOV(m_fov);
-			}
 		}
 
 	}
