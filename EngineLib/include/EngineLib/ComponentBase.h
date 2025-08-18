@@ -16,11 +16,8 @@ namespace EngineCore {
 	public:
 		virtual ~ComponentBase() = default;
 
-		void CUpdate();
-		virtual void UpdateImpl() {}
 		virtual bool CanDisalbe() const { return true; }
 		virtual bool IsDrawable() const { return false; }
-		virtual void SubmitDrawCall() {}
 
 		void Disable(bool value);
 
@@ -51,6 +48,9 @@ namespace EngineCore {
 		* @return returns true when the gameobject is dead
 		*/
 		bool IsDead(const std::string& msg) const;
+		void CUpdate();
+		virtual void UpdateImpl() {}
+		virtual void SubmitDrawCall() {}
 	};
 
 }
