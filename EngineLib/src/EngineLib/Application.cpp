@@ -83,6 +83,10 @@ bool Application::App_Application_Get_CloseAppOnWindowClose() const {
     return m_appApplicationCloseAppOnWindowClose;
 }
 
+bool Application::App_Application_Get_DebugMode() const {
+    return m_appApplicationDebugMode;
+}
+
 // OpenGL
 void Application::App_OpenGL_Get_Version(int& major, int& minor) const {
     major = m_appOpenGLVersionMajor;
@@ -169,6 +173,10 @@ void Application::App_Application_Set_CloseAppOnWindowClose(bool value) {
 void Application::App_Application_Set_WindowClose() {
     if (m_window != nullptr)
      glfwSetWindowShouldClose(m_window, true);
+}
+
+void Application::App_Application_Set_DebugMode(bool value) {
+    m_appApplicationDebugMode = value;
 }
 
 void Application::App_OpenGL_Set_DepthTesting(bool value) {

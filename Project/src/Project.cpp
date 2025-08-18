@@ -16,6 +16,7 @@ Project::Project()
 	App_OpenGL_Set_DepthTesting(true);
 
 	App_Application_Set_Header(true);
+	App_Application_Set_DebugMode(true);
 
 	// Log::SaveLogs("Logs/");
 }
@@ -25,9 +26,9 @@ void GenerateCubesSphere();
 std::shared_ptr<GameObject> cameraGO = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 50; // horizontale Segmente
-size_t cubeCountPhi = 50;   // vertikale Segmente
-float sphereRadius = 100.0f;
+size_t cubeCountTheta = 20; // horizontale Segmente
+size_t cubeCountPhi = 20;   // vertikale Segmente
+float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -87,6 +88,8 @@ void Project::Update() {
 	}
 
 	UpdateCubesSphere(Time::GetTime());
+
+	Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
 }
 
 void Project::Shutdown() {

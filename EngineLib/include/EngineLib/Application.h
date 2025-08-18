@@ -55,6 +55,7 @@ public:
 	int App_Application_Get_FramesPerSecond() const;
 	bool App_Application_Get_Header() const;
 	bool App_Application_Get_CloseAppOnWindowClose() const;
+	bool App_Application_Get_DebugMode() const;
 
 	void App_Application_Set_Header(bool value);
 	void App_Application_Set_Window_Height(int height);
@@ -67,6 +68,7 @@ public:
 	void App_Application_Set_Window_Cursor_Hidden(bool value);
 	void App_Application_Set_CloseAppOnWindowClose(bool value);
 	void App_Application_Set_WindowClose();
+	void App_Application_Set_DebugMode(bool value);
 
 	void App_OpenGL_Get_Version(int& major, int& minor) const;
 	bool App_OpenGL_Get_DepthTesting() const;
@@ -108,6 +110,7 @@ private:
 	bool m_appApplicationWindowCursorHidden = false;
 	WindowState m_appApplicationWindowState = WindowState::Restored;// not implementedasdflkdgs;
 	bool m_appApplicationCloseAppOnWindowClose = true;
+	bool m_appApplicationDebugMode = false;
 
 	int m_appOpenGLVersionMajor = 3;
 	int m_appOpenGLVersionMinor = 3;
