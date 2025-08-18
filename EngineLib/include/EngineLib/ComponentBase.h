@@ -42,7 +42,7 @@ namespace EngineCore {
 		ComponentBase(const std::string& name, GameObject* gameObject);
 
 		bool m_alive = true;
-		bool m_isDisabled = true;
+		bool m_isDisabled = false;
 		std::string m_name;
 		GameObject* m_gameObject = nullptr;
 		/**
