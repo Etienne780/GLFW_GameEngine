@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\EngineLib\DebuggerWindows.h" />
     <ClInclude Include="include\EngineLib\AllComponents.h" />
     <ClInclude Include="include\EngineLib\Application.h" />
     <ClInclude Include="include\EngineLib\AssetRepository.h" />
@@ -50,6 +51,7 @@
     <ClCompile Include="src\EngineLib\Components\Script_C.cpp" />
     <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
     <ClCompile Include="src\EngineLib\Debugger.cpp" />
+    <ClCompile Include="src\EngineLib\DebuggerWindows.cpp" />
     <ClCompile Include="src\EngineLib\Material.cpp" />
     <ClCompile Include="src\EngineLib\Mesh.cpp" />
     <ClCompile Include="src\EngineLib\Components\MeshRenderer_C.cpp" />

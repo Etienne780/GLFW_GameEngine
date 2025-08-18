@@ -7,10 +7,11 @@
 #include <ImGUI/imgui_impl_opengl3.h>
 #include <CoreLib/Log.h>
 
-#include "EngineLib/Debugger.h"
 #include "EngineLib/Application.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/Time.h"
+#include "EngineLib/DebuggerWindows.h"
+#include "EngineLib/Debugger.h"
 
 namespace EngineCore {
 	
@@ -36,18 +37,14 @@ namespace EngineCore {
 	}
 
 	void Debugger::Update() {
+		SetVariables();
 		HandleCursorLock();
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::Begin("Debugger");
-		ImGui::Text("Hello from Debugger!");
-		if (ImGui::Button("Klick mich")) {
-			Log::Info("Debugger Button clicked");
-		}
-		ImGui::End();
+		DebugWindow::MenuSidebar(m_menuSidebarWidth, m_windowHeight);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -58,6 +55,11 @@ namespace EngineCore {
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 		Log::Debug("ImGui Debugger shutdown");
+	}
+
+	void Debugger::SetVariables() {
+		m_windowWidth = m_app->App_Application_Get_Window_Width();
+		m_windowHeight = m_app->App_Application_Get_Window_Height();
 	}
 
 	void Debugger::HandleCursorLock() {
