@@ -101,6 +101,12 @@ public:
 	bool App_Debug_Get_Active() const;
 	bool App_Debug_Get_IsCursorLockDisabled() const;
 
+	/**
+	 * @brief Enables or disables Debug mode.
+	 * In Debug mode, you can press F1 or hold Left Alt to toggle mouse locking.
+	 * Whether mouse locking is currently disabled can be queried via the
+	 * App_Debug_GetIsCursorLockDisabled function.
+	 */
 	void App_Debug_Set_Active(bool value);
 
 private:
