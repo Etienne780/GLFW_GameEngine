@@ -12,6 +12,8 @@
 #include "EngineLib/Time.h"
 #include "EngineLib/DebuggerWindows.h"
 #include "EngineLib/Debugger.h"
+#include "EngineLib/IconsFontAwesome5Pro.h"
+#include <CoreLib\File.h>
 
 namespace EngineCore {
 	
@@ -28,6 +30,20 @@ namespace EngineCore {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		
+		io.Fonts->AddFontDefault();
+		float baseFontSize = 24.0f; // 13.0f is the size of the default font. Change to the font size you use.
+		float iconFontSize = baseFontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
+
+		// merge in icons from Font Awesome
+		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+		ImFontConfig icons_config;
+		icons_config.MergeMode = true;
+		icons_config.PixelSnapH = true;
+		icons_config.GlyphMinAdvanceX = iconFontSize;
+
+		std::string path = "/assets/fonts/fa-solid-900.ttf";
+		io.Fonts->AddFontFromFileTTF((File::GetExecutableDir() + path).c_str(), iconFontSize, &icons_config, icons_ranges);
 
 		ImGui::StyleColorsDark();
 
@@ -44,7 +60,7 @@ namespace EngineCore {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		DebugWindow::MenuSidebar(m_menuSidebarWidth, m_windowHeight);
+		DebugWindow::MenuSidebar(m_menuSidebarWidthRatio, m_windowWidth, m_windowHeight);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

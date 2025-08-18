@@ -93,6 +93,9 @@
     <ClInclude Include="include\EngineLib\DebuggerWindows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EngineLib\IconsFontAwesome5Pro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EngineLib\Application.cpp">
@@ -172,5 +175,8 @@
     <None Include="include\EngineLib\Material.inl">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\fonts\fa-solid-900.ttf" />
   </ItemGroup>
 </Project>

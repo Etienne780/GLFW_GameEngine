@@ -4,7 +4,7 @@ namespace EngineCore {
 	
 	namespace DebugWindow {
 
-		void MenuSidebar(float sidebarWidth, float windowHeight);
+		void MenuSidebar(float sidebarRatio, float windowWidth, float windowHeight);
 
 	}
 

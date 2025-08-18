@@ -94,8 +94,7 @@ void Project::Update() {
 		camController->m_isRotationDisabled = !App_Debug_Get_IsCursorLockDisabled();
 	}
 
-	UpdateCubesSphere(Time::GetTime());
-
+	// UpdateCubesSphere(Time::GetTime());
 	// Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
 }
 

@@ -25,7 +25,7 @@ namespace EngineCore {
 		float m_windowHeight = 0;
 		bool m_cursorLock = true;
 
-		float m_menuSidebarWidth = 30;
+		float m_menuSidebarWidthRatio = 0.07;// is in %
 
 		void SetVariables();
 		void HandleCursorLock();
