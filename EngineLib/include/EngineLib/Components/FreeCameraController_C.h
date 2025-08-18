@@ -38,10 +38,12 @@ namespace EngineCore {
 			Vector3 moveDir;
 			float moveDirY = 0;
 			Vector2 secondaryLookDir;
+			std::shared_ptr<Transform> trans = nullptr;
 
 			void Update() override;
 			void CalculateCameraRotation(Vector2 mouseDelta);
 			void CameraZoom();
+			void CameraMovement();
 		};
 		
 	}

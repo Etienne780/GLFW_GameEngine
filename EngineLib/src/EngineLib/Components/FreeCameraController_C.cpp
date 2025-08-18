@@ -6,6 +6,7 @@ namespace EngineCore {
 
 		FreeCameraController::FreeCameraController(GameObject* gameObject) : Script(gameObject){
 			m_camera = m_gameObject->GetComponent<Component::Camera>();
+			trans = m_gameObject->GetTransform();
 		}
 
 		void FreeCameraController::Update() {
@@ -43,7 +44,31 @@ namespace EngineCore {
 
 				CalculateCameraRotation(Input::GetMousePositionDelta());
 			}
+
+			CameraMovement();
 			first = false;
+		}
+
+		void FreeCameraController::CameraMovement() {
+			forward = trans->GetForward();
+			moveDir.Normalize();
+
+			Vector3 right = trans->GetRight(forward);
+			Vector3 up = trans->GetUp(forward, right);
+
+			Vector3 worldMoveDir =
+				right * moveDir.x +
+				up * moveDir.y +
+				forward * moveDir.z;
+
+			worldMoveDir.y += moveDirY * m_verticalMovementspeedMultiplier;
+
+			float multiplier = (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT)) ? m_sprintMultiplier : 1;
+			multiplier *= (Input::KeyPressed(GLFW_KEY_LEFT_ALT)) ? m_slowMultiplier : 1;
+			cameraPosition += worldMoveDir * m_movementSpeed * multiplier * Time::GetDeltaTime();
+
+			trans->SetPosition(cameraPosition);
+			trans->SetRotation(cameraRotation);
 		}
 
 		void FreeCameraController::CalculateCameraRotation(Vector2 mouseDelta) {
@@ -59,27 +84,6 @@ namespace EngineCore {
 				}
 
 				MathUtil::Clamp(cameraRotation.x, -89.0f, 89.0f);
-
-				auto trans = m_gameObject->GetTransform();
-				forward = trans->GetForward();
-				moveDir.Normalize();
-
-				Vector3 right = trans->GetRight(forward);
-				Vector3 up = trans->GetUp(forward, right);
-
-				Vector3 worldMoveDir =
-					right * moveDir.x +
-					up * moveDir.y +
-					forward * moveDir.z;
-
-				worldMoveDir.y += moveDirY * m_verticalMovementspeedMultiplier;
-
-				float multiplier = (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT)) ? m_sprintMultiplier : 1;
-				multiplier *= (Input::KeyPressed(GLFW_KEY_LEFT_ALT)) ? m_slowMultiplier : 1;
-				cameraPosition += worldMoveDir * m_movementSpeed * multiplier * Time::GetDeltaTime();
-
-				trans->SetPosition(cameraPosition);
-				trans->SetRotation(cameraRotation);
 			}
 		}
 
