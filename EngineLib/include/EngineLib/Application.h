@@ -41,6 +41,7 @@ public:
 
 	static Application* Get();
 
+	// Application
 	std::string App_Application_Get_Name() const;
 	std::string App_Application_Get_Version() const;
 	GLFWwindow* App_Application_Get_Window() const;
@@ -55,7 +56,6 @@ public:
 	int App_Application_Get_FramesPerSecond() const;
 	bool App_Application_Get_Header() const;
 	bool App_Application_Get_CloseAppOnWindowClose() const;
-	bool App_Application_Get_DebugMode() const;
 
 	void App_Application_Set_Header(bool value);
 	void App_Application_Set_Window_Height(int height);
@@ -68,18 +68,18 @@ public:
 	void App_Application_Set_Window_Cursor_Hidden(bool value);
 	void App_Application_Set_CloseAppOnWindowClose(bool value);
 	void App_Application_Set_WindowClose();
-	void App_Application_Set_DebugMode(bool value);
 
+	// OpenGL
 	void App_OpenGL_Get_Version(int& major, int& minor) const;
 	bool App_OpenGL_Get_DepthTesting() const;
 	void App_OpenGL_Get_BackgroundColor(float& rOut, float& gOut, float& bOut) const;
 	Vector3 App_OpenGL_Get_BackgroundColor() const;
 	bool App_OpenGL_Get_ManuallyClearBackground() const;
-	bool App_OpenGL_Set_DepthTesting() const;
-	void App_OpenGL_Set_PolygonMode(GLenum& faceOut, GLenum& modeOut) const;
-	GLenum App_OpenGL_Set_PolygonMode_Face() const;
-	GLenum App_OpenGL_Set_PolygonMode_Mode() const;
-	bool App_OpenGL_Set_FaceCulling() const;
+	bool App_OpenGL_Get_DepthTesting() const;
+	void App_OpenGL_Get_PolygonMode(GLenum& faceOut, GLenum& modeOut) const;
+	GLenum App_OpenGL_Get_PolygonMode_Face() const;
+	GLenum App_OpenGL_Get_PolygonMode_Mode() const;
+	bool App_OpenGL_Get_FaceCulling() const;
 
 	void App_OpenGL_Set_Version(int major, int minor);
 	// cant be called in the constructor. needs a window
@@ -98,6 +98,12 @@ public:
 
 	void App_OpenGL_BackgroundColor() const;
 
+	// Debug
+	bool App_Debug_Get_Active() const;
+	bool App_Debug_Get_IsCursorLockDisabled() const;
+
+	void App_Debug_Set_Active(bool value);
+
 private:
 	static Application* s_instance;
 
@@ -115,7 +121,6 @@ private:
 	bool m_appApplicationWindowCursorHidden = false;
 	WindowState m_appApplicationWindowState = WindowState::Restored;// not implementedasdflkdgs;
 	bool m_appApplicationCloseAppOnWindowClose = true;
-	bool m_appApplicationDebugMode = false;
 
 	int m_appOpenGLVersionMajor = 3;
 	int m_appOpenGLVersionMinor = 3;
@@ -125,6 +130,9 @@ private:
 	GLenum m_appOpenGLPolygonModeMode;
 	Vector3 m_appOpenGLBackgroundColor;
 	bool m_appOpenGLManuallyClearBackground = false;
+
+	bool m_appDebugActive = false;
+	bool m_appDebugIsCursorLockDisabled = false;
 
 	GLFWwindow* m_window = nullptr;
 };

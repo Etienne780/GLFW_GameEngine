@@ -83,10 +83,6 @@ bool Application::App_Application_Get_CloseAppOnWindowClose() const {
     return m_appApplicationCloseAppOnWindowClose;
 }
 
-bool Application::App_Application_Get_DebugMode() const {
-    return m_appApplicationDebugMode;
-}
-
 // OpenGL
 void Application::App_OpenGL_Get_Version(int& major, int& minor) const {
     major = m_appOpenGLVersionMajor;
@@ -110,25 +106,34 @@ bool Application::App_OpenGL_Get_ManuallyClearBackground() const {
     return m_appOpenGLManuallyClearBackground;
 }
 
-bool Application::App_OpenGL_Set_DepthTesting() const {
+bool Application::App_OpenGL_Get_DepthTesting() const {
     return m_appOpenGLDepthTesting;
 }
 
-void Application::App_OpenGL_Set_PolygonMode(GLenum& faceOut, GLenum& modeOut) const {
+void Application::App_OpenGL_Get_PolygonMode(GLenum& faceOut, GLenum& modeOut) const {
     faceOut = m_appOpenGLPolygonModeFace;
     modeOut = m_appOpenGLPolygonModeMode;
 }
 
-GLenum Application::App_OpenGL_Set_PolygonMode_Face() const {
+GLenum Application::App_OpenGL_Get_PolygonMode_Face() const {
     return m_appOpenGLPolygonModeFace;
 }
 
-GLenum Application::App_OpenGL_Set_PolygonMode_Mode() const {
+GLenum Application::App_OpenGL_Get_PolygonMode_Mode() const {
     return m_appOpenGLPolygonModeMode;
 }
 
-bool Application::App_OpenGL_Set_FaceCulling() const {
+bool Application::App_OpenGL_Get_FaceCulling() const {
     return m_appOpenGLFaceCulling;
+}
+
+// Debug
+bool Application::App_Debug_Get_Active() const {
+    return m_appDebugActive;
+}
+
+bool Application::App_Debug_Get_IsCursorLockDisabled() const {
+    return m_appDebugIsCursorLockDisabled;
 }
 
 #pragma endregion
@@ -195,10 +200,6 @@ void Application::App_Application_Set_CloseAppOnWindowClose(bool value) {
 void Application::App_Application_Set_WindowClose() {
     if (m_window != nullptr)
      glfwSetWindowShouldClose(m_window, true);
-}
-
-void Application::App_Application_Set_DebugMode(bool value) {
-    m_appApplicationDebugMode = value;
 }
 
 void Application::App_OpenGL_Set_DepthTesting(bool value) {
@@ -275,6 +276,11 @@ void Application::App_OpenGL_Set_FaceCulling(bool value) {
     }
 
     Log::Debug("Application: OpenGL: Face culling set: {}", value);
+}
+
+//Debug
+void Application::App_Debug_Set_Active(bool value) {
+    m_appDebugActive = value;
 }
 
 #pragma endregion
