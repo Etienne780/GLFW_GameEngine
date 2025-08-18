@@ -19,12 +19,12 @@ namespace EngineCore {
 				moveDir.z = 0;
 				moveDirY = 0;
 
-				if (Input::KeyPressed(GLFW_KEY_W)) moveDir.z += 1;
-				if (Input::KeyPressed(GLFW_KEY_S)) moveDir.z -= 1;
-				if (Input::KeyPressed(GLFW_KEY_A)) moveDir.x += 1;
-				if (Input::KeyPressed(GLFW_KEY_D)) moveDir.x -= 1;
-				if (Input::KeyPressed(GLFW_KEY_SPACE)) moveDirY += 1;
-				if (Input::KeyPressed(GLFW_KEY_LEFT_CONTROL)) moveDirY -= 1;
+				if (Input::KeyPressed(m_keyMoveForward)) moveDir.z += 1;
+				if (Input::KeyPressed(m_keyMoveBack)) moveDir.z -= 1;
+				if (Input::KeyPressed(m_keyMoveLeft)) moveDir.x += 1;
+				if (Input::KeyPressed(m_keyMoveRight)) moveDir.x -= 1;
+				if (Input::KeyPressed(m_keyMoveUp)) moveDirY += 1;
+				if (Input::KeyPressed(m_keyMoveDown)) moveDirY -= 1;
 			}
 
 			if (!m_isRotationDisabled) {
@@ -32,10 +32,10 @@ namespace EngineCore {
 					secondaryLookDir.x = 0;
 					secondaryLookDir.y = 0;
 
-					if (Input::KeyPressed(GLFW_KEY_UP)) secondaryLookDir.x += 1;
-					if (Input::KeyPressed(GLFW_KEY_DOWN)) secondaryLookDir.x -= 1;
-					if (Input::KeyPressed(GLFW_KEY_LEFT)) secondaryLookDir.y -= 1;
-					if (Input::KeyPressed(GLFW_KEY_RIGHT)) secondaryLookDir.y += 1;
+					if (Input::KeyPressed(m_keyRotateUp)) secondaryLookDir.x += 1;
+					if (Input::KeyPressed(m_keyRotateDown)) secondaryLookDir.x -= 1;
+					if (Input::KeyPressed(m_keyRotateLeft)) secondaryLookDir.y -= 1;
+					if (Input::KeyPressed(m_keyRotateRight)) secondaryLookDir.y += 1;
 
 					secondaryLookDir *= m_arrowSensitivity * Time::GetDeltaTime() * 100;
 					cameraRotation.y += secondaryLookDir.y;
@@ -88,8 +88,8 @@ namespace EngineCore {
 
 			worldMoveDir.y += moveDirY * m_verticalMovementspeedMultiplier;
 
-			float multiplier = (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT)) ? m_sprintMultiplier : 1;
-			multiplier *= (Input::KeyPressed(GLFW_KEY_LEFT_ALT)) ? m_slowMultiplier : 1;
+			float multiplier = (Input::KeyPressed(m_keyMoveSprint)) ? m_sprintMultiplier : 1;
+			multiplier *= (Input::KeyPressed(m_keyMoveSlow)) ? m_slowMultiplier : 1;
 			cameraPosition += worldMoveDir * m_movementSpeed * multiplier * Time::GetDeltaTime();
 
 			trans->SetPosition(cameraPosition);

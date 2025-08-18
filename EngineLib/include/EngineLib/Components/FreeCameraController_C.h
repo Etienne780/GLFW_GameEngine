@@ -11,6 +11,20 @@ namespace EngineCore {
 
 			COMPONENT_TYPE_DEFINITION(FreeCameraController);
 
+			int m_keyMoveForward = GLFW_KEY_W;
+			int m_keyMoveBack = GLFW_KEY_S;
+			int m_keyMoveLeft = GLFW_KEY_A;
+			int m_keyMoveRight = GLFW_KEY_D;
+			int m_keyMoveUp = GLFW_KEY_SPACE;
+			int m_keyMoveDown = GLFW_KEY_LEFT_CONTROL;
+			int m_keyMoveSprint = GLFW_KEY_LEFT_SHIFT;
+			int m_keyMoveSlow = GLFW_KEY_LEFT_ALT;
+
+			int m_keyRotateUp = GLFW_KEY_UP;
+			int m_keyRotateDown = GLFW_KEY_DOWN;
+			int m_keyRotateLeft = GLFW_KEY_LEFT;
+			int m_keyRotateRight = GLFW_KEY_RIGHT;
+
 			bool m_isZoomDisabled = false;
 			bool m_isMovementDisabled = false;
 			bool m_isRotationDisabled = false;
