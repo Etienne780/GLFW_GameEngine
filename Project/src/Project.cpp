@@ -22,7 +22,7 @@ Project::Project()
 
 void GenerateCubesSphere();
 
-std::shared_ptr<GameObject> cameraGO = nullptr;
+std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
 size_t cubeCountTheta = 20; // horizontale Segmente
@@ -33,9 +33,9 @@ void Project::Start() {
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	App_OpenGL_Set_FaceCulling(true);
 
-	cameraGO = GameObject::Create("MainCamera");
+	auto cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
-	cameraGO->AddComponent<Component::FreeCameraController>();
+	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 	
 	// auto c = GameObject::Create("TestCube");
 	// auto mr = c->AddComponent<Component::MeshRenderer>();
@@ -87,7 +87,11 @@ void Project::Update() {
 	}
 
 	if (Input::KeyJustPressed(GLFW_KEY_H)) {
-		App_Application_Set_DebugMode(!App_Application_Get_DebugMode());
+		App_Debug_Set_Active(!App_Debug_Get_Active());
+	}
+
+	if (App_Debug_Get_Active()) {
+		camController->m_isRotationDisabled = !App_Debug_Get_IsCursorLockDisabled();
 	}
 
 	UpdateCubesSphere(Time::GetTime());
