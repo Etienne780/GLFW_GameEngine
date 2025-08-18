@@ -75,7 +75,6 @@ public:
 	void App_OpenGL_Get_BackgroundColor(float& rOut, float& gOut, float& bOut) const;
 	Vector3 App_OpenGL_Get_BackgroundColor() const;
 	bool App_OpenGL_Get_ManuallyClearBackground() const;
-	bool App_OpenGL_Get_DepthTesting() const;
 	void App_OpenGL_Get_PolygonMode(GLenum& faceOut, GLenum& modeOut) const;
 	GLenum App_OpenGL_Get_PolygonMode_Face() const;
 	GLenum App_OpenGL_Get_PolygonMode_Mode() const;

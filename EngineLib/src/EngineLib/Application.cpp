@@ -106,10 +106,6 @@ bool Application::App_OpenGL_Get_ManuallyClearBackground() const {
     return m_appOpenGLManuallyClearBackground;
 }
 
-bool Application::App_OpenGL_Get_DepthTesting() const {
-    return m_appOpenGLDepthTesting;
-}
-
 void Application::App_OpenGL_Get_PolygonMode(GLenum& faceOut, GLenum& modeOut) const {
     faceOut = m_appOpenGLPolygonModeFace;
     modeOut = m_appOpenGLPolygonModeMode;
