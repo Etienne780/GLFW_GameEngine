@@ -41,8 +41,8 @@ public:
 
 	static Application* Get();
 
-	const std::string& App_Application_Get_Name() const;
-	const std::string& App_Application_Get_Version() const;
+	std::string App_Application_Get_Name() const;
+	std::string App_Application_Get_Version() const;
 	GLFWwindow* App_Application_Get_Window() const;
 	int App_Application_Get_Window_Height() const;
 	int App_Application_Get_Window_Width() const;
@@ -72,9 +72,14 @@ public:
 
 	void App_OpenGL_Get_Version(int& major, int& minor) const;
 	bool App_OpenGL_Get_DepthTesting() const;
-	void App_OpenGL_Get_BackgroundColor(float& r, float& g, float& b) const;
-	const Vector3& App_OpenGL_Get_BackgroundColor() const;
+	void App_OpenGL_Get_BackgroundColor(float& rOut, float& gOut, float& bOut) const;
+	Vector3 App_OpenGL_Get_BackgroundColor() const;
 	bool App_OpenGL_Get_ManuallyClearBackground() const;
+	bool App_OpenGL_Set_DepthTesting() const;
+	void App_OpenGL_Set_PolygonMode(GLenum& faceOut, GLenum& modeOut) const;
+	GLenum App_OpenGL_Set_PolygonMode_Face() const;
+	GLenum App_OpenGL_Set_PolygonMode_Mode() const;
+	bool App_OpenGL_Set_FaceCulling() const;
 
 	void App_OpenGL_Set_Version(int major, int minor);
 	// cant be called in the constructor. needs a window

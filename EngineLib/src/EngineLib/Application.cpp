@@ -27,11 +27,11 @@ Application* Application::Get() {
 }
 
 // Application
-const std::string& Application::App_Application_Get_Name() const {
+std::string Application::App_Application_Get_Name() const {
     return m_appApplicationName;
 }
 
-const std::string& Application::App_Application_Get_Version() const {
+std::string Application::App_Application_Get_Version() const {
     return m_appApplicationVersion;
 }
 
@@ -97,17 +97,38 @@ bool Application::App_OpenGL_Get_DepthTesting() const {
     return m_appOpenGLDepthTesting;
 }
 
-void Application::App_OpenGL_Get_BackgroundColor(float& r, float& g, float& b) const {
-    r = m_appOpenGLBackgroundColor.x;
-    g = m_appOpenGLBackgroundColor.y;
-    b = m_appOpenGLBackgroundColor.z;
+void Application::App_OpenGL_Get_BackgroundColor(float& rOut, float& gOut, float& bOut) const {
+    rOut = m_appOpenGLBackgroundColor.x;
+    gOut = m_appOpenGLBackgroundColor.y;
+    bOut = m_appOpenGLBackgroundColor.z;
 }
-const Vector3& Application::App_OpenGL_Get_BackgroundColor() const {
+Vector3 Application::App_OpenGL_Get_BackgroundColor() const {
     return m_appOpenGLBackgroundColor;
 }
 
 bool Application::App_OpenGL_Get_ManuallyClearBackground() const {
     return m_appOpenGLManuallyClearBackground;
+}
+
+bool Application::App_OpenGL_Set_DepthTesting() const {
+    return m_appOpenGLDepthTesting;
+}
+
+void Application::App_OpenGL_Set_PolygonMode(GLenum& faceOut, GLenum& modeOut) const {
+    faceOut = m_appOpenGLPolygonModeFace;
+    modeOut = m_appOpenGLPolygonModeMode;
+}
+
+GLenum Application::App_OpenGL_Set_PolygonMode_Face() const {
+    return m_appOpenGLPolygonModeFace;
+}
+
+GLenum Application::App_OpenGL_Set_PolygonMode_Mode() const {
+    return m_appOpenGLPolygonModeMode;
+}
+
+bool Application::App_OpenGL_Set_FaceCulling() const {
+    return m_appOpenGLFaceCulling;
 }
 
 #pragma endregion
@@ -181,15 +202,14 @@ void Application::App_Application_Set_DebugMode(bool value) {
 }
 
 void Application::App_OpenGL_Set_DepthTesting(bool value) {
-    if (m_window == nullptr) return;
-    if (m_appOpenGLDepthTesting != value) {
+    if (m_appOpenGLDepthTesting != value && m_window != nullptr) {
         if (value)
             glEnable(GL_DEPTH_TEST);
         else
             glDisable(GL_DEPTH_TEST);
-
-        m_appOpenGLDepthTesting = value;
     }
+
+    m_appOpenGLDepthTesting = value;
     Log::Debug("Application: OpenGL: Depth testing set: ", value);
 }
 
