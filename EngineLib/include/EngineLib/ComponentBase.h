@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "ComponentTypeID.h"
+#include "EngineTypes.h"
 
 #define COMPONENT_TYPE_DEFINITION(T) \
     static ComponentTypeID StaticTypeID() { return GetComponentTypeID<T>(); } \
@@ -15,8 +16,8 @@ namespace EngineCore {
 	public:
 		virtual ~ComponentBase() = default;
 
-		void CUpdate(float deltaTime);
-		virtual void UpdateImpl(float deltaTime) {}
+		void CUpdate();
+		virtual void UpdateImpl() {}
 		virtual bool IsDrawable() const { return false; }
 		virtual void SubmitDrawCall() {}
 
@@ -27,7 +28,7 @@ namespace EngineCore {
 		std::string GetName() const;
 		GameObject* GetGameObject() const;
 
-		virtual ComponentTypeID GetTypeID() const { return 0; }
+		virtual ComponentTypeID GetTypeID() const { return ENGINE_INVALID_ID; }
 
 		template<typename T>
 		bool IsType() const {

@@ -94,12 +94,12 @@ namespace EngineCore {
         glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 
         // Attribut-Location 3..6 für die Matrix-Spalten
-        std::size_t vec4Size = sizeof(float) * 4;
-        std::size_t mat4Size = sizeof(float) * 16;
+        size_t vec4Size = sizeof(float) * 4;
+        size_t mat4Size = sizeof(float) * 16;
 
         for (int i = 0; i < 4; i++) {
             glEnableVertexAttribArray(3 + i);
-            glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, mat4Size, (void*)(i * vec4Size));
+            glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE,static_cast<GLsizei>(mat4Size), (void*)(i * vec4Size));
             glVertexAttribDivisor(3 + i, 1); // per instance
         }
 

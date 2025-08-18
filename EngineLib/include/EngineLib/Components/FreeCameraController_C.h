@@ -9,6 +9,8 @@ namespace EngineCore {
 		public:
 			FreeCameraController(GameObject* gameObject);
 
+			COMPONENT_TYPE_DEFINITION(FreeCameraController);
+
 			void Update() override;
 			void CalculateCameraRotation(Vector2 mouseDelta);
 

@@ -9,7 +9,7 @@ namespace EngineCore {
 	protected:
 		Script(GameObject* gameObject);
 
-		void UpdateImpl(float deltaTime) override;
+		void UpdateImpl() override;
 
 		virtual void Update() {};
 

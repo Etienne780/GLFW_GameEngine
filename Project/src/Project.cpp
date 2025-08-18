@@ -16,7 +16,6 @@ Project::Project()
 	App_OpenGL_Set_DepthTesting(true);
 
 	App_Application_Set_Header(true);
-	App_Application_Set_DebugMode(true);
 
 	// Log::SaveLogs("Logs/");
 }
@@ -37,7 +36,7 @@ void Project::Start() {
 	cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	cameraGO->AddComponent<Component::FreeCameraController>();
-
+	
 	// auto c = GameObject::Create("TestCube");
 	// auto mr = c->AddComponent<Component::MeshRenderer>();
 	// mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
@@ -87,9 +86,13 @@ void Project::Update() {
 		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
 	}
 
+	if (Input::KeyJustPressed(GLFW_KEY_H)) {
+		App_Application_Set_DebugMode(!App_Application_Get_DebugMode());
+	}
+
 	UpdateCubesSphere(Time::GetTime());
 
-	Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
+	// Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
 }
 
 void Project::Shutdown() {

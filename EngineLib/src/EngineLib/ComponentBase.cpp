@@ -9,8 +9,8 @@ namespace EngineCore {
 		: m_name(name), m_gameObject(gameObject) {
 	}
 
-	void ComponentBase::CUpdate(float deltaTime) {
-		UpdateImpl(deltaTime);
+	void ComponentBase::CUpdate() {
+		UpdateImpl();
 	}
 
 	GameObject* ComponentBase::GetGameObject() const {

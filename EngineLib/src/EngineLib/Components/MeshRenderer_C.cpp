@@ -57,6 +57,7 @@ namespace EngineCore {
 			}
 
 			m_invertMesh = value;
+			return *this;
 		}
 
 		void MeshRenderer::SubmitDrawCall() {

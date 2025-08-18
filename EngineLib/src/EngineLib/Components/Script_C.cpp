@@ -11,7 +11,7 @@ namespace EngineCore {
 		ComponentBase(compName, gameObject) {
 	}
 
-	void Script::UpdateImpl(float deltaTime) {
+	void Script::UpdateImpl() {
 		Update();
 	}
 
