@@ -12,6 +12,7 @@ namespace EngineCore {
 	}
 
 	int Engine::EngineStart() {
+		if (m_app == nullptr) return ENGINE_FAILURE;
 		if (GLFWInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
 
 		if (m_app->m_appApplicationHeader) {
@@ -91,10 +92,11 @@ namespace EngineCore {
 	void Engine::LateUpdate() {
 #ifndef NDEBUG
 		static bool isDebugModeInitCalled = false;
-		if (m_app->m_appApplicationDebugMode) {
+		if (m_app->m_appDebugActive) {
 			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app.get());
 			isDebugModeInitCalled = true;
 			m_debugger.Update();
+			m_app->m_appDebugIsCursorLockDisabled = m_debugger.GetCursorLock();
 		}
 		else {
 			if(isDebugModeInitCalled) m_debugger.Shutdown();

@@ -8,6 +8,9 @@
 #include <CoreLib/Log.h>
 
 #include "EngineLib/Debugger.h"
+#include "EngineLib/Application.h"
+#include "EngineLib/Input.h"
+#include "EngineLib/Time.h"
 
 namespace EngineCore {
 	
@@ -33,6 +36,8 @@ namespace EngineCore {
 	}
 
 	void Debugger::Update() {
+		HandleCursorLock();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -55,4 +60,31 @@ namespace EngineCore {
 		Log::Debug("ImGui Debugger shutdown");
 	}
 
+	void Debugger::HandleCursorLock() {
+		static bool toggleCursorLock = false;
+		if (Input::KeyPressed(GLFW_KEY_LEFT_ALT)) {
+			m_cursorLock = false;
+		}
+		else {
+			m_cursorLock = true;
+		}
+
+		if (Input::KeyJustPressed(GLFW_KEY_F1)) {
+			toggleCursorLock = !toggleCursorLock;
+			if (!toggleCursorLock) m_cursorLock = true;
+		}
+
+		if (toggleCursorLock) {
+			m_cursorLock = false;
+		}
+
+		if (m_app->App_Application_Get_Window_Cursor_Lock() != m_cursorLock) {
+			m_app->App_Application_Set_Window_Cursor_LockHidden(m_cursorLock);
+		}
+	}
+
+
+	bool Debugger::GetCursorLock() {
+		return m_cursorLock;
+	}
 }

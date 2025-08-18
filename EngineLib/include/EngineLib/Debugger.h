@@ -13,11 +13,17 @@ namespace EngineCore {
 		void Update();
 		void Shutdown();
 
+		void HandleCursorLock();
+
+		bool GetCursorLock();
+
 	private:
 		Debugger();
 
 		GLFWwindow* m_window = nullptr;
 		Application* m_app = nullptr;
+
+		bool m_cursorLock = true;
 	};
 
 }
