@@ -27,7 +27,7 @@
 #include "EngineLib\AllComponents.h"
 #ifndef NDEBUG
 #include "EngineLib\Debugger.h"
-#endif 
+#endif
 
 namespace EngineCore {
 
