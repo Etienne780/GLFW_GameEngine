@@ -115,6 +115,9 @@ private:
 	int m_appOpenGLVersionMajor = 3;
 	int m_appOpenGLVersionMinor = 3;
 	bool m_appOpenGLDepthTesting = false;
+	bool m_appOpenGLFaceCulling = false;
+	GLenum m_appOpenGLPolygonModeFace;
+	GLenum m_appOpenGLPolygonModeMode;
 	Vector3 m_appOpenGLBackgroundColor;
 	bool m_appOpenGLManuallyClearBackground = false;
 

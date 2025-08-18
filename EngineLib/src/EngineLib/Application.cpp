@@ -127,24 +127,24 @@ void Application::App_Application_Set_Window_Width(int width) {
 }
 
 void Application::App_Application_Set_Window_Resizable(bool value) {
-    m_appApplicationWindowResizable = value;
-
-    if (m_window != nullptr)
+    if (m_appApplicationWindowResizable != value && m_window != nullptr)
         glfwSetWindowAttrib(m_window, GLFW_RESIZABLE, value ? GLFW_TRUE : GLFW_FALSE);
+
+    m_appApplicationWindowResizable = value;
 }
 
 void Application::App_Application_Set_Window_Decoration(bool value) {
-    m_appApplicationWindowDecoration = value;
-
-    if (m_window != nullptr)
+    if (m_appApplicationWindowDecoration != value && m_window != nullptr)
         glfwSetWindowAttrib(m_window, GLFW_DECORATED, value ? GLFW_TRUE : GLFW_FALSE);
+
+    m_appApplicationWindowDecoration = value;
 }
 
 void Application::App_Application_Set_Window_Floating(bool value) {
-    m_appApplicationWindowFloating = value;
-
-    if (m_window != nullptr)
+    if (m_appApplicationWindowFloating != value && m_window != nullptr)
         glfwSetWindowAttrib(m_window, GLFW_FLOATING, value ? GLFW_TRUE : GLFW_FALSE);
+
+    m_appApplicationWindowFloating = value;
 }
 
 void Application::App_Application_Set_Window_Visibility(bool value) {
@@ -152,18 +152,19 @@ void Application::App_Application_Set_Window_Visibility(bool value) {
 }
 
 void Application::App_Application_Set_Window_Cursor_LockHidden(bool value) {
+    if ((m_appApplicationWindowCursorLock != value || m_appApplicationWindowCursorHidden != value) 
+        && m_window != nullptr)
+        glfwSetInputMode(m_window, GLFW_CURSOR, value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+
     m_appApplicationWindowCursorLock = value;
     m_appApplicationWindowCursorHidden = value;
-
-    if (m_window != nullptr)
-        glfwSetInputMode(m_window, GLFW_CURSOR, value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
 void Application::App_Application_Set_Window_Cursor_Hidden(bool value) {
-    m_appApplicationWindowCursorHidden = value;
-
-    if (m_window != nullptr)
+    if (m_appApplicationWindowCursorHidden != value && m_window != nullptr)
         glfwSetInputMode(m_window, GLFW_CURSOR, value ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
+
+    m_appApplicationWindowCursorHidden = value;
 }
 
 void Application::App_Application_Set_CloseAppOnWindowClose(bool value) {
@@ -180,13 +181,15 @@ void Application::App_Application_Set_DebugMode(bool value) {
 }
 
 void Application::App_OpenGL_Set_DepthTesting(bool value) {
-    m_appOpenGLDepthTesting = value;
-
     if (m_window == nullptr) return;
-    if(value)
-        glEnable(GL_DEPTH_TEST);
-    else 
-        glDisable(GL_DEPTH_TEST);
+    if (m_appOpenGLDepthTesting != value) {
+        if (value)
+            glEnable(GL_DEPTH_TEST);
+        else
+            glDisable(GL_DEPTH_TEST);
+
+        m_appOpenGLDepthTesting = value;
+    }
     Log::Debug("Application: OpenGL: Depth testing set: ", value);
 }
 
@@ -212,9 +215,15 @@ void Application::App_OpenGL_Set_ManuallyClearBackground(bool value) {
 }
 
 void Application::App_OpenGL_Set_PolygonMode(GLenum face, GLenum mode) {
-    // Setzt den Polygonmodus für die angegebenen Faces
-    glPolygonMode(face, mode);
 
+    if (m_appOpenGLPolygonModeFace != face || 
+        m_appOpenGLPolygonModeMode != mode) {
+        m_appOpenGLPolygonModeFace = face;
+        m_appOpenGLPolygonModeMode = mode;
+
+        glPolygonMode(face, mode);
+    }
+    
     std::string faceStr;
     switch (face) {
     case GL_FRONT: faceStr = "FRONT"; break;
@@ -236,10 +245,14 @@ void Application::App_OpenGL_Set_PolygonMode(GLenum face, GLenum mode) {
 
 
 void Application::App_OpenGL_Set_FaceCulling(bool value) {
-    if (value)
-        glEnable(GL_CULL_FACE);
-    else
-        glDisable(GL_CULL_FACE);
+    
+    if (m_appOpenGLFaceCulling != value) {
+        m_appOpenGLFaceCulling = value;
+        if (value)
+            glEnable(GL_CULL_FACE);
+        else
+            glDisable(GL_CULL_FACE);
+    }
 
     Log::Debug("Application: OpenGL: Face culling set: {}", value);
 }
