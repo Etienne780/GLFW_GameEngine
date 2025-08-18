@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,65 +19,32 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\EngineLib\AllComponents.h" />
-    <ClInclude Include="include\EngineLib\Application.h" />
-    <ClInclude Include="include\EngineLib\AssetRepository.h" />
-    <ClInclude Include="include\EngineLib\ComponentBase.h" />
-    <ClInclude Include="include\EngineLib\Components\FreeCameraController_C.h" />
-    <ClInclude Include="include\EngineLib\Components\Camera_C.h" />
-    <ClInclude Include="include\EngineLib\Components\MeshRenderer_C.h" />
-    <ClInclude Include="include\EngineLib\Components\Script_C.h" />
-    <ClInclude Include="include\EngineLib\Components\Transform_C.h" />
-    <ClInclude Include="include\EngineLib\ComponentTypeID.h" />
-    <ClInclude Include="include\EngineLib\Debugger.h" />
-    <ClInclude Include="include\EngineLib\Engine.h" />
-    <ClInclude Include="include\EngineLib\EngineTypes.h" />
-    <ClInclude Include="include\EngineLib\GameObject.h" />
-    <ClInclude Include="include\EngineLib\GameObjectManager.h" />
-    <ClInclude Include="include\EngineLib\Input.h" />
-    <ClInclude Include="include\EngineLib\Material.h" />
-    <ClInclude Include="include\EngineLib\Mesh.h" />
-    <ClInclude Include="include\EngineLib\Renderer.h" />
-    <ClInclude Include="include\EngineLib\ResourceManager.h" />
-    <ClInclude Include="include\EngineLib\Script.h" />
-    <ClInclude Include="include\EngineLib\Shader.h" />
-    <ClInclude Include="include\EngineLib\Texture2D.h" />
-    <ClInclude Include="include\EngineLib\Time.h" />
-    <ClInclude Include="include\EngineLib\Vertex.h" />
+    <ClInclude Include="include\ImGUI\imconfig.h" />
+    <ClInclude Include="include\ImGUI\imgui.h" />
+    <ClInclude Include="include\ImGUI\imgui_impl_glfw.h" />
+    <ClInclude Include="include\ImGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="include\ImGUI\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="include\ImGUI\imgui_internal.h" />
+    <ClInclude Include="include\ImGUI\imgui_stdlib.h" />
+    <ClInclude Include="include\ImGUI\imstb_rectpack.h" />
+    <ClInclude Include="include\ImGUI\imstb_textedit.h" />
+    <ClInclude Include="include\ImGUI\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\EngineLib\Components\FreeCameraController_C.cpp" />
-    <ClCompile Include="src\EngineLib\Components\Script_C.cpp" />
-    <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
-    <ClCompile Include="src\EngineLib\Debugger.cpp" />
-    <ClCompile Include="src\EngineLib\Material.cpp" />
-    <ClCompile Include="src\EngineLib\Mesh.cpp" />
-    <ClCompile Include="src\EngineLib\Components\MeshRenderer_C.cpp" />
-    <ClCompile Include="src\EngineLib\Components\Transform_C.cpp" />
-    <ClCompile Include="src\EngineLib\GameObjectManager.cpp" />
-    <ClCompile Include="src\EngineLib\Application.cpp" />
-    <ClCompile Include="src\EngineLib\ComponentBase.cpp" />
-    <ClCompile Include="src\EngineLib\Components\Camera_C.cpp" />
-    <ClCompile Include="src\EngineLib\Engine.cpp" />
-    <ClCompile Include="src\EngineLib\GameObject.cpp" />
-    <ClCompile Include="src\EngineLib\glad.c" />
-    <ClCompile Include="src\EngineLib\Input.cpp" />
-    <ClCompile Include="src\EngineLib\Renderer.cpp" />
-    <ClCompile Include="src\EngineLib\ResourceManager.cpp" />
-    <ClCompile Include="src\EngineLib\Shader.cpp" />
-    <ClCompile Include="src\EngineLib\Texture2D.cpp" />
-    <ClCompile Include="src\EngineLib\Time.cpp" />
-    <ClCompile Include="src\EngineLib\Vertex.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\EngineLib\GameObject.inl" />
-    <None Include="include\EngineLib\Material.inl" />
+    <ClCompile Include="src\ImGUI\imgui.cpp" />
+    <ClCompile Include="src\ImGUI\imgui_demo.cpp" />
+    <ClCompile Include="src\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="src\ImGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\ImGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\ImGUI\imgui_stdlib.cpp" />
+    <ClCompile Include="src\ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="src\ImGUI\imgui_widgets.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{731b5ead-f3e1-4d49-b952-2841f4a92045}</ProjectGuid>
-    <RootNamespace>EngineLib</RootNamespace>
+    <ProjectGuid>{7e541724-a746-4400-a300-3cd4d450a97e}</ProjectGuid>
+    <RootNamespace>ImGUI</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -149,9 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -169,13 +134,13 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -187,9 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -207,13 +170,13 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>

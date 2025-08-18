@@ -14,6 +14,7 @@ namespace EngineCore {
 			friend class EngineCore::Engine;
 		public:
 			Camera(GameObject* gameObject);
+			bool CanDisalbe() const override { return false; }
 
 			COMPONENT_TYPE_DEFINITION(Camera);
 

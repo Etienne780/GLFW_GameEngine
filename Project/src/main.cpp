@@ -1,18 +1,15 @@
 #include "Project.h"
 
 int main() {
-	using EnginePtr = std::unique_ptr<EngineCore::Engine>;
+	EngineCore::Engine engine(std::make_unique<Project>());
 
-	EnginePtr engine = std::make_unique<EngineCore::Engine>(std::make_unique<Project>());
-
-	const int result = engine->EngineStart();
+	const int result = engine.EngineStart();
 	if (result != 0) {
 		Log::Error("Engine start failed with code: {}", result);
 		return EXIT_FAILURE;
 	}
 
-	engine->EngineLoop();
-	engine.reset();
+	engine.EngineLoop();
 
 	return EXIT_SUCCESS;
 }

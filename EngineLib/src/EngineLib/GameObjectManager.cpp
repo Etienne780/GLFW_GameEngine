@@ -16,9 +16,9 @@ namespace EngineCore {
 		return instance;
 	}
 
-	void GameObjectManager::UpdateGameObjects(float deltaTime) {
+	void GameObjectManager::UpdateGameObjects() {
 		for (auto& go : m_gameObjects) {
-			go->Update(deltaTime);
+			go->Update();
 		}
 	}
 

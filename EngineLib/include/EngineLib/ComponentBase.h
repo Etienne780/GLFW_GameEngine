@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "ComponentTypeID.h"
+#include "EngineTypes.h"
 
 #define COMPONENT_TYPE_DEFINITION(T) \
     static ComponentTypeID StaticTypeID() { return GetComponentTypeID<T>(); } \
@@ -15,10 +16,10 @@ namespace EngineCore {
 	public:
 		virtual ~ComponentBase() = default;
 
-		void CUpdate(float deltaTime);
-		virtual void UpdateImpl(float deltaTime) {}
+		virtual bool CanDisalbe() const { return true; }
 		virtual bool IsDrawable() const { return false; }
-		virtual void SubmitDrawCall() {}
+
+		void Disable(bool value);
 
 		std::string GetComponentString() const;
 		std::string GetComponentString(bool moreDetail) const;
@@ -27,7 +28,7 @@ namespace EngineCore {
 		std::string GetName() const;
 		GameObject* GetGameObject() const;
 
-		virtual ComponentTypeID GetTypeID() const { return 0; }
+		virtual ComponentTypeID GetTypeID() const { return ENGINE_INVALID_ID; }
 
 		template<typename T>
 		bool IsType() const {
@@ -38,6 +39,7 @@ namespace EngineCore {
 		ComponentBase(const std::string& name, GameObject* gameObject);
 
 		bool m_alive = true;
+		bool m_isDisabled = false;
 		std::string m_name;
 		GameObject* m_gameObject = nullptr;
 		/**
@@ -46,6 +48,9 @@ namespace EngineCore {
 		* @return returns true when the gameobject is dead
 		*/
 		bool IsDead(const std::string& msg) const;
+		void CUpdate();
+		virtual void UpdateImpl() {}
+		virtual void SubmitDrawCall() {}
 	};
 
 }

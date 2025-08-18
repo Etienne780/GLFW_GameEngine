@@ -112,8 +112,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\; $(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib; CoreLib.lib;EngineLib.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3dll.lib;CoreLib.lib;EngineLib.lib;ImGUI.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,8 +131,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\; $(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib; CoreLib.lib;EngineLib.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3dll.lib;CoreLib.lib;EngineLib.lib;ImGUI.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -148,8 +148,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\; $(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib; CoreLib.lib;EngineLib.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3dll.lib;CoreLib.lib;EngineLib.lib;ImGUI.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,8 +167,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\; $(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib; CoreLib.lib;EngineLib.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)SharedBuild\Lib\$(Platform)\$(Configuration)\;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3dll.lib;CoreLib.lib;EngineLib.lib;ImGUI.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

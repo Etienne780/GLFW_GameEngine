@@ -9,8 +9,14 @@ namespace EngineCore {
 		: m_name(name), m_gameObject(gameObject) {
 	}
 
-	void ComponentBase::CUpdate(float deltaTime) {
-		UpdateImpl(deltaTime);
+	void ComponentBase::CUpdate() {
+		if (m_isDisabled) return;
+		UpdateImpl();
+	}
+
+	void ComponentBase::Disable(bool value) {
+		if (!CanDisalbe()) return;
+		m_isDisabled = value;
 	}
 
 	GameObject* ComponentBase::GetGameObject() const {

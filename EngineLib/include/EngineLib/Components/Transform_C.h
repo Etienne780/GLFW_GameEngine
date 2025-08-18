@@ -10,6 +10,7 @@ namespace EngineCore {
 		class Transform : public EngineCore::ComponentBase {
 		public:
 			Transform(GameObject* gameObject);
+			bool CanDisalbe() const override { return false; }
 
 			COMPONENT_TYPE_DEFINITION(Transform);
 

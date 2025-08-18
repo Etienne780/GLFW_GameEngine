@@ -22,21 +22,21 @@ Project::Project()
 
 void GenerateCubesSphere();
 
-std::shared_ptr<GameObject> cameraGO = nullptr;
+std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 50; // horizontale Segmente
-size_t cubeCountPhi = 50;   // vertikale Segmente
-float sphereRadius = 100.0f;
+size_t cubeCountTheta = 20; // horizontale Segmente
+size_t cubeCountPhi = 20;   // vertikale Segmente
+float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	App_OpenGL_Set_FaceCulling(true);
 
-	cameraGO = GameObject::Create("MainCamera");
+	auto cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
-	cameraGO->AddComponent<Component::FreeCameraController>();
-
+	camController = cameraGO->AddComponent<Component::FreeCameraController>();
+	
 	// auto c = GameObject::Create("TestCube");
 	// auto mr = c->AddComponent<Component::MeshRenderer>();
 	// mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
@@ -86,7 +86,17 @@ void Project::Update() {
 		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
 	}
 
+	if (Input::KeyJustPressed(GLFW_KEY_H)) {
+		App_Debug_Set_Active(!App_Debug_Get_Active());
+	}
+
+	if (App_Debug_Get_Active()) {
+		camController->m_isRotationDisabled = !App_Debug_Get_IsCursorLockDisabled();
+	}
+
 	UpdateCubesSphere(Time::GetTime());
+
+	// Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
 }
 
 void Project::Shutdown() {

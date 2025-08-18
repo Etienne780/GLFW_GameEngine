@@ -3,20 +3,24 @@
 
 namespace EngineCore {
 	Engine::Engine(std::unique_ptr<Application> app)
-		: app(std::move(app)) {
+		: m_app(std::move(app)) {
 
 		m_gameObjectManager = &GameObjectManager::GetInstance();
+#ifndef NDEBUG
+		m_debugger = Debugger();
+#endif 
 	}
 
 	int Engine::EngineStart() {
+		if (m_app == nullptr) return ENGINE_FAILURE;
 		if (GLFWInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
 
-		if (app->m_appApplicationHeader) {
+		if (m_app->m_appApplicationHeader) {
 			if (GLFWCreateWindow() != ENGINE_SUCCESS) return ENGINE_FAILURE;
 			if (GLADInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
 		}
 
-		app->m_window = m_window;
+		m_app->m_window = m_window;
 		Input::Init(m_window);
 		Material::m_maxTextureUnits = m_maxTextureUnits;
 
@@ -24,7 +28,7 @@ namespace EngineCore {
 
 		PrintApplicationHeader();
 		stbi_set_flip_vertically_on_load(true);
-		app->Start();
+		m_app->Start();
 
 		return ENGINE_SUCCESS;
 	}
@@ -41,7 +45,7 @@ namespace EngineCore {
 			}
 
 			if (hasWindow && glfwWindowShouldClose(m_window)) {
-				if (app->m_appApplicationCloseAppOnWindowClose)
+				if (m_app->m_appApplicationCloseAppOnWindowClose)
 					m_isEngineRunning = false;
 				GLFWCloseWindow();
 			}
@@ -62,19 +66,19 @@ namespace EngineCore {
 		}
 
 		// cleares the window each frame
-		if (m_window != nullptr && !app->m_appOpenGLManuallyClearBackground) {
-			glClearColor(app->m_appOpenGLBackgroundColor.x, 
-						 app->m_appOpenGLBackgroundColor.y, 
-						 app->m_appOpenGLBackgroundColor.z, 
+		if (m_window != nullptr && !m_app->m_appOpenGLManuallyClearBackground) {
+			glClearColor(m_app->m_appOpenGLBackgroundColor.x, 
+						 m_app->m_appOpenGLBackgroundColor.y, 
+						 m_app->m_appOpenGLBackgroundColor.z, 
 						 1.0f);
-			glClear(((app->m_appOpenGLDepthTesting) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
+			glClear(((m_app->m_appOpenGLDepthTesting) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
 		}
-		Component::Camera::SetWindowDimensions(app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
-		app->m_appApplicationFramesPerSecond = m_framesPerSecond;
+		Component::Camera::SetWindowDimensions(m_app->m_appApplicationWindowWidth, m_app->m_appApplicationWindowHeight);
+		m_app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 
-		m_gameObjectManager->UpdateGameObjects(Time::GetDeltaTime());
+		m_gameObjectManager->UpdateGameObjects();
 
-		app->Update();
+		m_app->Update();
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			m_gameObjectManager->DrawGameObjects();
 		}
@@ -86,11 +90,25 @@ namespace EngineCore {
 	}
 
 	void Engine::LateUpdate() {
+#ifndef NDEBUG
+		static bool isDebugModeInitCalled = false;
+		if (m_app->m_appDebugActive) {
+			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app.get());
+			isDebugModeInitCalled = true;
+			m_debugger.Update();
+			m_app->m_appDebugIsCursorLockDisabled = m_debugger.GetCursorLock();
+		}
+		else {
+			if(isDebugModeInitCalled) m_debugger.Shutdown();
+			isDebugModeInitCalled = false;
+		}
+#endif 
+
 		Input::LateUpdate();
 	}
 
 	void Engine::Shutdown() {
-		app->Shutdown();
+		m_app->Shutdown();
 
 		ResourceManager& rm = ResourceManager::GetInstance();
 		rm.Cleanup();
@@ -98,9 +116,9 @@ namespace EngineCore {
 	}
 
 	void Engine::OnWindowResize(int width, int height) {
-		app->m_appApplicationWindowWidth = width;
-		app->m_appApplicationWindowHeight = height;
-		app->OnWindowResize(width, height);
+		m_app->m_appApplicationWindowWidth = width;
+		m_app->m_appApplicationWindowHeight = height;
+		m_app->OnWindowResize(width, height);
 	}
 
 	int Engine::GLFWInit() {
@@ -116,21 +134,21 @@ namespace EngineCore {
 	}
 
 	int Engine::GLFWCreateWindow() {
-		if (!app->m_appApplicationHeader) return ENGINE_SUCCESS;
+		if (!m_app->m_appApplicationHeader) return ENGINE_SUCCESS;
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, app->m_appOpenGLVersionMajor);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, app->m_appOpenGLVersionMinor);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_app->m_appOpenGLVersionMajor);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_app->m_appOpenGLVersionMinor);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-		glfwWindowHint(GLFW_RESIZABLE, app->m_appApplicationWindowResizable);
-		glfwWindowHint(GLFW_DECORATED, app->m_appApplicationWindowDecoration);
-		glfwWindowHint(GLFW_FLOATING, app->m_appApplicationWindowFloating);
-		glfwWindowHint(GLFW_VISIBLE, app->m_appApplicationWindowVisibility);
+		glfwWindowHint(GLFW_RESIZABLE, m_app->m_appApplicationWindowResizable);
+		glfwWindowHint(GLFW_DECORATED, m_app->m_appApplicationWindowDecoration);
+		glfwWindowHint(GLFW_FLOATING, m_app->m_appApplicationWindowFloating);
+		glfwWindowHint(GLFW_VISIBLE, m_app->m_appApplicationWindowVisibility);
 
-		m_window = glfwCreateWindow(app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight, app->m_appApplicationName.c_str(), NULL, NULL);
+		m_window = glfwCreateWindow(m_app->m_appApplicationWindowWidth, m_app->m_appApplicationWindowHeight, m_app->m_appApplicationName.c_str(), NULL, NULL);
 		
 		if (!m_window)
 		{
@@ -147,9 +165,9 @@ namespace EngineCore {
 		glfwSwapInterval(0);
 
 		auto cursorMode = GLFW_CURSOR_NORMAL;
-		if (app->m_appApplicationWindowCursorHidden)
+		if (m_app->m_appApplicationWindowCursorHidden)
 			cursorMode = GLFW_CURSOR_HIDDEN;
-		if (app->m_appApplicationWindowCursorLock)
+		if (m_app->m_appApplicationWindowCursorLock)
 			cursorMode = GLFW_CURSOR_DISABLED;
 
 		glfwSetInputMode(m_window, GLFW_CURSOR, cursorMode);
@@ -181,10 +199,10 @@ namespace EngineCore {
 		if (!engine) return;
 
 		if (focused) {
-			engine->app->OnWindowFocusGain();
+			engine->m_app->OnWindowFocusGain();
 		}
 		else {
-			engine->app->OnWindowFocusLost();
+			engine->m_app->OnWindowFocusLost();
 		}
 	}
 
@@ -203,9 +221,9 @@ namespace EngineCore {
 		Log::Info("Engine::GLAD: Initialized GLAD successfully");
 
 		glPolygonMode(GL_FRONT, GL_FILL);
-		glViewport(0, 0, app->m_appApplicationWindowWidth, app->m_appApplicationWindowHeight);
+		glViewport(0, 0, m_app->m_appApplicationWindowWidth, m_app->m_appApplicationWindowHeight);
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
-		if (app->m_appOpenGLDepthTesting)
+		if (m_app->m_appOpenGLDepthTesting)
 			glEnable(GL_DEPTH_TEST);
 		else
 			glDisable(GL_DEPTH_TEST);
@@ -213,9 +231,9 @@ namespace EngineCore {
 	}
 
 	void Engine::PrintApplicationHeader() const {
-		std::string msg = Log::GetFormattedString("Start application: \"{}\", version: \"{}\"", app->m_appApplicationName, app->m_appApplicationVersion);
+		std::string msg = Log::GetFormattedString("Start application: \"{}\", version: \"{}\"", m_app->m_appApplicationName, m_app->m_appApplicationVersion);
 		Log::Info(msg);
-		if (!app->m_appApplicationHeader) {
+		if (!m_app->m_appApplicationHeader) {
 			Log::Info("Application is Headerless");
 		}
 

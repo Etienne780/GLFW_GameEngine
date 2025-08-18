@@ -11,6 +11,7 @@
 namespace EngineCore {
 
 	class ComponentBase;
+	class GameObjectManager;
 
 	class GameObject : public std::enable_shared_from_this<GameObject> {
 	friend class GameObjectManager;
@@ -75,7 +76,7 @@ namespace EngineCore {
 		/**
 		* @brief calls the start and update methods of the components
 		*/
-		void Update(float deltaTime);
+		void Update();
 
 		void RegisterCamera(std::weak_ptr<Component::Camera> camera);
 		void UnregisterCamera(std::weak_ptr<Component::Camera> camera);

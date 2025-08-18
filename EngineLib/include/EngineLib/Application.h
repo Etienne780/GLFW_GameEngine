@@ -41,8 +41,9 @@ public:
 
 	static Application* Get();
 
-	const std::string& App_Application_Get_Name() const;
-	const std::string& App_Application_Get_Version() const;
+	// Application
+	std::string App_Application_Get_Name() const;
+	std::string App_Application_Get_Version() const;
 	GLFWwindow* App_Application_Get_Window() const;
 	int App_Application_Get_Window_Height() const;
 	int App_Application_Get_Window_Width() const;
@@ -68,11 +69,16 @@ public:
 	void App_Application_Set_CloseAppOnWindowClose(bool value);
 	void App_Application_Set_WindowClose();
 
+	// OpenGL
 	void App_OpenGL_Get_Version(int& major, int& minor) const;
 	bool App_OpenGL_Get_DepthTesting() const;
-	void App_OpenGL_Get_BackgroundColor(float& r, float& g, float& b) const;
-	const Vector3& App_OpenGL_Get_BackgroundColor() const;
+	void App_OpenGL_Get_BackgroundColor(float& rOut, float& gOut, float& bOut) const;
+	Vector3 App_OpenGL_Get_BackgroundColor() const;
 	bool App_OpenGL_Get_ManuallyClearBackground() const;
+	void App_OpenGL_Get_PolygonMode(GLenum& faceOut, GLenum& modeOut) const;
+	GLenum App_OpenGL_Get_PolygonMode_Face() const;
+	GLenum App_OpenGL_Get_PolygonMode_Mode() const;
+	bool App_OpenGL_Get_FaceCulling() const;
 
 	void App_OpenGL_Set_Version(int major, int minor);
 	// cant be called in the constructor. needs a window
@@ -90,6 +96,18 @@ public:
 	void App_OpenGL_Set_FaceCulling(bool value);
 
 	void App_OpenGL_BackgroundColor() const;
+
+	// Debug
+	bool App_Debug_Get_Active() const;
+	bool App_Debug_Get_IsCursorLockDisabled() const;
+
+	/**
+	 * @brief Enables or disables Debug mode.
+	 * In Debug mode, you can press F1 or hold Left Alt to toggle mouse locking.
+	 * Whether mouse locking is currently disabled can be queried via the
+	 * App_Debug_GetIsCursorLockDisabled function.
+	 */
+	void App_Debug_Set_Active(bool value);
 
 private:
 	static Application* s_instance;
@@ -112,8 +130,14 @@ private:
 	int m_appOpenGLVersionMajor = 3;
 	int m_appOpenGLVersionMinor = 3;
 	bool m_appOpenGLDepthTesting = false;
+	bool m_appOpenGLFaceCulling = false;
+	GLenum m_appOpenGLPolygonModeFace;
+	GLenum m_appOpenGLPolygonModeMode;
 	Vector3 m_appOpenGLBackgroundColor;
 	bool m_appOpenGLManuallyClearBackground = false;
+
+	bool m_appDebugActive = false;
+	bool m_appDebugIsCursorLockDisabled = false;
 
 	GLFWwindow* m_window = nullptr;
 };

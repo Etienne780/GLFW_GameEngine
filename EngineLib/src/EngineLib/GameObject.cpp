@@ -178,9 +178,9 @@ namespace EngineCore {
 		return this;
 	}
 
-	void GameObject::Update(float deltaTime) {
+	void GameObject::Update() {
 		for (auto& comp : m_components) {
-			comp->CUpdate(deltaTime);
+			comp->CUpdate();
 		}
 	}
 

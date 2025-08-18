@@ -31,7 +31,7 @@ namespace EngineCore {
 		/**
 		* @brief calles the start and update func of the GameObjects
 		*/
-		void UpdateGameObjects(float deltaTime);
+		void UpdateGameObjects();
 		/**
 		* @brief Draws a Gameobject if it has a component that can be drawn
 		*/

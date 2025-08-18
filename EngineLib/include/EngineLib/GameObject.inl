@@ -13,7 +13,7 @@ namespace EngineCore {
 			Log::Warn("Transform is already part of the GameObject.");
 			return nullptr;
 		}
-
+		
 		if (HasComponent<C>()) {
 			Log::Warn("Component already exists.");
 			return nullptr;

@@ -54,6 +54,7 @@ namespace EngineCore {
             unsigned int m_meshIDCounter = 0;
             unsigned int m_shaderIDCounter = 0;
             unsigned int m_materialsIDCounter = 0;
+            unsigned int m_default = 0;
 
             IDCounters() = default;
             unsigned int& operator[](unsigned int index) {
@@ -62,6 +63,7 @@ namespace EngineCore {
                 case 1: return m_meshIDCounter;
                 case 2: return m_shaderIDCounter;
                 case 3: return m_materialsIDCounter;
+                default: return m_default;
                 }
             }
         };
