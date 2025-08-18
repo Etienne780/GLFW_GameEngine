@@ -162,7 +162,7 @@ namespace EngineCore {
 		glfwSetFramebufferSizeCallback(m_window, GLFWFramebufferSizeCallback);
 		glfwSetWindowFocusCallback(m_window, GLFWFocusCallback);
 
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 
 		auto cursorMode = GLFW_CURSOR_NORMAL;
 		if (m_app->m_appApplicationWindowCursorHidden)
