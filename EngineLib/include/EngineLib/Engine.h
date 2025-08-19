@@ -32,6 +32,7 @@
 namespace EngineCore {
 
 	class Engine {
+	friend class DebuggerWindows;
 	public:
 		std::unique_ptr<Application> m_app;
 

@@ -9,7 +9,7 @@ namespace EngineCore {
 	class Debugger {
 	friend class Engine;
 	public:
-		void Init(GLFWwindow* m_window, Application* app);
+		void Init(GLFWwindow* window, Application* app, Engine* engine);
 		void Update();
 		void Shutdown();
 
@@ -20,6 +20,7 @@ namespace EngineCore {
 
 		GLFWwindow* m_window = nullptr;
 		Application* m_app = nullptr;
+		Engine* m_engine = nullptr;
 
 		int m_windowWidth = 0;
 		int m_windowHeight = 0;

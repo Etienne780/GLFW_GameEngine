@@ -13,6 +13,7 @@ namespace EngineCore {
 	}
 
 	class GameObjectManager {
+	friend class DebuggerWindows;
 	friend class GameObject;
 	friend class Engine;
 	private:

@@ -93,7 +93,7 @@ namespace EngineCore {
 #ifndef NDEBUG
 		static bool isDebugModeInitCalled = false;
 		if (m_app->m_appDebugActive) {
-			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app.get());
+			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app.get(), this);
 			isDebugModeInitCalled = true;
 			m_debugger.Update();
 			m_app->m_appDebugIsCursorLockDisabled = m_debugger.GetCursorLock();

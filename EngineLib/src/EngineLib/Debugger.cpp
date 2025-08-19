@@ -6,23 +6,26 @@
 #include <ImGUI/imgui_impl_glfw.h>
 #include <ImGUI/imgui_impl_opengl3.h>
 #include <CoreLib/Log.h>
+#include <CoreLib\File.h>
 
+#include "EngineLib/Engine.h"
 #include "EngineLib/Application.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/Time.h"
 #include "EngineLib/DebuggerWindows.h"
 #include "EngineLib/Debugger.h"
 #include "EngineLib/IconsFontAwesome5Pro.h"
-#include <CoreLib\File.h>
 
 namespace EngineCore {
 	
 	Debugger::Debugger() {	
 	}
 
-	void Debugger::Init(GLFWwindow* window, Application* app) {
+	void Debugger::Init(GLFWwindow* window, Application* app, Engine* engine) {
 		m_window = window;
 		m_app = app;
+		m_engine = engine;
+		DebuggerWindows::Init(m_engine);
 
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -49,7 +52,7 @@ namespace EngineCore {
 			Log::Error("Debugger: could not load FontAwesome fonts!");
 		}
 		else {
-			DebugWindow::SetIconFonts(smallIconFont, largeIconFont);
+			DebuggerWindows::SetIconFonts(smallIconFont, largeIconFont);
 		}
 
 		ImGui::StyleColorsDark();
@@ -67,7 +70,7 @@ namespace EngineCore {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		DebugWindow::MenuSidebar(m_menuSidebarWidthRatio, m_windowWidth, m_windowHeight);
+		DebuggerWindows::MenuSidebar(m_menuSidebarWidthRatio, m_windowWidth, m_windowHeight);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
