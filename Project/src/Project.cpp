@@ -25,8 +25,8 @@ void GenerateCubesSphere();
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 20; // horizontale Segmente
-size_t cubeCountPhi = 20;   // vertikale Segmente
+size_t cubeCountTheta = 2; // horizontale Segmente
+size_t cubeCountPhi = 2;   // vertikale Segmente
 float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
@@ -90,8 +90,10 @@ void Project::Update() {
 		App_Debug_Set_Active(!App_Debug_Get_Active());
 	}
 
+	camController->m_isZoomDisabled = App_Debug_Get_Active();
 	if (App_Debug_Get_Active()) {
 		camController->m_isRotationDisabled = !App_Debug_Get_IsCursorLockDisabled();
+		camController->Disable(App_Debug_Get_IsDebugCameraActive());
 	}
 
 	// UpdateCubesSphere(Time::GetTime());
