@@ -8,7 +8,7 @@ namespace EngineCore {
 
 		void SetIconFonts(ImFont* smallIcon, ImFont* largeIcon);
 
-		void MenuSidebar(float sidebarRatio, float windowWidth, float windowHeight);
+		void MenuSidebar(float sidebarRatio, int windowWidth, int windowHeight);
 
 		void IconDisplayWindow(float startX, float startY);
 	}

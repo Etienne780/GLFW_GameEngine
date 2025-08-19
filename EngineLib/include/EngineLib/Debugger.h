@@ -21,11 +21,11 @@ namespace EngineCore {
 		GLFWwindow* m_window = nullptr;
 		Application* m_app = nullptr;
 
-		float m_windowWidth = 0;
-		float m_windowHeight = 0;
+		int m_windowWidth = 0;
+		int m_windowHeight = 0;
 		bool m_cursorLock = true;
 
-		float m_menuSidebarWidthRatio = 0.07;// is in %
+		float m_menuSidebarWidthRatio = 0.07f;// is in %
 
 		void SetVariables();
 		void HandleCursorLock();

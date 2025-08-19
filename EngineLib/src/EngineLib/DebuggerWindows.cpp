@@ -23,11 +23,11 @@ namespace EngineCore {
             largeIconFont = largeIcon;
         }
 
-        void MenuSidebar(float sidebarRatio, float windowWidth, float windowHeight) {
+        void MenuSidebar(float sidebarRatio, int windowWidth, int windowHeight) {
             float sidebarWidth = windowWidth * sidebarRatio;
 
             ImGui::SetNextWindowPos(ImVec2(0, 0));
-            ImGui::SetNextWindowSize(ImVec2(sidebarWidth, windowHeight));
+            ImGui::SetNextWindowSize(ImVec2(sidebarWidth, static_cast<float>(windowHeight)));
             ImGui::Begin("Sidebar", nullptr,
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
@@ -44,18 +44,21 @@ namespace EngineCore {
                     return ImGui::Button(label.c_str(), ImVec2(-1, 30));
                     };
 
-                static bool iconWin = false;
-                if (SidebarButton(ICON_FA_ICONS, "Icon")) {
-                    iconWin = !iconWin;
+                if (SidebarButton(ICON_FA_POLL, "Info/Stats")) {
                 }
 
-                if (SidebarButton(ICON_FA_CAMERA, "Camera")) {
+                if (SidebarButton(ICON_FA_VIDEO, "Camera")) {
                 }
 
                 if (SidebarButton(ICON_FA_CUBE, "Objects")) {
                 }
 
                 if (SidebarButton(ICON_FA_COG, "Settings")) {
+                }
+
+                static bool iconWin = false;
+                if (SidebarButton(ICON_FA_ICONS, "Icon")) {
+                    iconWin = !iconWin;
                 }
 
                 if (iconWin) IconDisplayWindow(sidebarWidth + 10, 10);
