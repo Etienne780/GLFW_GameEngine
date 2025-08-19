@@ -1,7 +1,7 @@
 #include "Project.h"
 
 int main() {
-	EngineCore::Engine engine(std::make_unique<Project>());
+	EngineCore::Engine engine(std::make_shared<Project>());
 
 	const int result = engine.EngineStart();
 	if (result != 0) {

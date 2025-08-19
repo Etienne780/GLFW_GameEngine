@@ -1,3 +1,5 @@
+#ifndef NDEBUG
+
 #pragma once
 
 struct ImFont;
@@ -14,11 +16,12 @@ namespace EngineCore {
 		static void SetIconFonts(ImFont* smallIcon, ImFont* largeIcon);
 		static void MenuSidebar(float sidebarRatio, int windowWidth, int windowHeight);
 		static void StatsWindow(float startX, float startY);
+		static void CameraWindow(float startX, float startY);
 		static void IconDisplayWindow(float startX, float startY);
 
 	private:
 		static Engine* m_engine;
-		static Application* m_app;
+		static std::weak_ptr<Application> m_app;
 		static GameObjectManager* m_gameObjectManager;
 
 		static ImFont* m_smallIconFont;
@@ -26,3 +29,5 @@ namespace EngineCore {
 	};
 
 }
+
+#endif

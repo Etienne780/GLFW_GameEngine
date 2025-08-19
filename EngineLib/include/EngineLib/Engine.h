@@ -34,9 +34,9 @@ namespace EngineCore {
 	class Engine {
 	friend class DebuggerWindows;
 	public:
-		std::unique_ptr<Application> m_app;
+		std::shared_ptr<Application> m_app;
 
-		Engine(std::unique_ptr<Application> app);
+		Engine(std::shared_ptr<Application> app);
 
 		int EngineStart();
 		void EngineLoop();

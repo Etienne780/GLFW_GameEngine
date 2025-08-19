@@ -1,3 +1,5 @@
+#ifndef NDEBUG
+
 #pragma once
 #include "EngineTypes.h"
 
@@ -9,7 +11,7 @@ namespace EngineCore {
 	class Debugger {
 	friend class Engine;
 	public:
-		void Init(GLFWwindow* window, Application* app, Engine* engine);
+		void Init(GLFWwindow* window, std::weak_ptr<Application> app, Engine* engine);
 		void Update();
 		void Shutdown();
 
@@ -19,8 +21,9 @@ namespace EngineCore {
 		Debugger();
 
 		GLFWwindow* m_window = nullptr;
-		Application* m_app = nullptr;
+		std::weak_ptr<Application> m_app;
 		Engine* m_engine = nullptr;
+		std::shared_ptr<GameObject> m_debugCamera;
 
 		int m_windowWidth = 0;
 		int m_windowHeight = 0;
@@ -33,3 +36,5 @@ namespace EngineCore {
 	};
 
 }
+
+#endif

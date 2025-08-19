@@ -1,3 +1,5 @@
+#ifndef NDEBUG
+
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
@@ -17,7 +19,7 @@
 namespace EngineCore {
 
     Engine* DebuggerWindows::m_engine = nullptr;
-    Application* DebuggerWindows::m_app = nullptr;
+    std::weak_ptr<Application> DebuggerWindows::m_app;
     GameObjectManager* DebuggerWindows::m_gameObjectManager = nullptr;
 
     ImFont* DebuggerWindows::m_smallIconFont = nullptr;
@@ -30,7 +32,7 @@ namespace EngineCore {
             return;
         }
 
-        m_app = m_engine->m_app.get();
+        m_app = m_engine->m_app;
         m_gameObjectManager = m_engine->m_gameObjectManager;
     }
 
@@ -46,7 +48,7 @@ namespace EngineCore {
         ImGui::SetNextWindowSize(ImVec2(sidebarWidth, static_cast<float>(windowHeight)));
         ImGui::Begin("Sidebar", nullptr,
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
         {
 
             ImGuiIO& io = ImGui::GetIO();
@@ -66,7 +68,9 @@ namespace EngineCore {
                 statsWin = !statsWin;
             }
 
+            static bool cameraWin = false;
             if (SidebarButton(ICON_FA_VIDEO, "Camera")) {
+                cameraWin = !cameraWin;
             }
 
             if (SidebarButton(ICON_FA_CUBE, "Objects")) {
@@ -81,6 +85,7 @@ namespace EngineCore {
             }
 
             if (statsWin) StatsWindow(sidebarWidth + 10, buttonHeight * 1);
+            if (cameraWin) CameraWindow(sidebarWidth + 10, buttonHeight * 1);
             if (iconWin) IconDisplayWindow(sidebarWidth + 10, buttonHeight * 5);
         }
         ImGui::End();
@@ -95,10 +100,28 @@ namespace EngineCore {
 
         ImGui::Begin("Stats", nullptr, ImGuiWindowFlags_NoResize);
         {
-            ImGui::Text(FormatUtils::formatString("FPS: {}", m_app->App_Application_Get_FramesPerSecond()).c_str());
+            int fps = (m_app.lock()) ? m_app.lock()->App_Application_Get_FramesPerSecond(): 0;
+            ImGui::Text(FormatUtils::formatString("FPS: {}", fps).c_str());
             ImGui::Text(FormatUtils::formatString("Delta time: {}", Time::GetDeltaTime()).c_str());
             ImGui::Text(FormatUtils::formatString("Frame count: {}", Time::GetFrameCount()).c_str());
             ImGui::Text(FormatUtils::formatString("GameObject count: {}", m_gameObjectManager->m_gameObjects.size()).c_str());
+            ImGui::Text(FormatUtils::formatString("Camera count: {}", m_gameObjectManager->m_cameras.size()).c_str());
+        }
+        ImGui::End();
+
+        first = false;
+    }
+
+    void DebuggerWindows::CameraWindow(float startX, float startY) {
+        static bool first = true;
+        if (first) {
+            ImGui::SetNextWindowPos(ImVec2(startX, startY));
+            ImGui::SetNextWindowSize(ImVec2(250, 375));
+        }
+
+        ImGui::Begin("Camera", nullptr);
+        {
+            
         }
         ImGui::End();
 
@@ -153,3 +176,5 @@ namespace EngineCore {
     }
 
 }
+
+#endif

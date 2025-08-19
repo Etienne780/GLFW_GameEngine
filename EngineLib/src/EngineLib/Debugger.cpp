@@ -1,3 +1,5 @@
+#ifndef NDEBUG
+
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
@@ -21,7 +23,7 @@ namespace EngineCore {
 	Debugger::Debugger() {	
 	}
 
-	void Debugger::Init(GLFWwindow* window, Application* app, Engine* engine) {
+	void Debugger::Init(GLFWwindow* window, std::weak_ptr<Application> app, Engine* engine) {
 		m_window = window;
 		m_app = app;
 		m_engine = engine;
@@ -84,8 +86,10 @@ namespace EngineCore {
 	}
 
 	void Debugger::SetVariables() {
-		m_windowWidth = m_app->App_Application_Get_Window_Width();
-		m_windowHeight = m_app->App_Application_Get_Window_Height();
+		if (auto app = m_app.lock()) {
+			m_windowWidth = app->App_Application_Get_Window_Width();
+			m_windowHeight = app->App_Application_Get_Window_Height();
+		}
 	}
 
 	void Debugger::HandleCursorLock() {
@@ -106,13 +110,16 @@ namespace EngineCore {
 			m_cursorLock = false;
 		}
 
-		if (m_app->App_Application_Get_Window_Cursor_Lock() != m_cursorLock) {
-			m_app->App_Application_Set_Window_Cursor_LockHidden(m_cursorLock);
+		if (auto app = m_app.lock()) {
+			if (app->App_Application_Get_Window_Cursor_Lock() != m_cursorLock) {
+				app->App_Application_Set_Window_Cursor_LockHidden(m_cursorLock);
+			}
 		}
 	}
-
 
 	bool Debugger::GetCursorLock() {
 		return m_cursorLock;
 	}
 }
+
+#endif

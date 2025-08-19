@@ -2,14 +2,16 @@
 #include "EngineLib\Engine.h"
 
 namespace EngineCore {
-	Engine::Engine(std::unique_ptr<Application> app)
-		: m_app(std::move(app)) {
+
+	Engine::Engine(std::shared_ptr<Application> app) {
+		m_app = app;
 
 		m_gameObjectManager = &GameObjectManager::GetInstance();
-#ifndef NDEBUG
+		#ifndef NDEBUG
 		m_debugger = Debugger();
-#endif 
+		#endif 
 	}
+
 
 	int Engine::EngineStart() {
 		if (m_app == nullptr) return ENGINE_FAILURE;
@@ -93,7 +95,7 @@ namespace EngineCore {
 #ifndef NDEBUG
 		static bool isDebugModeInitCalled = false;
 		if (m_app->m_appDebugActive) {
-			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app.get(), this);
+			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app, this);
 			isDebugModeInitCalled = true;
 			m_debugger.Update();
 			m_app->m_appDebugIsCursorLockDisabled = m_debugger.GetCursorLock();
