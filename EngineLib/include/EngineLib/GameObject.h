@@ -4,8 +4,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "Components/Camera_C.h"
-#include "Components/Transform_C.h"
+#include "AllComponents.h"
 #include "EngineTypes.h"
 
 namespace EngineCore {

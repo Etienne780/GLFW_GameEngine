@@ -100,7 +100,8 @@ public:
 	// Debug
 	bool App_Debug_Get_Active() const;
 	bool App_Debug_Get_IsCursorLockDisabled() const;
-
+	bool App_Debug_Get_IsDebugCameraActive() const;
+	
 	/**
 	 * @brief Enables or disables Debug mode.
 	 * In Debug mode, you can press F1 or hold Left Alt to toggle mouse locking.
@@ -138,6 +139,7 @@ private:
 
 	bool m_appDebugActive = false;
 	bool m_appDebugIsCursorLockDisabled = false;
+	bool m_appDebugIsDebugCameraActive = false;
 
 	GLFWwindow* m_window = nullptr;
 };

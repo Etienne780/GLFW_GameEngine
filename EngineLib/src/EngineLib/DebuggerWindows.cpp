@@ -13,6 +13,8 @@
 #include "EngineLib/IconsFontAwesome5Pro.h"
 #include "EngineLib/Time.h"
 #include "EngineLib/Engine.h"
+#include "EngineLib/GameObject.h"
+#include "EngineLib/GameObjectManager.h"
 #include "EngineLib/Application.h"
 #include "EngineLib/DebuggerWindows.h"
 
@@ -24,6 +26,10 @@ namespace EngineCore {
 
     ImFont* DebuggerWindows::m_smallIconFont = nullptr;
     ImFont* DebuggerWindows::m_largeIconFont = nullptr;
+
+    bool DebuggerWindows::m_statsWin = false;
+    bool DebuggerWindows::m_cameraWin = false;
+    bool DebuggerWindows::m_iconWin = false;
 
     void DebuggerWindows::Init(Engine* engine) {
         m_engine = engine;
@@ -63,14 +69,12 @@ namespace EngineCore {
                 return ImGui::Button(label.c_str(), ImVec2(-1, buttonHeight));
                 };
 
-            static bool statsWin = false;
             if (SidebarButton(ICON_FA_POLL, "Stats")) {
-                statsWin = !statsWin;
+                m_statsWin = !m_statsWin;
             }
 
-            static bool cameraWin = false;
             if (SidebarButton(ICON_FA_VIDEO, "Camera")) {
-                cameraWin = !cameraWin;
+                m_cameraWin = !m_cameraWin;
             }
 
             if (SidebarButton(ICON_FA_CUBE, "Objects")) {
@@ -79,14 +83,13 @@ namespace EngineCore {
             if (SidebarButton(ICON_FA_COG, "Settings")) {
             }
 
-            static bool iconWin = false;
             if (SidebarButton(ICON_FA_ICONS, "Icon")) {
-                iconWin = !iconWin;
+                m_iconWin = !m_iconWin;
             }
 
-            if (statsWin) StatsWindow(sidebarWidth + 10, buttonHeight * 1);
-            if (cameraWin) CameraWindow(sidebarWidth + 10, buttonHeight * 1);
-            if (iconWin) IconDisplayWindow(sidebarWidth + 10, buttonHeight * 5);
+            if (m_statsWin) StatsWindow(sidebarWidth + 10, buttonHeight * 1);
+            if (m_cameraWin) CameraWindow(sidebarWidth + 10, buttonHeight * 1);
+            if (m_iconWin) IconDisplayWindow(sidebarWidth + 10, buttonHeight * 5);
         }
         ImGui::End();
     }
@@ -98,9 +101,9 @@ namespace EngineCore {
             ImGui::SetNextWindowSize(ImVec2(250, -1));
         }
 
-        ImGui::Begin("Stats", nullptr, ImGuiWindowFlags_NoResize);
+        ImGui::Begin("Stats", &m_statsWin, ImGuiWindowFlags_NoResize);
         {
-            int fps = (m_app.lock()) ? m_app.lock()->App_Application_Get_FramesPerSecond(): 0;
+            int fps = (m_app.lock()) ? m_app.lock()->App_Application_Get_FramesPerSecond() : -1;
             ImGui::Text(FormatUtils::formatString("FPS: {}", fps).c_str());
             ImGui::Text(FormatUtils::formatString("Delta time: {}", Time::GetDeltaTime()).c_str());
             ImGui::Text(FormatUtils::formatString("Frame count: {}", Time::GetFrameCount()).c_str());
@@ -119,9 +122,9 @@ namespace EngineCore {
             ImGui::SetNextWindowSize(ImVec2(250, 375));
         }
 
-        ImGui::Begin("Camera", nullptr);
+        ImGui::Begin("Camera", &m_cameraWin);
         {
-            
+            ImGui::RadioButton("Debug camera", &);
         }
         ImGui::End();
 
@@ -137,39 +140,40 @@ namespace EngineCore {
             ImGui::SetNextWindowSize(ImVec2(375, 250));
         }
 
-        ImGui::Begin("Icon Preview", nullptr, ImGuiWindowFlags_NoResize);
+        ImGui::Begin("Icon Preview", &m_iconWin, ImGuiWindowFlags_NoResize);
+        {
+            if (currentIndex < 0) currentIndex = FA5_ICONS_COUNT - 1;
+            if (currentIndex >= FA5_ICONS_COUNT) currentIndex = 0;
 
-        if (currentIndex < 0) currentIndex = FA5_ICONS_COUNT - 1;
-        if (currentIndex >= FA5_ICONS_COUNT) currentIndex = 0;
+            FontAwesome5Icon currentIcon = FA5_ICONS[currentIndex];
+            ImGuiIO& io = ImGui::GetIO();
 
-        FontAwesome5Icon currentIcon = FA5_ICONS[currentIndex];
-        ImGuiIO& io = ImGui::GetIO();
+            // 2 Spalten: links Icon, rechts Text + Buttons
+            ImGui::Columns(2, nullptr, false);
+            ImGui::SetColumnWidth(0, ImGui::GetWindowWidth() * 0.3f);
 
-        // 2 Spalten: links Icon, rechts Text + Buttons
-        ImGui::Columns(2, nullptr, false);
-        ImGui::SetColumnWidth(0, ImGui::GetWindowWidth() * 0.3f);
+            // ----- Linke Spalte: Icon -----
+            // Vertikal zentrieren
+            float colHeight = ImGui::GetContentRegionAvail().y;
+            ImVec2 textSize = ImGui::CalcTextSize(currentIcon.utf8_data);
+            ImGui::SetCursorPosY((colHeight - textSize.y) * 0.5f);
 
-        // ----- Linke Spalte: Icon -----
-        // Vertikal zentrieren
-        float colHeight = ImGui::GetContentRegionAvail().y;
-        ImVec2 textSize = ImGui::CalcTextSize(currentIcon.utf8_data);
-        ImGui::SetCursorPosY((colHeight - textSize.y) * 0.5f);
+            ImGui::PushFont(m_largeIconFont);
+            ImGui::Text("%s", currentIcon.utf8_data);
+            ImGui::PopFont();
 
-        ImGui::PushFont(m_largeIconFont);
-        ImGui::Text("%s", currentIcon.utf8_data);
-        ImGui::PopFont();
+            ImGui::NextColumn();
 
-        ImGui::NextColumn();
+            // ----- Rechte Spalte -----
+            ImGui::Text(FormatUtils::formatString("Icon name: {}", currentIcon.name).c_str());
+            ImGui::Text(FormatUtils::formatString("Icon unicode: {}", currentIcon.unicode).c_str());
+            ImGui::Text(FormatUtils::formatString("Icon index: {}/{}", (currentIndex + 1), FA5_ICONS_COUNT).c_str());
+            ImGui::Dummy(ImVec2(0, 10));
+            if (ImGui::Button(ICON_FA_ARROW_ALT_CIRCLE_UP, ImVec2(-1, 30))) currentIndex--;
+            if (ImGui::Button(ICON_FA_ARROW_ALT_CIRCLE_DOWN, ImVec2(-1, 30))) currentIndex++;
 
-        // ----- Rechte Spalte -----
-        ImGui::Text(FormatUtils::formatString("Icon name: {}", currentIcon.name).c_str());
-        ImGui::Text(FormatUtils::formatString("Icon unicode: {}", currentIcon.unicode).c_str());
-        ImGui::Text(FormatUtils::formatString("Icon index: {}/{}", (currentIndex + 1), FA5_ICONS_COUNT).c_str());
-        ImGui::Dummy(ImVec2(0, 10));
-        if (ImGui::Button(ICON_FA_ARROW_ALT_CIRCLE_UP, ImVec2(-1, 30))) currentIndex--;
-        if (ImGui::Button(ICON_FA_ARROW_ALT_CIRCLE_DOWN, ImVec2(-1, 30))) currentIndex++;
-
-        ImGui::Columns(1);
+            ImGui::Columns(1);
+        }
         ImGui::End();
 
         first = false;

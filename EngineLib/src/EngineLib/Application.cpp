@@ -132,6 +132,10 @@ bool Application::App_Debug_Get_IsCursorLockDisabled() const {
     return m_appDebugIsCursorLockDisabled;
 }
 
+bool Application::App_Debug_Get_IsDebugCameraActive() const {
+    return m_appDebugIsDebugCameraActive;
+}
+
 #pragma endregion
 
 #pragma region set_funcs

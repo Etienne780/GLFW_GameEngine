@@ -10,13 +10,14 @@
 #include <CoreLib/Log.h>
 #include <CoreLib\File.h>
 
+#include "EngineLib/IconsFontAwesome5Pro.h"
+#include "EngineLib/GameObject.h"
 #include "EngineLib/Engine.h"
 #include "EngineLib/Application.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/Time.h"
 #include "EngineLib/DebuggerWindows.h"
 #include "EngineLib/Debugger.h"
-#include "EngineLib/IconsFontAwesome5Pro.h"
 
 namespace EngineCore {
 	
@@ -59,9 +60,17 @@ namespace EngineCore {
 
 		ImGui::StyleColorsDark();
 
+		DebugCameraInit();
+
 		ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 		Log::Debug("ImGui Debugger initialized");
+	}
+
+	void Debugger::DebugCameraInit() {
+		m_debugCamera = GameObject::Create("Debug-Camera");
+		m_debugCamera->AddComponent<Component::Camera>();
+		m_debugCamera->AddComponent<Component::FreeCameraController>()->Disable(true);
 	}
 
 	void Debugger::Update() {
@@ -79,6 +88,9 @@ namespace EngineCore {
 	}
 
 	void Debugger::Shutdown() {
+		GameObject::Delete(m_debugCamera);
+		m_debugCamera = nullptr;
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -117,8 +129,12 @@ namespace EngineCore {
 		}
 	}
 
-	bool Debugger::GetCursorLock() {
+	bool Debugger::GetCursorLock() const {
 		return m_cursorLock;
+	}
+
+	bool Debugger::IsDebugCameraActive() const {
+		return m_isDebugCameraActive;
 	}
 }
 

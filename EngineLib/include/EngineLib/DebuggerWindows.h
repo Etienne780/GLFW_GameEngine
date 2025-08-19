@@ -8,6 +8,7 @@ class Application;
 namespace EngineCore {
 
 	class Engine;
+	class GameObject;
 	class GameObjectManager;
 
 	class DebuggerWindows {
@@ -26,6 +27,10 @@ namespace EngineCore {
 
 		static ImFont* m_smallIconFont;
 		static ImFont* m_largeIconFont;
+
+		static bool m_statsWin;
+		static bool m_cameraWin;
+		static bool m_iconWin;
 	};
 
 }

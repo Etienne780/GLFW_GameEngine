@@ -11,14 +11,14 @@ namespace EngineCore {
 	class Debugger {
 	friend class Engine;
 	public:
-		void Init(GLFWwindow* window, std::weak_ptr<Application> app, Engine* engine);
-		void Update();
-		void Shutdown();
-
-		bool GetCursorLock();
+		bool GetCursorLock() const;
+		bool IsDebugCameraActive() const;
 
 	private:
 		Debugger();
+		void Init(GLFWwindow* window, std::weak_ptr<Application> app, Engine* engine);
+		void Update();
+		void Shutdown();
 
 		GLFWwindow* m_window = nullptr;
 		std::weak_ptr<Application> m_app;
@@ -28,9 +28,11 @@ namespace EngineCore {
 		int m_windowWidth = 0;
 		int m_windowHeight = 0;
 		bool m_cursorLock = true;
+		bool m_isDebugCameraActive = false;
 
 		float m_menuSidebarWidthRatio = 0.07f;// is in %
 
+		void DebugCameraInit();
 		void SetVariables();
 		void HandleCursorLock();
 	};

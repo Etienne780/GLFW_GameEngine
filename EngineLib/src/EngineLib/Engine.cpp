@@ -99,6 +99,7 @@ namespace EngineCore {
 			isDebugModeInitCalled = true;
 			m_debugger.Update();
 			m_app->m_appDebugIsCursorLockDisabled = m_debugger.GetCursorLock();
+			m_app->m_appDebugIsDebugCameraActive = m_debugger.IsDebugCameraActive();
 		}
 		else {
 			if(isDebugModeInitCalled) m_debugger.Shutdown();
