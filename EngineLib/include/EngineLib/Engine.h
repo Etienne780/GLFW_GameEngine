@@ -25,14 +25,13 @@
 #include "EngineLib\GameObjectManager.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\AllComponents.h"
-#ifndef NDEBUG
-#include "EngineLib\Debugger.h"
-#endif
 
 namespace EngineCore {
 
 	class Engine {
-	friend class DebuggerWindows;
+#ifndef NDEBUG
+		friend class Debugger;
+#endif
 	public:
 		std::shared_ptr<Application> m_app;
 
@@ -52,7 +51,7 @@ namespace EngineCore {
 		GLint m_maxTextureUnits = 0;
 
 #ifndef NDEBUG
-		Debugger m_debugger;
+		std::unique_ptr<Debugger> m_debugger;
 #endif 
 		GLFWwindow* m_window = nullptr;
 		GameObjectManager* m_gameObjectManager = nullptr;

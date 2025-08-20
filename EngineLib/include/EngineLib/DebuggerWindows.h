@@ -3,34 +3,27 @@
 #pragma once
 
 struct ImFont;
-class Application;
-
 namespace EngineCore {
 
-	class Engine;
-	class GameObject;
-	class GameObjectManager;
-
+	class Debugger;
 	class DebuggerWindows {
 	public:
-		static void Init(Engine* engine);
-		static void SetIconFonts(ImFont* smallIcon, ImFont* largeIcon);
-		static void MenuSidebar(float sidebarRatio, int windowWidth, int windowHeight);
-		static void StatsWindow(float startX, float startY);
-		static void CameraWindow(float startX, float startY);
-		static void IconDisplayWindow(float startX, float startY);
+		DebuggerWindows(Debugger* debugger);
+		void SetIconFonts(ImFont* smallIcon, ImFont* largeIcon);
+		void MenuSidebar(float sidebarRatio, int windowWidth, int windowHeight);
+		void StatsWindow(float startX, float startY);
+		void CameraWindow(float startX, float startY);
+		void IconDisplayWindow(float startX, float startY);
 
 	private:
-		static Engine* m_engine;
-		static std::weak_ptr<Application> m_app;
-		static GameObjectManager* m_gameObjectManager;
+		Debugger* m_debugger = nullptr;
 
-		static ImFont* m_smallIconFont;
-		static ImFont* m_largeIconFont;
+		ImFont* m_smallIconFont = nullptr;
+		ImFont* m_largeIconFont = nullptr;
 
-		static bool m_statsWin;
-		static bool m_cameraWin;
-		static bool m_iconWin;
+		bool m_statsWin = false;
+		bool m_cameraWin = false;
+		bool m_iconWin = false;
 	};
 
 }

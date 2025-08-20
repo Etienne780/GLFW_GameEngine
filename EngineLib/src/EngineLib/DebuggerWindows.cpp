@@ -16,30 +16,13 @@
 #include "EngineLib/GameObject.h"
 #include "EngineLib/GameObjectManager.h"
 #include "EngineLib/Application.h"
+#include "EngineLib/Debugger.h"
 #include "EngineLib/DebuggerWindows.h"
 
 namespace EngineCore {
 
-    Engine* DebuggerWindows::m_engine = nullptr;
-    std::weak_ptr<Application> DebuggerWindows::m_app;
-    GameObjectManager* DebuggerWindows::m_gameObjectManager = nullptr;
-
-    ImFont* DebuggerWindows::m_smallIconFont = nullptr;
-    ImFont* DebuggerWindows::m_largeIconFont = nullptr;
-
-    bool DebuggerWindows::m_statsWin = false;
-    bool DebuggerWindows::m_cameraWin = false;
-    bool DebuggerWindows::m_iconWin = false;
-
-    void DebuggerWindows::Init(Engine* engine) {
-        m_engine = engine;
-        if (!m_engine) {
-            Log::Error("DebugWindow: init failed, engine is nullptr");
-            return;
-        }
-
-        m_app = m_engine->m_app;
-        m_gameObjectManager = m_engine->m_gameObjectManager;
+    DebuggerWindows::DebuggerWindows(Debugger* debugger) {
+        m_debugger = debugger;
     }
 
     void DebuggerWindows::SetIconFonts(ImFont* smallIcon, ImFont* largeIcon) {
@@ -103,12 +86,12 @@ namespace EngineCore {
 
         ImGui::Begin("Stats", &m_statsWin, ImGuiWindowFlags_NoResize);
         {
-            int fps = (m_app.lock()) ? m_app.lock()->App_Application_Get_FramesPerSecond() : -1;
+            int fps = (m_debugger->m_app.lock()) ? m_debugger->m_app.lock()->App_Application_Get_FramesPerSecond() : -1;
             ImGui::Text(FormatUtils::formatString("FPS: {}", fps).c_str());
             ImGui::Text(FormatUtils::formatString("Delta time: {}", Time::GetDeltaTime()).c_str());
             ImGui::Text(FormatUtils::formatString("Frame count: {}", Time::GetFrameCount()).c_str());
-            ImGui::Text(FormatUtils::formatString("GameObject count: {}", m_gameObjectManager->m_gameObjects.size()).c_str());
-            ImGui::Text(FormatUtils::formatString("Camera count: {}", m_gameObjectManager->m_cameras.size()).c_str());
+            ImGui::Text(FormatUtils::formatString("GameObject count: {}", m_debugger->m_gameObjectManager->m_gameObjects.size()).c_str());
+            ImGui::Text(FormatUtils::formatString("Camera count: {}", m_debugger->m_gameObjectManager->m_cameras.size()).c_str());
         }
         ImGui::End();
 

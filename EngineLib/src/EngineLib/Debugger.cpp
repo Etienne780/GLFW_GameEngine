@@ -21,22 +21,19 @@
 
 namespace EngineCore {
 	
-	Debugger::Debugger() {	
+	Debugger::Debugger(Engine* engine) 
+		:m_engine(engine), m_app(engine->m_app), m_window(engine->m_window), m_gameObjectManager(engine->m_gameObjectManager) {
+		m_debuggerWindows = std::make_unique<DebuggerWindows>();
 	}
 
-	void Debugger::Init(GLFWwindow* window, std::weak_ptr<Application> app, Engine* engine) {
-		m_window = window;
-		m_app = app;
-		m_engine = engine;
-		DebuggerWindows::Init(m_engine);
-
+	void Debugger::Init() {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-		
+
 		io.Fonts->AddFontDefault();
 		float baseFontSize = 24.0f;
 		float iconFontSize = baseFontSize * 2.0f / 3.0f;
@@ -55,7 +52,7 @@ namespace EngineCore {
 			Log::Error("Debugger: could not load FontAwesome fonts!");
 		}
 		else {
-			DebuggerWindows::SetIconFonts(smallIconFont, largeIconFont);
+			m_debuggerWindows->SetIconFonts(smallIconFont, largeIconFont);
 		}
 
 		ImGui::StyleColorsDark();
@@ -81,7 +78,7 @@ namespace EngineCore {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		DebuggerWindows::MenuSidebar(m_menuSidebarWidthRatio, m_windowWidth, m_windowHeight);
+		m_debuggerWindows->MenuSidebar(m_menuSidebarWidthRatio, m_windowWidth, m_windowHeight);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -135,6 +132,18 @@ namespace EngineCore {
 
 	bool Debugger::IsDebugCameraActive() const {
 		return m_isDebugCameraActive;
+	}
+
+	Application* Debugger::GetApp() {
+		return m_app.get();
+	}
+
+	GLFWwindow* Debugger::GetWindow() const {
+	
+	}
+
+	GameObjectManager* Debugger::GetGameObjectManager() const {
+		
 	}
 }
 

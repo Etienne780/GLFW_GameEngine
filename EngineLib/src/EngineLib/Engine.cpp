@@ -1,3 +1,6 @@
+#ifndef NDEBUG
+#include "EngineLib\Debugger.h"
+#endif
 #include "EngineLib\AssetRepository.h"
 #include "EngineLib\Engine.h"
 
@@ -5,13 +8,8 @@ namespace EngineCore {
 
 	Engine::Engine(std::shared_ptr<Application> app) {
 		m_app = app;
-
 		m_gameObjectManager = &GameObjectManager::GetInstance();
-		#ifndef NDEBUG
-		m_debugger = Debugger();
-		#endif 
 	}
-
 
 	int Engine::EngineStart() {
 		if (m_app == nullptr) return ENGINE_FAILURE;
@@ -27,6 +25,10 @@ namespace EngineCore {
 		Material::m_maxTextureUnits = m_maxTextureUnits;
 
 		LoadBaseAsset();
+
+#ifndef NDEBUG
+		m_debugger = std::make_unique<Debugger>(this);
+#endif 
 
 		PrintApplicationHeader();
 		stbi_set_flip_vertically_on_load(true);
@@ -95,14 +97,14 @@ namespace EngineCore {
 #ifndef NDEBUG
 		static bool isDebugModeInitCalled = false;
 		if (m_app->m_appDebugActive) {
-			if(!isDebugModeInitCalled) m_debugger.Init(m_window, m_app, this);
+			if(!isDebugModeInitCalled) m_debugger->Init();
 			isDebugModeInitCalled = true;
-			m_debugger.Update();
-			m_app->m_appDebugIsCursorLockDisabled = m_debugger.GetCursorLock();
-			m_app->m_appDebugIsDebugCameraActive = m_debugger.IsDebugCameraActive();
+			m_debugger->Update();
+			m_app->m_appDebugIsCursorLockDisabled = m_debugger->GetCursorLock();
+			m_app->m_appDebugIsDebugCameraActive = m_debugger->IsDebugCameraActive();
 		}
 		else {
-			if(isDebugModeInitCalled) m_debugger.Shutdown();
+			if(isDebugModeInitCalled) m_debugger->Shutdown();
 			isDebugModeInitCalled = false;
 		}
 #endif 
