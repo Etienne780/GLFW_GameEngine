@@ -181,7 +181,13 @@ namespace EngineCore {
 	
 	void GameObjectManager::SetMainCamera(std::weak_ptr<Component::Camera> camera) {
 		auto cameraptr = camera.lock();
-		if (!cameraptr) return;
+		// sets the main cam to the first in the list
+		if (!cameraptr) {
+			if (!m_mainCamera.lock() && !m_cameras.empty()) {
+				m_mainCamera = m_cameras.front();
+			}
+			return;
+		}
 
 		bool isCameraInList = false;
 		for (auto& cam : m_cameras) {

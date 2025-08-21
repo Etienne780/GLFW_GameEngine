@@ -11,6 +11,8 @@ namespace EngineCore {
 		m_gameObjectManager = &GameObjectManager::GetInstance();
 	}
 
+	Engine::~Engine() = default;
+
 	int Engine::EngineStart() {
 		if (m_app == nullptr) return ENGINE_FAILURE;
 		if (GLFWInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
@@ -27,8 +29,8 @@ namespace EngineCore {
 		LoadBaseAsset();
 
 #ifndef NDEBUG
-		m_debugger = std::make_unique<Debugger>(this);
-#endif 
+		m_debugger = std::unique_ptr<Debugger>(new Debugger(this));
+#endif
 
 		PrintApplicationHeader();
 		stbi_set_flip_vertically_on_load(true);

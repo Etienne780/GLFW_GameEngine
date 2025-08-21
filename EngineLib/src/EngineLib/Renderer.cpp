@@ -44,6 +44,14 @@ namespace EngineCore {
         ResourceManager& rm = ResourceManager::GetInstance();
         
         std::shared_ptr<Component::Camera> camptr = GameObject::GetMainCamera().lock();
+        if (camptr->IsDisable()) {
+            Log::Warn("Renderer: Cant render, main Camera is disabled");
+            return;
+        }
+        if (camptr->GetGameObject()->IsDisable()) {
+            Log::Warn("Renderer: Cant render, main Camera GameObject is disabled");
+            return;
+        }
         Matrix4x4 cameraProjectionMat = camptr->GetProjectionMatrix();
         Matrix4x4 cameraViewMat = camptr->GetViewMatrix();
         

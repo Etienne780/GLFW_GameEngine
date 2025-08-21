@@ -7,8 +7,8 @@ namespace EngineCore {
 
 	ResourceManager& Script::resourceManager = EngineCore::ResourceManager::GetInstance();
 
-	Script::Script(GameObject* gameObject) :
-		ComponentBase(compName, gameObject) {
+	Script::Script(unsigned int gameObjectID) :
+		ComponentBase(compName, gameObjectID) {
 	}
 
 	void Script::UpdateImpl() {

@@ -13,8 +13,9 @@ namespace EngineCore {
 		int Camera::m_windowWidth = 1;
 		int Camera::m_windowHeight = 1;
 
-		Camera::Camera(GameObject* gameObject) :
-			ComponentBase(compName, gameObject) {
+		Camera::Camera(unsigned int gameObjectID) :
+			ComponentBase(compName, gameObjectID) {
+			m_gameObject = GetGameObject();
 		}
 
 		#pragma region Get

@@ -1,7 +1,7 @@
 #ifndef NDEBUG
 
 #pragma once
-#include <memory.h>
+#include <memory>
 #include "EngineTypes.h"
 
 struct GLFWwindow;
@@ -9,10 +9,18 @@ class Application;
 
 namespace EngineCore {
 
+	namespace Component {
+		class Camera;
+	}
+
+	class GameObject;
 	class DebuggerWindows;
+	class GameObjectManager;
 	class Debugger {
 	friend class Engine;
 	public:
+		~Debugger();
+
 		void Init();
 		void Update();
 		void Shutdown();
@@ -24,6 +32,8 @@ namespace EngineCore {
 		GLFWwindow* GetWindow() const;
 		GameObjectManager* GetGameObjectManager() const;
 
+		void SetDebugCameraActive(bool value);
+
 	private:
 		Debugger(Engine* engine);
 
@@ -31,8 +41,8 @@ namespace EngineCore {
 		std::weak_ptr<Application> m_app;
 		GLFWwindow* m_window = nullptr;
 		GameObjectManager* m_gameObjectManager = nullptr;
-		std::shared_ptr<GameObject> m_debugCamera;
-		std::unique_ptr<DebuggerWindows> m_debuggerWindows;
+		std::unique_ptr<DebuggerWindows> m_debuggerWindows = nullptr;
+		std::shared_ptr<GameObject> m_debugCameraGO = nullptr;
 
 		int m_windowWidth = 0;
 		int m_windowHeight = 0;

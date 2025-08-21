@@ -9,7 +9,7 @@ namespace EngineCore {
 
 		class Transform : public EngineCore::ComponentBase {
 		public:
-			Transform(GameObject* gameObject);
+			Transform(unsigned int gameObjectID);
 			bool CanDisalbe() const override { return false; }
 
 			COMPONENT_TYPE_DEFINITION(Transform);
@@ -106,6 +106,7 @@ namespace EngineCore {
 			// Local model matrix
 			Matrix4x4 m_localMatrix;
 			Matrix4x4 m_worldMatrix;
+			std::shared_ptr<GameObject> m_gameObject = nullptr;
 
 			void CalculateLocalModelMat();
 			void CalculateWorldModelMat();

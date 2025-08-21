@@ -13,6 +13,7 @@ namespace EngineCore {
 		void MenuSidebar(float sidebarRatio, int windowWidth, int windowHeight);
 		void StatsWindow(float startX, float startY);
 		void CameraWindow(float startX, float startY);
+		void HierarchyWindow(float startX, float startY);
 		void IconDisplayWindow(float startX, float startY);
 
 	private:
@@ -23,6 +24,7 @@ namespace EngineCore {
 
 		bool m_statsWin = false;
 		bool m_cameraWin = false;
+		bool m_hierarchyWin = false;
 		bool m_iconWin = false;
 	};
 

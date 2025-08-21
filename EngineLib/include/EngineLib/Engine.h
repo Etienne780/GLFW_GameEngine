@@ -36,6 +36,7 @@ namespace EngineCore {
 		std::shared_ptr<Application> m_app;
 
 		Engine(std::shared_ptr<Application> app);
+		~Engine();
 
 		int EngineStart();
 		void EngineLoop();
@@ -51,7 +52,7 @@ namespace EngineCore {
 		GLint m_maxTextureUnits = 0;
 
 #ifndef NDEBUG
-		std::unique_ptr<Debugger> m_debugger;
+		std::unique_ptr<Debugger> m_debugger = nullptr;
 #endif 
 		GLFWwindow* m_window = nullptr;
 		GameObjectManager* m_gameObjectManager = nullptr;

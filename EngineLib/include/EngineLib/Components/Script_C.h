@@ -7,7 +7,7 @@ namespace EngineCore {
 
 	class Script : public ComponentBase {
 	protected:
-		Script(GameObject* gameObject);
+		Script(unsigned int gameObjectID);
 
 		void UpdateImpl() override;
 

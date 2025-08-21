@@ -4,9 +4,10 @@ namespace EngineCore {
 
 	namespace Component {
 
-		FreeCameraController::FreeCameraController(GameObject* gameObject) : Script(gameObject){
-			m_camera = m_gameObject->GetComponent<Component::Camera>();
-			trans = m_gameObject->GetTransform();
+		FreeCameraController::FreeCameraController(unsigned int gameObjectID) : Script(gameObjectID){
+			auto go = GetGameObject();
+			m_camera = go->GetComponent<Component::Camera>();
+			trans = go->GetTransform();
 		}
 
 		void FreeCameraController::Update() {

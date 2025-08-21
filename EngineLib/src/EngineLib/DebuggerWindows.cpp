@@ -61,6 +61,7 @@ namespace EngineCore {
             }
 
             if (SidebarButton(ICON_FA_CUBE, "Objects")) {
+                m_hierarchyWin = !m_hierarchyWin;
             }
 
             if (SidebarButton(ICON_FA_COG, "Settings")) {
@@ -72,6 +73,7 @@ namespace EngineCore {
 
             if (m_statsWin) StatsWindow(sidebarWidth + 10, buttonHeight * 1);
             if (m_cameraWin) CameraWindow(sidebarWidth + 10, buttonHeight * 1);
+            if (m_hierarchyWin) HierarchyWindow(sidebarWidth + 10, buttonHeight * 1);
             if (m_iconWin) IconDisplayWindow(sidebarWidth + 10, buttonHeight * 5);
         }
         ImGui::End();
@@ -86,12 +88,12 @@ namespace EngineCore {
 
         ImGui::Begin("Stats", &m_statsWin, ImGuiWindowFlags_NoResize);
         {
-            int fps = (m_debugger->m_app.lock()) ? m_debugger->m_app.lock()->App_Application_Get_FramesPerSecond() : -1;
+            int fps = (m_debugger->GetApp()) ? m_debugger->GetApp()->App_Application_Get_FramesPerSecond() : -1;
             ImGui::Text(FormatUtils::formatString("FPS: {}", fps).c_str());
             ImGui::Text(FormatUtils::formatString("Delta time: {}", Time::GetDeltaTime()).c_str());
             ImGui::Text(FormatUtils::formatString("Frame count: {}", Time::GetFrameCount()).c_str());
-            ImGui::Text(FormatUtils::formatString("GameObject count: {}", m_debugger->m_gameObjectManager->m_gameObjects.size()).c_str());
-            ImGui::Text(FormatUtils::formatString("Camera count: {}", m_debugger->m_gameObjectManager->m_cameras.size()).c_str());
+            ImGui::Text(FormatUtils::formatString("GameObject count: {}", m_debugger->GetGameObjectManager()->m_gameObjects.size()).c_str());
+            ImGui::Text(FormatUtils::formatString("Camera count: {}", m_debugger->GetGameObjectManager()->m_cameras.size()).c_str());
         }
         ImGui::End();
 
@@ -105,9 +107,29 @@ namespace EngineCore {
             ImGui::SetNextWindowSize(ImVec2(250, 375));
         }
 
+        static bool currentState = m_debugger->IsDebugCameraActive();
         ImGui::Begin("Camera", &m_cameraWin);
         {
-            ImGui::RadioButton("Debug camera", &);
+            if (ImGui::Checkbox("Debug camera", &currentState)) {
+                // only update if it changes
+                m_debugger->SetDebugCameraActive(currentState);
+            }
+        }
+        ImGui::End();
+
+        first = false;
+    }
+
+    void DebuggerWindows::HierarchyWindow(float startX, float startY) {
+        static bool first = true;
+        if (first) {
+            ImGui::SetNextWindowPos(ImVec2(startX, startY));
+            ImGui::SetNextWindowSize(ImVec2(250, 375));
+        }
+
+        ImGui::Begin("Hierarchy", &m_hierarchyWin);
+        {
+           ImGui::Text(GameObject::GetHierarchyString().c_str());
         }
         ImGui::End();
 

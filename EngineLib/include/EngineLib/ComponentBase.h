@@ -20,13 +20,14 @@ namespace EngineCore {
 		virtual bool IsDrawable() const { return false; }
 
 		void Disable(bool value);
+		bool IsDisable() const;
 
 		std::string GetComponentString() const;
 		std::string GetComponentString(bool moreDetail) const;
 		virtual void GetComponentString(const std::string& prefix, std::string& outStr, bool moreDetail) const;
 
 		std::string GetName() const;
-		GameObject* GetGameObject() const;
+		std::shared_ptr<GameObject> GetGameObject() const;
 
 		virtual ComponentTypeID GetTypeID() const { return ENGINE_INVALID_ID; }
 
@@ -36,12 +37,12 @@ namespace EngineCore {
 		}
 
 	protected:
-		ComponentBase(const std::string& name, GameObject* gameObject);
+		ComponentBase(const std::string& name, unsigned int goID);
 
 		bool m_alive = true;
 		bool m_isDisabled = false;
 		std::string m_name;
-		GameObject* m_gameObject = nullptr;
+		unsigned int m_gameObjectID = ENGINE_INVALID_ID;
 		/**
 		* @brief checks if the gameobject is Dead
 		* @param msg if the func is true writes warn(GameObject: 'msg', GameObject was deleted!)

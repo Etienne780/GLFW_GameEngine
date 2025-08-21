@@ -8,7 +8,12 @@ namespace EngineCore {
 	
 	GameObject::GameObject(unsigned int id, const std::string& name)
 		: m_id(id), m_name(name) {
-		m_transform = std::make_shared<Component::Transform>(this);
+	}
+
+	void GameObject::InitComponents() {
+		if (!m_transform) {
+			m_transform = std::make_shared<Component::Transform>(m_id);
+		}
 	}
 
 	GameObject::~GameObject() {
@@ -23,7 +28,7 @@ namespace EngineCore {
 		return m_gameObjectManager->GetHierarchy();
 	}
 
-	int GameObject::GetGameObjectCount() {
+	size_t GameObject::GetGameObjectCount() {
 		return m_gameObjectManager->m_gameObjects.size();
 	}
 
@@ -36,6 +41,7 @@ namespace EngineCore {
 		unsigned int id = m_gameObjectManager->GetNewUniqueIdentifier();
 		auto go = std::shared_ptr<GameObject>(new GameObject(id, name));
 		m_gameObjectManager->AddGameObject(go);
+		go->InitComponents();
 		return go;
 	}
 
@@ -71,6 +77,14 @@ namespace EngineCore {
 
 	bool GameObject::HasParent() const {
 		return (m_parentObjPtr != nullptr);
+	}
+
+	void GameObject::Disable(bool value) {
+		m_isDisabled = value;
+	}
+
+	bool GameObject::IsDisable() const {
+		return m_isDisabled;
 	}
 
 	#pragma region Get
@@ -179,6 +193,9 @@ namespace EngineCore {
 	}
 
 	void GameObject::Update() {
+		if (m_isDisabled)
+			return;
+
 		for (auto& comp : m_components) {
 			comp->CUpdate();
 		}
@@ -214,6 +231,9 @@ namespace EngineCore {
 	}
 
 	void GameObject::SubmitDrawCall() {
+		if (m_isDisabled)
+			return;
+
 		for (auto& comp : m_drawComponents) {
 			comp->SubmitDrawCall();
 		}

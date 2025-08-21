@@ -9,8 +9,9 @@ namespace EngineCore {
 		
 		const std::string compName = "Transform";
 
-		Transform::Transform(GameObject* gameObject) :
-			ComponentBase(compName, gameObject) {
+		Transform::Transform(unsigned int gameObjectID) :
+			ComponentBase(compName, gameObjectID) {
+			m_gameObject = GetGameObject();
 		}
 
 		void Transform::CalculateLocalModelMat() {

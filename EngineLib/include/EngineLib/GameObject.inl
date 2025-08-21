@@ -19,7 +19,7 @@ namespace EngineCore {
 			return nullptr;
 		}
 
-		auto comp = std::make_shared<C>(this, std::forward<Args>(args)...);
+		auto comp = std::make_shared<C>(m_id, std::forward<Args>(args)...);
 		if (auto cam = std::dynamic_pointer_cast<Component::Camera>(comp)) {
 			m_hasCamera = true;
 			RegisterCamera(cam);

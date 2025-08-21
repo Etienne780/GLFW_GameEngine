@@ -23,8 +23,10 @@ namespace EngineCore {
 	
 	Debugger::Debugger(Engine* engine) 
 		:m_engine(engine), m_app(engine->m_app), m_window(engine->m_window), m_gameObjectManager(engine->m_gameObjectManager) {
-		m_debuggerWindows = std::make_unique<DebuggerWindows>();
+		m_debuggerWindows = std::make_unique<DebuggerWindows>(this);
 	}
+
+	Debugger::~Debugger() = default;
 
 	void Debugger::Init() {
 		IMGUI_CHECKVERSION();
@@ -65,14 +67,22 @@ namespace EngineCore {
 	}
 
 	void Debugger::DebugCameraInit() {
-		m_debugCamera = GameObject::Create("Debug-Camera");
-		m_debugCamera->AddComponent<Component::Camera>();
-		m_debugCamera->AddComponent<Component::FreeCameraController>()->Disable(true);
+		m_debugCameraGO = GameObject::Create("Debug-Camera");
+		m_debugCameraGO->AddComponent<Component::Camera>();
+		m_debugCameraGO->AddComponent<Component::FreeCameraController>()->m_isZoomDisabled = true;
+		m_debugCameraGO->Disable(true);
 	}
 
 	void Debugger::Update() {
+		static bool lastCursorLock = m_cursorLock;
 		SetVariables();
 		HandleCursorLock();
+
+		if (m_isDebugCameraActive && lastCursorLock != m_cursorLock) {
+			lastCursorLock = m_cursorLock;
+			m_debugCameraGO->GetComponent
+				<Component::FreeCameraController>()->m_isRotationDisabled = !m_cursorLock;
+		}
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -85,8 +95,10 @@ namespace EngineCore {
 	}
 
 	void Debugger::Shutdown() {
-		GameObject::Delete(m_debugCamera);
-		m_debugCamera = nullptr;
+		SetDebugCameraActive(false);
+
+		GameObject::Delete(m_debugCameraGO);
+		m_debugCameraGO = nullptr;
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
@@ -135,15 +147,33 @@ namespace EngineCore {
 	}
 
 	Application* Debugger::GetApp() {
-		return m_app.get();
+		return m_app.lock().get();
 	}
 
 	GLFWwindow* Debugger::GetWindow() const {
-	
+		return m_window;
 	}
 
 	GameObjectManager* Debugger::GetGameObjectManager() const {
-		
+		return m_gameObjectManager;
+	}
+
+	void Debugger::SetDebugCameraActive(bool value) {
+		static std::weak_ptr<Component::Camera> lastCamera;
+		if (m_isDebugCameraActive == value)
+			return;
+
+		m_isDebugCameraActive = value;
+		if (value) {
+			m_debugCameraGO->Disable(false);
+			lastCamera = GameObject::GetMainCamera();
+			GameObject::SetMainCamera(m_debugCameraGO->GetComponent<Component::Camera>());
+		}
+		else {
+			m_debugCameraGO->Disable(true);
+			auto camptr = lastCamera.lock();
+			GameObject::SetMainCamera(camptr);
+		}
 	}
 }
 

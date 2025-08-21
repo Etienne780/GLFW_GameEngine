@@ -7,7 +7,7 @@ namespace EngineCore {
 		
 		class FreeCameraController : public EngineCore::Script {
 		public:
-			FreeCameraController(GameObject* gameObject);
+			FreeCameraController(unsigned int gameObjectID);
 
 			COMPONENT_TYPE_DEFINITION(FreeCameraController);
 

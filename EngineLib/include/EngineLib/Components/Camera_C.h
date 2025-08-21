@@ -13,7 +13,7 @@ namespace EngineCore {
 		class Camera : public EngineCore::ComponentBase {
 			friend class EngineCore::Engine;
 		public:
-			Camera(GameObject* gameObject);
+			Camera(unsigned int gameObjectID);
 			bool CanDisalbe() const override { return false; }
 
 			COMPONENT_TYPE_DEFINITION(Camera);
@@ -44,6 +44,7 @@ namespace EngineCore {
 		private:
 			// gets updatet in the engine loop (before the update loop of the application)
 			static int m_windowWidth, m_windowHeight;
+			std::shared_ptr<GameObject> m_gameObject;
 
 			float m_fov = 66.0f;
 			bool m_isOrthograpic = false;

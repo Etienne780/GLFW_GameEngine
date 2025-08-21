@@ -9,7 +9,7 @@ namespace EngineCore {
 
 		class MeshRenderer : public EngineCore::ComponentBase {
 		public:
-			MeshRenderer(GameObject* gameObject);
+			MeshRenderer(unsigned int gameObjectID);
 
 			COMPONENT_TYPE_DEFINITION(MeshRenderer);
 
@@ -27,6 +27,7 @@ namespace EngineCore {
 
 		private:
 			static Renderer& m_renderer;
+			std::shared_ptr<GameObject> m_gameObject = nullptr;
 			RenderCommand m_cmd;
 			std::shared_ptr<Mesh> m_mesh = nullptr;
 			unsigned int m_meshID = ENGINE_INVALID_ID;

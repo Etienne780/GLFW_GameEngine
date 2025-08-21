@@ -18,7 +18,7 @@ namespace EngineCore {
 		~GameObject();
 
 		static std::string GetHierarchyString();
-		static int GetGameObjectCount();
+		static size_t GetGameObjectCount();
 		static std::shared_ptr<GameObject> Create(const std::string& name);
 		static bool Delete(std::shared_ptr<GameObject> gameObjectPtr);
 		static bool Delete(unsigned int id);
@@ -44,6 +44,9 @@ namespace EngineCore {
 		bool HasComponent() const;
 		bool HasParent() const;
 
+		void Disable(bool value);
+		bool IsDisable() const;
+
 		std::shared_ptr<Component::Transform> GetTransform();
 		std::string GetName() const;
 		unsigned int GetID() const;
@@ -58,11 +61,13 @@ namespace EngineCore {
 
 	private:
 		GameObject(unsigned int id, const std::string& name);
+		void InitComponents();
 
 		static GameObjectManager* m_gameObjectManager;
 
 		unsigned int m_id = ENGINE_INVALID_ID;
 		bool m_alive = true;
+		bool m_isDisabled = false;
 		std::string m_name;
 		std::shared_ptr<GameObject> m_parentObjPtr = nullptr;
 		std::vector<std::shared_ptr<GameObject>> m_childObjPtrs;

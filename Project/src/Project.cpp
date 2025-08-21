@@ -25,8 +25,8 @@ void GenerateCubesSphere();
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 2; // horizontale Segmente
-size_t cubeCountPhi = 2;   // vertikale Segmente
+size_t cubeCountTheta = 5; // horizontale Segmente
+size_t cubeCountPhi = 5;   // vertikale Segmente
 float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);

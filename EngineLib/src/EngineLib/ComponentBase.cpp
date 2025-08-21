@@ -1,12 +1,13 @@
 #include "CoreLib\FormatUtils.h"
 #include "CoreLib\Log.h"
 
+#include "EngineLib\GameObject.h"
 #include "EngineLib\ComponentBase.h"
 
 namespace EngineCore {
 
-	ComponentBase::ComponentBase(const std::string& name, GameObject* gameObject)
-		: m_name(name), m_gameObject(gameObject) {
+	ComponentBase::ComponentBase(const std::string& name, unsigned int goID)
+		: m_name(name), m_gameObjectID(goID) {
 	}
 
 	void ComponentBase::CUpdate() {
@@ -19,11 +20,16 @@ namespace EngineCore {
 		m_isDisabled = value;
 	}
 
-	GameObject* ComponentBase::GetGameObject() const {
+	bool ComponentBase::IsDisable() const {
+		return m_isDisabled;
+	}
+
+	std::shared_ptr<GameObject> ComponentBase::GetGameObject() const {
 		if (IsDead("Cant get GameObject")) {
 			return nullptr;
 		}
-		return m_gameObject;
+		
+		return GameObject::Get(m_gameObjectID);
 	}
 
 	std::string ComponentBase::GetName() const {
