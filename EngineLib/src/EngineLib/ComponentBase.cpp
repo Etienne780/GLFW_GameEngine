@@ -28,8 +28,10 @@ namespace EngineCore {
 		if (IsDead("Cant get GameObject")) {
 			return nullptr;
 		}
-		
-		return GameObject::Get(m_gameObjectID);
+
+		if(!m_gameObject)
+			m_gameObject = GameObject::Get(m_gameObjectID);
+		return m_gameObject;
 	}
 
 	std::string ComponentBase::GetName() const {

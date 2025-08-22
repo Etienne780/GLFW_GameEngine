@@ -27,7 +27,7 @@ namespace EngineCore {
 	}
 
 	Debugger::~Debugger() = default;
-
+	
 	void Debugger::Init() {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -95,8 +95,6 @@ namespace EngineCore {
 	}
 
 	void Debugger::Shutdown() {
-		SetDebugCameraActive(false);
-
 		GameObject::Delete(m_debugCameraGO);
 		m_debugCameraGO = nullptr;
 
@@ -158,22 +156,12 @@ namespace EngineCore {
 		return m_gameObjectManager;
 	}
 
-	void Debugger::SetDebugCameraActive(bool value) {
-		static std::weak_ptr<Component::Camera> lastCamera;
-		if (m_isDebugCameraActive == value)
+	void Debugger::SetMainCamera(std::shared_ptr<Component::Camera> cam) {
+		if (!cam)
 			return;
-
-		m_isDebugCameraActive = value;
-		if (value) {
-			m_debugCameraGO->Disable(false);
-			lastCamera = GameObject::GetMainCamera();
-			GameObject::SetMainCamera(m_debugCameraGO->GetComponent<Component::Camera>());
-		}
-		else {
-			m_debugCameraGO->Disable(true);
-			auto camptr = lastCamera.lock();
-			GameObject::SetMainCamera(camptr);
-		}
+		m_isDebugCameraActive = (cam->GetGameObject()->GetID() == m_debugCameraGO->GetID());
+		m_debugCameraGO->Disable(!m_isDebugCameraActive);
+		GameObject::SetMainCamera(cam);
 	}
 }
 

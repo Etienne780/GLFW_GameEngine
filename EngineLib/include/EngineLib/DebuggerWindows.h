@@ -15,7 +15,7 @@ namespace EngineCore {
 		void CameraWindow(float startX, float startY);
 		void HierarchyWindow(float startX, float startY);
 		void IconDisplayWindow(float startX, float startY);
-
+		
 	private:
 		Debugger* m_debugger = nullptr;
 

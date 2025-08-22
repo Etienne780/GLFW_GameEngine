@@ -104,15 +104,103 @@ namespace EngineCore {
         static bool first = true;
         if (first) {
             ImGui::SetNextWindowPos(ImVec2(startX, startY));
-            ImGui::SetNextWindowSize(ImVec2(250, 375));
+            ImGui::SetNextWindowSize(ImVec2(300, 400));
         }
 
-        static bool currentState = m_debugger->IsDebugCameraActive();
         ImGui::Begin("Camera", &m_cameraWin);
         {
-            if (ImGui::Checkbox("Debug camera", &currentState)) {
-                // only update if it changes
-                m_debugger->SetDebugCameraActive(currentState);
+            auto& cameras = m_debugger->GetGameObjectManager()->m_cameras;
+            if (cameras.empty()) {
+                ImGui::Text("No cameras available");
+                ImGui::End();
+                return;
+            }
+
+            // Liste für Dropdown vorbereiten, Debug-Cam immer an erster Stelle
+            std::vector<std::shared_ptr<EngineCore::Component::Camera>> sortedCameras;
+            sortedCameras.reserve(cameras.size());
+
+            // Debug-Cam nach vorne holen
+            for (auto& weakCam : cameras) {
+                auto cam = weakCam.lock();
+                if (cam && cam->GetGameObject() == m_debugger->m_debugCameraGO) {
+                    sortedCameras.push_back(cam);
+                }
+            }
+            // alle anderen
+            for (auto& weakCam : cameras) {
+                auto cam = weakCam.lock();
+                if (cam && cam->GetGameObject() != m_debugger->m_debugCameraGO) {
+                    sortedCameras.push_back(cam);
+                }
+            }
+
+            // aktuell selektierte Kamera
+            static int currentIndex = 0;
+            if (currentIndex >= (int)sortedCameras.size()) currentIndex = 0;
+
+            std::string currentName = sortedCameras[currentIndex]
+                ? sortedCameras[currentIndex]->GetGameObject()->GetName()
+                : "<invalid>";
+
+            // Dropdown
+            if (ImGui::BeginCombo("Active Camera", currentName.c_str())) {
+                for (int i = 0; i < (int)sortedCameras.size(); ++i) {
+                    auto cam = sortedCameras[i];
+                    if (!cam) continue;
+
+                    // Debug-Cam markieren
+                    std::string label = cam->GetGameObject()->GetName();
+                    if (cam->GetGameObject()->GetID() == m_debugger->m_debugCameraGO->GetID()) {
+                        label = "[DEBUG] " + label;
+                    }
+
+                    bool isSelected = (currentIndex == i);
+                    if (ImGui::Selectable(label.c_str(), isSelected)) {
+                        currentIndex = i;
+                    }
+                    if (isSelected) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            // aktive Kamera anzeigen & editieren
+            auto activeCam = sortedCameras[currentIndex];
+            if (activeCam) {
+                m_debugger->SetMainCamera(activeCam);
+
+                ImGui::SeparatorText("Projection");
+
+                if (!activeCam->GetOrthograpic()) {
+                    float fov = activeCam->GetFOV();
+                    if (ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f, "%.1f")) {
+                        activeCam->SetFOV(fov);
+                    }
+                }
+                else {
+                    ImGui::TextDisabled("FOV (not used in orthographic mode)");
+                }
+
+                bool ortho = activeCam->GetOrthograpic();
+                if (ImGui::Checkbox("Orthographic", &ortho)) {
+                    activeCam->SetOrthograpic(ortho);
+                }
+
+                float aspect = activeCam->GetAspectRatio();
+                if (ImGui::SliderFloat("Aspect Ratio", &aspect, 0.5f, 3.0f, "%.2f")) {
+                    activeCam->SetAspectRatio(aspect);
+                }
+
+                ImGui::SeparatorText("Clipping Planes");
+                float nearPlane = activeCam->GetNearPlane();
+                float farPlane = activeCam->GetFarPlane();
+
+                if (ImGui::DragFloat("Near Plane", &nearPlane, 0.01f, 0.01f, farPlane - 0.01f)) {
+                    activeCam->SetNearPlane(nearPlane);
+                }
+                if (ImGui::DragFloat("Far Plane", &farPlane, 1.0f, nearPlane + 0.01f, 10000.0f)) {
+                    activeCam->SetFarPlane(farPlane);
+                }
             }
         }
         ImGui::End();

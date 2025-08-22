@@ -43,6 +43,7 @@ namespace EngineCore {
 		bool m_isDisabled = false;
 		std::string m_name;
 		unsigned int m_gameObjectID = ENGINE_INVALID_ID;
+		mutable std::shared_ptr<GameObject> m_gameObject = nullptr;
 		/**
 		* @brief checks if the gameobject is Dead
 		* @param msg if the func is true writes warn(GameObject: 'msg', GameObject was deleted!)

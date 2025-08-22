@@ -19,6 +19,8 @@ namespace EngineCore {
 	class Debugger {
 	friend class Engine;
 	public:
+		std::shared_ptr<GameObject> m_debugCameraGO = nullptr;
+
 		~Debugger();
 
 		void Init();
@@ -32,7 +34,7 @@ namespace EngineCore {
 		GLFWwindow* GetWindow() const;
 		GameObjectManager* GetGameObjectManager() const;
 
-		void SetDebugCameraActive(bool value);
+		void SetMainCamera(std::shared_ptr<Component::Camera> cam);
 
 	private:
 		Debugger(Engine* engine);
@@ -42,7 +44,6 @@ namespace EngineCore {
 		GLFWwindow* m_window = nullptr;
 		GameObjectManager* m_gameObjectManager = nullptr;
 		std::unique_ptr<DebuggerWindows> m_debuggerWindows = nullptr;
-		std::shared_ptr<GameObject> m_debugCameraGO = nullptr;
 
 		int m_windowWidth = 0;
 		int m_windowHeight = 0;

@@ -89,6 +89,8 @@ namespace EngineCore {
 			gameObjectPtr->Detach();
 		}
 
+
+
 		gameObjectPtr->UnregisterCameraFromManager();
 		gameObjectPtr->UnaliveComponents();
 		gameObjectPtr->m_alive = false;
