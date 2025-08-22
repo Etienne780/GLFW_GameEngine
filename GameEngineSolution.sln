@@ -3,18 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36127.28
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project", "Project\Project.vcxproj", "{8E1DADC7-F577-4383-9CD6-0E71F503A7E9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0864F928-EC46-4535-BEE8-3F0A1684549C} = {0864F928-EC46-4535-BEE8-3F0A1684549C}
+		{731B5EAD-F3E1-4D49-B952-2841F4A92045} = {731B5EAD-F3E1-4D49-B952-2841F4A92045}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreLib", "CoreLib\CoreLib.vcxproj", "{0864F928-EC46-4535-BEE8-3F0A1684549C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineLib", "EngineLib\EngineLib.vcxproj", "{731B5EAD-F3E1-4D49-B952-2841F4A92045}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0864F928-EC46-4535-BEE8-3F0A1684549C} = {0864F928-EC46-4535-BEE8-3F0A1684549C}
 		{7E541724-A746-4400-A300-3CD4D450A97E} = {7E541724-A746-4400-A300-3CD4D450A97E}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project", "Project\Project.vcxproj", "{8E1DADC7-F577-4383-9CD6-0E71F503A7E9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{0864F928-EC46-4535-BEE8-3F0A1684549C} = {0864F928-EC46-4535-BEE8-3F0A1684549C}
-		{731B5EAD-F3E1-4D49-B952-2841F4A92045} = {731B5EAD-F3E1-4D49-B952-2841F4A92045}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineViewer", "EngineViewer\EngineViewer.vcxproj", "{2E3A4491-1DB0-455C-85AA-D3A818A4C347}"
