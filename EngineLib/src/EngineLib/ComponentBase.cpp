@@ -11,6 +11,7 @@ namespace EngineCore {
 	}
 
 	void ComponentBase::CUpdate() {
+		UpdateAlwaysImpl();
 		if (m_isDisabled) return;
 		UpdateImpl();
 	}

@@ -51,7 +51,16 @@ namespace EngineCore {
 		*/
 		bool IsDead(const std::string& msg) const;
 		void CUpdate();
+		/*
+		* @brief Called every frame before Application Update.
+		*/
 		virtual void UpdateImpl() {}
+
+		/*
+		* @brief Called every frame before Application Update and Component update,
+		*        even if the Component is disabled.
+		*/
+		virtual void UpdateAlwaysImpl() {}
 		virtual void SubmitDrawCall() {}
 	};
 
