@@ -57,8 +57,8 @@ namespace EngineCore {
 		return m_gameObjectManager->DeleteGameObject(name);
 	}
 
-	std::weak_ptr<Component::Camera>  GameObject::GetMainCamera() {
-		return m_gameObjectManager->GetMainCamera();
+	std::shared_ptr<Component::Camera>  GameObject::GetMainCamera() {
+		return m_gameObjectManager->GetMainCamera().lock();
 	}
 
 	void GameObject::SetMainCamera(std::shared_ptr<Component::Camera> camera) {

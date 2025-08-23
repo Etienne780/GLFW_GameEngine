@@ -43,7 +43,7 @@ namespace EngineCore {
         
         ResourceManager& rm = ResourceManager::GetInstance();
         
-        std::shared_ptr<Component::Camera> camptr = GameObject::GetMainCamera().lock();
+        std::shared_ptr<Component::Camera> camptr = GameObject::GetMainCamera();
         if (camptr->IsDisable()) {
             Log::Warn("Renderer: Cant render, main Camera is disabled");
             return;

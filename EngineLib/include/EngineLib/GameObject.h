@@ -25,7 +25,7 @@ namespace EngineCore {
 		static bool Delete(const std::string& name);
 		static std::shared_ptr<GameObject> Get(unsigned int id);
 		static std::shared_ptr<GameObject> Get(const std::string& name);
-		static std::weak_ptr<Component::Camera> GetMainCamera();
+		static std::shared_ptr<Component::Camera> GetMainCamera();
 		static void SetMainCamera(std::shared_ptr<Component::Camera> camera);
 
 		template<typename C, typename... Args>

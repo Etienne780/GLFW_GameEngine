@@ -120,7 +120,7 @@ namespace EngineCore {
             std::vector<std::shared_ptr<EngineCore::Component::Camera>> sortedCameras;
             sortedCameras.reserve(cameras.size());
 
-            std::shared_ptr<Component::Camera> mainCameraPtr = GameObject::GetMainCamera().lock();
+            std::shared_ptr<Component::Camera> mainCameraPtr = GameObject::GetMainCamera();
             std::shared_ptr<Component::Camera> debugCam = m_debugger->m_debugCameraGO->GetComponent<Component::Camera>();
 
             if (mainCameraPtr) {

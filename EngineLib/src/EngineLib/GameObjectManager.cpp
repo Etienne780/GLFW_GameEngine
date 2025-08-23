@@ -43,7 +43,6 @@ namespace EngineCore {
 		m_gameObjects.emplace_back(go);
 	}
 
-
 	#pragma region Delete
 
 	bool GameObjectManager::DeleteGameObject(std::shared_ptr<GameObject> gameObjectPtr) {
@@ -89,11 +88,16 @@ namespace EngineCore {
 			gameObjectPtr->Detach();
 		}
 
-
-
 		gameObjectPtr->UnregisterCameraFromManager();
 		gameObjectPtr->UnaliveComponents();
 		gameObjectPtr->m_alive = false;
+
+		// adds free id to the pool
+		unsigned int id = gameObjectPtr->GetID();
+		if (id != ENGINE_INVALID_ID) {
+			m_freeIDs.push(id);
+		}
+
 		m_gameObjects.erase(std::remove(m_gameObjects.begin(), m_gameObjects.end(), gameObjectPtr), m_gameObjects.end());
 	}
 
@@ -107,6 +111,11 @@ namespace EngineCore {
 		}
 
 		m_gameObjects.clear();
+		std::queue<unsigned int> empty;
+		std::swap(m_freeIDs, empty);
+		m_idCounter = 0;
+		m_idFallback = false;
+
 	}
 
 	#pragma endregion
@@ -117,6 +126,7 @@ namespace EngineCore {
 				return obj;
 			}
 		}
+
 		Log::Warn("GameObjectManager: no GameObject with ID '{}' found!", id);
 		return nullptr;
 	}
@@ -222,7 +232,40 @@ namespace EngineCore {
 	}
 
 	unsigned int GameObjectManager::GetNewUniqueIdentifier() {
-		return m_idCounter++;
+		unsigned int id;
+		if (m_idCounter != ENGINE_INVALID_ID) {
+			id = m_idCounter++;
+		}
+		else {
+			id = GetNewUniqueIdentifierFallback();
+		}
+
+		return m_idCounter;
+	}
+
+	unsigned int GameObjectManager::GetNewUniqueIdentifierFallback() {
+		if (!m_idFallback) {
+			m_idFallback = true;
+			Log::Warn("Max ID limit reached, using fallback IDs from free pool");
+		}
+
+		if (!m_freeIDs.empty()) {
+			auto id = m_freeIDs.front();
+			m_freeIDs.pop();
+			return id;
+		}
+
+		unsigned int lastID = 0;
+		for (auto& go : m_gameObjects) {
+			unsigned int currentID = go->GetID();
+			int diff = static_cast<int>(currentID) - static_cast<int>(lastID);
+			if (diff > 1)
+				return currentID - 1;
+			lastID = currentID;
+		}
+
+		Log::Error("GameObjectManager: Cant find any free IDs");
+		return ENGINE_INVALID_ID;
 	}
 
 	std::vector<GameObject*> GameObjectManager::GetAllGameObjects() {
