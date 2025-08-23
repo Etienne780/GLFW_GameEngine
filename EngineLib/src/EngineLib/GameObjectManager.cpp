@@ -121,6 +121,32 @@ namespace EngineCore {
 	#pragma endregion
 
 	std::shared_ptr<GameObject> GameObjectManager::GetGameObject(unsigned int id) {
+		if (m_gameObjects.empty())
+			return nullptr;
+		
+		// binary search if ids ordered
+		if (!m_idFallback) {
+			unsigned int startIndex = 0;
+			unsigned int endIndex = static_cast<unsigned int>(m_gameObjects.size() - 1);
+		
+			while (startIndex <= endIndex) {
+				unsigned int mid = startIndex + (endIndex - startIndex) / 2;
+				auto go = m_gameObjects[mid];
+		
+				if (go->GetID() == id) {
+					return go;
+				}
+				else if (go->GetID() > id) {
+					if (mid == 0) break; // verhindert Underflow
+					endIndex = mid - 1;
+				}
+				else {
+					startIndex = mid + 1;
+				}
+			}
+		}
+		
+		// lineare Suche
 		for (auto& obj : m_gameObjects) {
 			if (obj->GetID() == id) {
 				return obj;
@@ -240,7 +266,7 @@ namespace EngineCore {
 			id = GetNewUniqueIdentifierFallback();
 		}
 
-		return m_idCounter;
+		return id;
 	}
 
 	unsigned int GameObjectManager::GetNewUniqueIdentifierFallback() {
