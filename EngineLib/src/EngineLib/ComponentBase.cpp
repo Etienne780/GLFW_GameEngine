@@ -35,6 +35,22 @@ namespace EngineCore {
 		return m_gameObject;
 	}
 
+	unsigned int ComponentBase::GetGameObjectID() const {
+		if (IsDead("Cant get GameObjectID")) {
+			return ENGINE_INVALID_ID;
+		}
+
+		return m_gameObjectID;
+	}
+
+	const unsigned int* ComponentBase::GetGameObjectIDPtr() const {
+		if (IsDead("Cant get GameObjectID")) {
+			return nullptr;
+		}
+
+		return GetGameObject()->GetIDPtr();
+	}
+
 	std::string ComponentBase::GetName() const {
 		if (IsDead("Cant get name")) {
 			return "INVALID";

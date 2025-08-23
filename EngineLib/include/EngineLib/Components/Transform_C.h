@@ -8,6 +8,7 @@ namespace EngineCore {
 	namespace Component {
 
 		class Transform : public EngineCore::ComponentBase {
+		friend class GameObject;
 		public:
 			Transform(unsigned int gameObjectID);
 			bool CanDisalbe() const override { return false; }

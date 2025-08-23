@@ -74,6 +74,7 @@ namespace EngineCore {
 
 	void Debugger::DebugCameraInit() {
 		m_debugCameraGO = GameObject::Create("Debug-Camera");
+		m_debugCameraGO->SetPersistent(true);
 		m_debugCameraGO->AddComponent<Component::Camera>();
 		m_debugCameraGO->AddComponent<Component::FreeCameraController>()->m_isZoomDisabled = true;
 		m_debugCameraGO->Disable(true);

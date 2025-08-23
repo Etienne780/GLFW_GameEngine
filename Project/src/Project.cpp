@@ -25,8 +25,8 @@ void GenerateCubesSphere();
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 20; // horizontale Segmente
-size_t cubeCountPhi = 20;   // vertikale Segmente
+size_t cubeCountTheta = 2; // horizontale Segmente
+size_t cubeCountPhi = 2;   // vertikale Segmente
 float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
@@ -36,12 +36,13 @@ void Project::Start() {
 	auto cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
-	
+
 	GenerateCubesSphere();
 }
 
 void GenerateCubesSphere() {
 	auto container = GameObject::Create("Container");
+	container->SetPersistent(true);
 	containerTrans = container->GetTransform();
 
 	for (size_t i = 0; i < cubeCountTheta; ++i) {
@@ -72,7 +73,7 @@ void UpdateCubesSphere(float time) {
 void Project::Update() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
-	
+
 	if (Input::KeyJustPressed(GLFW_KEY_K)) {
 		App_Application_Set_Window_Resizable(!App_Application_Get_Window_Resizable());
 	}
@@ -83,6 +84,10 @@ void Project::Update() {
 
 	if (Input::KeyJustPressed(GLFW_KEY_H)) {
 		App_Debug_Set_Active(!App_Debug_Get_Active());
+	}
+
+	if (Input::KeyJustPressed(GLFW_KEY_U)) {
+		GameObject::ClearAll();
 	}
 
 	UpdateCubesSphere(Time::GetTime());

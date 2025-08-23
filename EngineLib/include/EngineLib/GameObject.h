@@ -23,6 +23,14 @@ namespace EngineCore {
 		static bool Delete(std::shared_ptr<GameObject> gameObjectPtr);
 		static bool Delete(unsigned int id);
 		static bool Delete(const std::string& name);
+		/*
+		* @brief Deletes all GameObjects except persistent ones.
+		*/
+		static void ClearAll();
+		/*
+		* @brief Deletes all GameObjects including persistent ones.
+		*/
+		static void DeleteAll();
 		static std::shared_ptr<GameObject> Get(unsigned int id);
 		static std::shared_ptr<GameObject> Get(const std::string& name);
 		static std::shared_ptr<Component::Camera> GetMainCamera();
@@ -46,10 +54,23 @@ namespace EngineCore {
 
 		void Disable(bool value);
 		bool IsDisable() const;
+		bool IsPersistent() const;
 
 		std::shared_ptr<Component::Transform> GetTransform();
 		std::string GetName() const;
+		/*
+		* @brief Returns the current ID of this GameObject.
+		*        Note: For persistent GameObjects, the ID may change during runtime.
+		* @return The current ID of the GameObject.
+		*/
 		unsigned int GetID() const;
+		/*
+		* @brief Returns a pointer to the internal ID of this GameObject.
+		*        Useful for persistent GameObjects, where the ID may be updated dynamically.
+		*        Do NOT modify the ID through this pointer, as it may cause internal inconsistencies.
+		* @return Pointer to the internal ID.
+		*/
+		const unsigned int* GetIDPtr() const;
 		std::shared_ptr<GameObject> GetParent() const;
 		const std::vector<std::shared_ptr<GameObject>>& GetChildren() const;
 		std::string GetComponentListString() const;
@@ -57,6 +78,7 @@ namespace EngineCore {
 
 		GameObject* SetName(const std::string& name);
 		GameObject* SetParent(std::shared_ptr<GameObject> parentPtr);
+		GameObject* SetPersistent(bool value);
 		GameObject* Detach();
 
 	private:
@@ -67,6 +89,7 @@ namespace EngineCore {
 
 		unsigned int m_id = ENGINE_INVALID_ID;
 		bool m_alive = true;
+		bool m_isPersistent = false;
 		bool m_isDisabled = false;
 		std::string m_name;
 		std::shared_ptr<GameObject> m_parentObjPtr = nullptr;
@@ -82,6 +105,7 @@ namespace EngineCore {
 		*/
 		void Update();
 
+		void UpdateComponentIDs();
 		void RegisterCamera(std::weak_ptr<Component::Camera> camera);
 		void UnregisterCamera(std::weak_ptr<Component::Camera> camera);
 		void UnregisterCameraFromManager();

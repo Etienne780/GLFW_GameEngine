@@ -101,7 +101,38 @@ namespace EngineCore {
 	}
 
 	void GameObjectManager::CleareAllGameObjects() {
-		Log::Debug("Clearing {} game objects", m_gameObjects.size());
+		for (auto& obj : m_gameObjects) {
+			if (!obj->IsPersistent()) {
+				obj->UnregisterCameraFromManager();
+				obj->UnaliveComponents();
+				obj->m_alive = false;
+			}
+		}
+
+		// new vector with only persistent objects
+		std::vector<std::shared_ptr<GameObject>> persistentObjects;
+		persistentObjects.reserve(m_gameObjects.size());
+		unsigned int newID = 0;
+
+		for (auto& obj : m_gameObjects) {
+			if (obj->IsPersistent()) {
+				obj->m_id = newID++;
+				obj->UpdateComponentIDs();
+				persistentObjects.push_back(obj);
+			}
+		}
+
+		Log::Debug("Clearing {} game objects", static_cast<int>(m_gameObjects.size() - persistentObjects.size()));
+		m_gameObjects = std::move(persistentObjects);
+
+		std::queue<unsigned int> empty;
+		std::swap(m_freeIDs, empty);
+		m_idCounter = static_cast<unsigned int>(m_gameObjects.size());
+		m_idFallback = false;
+	}
+
+	void GameObjectManager::DeleteAllGameObjects() {
+		Log::Debug("Deleted {} game objects", m_gameObjects.size());
 
 		for (auto& obj : m_gameObjects) {
 			obj->UnregisterCameraFromManager();

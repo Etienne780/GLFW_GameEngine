@@ -57,6 +57,14 @@ namespace EngineCore {
 		return m_gameObjectManager->DeleteGameObject(name);
 	}
 
+	void GameObject::ClearAll() {
+		m_gameObjectManager->CleareAllGameObjects();
+	}
+
+	void GameObject::DeleteAll() {
+		m_gameObjectManager->DeleteAllGameObjects();
+	}
+
 	std::shared_ptr<Component::Camera>  GameObject::GetMainCamera() {
 		return m_gameObjectManager->GetMainCamera().lock();
 	}
@@ -87,6 +95,10 @@ namespace EngineCore {
 		return m_isDisabled;
 	}
 
+	bool GameObject::IsPersistent() const {
+		return m_isPersistent;
+	}
+
 	#pragma region Get
 
 	std::shared_ptr<Component::Transform> GameObject::GetTransform() {
@@ -108,6 +120,13 @@ namespace EngineCore {
 			return ENGINE_INVALID_ID;
 		}
 		return m_id;
+	}
+
+	const unsigned int* GameObject::GetIDPtr() const {
+		if (IsDead("Cant get id ptr")) {
+			return nullptr;
+		}
+		return &m_id;
 	}
 
 	std::shared_ptr<GameObject> GameObject::GetParent() const {
@@ -180,7 +199,25 @@ namespace EngineCore {
 		// add selft to parents child list
 		if (m_parentObjPtr) {
 			m_parentObjPtr->m_childObjPtrs.push_back(shared_from_this());
+			// sets child persistent if parent is persistent
+			m_isPersistent = m_parentObjPtr->IsPersistent();
 		}
+		return this;
+	}
+
+	GameObject* GameObject::SetPersistent(bool value) {
+		if (IsDead("Cant set persistent")) {
+			return this;
+		}
+
+		m_isPersistent = value;
+		// sets the childs also to persistent
+		if (!m_childObjPtrs.empty()) {
+			for (auto& childs : m_childObjPtrs) {
+				childs->m_isPersistent = value;
+			}
+		}
+
 		return this;
 	}
 
@@ -198,6 +235,17 @@ namespace EngineCore {
 
 		for (auto& comp : m_components) {
 			comp->CUpdate();
+		}
+	}
+
+	void GameObject::UpdateComponentIDs() {
+		m_transform->m_gameObjectID = m_id;
+		for (auto& comp : m_components) {
+			comp->m_gameObjectID = m_id;
+		}
+
+		for (auto& comp : m_drawComponents) {
+			comp->m_gameObjectID = m_id;
 		}
 	}
 

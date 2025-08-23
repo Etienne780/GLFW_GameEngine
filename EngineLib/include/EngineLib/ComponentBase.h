@@ -28,6 +28,21 @@ namespace EngineCore {
 
 		std::string GetName() const;
 		std::shared_ptr<GameObject> GetGameObject() const;
+		/*
+		* @brief Returns the current ID of the GameObject this Component belongs to.
+		*        Note: For persistent GameObjects, the ID may change during runtime.
+		* @return The current ID of the associated GameObject.
+		*/
+		unsigned int GetGameObjectID() const;
+
+		/*
+		* @brief Returns a pointer to the internal ID of the GameObject this Component belongs to.
+		*        Useful for persistent GameObjects, where the ID may be updated dynamically.
+		*        Do NOT modify the ID through this pointer, as it may cause internal inconsistencies.
+		* @return Pointer to the internal GameObject ID.
+		*/
+		const unsigned int* GetGameObjectIDPtr() const;
+
 
 		virtual ComponentTypeID GetTypeID() const { return ENGINE_INVALID_ID; }
 

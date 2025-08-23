@@ -46,8 +46,17 @@ namespace EngineCore {
 		bool DeleteGameObject(unsigned int id);
 		bool DeleteGameObject(const std::string& name);
 		void DeleteGameObjectInternal(std::shared_ptr<GameObject> gameObjectPtr);
-		// Deletes all GameObjects that currently in the GameObjectManager and clears the idCounter
+		/**
+		* @brief Deletes all GameObjects except persistent ones that are currently managed by the GameObjectManager.
+		*        Resets the ID counter and clears the free ID queue.
+		*        Persistent GameObjects are kept and their IDs are reassigned to maintain order.
+		*/
 		void CleareAllGameObjects();
+		/**
+		* @brief Deletes all GameObjects currently managed by the GameObjectManager, including persistent ones.
+		*        Resets the ID counter and clears the free ID queue.
+		*/
+		void DeleteAllGameObjects();
 		std::shared_ptr<GameObject> GetGameObject(unsigned int id);
 		std::shared_ptr<GameObject> GetGameObject(const std::string& name);
 
