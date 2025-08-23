@@ -124,7 +124,7 @@ namespace EngineCore {
 		if (m_gameObjects.empty())
 			return nullptr;
 		
-		// binary search if ids ordered
+		// binary search if the ids are in order
 		if (!m_idFallback) {
 			unsigned int startIndex = 0;
 			unsigned int endIndex = static_cast<unsigned int>(m_gameObjects.size() - 1);
@@ -137,7 +137,7 @@ namespace EngineCore {
 					return go;
 				}
 				else if (go->GetID() > id) {
-					if (mid == 0) break; // verhindert Underflow
+					if (mid == 0) break;
 					endIndex = mid - 1;
 				}
 				else {
