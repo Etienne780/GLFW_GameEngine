@@ -1,4 +1,5 @@
 #include "EngineLib\Components\FreeCameraController_C.h"
+#include "EngineLib\Application.h"
 
 namespace EngineCore {
 
@@ -11,6 +12,24 @@ namespace EngineCore {
 		}
 
 		void FreeCameraController::Update() {
+			// disalbes the camera if it is not the main camera
+			if (m_disableIfNotMainCamera) {
+				auto mainCamera = GameObject::GetMainCamera();
+				bool isCamControllerMainCam = (mainCamera->GetGameObject()->GetID() == GetGameObject()->GetID());
+				Disable(!isCamControllerMainCam);
+				if (isCamControllerMainCam)
+					return;
+			}
+
+#ifndef NDEBUG
+			auto app = Application::Get();
+			m_isZoomDisabled = app->App_Debug_Get_Active();
+			if (app->App_Debug_Get_Active()) {
+				m_isRotationDisabled = !app->App_Debug_Get_IsCursorLockDisabled();
+				Disable(app->App_Debug_Get_IsDebugCameraActive());
+			}
+#endif
+
 			if (!m_isZoomDisabled) {
 				CameraZoom();
 			}

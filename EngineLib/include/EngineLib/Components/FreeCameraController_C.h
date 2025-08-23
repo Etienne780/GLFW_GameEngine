@@ -43,6 +43,8 @@ namespace EngineCore {
 			float m_fov = 66.0f;
 			float m_minFov = 1.0f;
 			float m_maxFov = 120.0f;
+
+			bool m_disableIfNotMainCamera = true;
 		private:
 			bool first = true;
 			std::shared_ptr<Component::Camera> m_camera;
