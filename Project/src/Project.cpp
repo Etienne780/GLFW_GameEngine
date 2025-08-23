@@ -98,6 +98,10 @@ void Project::Update() {
 		App_Debug_Set_Active(!App_Debug_Get_Active());
 	}
 
+	auto mainCamera = GameObject::GetMainCamera();
+	bool isCamControllerMainCam = (mainCamera->GetGameObject()->GetID() != camController->GetGameObject()->GetID());
+	camController->Disable(!isCamControllerMainCam);
+
 	camController->m_isZoomDisabled = App_Debug_Get_Active();
 	if (App_Debug_Get_Active()) {
 		camController->m_isRotationDisabled = !App_Debug_Get_IsCursorLockDisabled();
