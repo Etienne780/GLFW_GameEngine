@@ -25,8 +25,8 @@ void GenerateCubesSphere();
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 5; // horizontale Segmente
-size_t cubeCountPhi = 5;   // vertikale Segmente
+size_t cubeCountTheta = 20; // horizontale Segmente
+size_t cubeCountPhi = 20;   // vertikale Segmente
 float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
@@ -36,20 +36,7 @@ void Project::Start() {
 	auto cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
-
-	auto cameraGO1 = GameObject::Create("cam1");
-	cameraGO1->AddComponent<Component::Camera>();
-	cameraGO1->AddComponent<Component::FreeCameraController>()->Disable(true);
-
-	auto cameraGO2 = GameObject::Create("cam2");
-	cameraGO2->AddComponent<Component::Camera>();
-	cameraGO2->AddComponent<Component::FreeCameraController>()->Disable(true);
 	
-	// auto c = GameObject::Create("TestCube");
-	// auto mr = c->AddComponent<Component::MeshRenderer>();
-	// mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
-	// c->GetTransform()->SetScale(10, 10, 10);
-
 	GenerateCubesSphere();
 }
 
@@ -98,7 +85,7 @@ void Project::Update() {
 		App_Debug_Set_Active(!App_Debug_Get_Active());
 	}
 
-	// UpdateCubesSphere(Time::GetTime());
+	UpdateCubesSphere(Time::GetTime());
 	// Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
 }
 
