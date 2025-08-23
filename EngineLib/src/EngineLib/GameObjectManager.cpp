@@ -87,17 +87,16 @@ namespace EngineCore {
 		if (gameObjectPtr->GetParent()) {
 			gameObjectPtr->Detach();
 		}
-
-		gameObjectPtr->UnregisterCameraFromManager();
-		gameObjectPtr->UnaliveComponents();
-		gameObjectPtr->m_alive = false;
-
+		
 		// adds free id to the pool
 		unsigned int id = gameObjectPtr->GetID();
 		if (id != ENGINE_INVALID_ID) {
 			m_freeIDs.push(id);
 		}
 
+		gameObjectPtr->UnregisterCameraFromManager();
+		gameObjectPtr->UnaliveComponents();
+		gameObjectPtr->m_alive = false;
 		m_gameObjects.erase(std::remove(m_gameObjects.begin(), m_gameObjects.end(), gameObjectPtr), m_gameObjects.end());
 	}
 
@@ -115,7 +114,6 @@ namespace EngineCore {
 		std::swap(m_freeIDs, empty);
 		m_idCounter = 0;
 		m_idFallback = false;
-
 	}
 
 	#pragma endregion
