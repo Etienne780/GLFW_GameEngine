@@ -99,7 +99,7 @@ void Project::Update() {
 	}
 
 	auto mainCamera = GameObject::GetMainCamera();
-	bool isCamControllerMainCam = (mainCamera->GetGameObject()->GetID() != camController->GetGameObject()->GetID());
+	bool isCamControllerMainCam = (mainCamera->GetGameObject()->GetID() == camController->GetGameObject()->GetID());
 	camController->Disable(!isCamControllerMainCam);
 
 	camController->m_isZoomDisabled = App_Debug_Get_Active();
