@@ -280,6 +280,11 @@ void Application::App_OpenGL_Set_FaceCulling(bool value) {
 
 //Debug
 void Application::App_Debug_Set_Active(bool value) {
+#ifdef NDEBUG
+    Log::Warn("Application: Debug mode only available in debug builds");
+    return;
+#endif
+
     m_appDebugActive = value;
 }
 

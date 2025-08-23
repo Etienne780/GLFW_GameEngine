@@ -116,6 +116,11 @@ namespace EngineCore {
 
 	void Engine::Shutdown() {
 		m_app->Shutdown();
+#ifndef NDEBUG
+		if (m_app->m_appDebugActive) {
+			m_debugger->Shutdown();
+		}
+#endif 
 
 		ResourceManager& rm = ResourceManager::GetInstance();
 		rm.Cleanup();

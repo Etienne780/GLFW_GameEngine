@@ -1,7 +1,7 @@
+#include <memory>
 #ifndef NDEBUG
 
 #pragma once
-#include <memory>
 #include "EngineTypes.h"
 
 struct GLFWwindow;

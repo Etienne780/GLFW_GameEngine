@@ -36,6 +36,14 @@ void Project::Start() {
 	auto cameraGO = GameObject::Create("MainCamera");
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
+
+	auto cameraGO1 = GameObject::Create("cam1");
+	cameraGO1->AddComponent<Component::Camera>();
+	cameraGO1->AddComponent<Component::FreeCameraController>()->Disable(true);
+
+	auto cameraGO2 = GameObject::Create("cam2");
+	cameraGO2->AddComponent<Component::Camera>();
+	cameraGO2->AddComponent<Component::FreeCameraController>()->Disable(true);
 	
 	// auto c = GameObject::Create("TestCube");
 	// auto mr = c->AddComponent<Component::MeshRenderer>();

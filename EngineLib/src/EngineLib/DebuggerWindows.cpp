@@ -116,29 +116,33 @@ namespace EngineCore {
                 return;
             }
 
-            // Liste für Dropdown vorbereiten, Debug-Cam immer an erster Stelle
+            // list for drop down
             std::vector<std::shared_ptr<EngineCore::Component::Camera>> sortedCameras;
             sortedCameras.reserve(cameras.size());
 
-            // Debug-Cam nach vorne holen
-            for (auto& weakCam : cameras) {
-                auto cam = weakCam.lock();
-                if (cam && cam->GetGameObject() == m_debugger->m_debugCameraGO) {
-                    sortedCameras.push_back(cam);
-                }
-            }
-            // alle anderen
-            for (auto& weakCam : cameras) {
-                auto cam = weakCam.lock();
-                if (cam && cam->GetGameObject() != m_debugger->m_debugCameraGO) {
-                    sortedCameras.push_back(cam);
-                }
+            std::shared_ptr<Component::Camera> mainCameraPtr = GameObject::GetMainCamera().lock();
+            std::shared_ptr<Component::Camera> debugCam = m_debugger->m_debugCameraGO->GetComponent<Component::Camera>();
+
+            if (mainCameraPtr) {
+                sortedCameras.push_back(mainCameraPtr);
             }
 
-            // aktuell selektierte Kamera
-            static int currentIndex = 0;
-            if (currentIndex >= (int)sortedCameras.size()) currentIndex = 0;
+            if (debugCam && (mainCameraPtr && mainCameraPtr->GetGameObject()->GetID() != debugCam->GetGameObject()->GetID())) {
+                sortedCameras.push_back(debugCam);
+            }
 
+            for (auto& weakCam : cameras) {
+                auto cam = weakCam.lock();
+                if (!cam) continue;
+
+                if (mainCameraPtr && mainCameraPtr->GetGameObject()->GetID() == cam->GetGameObject()->GetID() ||
+                    debugCam && debugCam->GetGameObject()->GetID() == cam->GetGameObject()->GetID())
+                    continue;
+
+                sortedCameras.push_back(cam);
+            }
+
+            int currentIndex = 0;
             std::string currentName = sortedCameras[currentIndex]
                 ? sortedCameras[currentIndex]->GetGameObject()->GetName()
                 : "<invalid>";
@@ -171,7 +175,12 @@ namespace EngineCore {
 
                 ImGui::SeparatorText("Projection");
 
-                if (!activeCam->GetOrthograpic()) {
+                bool ortho = activeCam->GetOrthograpic();
+                if (ImGui::Checkbox("Orthographic", &ortho)) {
+                    activeCam->SetOrthograpic(ortho);
+                }
+
+                if (!ortho) {
                     float fov = activeCam->GetFOV();
                     if (ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f, "%.1f")) {
                         activeCam->SetFOV(fov);
@@ -181,14 +190,19 @@ namespace EngineCore {
                     ImGui::TextDisabled("FOV (not used in orthographic mode)");
                 }
 
-                bool ortho = activeCam->GetOrthograpic();
-                if (ImGui::Checkbox("Orthographic", &ortho)) {
-                    activeCam->SetOrthograpic(ortho);
+                bool aspectRatioAuto = activeCam->GetAspectRatioAuto();
+                if (ImGui::Checkbox("Aspect Ratio Auto", &aspectRatioAuto)) {
+                    activeCam->SetAspectRatioAuto(aspectRatioAuto);
                 }
 
-                float aspect = activeCam->GetAspectRatio();
-                if (ImGui::SliderFloat("Aspect Ratio", &aspect, 0.5f, 3.0f, "%.2f")) {
-                    activeCam->SetAspectRatio(aspect);
+                if (!aspectRatioAuto) {
+                    float aspect = activeCam->GetAspectRatio();
+                    if (ImGui::SliderFloat("Aspect Ratio", &aspect, 0.5f, 3.0f, "%.2f")) {
+                        activeCam->SetAspectRatio(aspect);
+                    }
+                }
+                else {
+                    ImGui::TextDisabled("Aspect Ratio (not used when Aspect Ratio Auto is on)");
                 }
 
                 ImGui::SeparatorText("Clipping Planes");
@@ -251,9 +265,11 @@ namespace EngineCore {
             ImVec2 textSize = ImGui::CalcTextSize(currentIcon.utf8_data);
             ImGui::SetCursorPosY((colHeight - textSize.y) * 0.5f);
 
-            ImGui::PushFont(m_largeIconFont);
+            if(m_largeIconFont)
+                ImGui::PushFont(m_largeIconFont);
             ImGui::Text("%s", currentIcon.utf8_data);
-            ImGui::PopFont();
+            if (m_largeIconFont)
+                ImGui::PopFont();
 
             ImGui::NextColumn();
 

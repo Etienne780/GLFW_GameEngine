@@ -20,6 +20,11 @@ namespace EngineCore {
 
 			float GetFOV() const;
 			bool GetOrthograpic() const;
+			/**
+			* @brief Gets AspectRatioAuto
+			* @return returns true if the aspect ratio gets created with the window dimensions.
+			*/
+			bool GetAspectRatioAuto() const;
 			float GetAspectRatio() const;
 			float GetNearPlane() const;
 			float GetFarPlane() const;

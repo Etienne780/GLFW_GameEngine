@@ -34,6 +34,13 @@ namespace EngineCore {
 			return m_isOrthograpic;
 		}
 
+		bool Camera::GetAspectRatioAuto() const {
+			if (IsDead("Cant get is AspectRatioAuto")) {
+				return false;
+			}
+			return m_calculateAspectRatioWithWindow;
+		}
+
 		float Camera::GetAspectRatio() const {
 			if (IsDead("Cant get aspect ratio")) {
 				return 0;

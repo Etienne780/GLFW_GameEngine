@@ -47,14 +47,19 @@ namespace EngineCore {
 		icons_config.GlyphMinAdvanceX = iconFontSize;
 
 		std::string fontPath = File::GetExecutableDir() + "/assets/fonts/fa-solid-900.ttf";
-		ImFont* smallIconFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), iconFontSize, &icons_config, icons_ranges);
-		ImFont* largeIconFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 128.0f, &icons_config, icons_ranges);
-
-		if (!smallIconFont || !largeIconFont) {
-			Log::Error("Debugger: could not load FontAwesome fonts!");
+		if (File::Exists(fontPath)) {
+			ImFont* smallIconFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), iconFontSize, &icons_config, icons_ranges);
+			ImFont* largeIconFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 128.0f, &icons_config, icons_ranges);
+			
+			if (!smallIconFont || !largeIconFont) {
+				Log::Error("Debugger: could not load FontAwesome fonts!");
+			}
+			else {
+				m_debuggerWindows->SetIconFonts(smallIconFont, largeIconFont);
+			}
 		}
 		else {
-			m_debuggerWindows->SetIconFonts(smallIconFont, largeIconFont);
+			Log::Warn("Debugger: extra font could not be loaded, file '{}' dosent exits", fontPath);
 		}
 
 		ImGui::StyleColorsDark();
