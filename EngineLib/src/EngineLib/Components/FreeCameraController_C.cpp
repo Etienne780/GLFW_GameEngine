@@ -11,18 +11,17 @@ namespace EngineCore {
 			trans = go->GetTransform();
 		}
 
-		void FreeCameraController::Update() {
+		void FreeCameraController::UpdateAlways() {
 			// disalbes the camera if it is not the main camera
 			if (m_disableIfNotMainCamera) {
 				auto mainCamera = GameObject::GetMainCamera();
 				bool isCamControllerMainCam = (mainCamera->GetGameObject()->GetID() == GetGameObject()->GetID());
 				Disable(!isCamControllerMainCam);
-				if (isCamControllerMainCam)
-					return;
 			}
+		}
 
+		void FreeCameraController::Update() {
 #ifndef NDEBUG
-			auto app = Application::Get();
 			m_isZoomDisabled = app->App_Debug_Get_Active();
 			if (app->App_Debug_Get_Active()) {
 				m_isRotationDisabled = !app->App_Debug_Get_IsCursorLockDisabled();

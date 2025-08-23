@@ -56,7 +56,16 @@ namespace EngineCore {
 			Vector2 secondaryLookDir;
 			std::shared_ptr<Transform> trans = nullptr;
 
+			/*
+			* @brief Called every frame before Application Update.
+			*/
 			void Update() override;
+			/*
+			* @brief Called every frame before Application Update and Component update,
+			*        even if the Component is disabled.
+			*/
+			void UpdateAlways() override;
+
 			void CalculateCameraRotation(Vector2 mouseDelta);
 			void CameraZoom();
 			void CameraMovement();

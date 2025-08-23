@@ -22,7 +22,7 @@ void Application::OnWindowFocusGain() {}
 
 #pragma region get_funcs
 
-Application* Application::Get() {
+Application* Application::GetInstance() {
     return s_instance;
 }
 

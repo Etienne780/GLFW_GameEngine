@@ -39,7 +39,7 @@ public:
 	virtual void OnWindowFocusLost();
 	virtual void OnWindowFocusGain();
 
-	static Application* Get();
+	static Application* GetInstance();
 
 	// Application
 	std::string App_Application_Get_Name() const;
