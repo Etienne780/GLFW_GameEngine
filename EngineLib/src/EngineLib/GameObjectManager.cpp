@@ -1,4 +1,5 @@
-﻿#include "CoreLib\Log.h"
+﻿#include <unordered_set>
+#include <CoreLib\Log.h>
 
 #include "EngineLib\Time.h"
 #include "EngineLib\Renderer.h"
@@ -34,8 +35,8 @@ namespace EngineCore {
 	void GameObjectManager::AddGameObject(std::shared_ptr<GameObject> go) {
 		if (!go) return;
 
-		auto it = std::find(m_gameObjects.begin(), m_gameObjects.end(), go);
-		if (it != m_gameObjects.end()) {
+		auto goPtr = GetGameObject(go->GetID());
+		if (goPtr) {
 			Log::Warn("GameObjectManager: GameObject '{}' already added", go->GetName());
 			return;
 		}
@@ -182,7 +183,6 @@ namespace EngineCore {
 			}
 		}
 
-		Log::Warn("GameObjectManager: no GameObject with ID '{}' found!", id);
 		return nullptr;
 	}
 
@@ -192,7 +192,7 @@ namespace EngineCore {
 				return obj;
 			}
 		}
-		Log::Warn("GameObjectManager: no GameObject with name '{}' found!", name);
+
 		return nullptr;
 	}
 
@@ -288,11 +288,17 @@ namespace EngineCore {
 
 	unsigned int GameObjectManager::GetNewUniqueIdentifier() {
 		unsigned int id;
-		if (m_idCounter != ENGINE_INVALID_ID) {
-			id = m_idCounter++;
+
+		if (m_idFallback) {
+			id = GetNewUniqueIdentifierFallback();
 		}
 		else {
-			id = GetNewUniqueIdentifierFallback();
+			if (m_idCounter != ENGINE_INVALID_ID) {
+				id = m_idCounter++;
+			}
+			else {
+				id = GetNewUniqueIdentifierFallback();
+			}
 		}
 
 		return id;
@@ -304,23 +310,42 @@ namespace EngineCore {
 			Log::Warn("Max ID limit reached, using fallback IDs from free pool");
 		}
 
+		if (m_freeIDs.empty()) {
+			SearchForFreeIDs(m_freeIDs, m_idSearchAmount);
+		}
+
 		if (!m_freeIDs.empty()) {
 			auto id = m_freeIDs.front();
 			m_freeIDs.pop();
 			return id;
 		}
 
-		unsigned int lastID = 0;
+		Log::Warn("GameObjectManager: Cant find any free IDs");
+		return ENGINE_INVALID_ID;
+	}
+
+	void GameObjectManager::SearchForFreeIDs(std::queue<unsigned int>& queue, unsigned int numberOfIDs) {
+		std::unordered_set<unsigned int> usedIDs;
+		usedIDs.reserve(m_gameObjects.size());
 		for (auto& go : m_gameObjects) {
-			unsigned int currentID = go->GetID();
-			int diff = static_cast<int>(currentID) - static_cast<int>(lastID);
-			if (diff > 1)
-				return currentID - 1;
-			lastID = currentID;
+			usedIDs.insert(go->GetID());
 		}
 
-		Log::Error("GameObjectManager: Cant find any free IDs");
-		return ENGINE_INVALID_ID;
+		unsigned int found = 0;
+		for (unsigned int id = 0; id < std::numeric_limits<unsigned int>::max(); ++id) {
+			if (id == ENGINE_INVALID_ID)
+				continue;
+
+			if (usedIDs.find(id) == usedIDs.end()) {
+				queue.push(id);
+				if (++found >= numberOfIDs)
+					break;
+			}
+		}
+
+		if (found == 0) {
+			Log::Error("GameObjectManager: No free IDs found during SearchForFreeIDs");
+		}
 	}
 
 	std::vector<GameObject*> GameObjectManager::GetAllGameObjects() {

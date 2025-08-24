@@ -28,6 +28,7 @@ namespace EngineCore {
 		unsigned int m_idCounter = 0;
 		bool m_idFallback = false;// gets set to true when the id limit(Integer.Max) is reached.
 		std::queue<unsigned int> m_freeIDs;
+		const unsigned int m_idSearchAmount = 50;// number of ids that get added when in fallback and queue empty
 		std::vector<std::shared_ptr<GameObject>> m_gameObjects;
 		std::vector<std::weak_ptr<Component::Camera>> m_cameras;
 		std::weak_ptr<Component::Camera> m_mainCamera;
@@ -69,6 +70,7 @@ namespace EngineCore {
 		unsigned int GetNewUniqueIdentifier();
 		// searches for the firs free id. should be called if the id limit is reachd
 		unsigned int GetNewUniqueIdentifierFallback();
+		void SearchForFreeIDs(std::queue<unsigned int>& queue, unsigned int numberOfIDs);
 		std::vector<GameObject*> GetAllGameObjects();
 
 		bool IsNameUnique(const std::string& name);
