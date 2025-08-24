@@ -34,6 +34,7 @@ void Project::Start() {
 	App_OpenGL_Set_FaceCulling(true);
 
 	auto cameraGO = GameObject::Create("MainCamera");
+	cameraGO->SetPersistent(true);
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 
@@ -42,7 +43,6 @@ void Project::Start() {
 
 void GenerateCubesSphere() {
 	auto container = GameObject::Create("Container");
-	container->SetPersistent(true);
 	containerTrans = container->GetTransform();
 
 	for (size_t i = 0; i < cubeCountTheta; ++i) {
@@ -74,10 +74,6 @@ void Project::Update() {
 	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 
-	if (Input::KeyJustPressed(GLFW_KEY_K)) {
-		App_Application_Set_Window_Resizable(!App_Application_Get_Window_Resizable());
-	}
-
 	if (Input::KeyJustPressed(GLFW_KEY_L)) {
 		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
 	}
@@ -91,7 +87,6 @@ void Project::Update() {
 	}
 
 	UpdateCubesSphere(Time::GetTime());
-	// Log::Info("FPS: {}", App_Application_Get_FramesPerSecond());
 }
 
 void Project::Shutdown() {
