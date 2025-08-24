@@ -39,6 +39,10 @@ namespace EngineCore {
 		}
 		#endif
 		unsigned int id = m_gameObjectManager->GetNewUniqueIdentifier();
+		if (id == ENGINE_INVALID_ID) {
+			Log::Warn("GameObject: cant create GameObject, no free ids left");
+			return nullptr;
+		}
 		auto go = std::shared_ptr<GameObject>(new GameObject(id, name));
 		m_gameObjectManager->AddGameObject(go);
 		go->InitComponents();
@@ -76,11 +80,39 @@ namespace EngineCore {
 	#pragma endregion
 
 	std::shared_ptr<GameObject> GameObject::Get(unsigned int id) {
+#ifndef NDEBUG
+		auto go = m_gameObjectManager->GetGameObject(id);
+		if (!go)
+			Log::Warn("GameObject: no GameObject with ID '{}' found!", id);
+		return go;
+#endif
 		return m_gameObjectManager->GetGameObject(id);
 	}
 
 	std::shared_ptr<GameObject> GameObject::Get(const std::string& name) {
+#ifndef NDEBUG
+		auto go = m_gameObjectManager->GetGameObject(name);
+		if (!go)
+			Log::Warn("GameObject: no GameObject with name '{}' found!", name);
+		return go;
+#endif
 		return m_gameObjectManager->GetGameObject(name);
+	}
+
+	std::vector<std::shared_ptr<ComponentBase>> GameObject::GetAllComponents() const {
+		std::vector<std::shared_ptr<ComponentBase>> comps;
+		comps.reserve(m_components.size() + m_drawComponents.size() + 1);
+
+		comps.push_back(m_transform);
+		for (auto& comp : m_components) {
+			comps.push_back(comp);
+		}
+
+		for (auto& comp : m_drawComponents) {
+			comps.push_back(comp);
+		}
+
+		return comps;
 	}
 
 	bool GameObject::HasParent() const {

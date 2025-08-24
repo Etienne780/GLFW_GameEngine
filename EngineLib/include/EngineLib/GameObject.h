@@ -45,6 +45,8 @@ namespace EngineCore {
 		template<typename C>
 		std::shared_ptr<C> GetComponent() const;
 
+		std::vector<std::shared_ptr<ComponentBase>> GetAllComponents() const;
+
 		template<typename C>
 		bool TryGetComponent(C*& outComponent) const;
 

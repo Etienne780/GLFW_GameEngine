@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "IComponentUIRenderer.h"
 #include "ComponentTypeID.h"
 #include "EngineTypes.h"
 
@@ -18,6 +19,7 @@ namespace EngineCore {
 
 		virtual bool CanDisalbe() const { return true; }
 		virtual bool IsDrawable() const { return false; }
+		virtual void OnInspectorGUI(IUIRenderer& ui) { ui.DrawLabel("No Component UI defined"); }
 
 		void Disable(bool value);
 		bool IsDisable() const;

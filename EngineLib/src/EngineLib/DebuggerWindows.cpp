@@ -1,4 +1,4 @@
-#ifndef NDEBUG
+﻿#ifndef NDEBUG
 
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
@@ -72,8 +72,9 @@ namespace EngineCore {
             }
 
             if (m_statsWin) StatsWindow(sidebarWidth + 10, buttonHeight * 1);
-            if (m_cameraWin) CameraWindow(sidebarWidth + 10, buttonHeight * 1);
-            if (m_hierarchyWin) HierarchyWindow(sidebarWidth + 10, buttonHeight * 1);
+            if (m_cameraWin) CameraWindow(sidebarWidth + 10, buttonHeight * 2);
+            if (m_hierarchyWin) HierarchyWindow(sidebarWidth + 10, buttonHeight * 3);
+            if (m_hierarchyWin) InspectorWindow(sidebarWidth + 10, buttonHeight * 4);
             if (m_iconWin) IconDisplayWindow(sidebarWidth + 10, buttonHeight * 5);
         }
         ImGui::End();
@@ -222,6 +223,29 @@ namespace EngineCore {
         first = false;
     }
 
+    void DebuggerWindows::DrawGameObjectNode(std::shared_ptr<GameObject>& obj) {
+        if (!obj) return;
+
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+        if (obj->GetChildren().empty()) {
+            flags |= ImGuiTreeNodeFlags_Leaf;
+        }
+
+        bool open = ImGui::TreeNodeEx((void*)(intptr_t)obj->GetID(), flags, "%s", obj->GetName().c_str());
+
+        if (ImGui::IsItemClicked()) {
+            m_debugger->m_hierarchySelectedGO = obj;
+        }
+
+        if (open) {
+            auto childs = obj->GetChildren();
+            for (std::shared_ptr<GameObject>& child : childs) {
+                DrawGameObjectNode(child);
+            }
+            ImGui::TreePop();
+        }
+    }
+
     void DebuggerWindows::HierarchyWindow(float startX, float startY) {
         static bool first = true;
         if (first) {
@@ -231,7 +255,50 @@ namespace EngineCore {
 
         ImGui::Begin("Hierarchy", &m_hierarchyWin);
         {
-           ImGui::Text(GameObject::GetHierarchyString().c_str());
+            auto& gameObjects = m_debugger->GetGameObjectManager()->m_gameObjects;
+
+            for (auto& go : gameObjects) {
+                if (!go) continue;
+
+                auto parent = go->GetParent();
+                if (!parent) {
+                    DrawGameObjectNode(go);
+                }
+            }
+        }
+        ImGui::End();
+
+        first = false;
+    }
+
+    void DebuggerWindows::InspectorWindow(float startX, float startY) {
+        static bool first = true;
+        if (first) {
+            ImGui::SetNextWindowPos(ImVec2(startX, startY));
+            ImGui::SetNextWindowSize(ImVec2(250, 375));
+        }
+
+        ImGui::Begin("Inspector", &m_hierarchyWin);
+        {
+            auto selectedGO = m_debugger->m_hierarchySelectedGO;
+            if (selectedGO) {
+                ImGui::Text("Name: %s", selectedGO->GetName().c_str());
+                ImGui::Text("ID: %u", selectedGO->GetID());
+
+                ImGui::Separator();
+
+                for (auto& comp : selectedGO->GetAllComponents()) {
+                    if (!comp) continue;
+
+                    if (ImGui::TreeNode(comp->GetName().c_str())) {
+                        comp->OnInspectorGUI(m_uiRenderer);
+                        ImGui::TreePop();
+                    }
+                }
+            }
+            else {
+                ImGui::Text("No GameObject selected");
+            }
         }
         ImGui::End();
 

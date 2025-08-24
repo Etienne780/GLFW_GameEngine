@@ -20,6 +20,7 @@ namespace EngineCore {
 	friend class Engine;
 	public:
 		std::shared_ptr<GameObject> m_debugCameraGO = nullptr;
+		std::shared_ptr<GameObject> m_hierarchySelectedGO;
 
 		~Debugger();
 
