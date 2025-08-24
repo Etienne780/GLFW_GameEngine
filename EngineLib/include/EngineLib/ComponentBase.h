@@ -13,13 +13,13 @@ namespace EngineCore {
 	class GameObject;
 
 	class ComponentBase {
-		friend class GameObject;
+	friend class GameObject;
+	friend class DebuggerWindows;
 	public:
 		virtual ~ComponentBase() = default;
 
 		virtual bool CanDisalbe() const { return true; }
 		virtual bool IsDrawable() const { return false; }
-		virtual void OnInspectorGUI(IUIRenderer& ui) { ui.DrawLabel("No Component UI defined"); }
 
 		void Disable(bool value);
 		bool IsDisable() const;
@@ -72,13 +72,14 @@ namespace EngineCore {
 		* @brief Called every frame before Application Update.
 		*/
 		virtual void UpdateImpl() {}
-
 		/*
 		* @brief Called every frame before Application Update and Component update,
 		*        even if the Component is disabled.
 		*/
 		virtual void UpdateAlwaysImpl() {}
+		void CSubmitDrawCall();
 		virtual void SubmitDrawCall() {}
+		virtual void OnInspectorGUIImpl(IUIRenderer& ui) { ui.DrawLabel("No Component UI defined"); }
 	};
 
 }

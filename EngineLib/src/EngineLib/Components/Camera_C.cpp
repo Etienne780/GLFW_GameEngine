@@ -18,6 +18,35 @@ namespace EngineCore {
 			m_gameObject = GetGameObject();
 		}
 
+		void Camera::OnInspectorGUIImpl(IUIRenderer& ui) {
+			ui.DrawSeparatorText("Projection");
+
+			ui.DrawCheckbox("Orthographic", &m_isOrthograpic);
+
+			if (!m_isOrthograpic) {
+				ui.DrawSliderFloat("FOV", &m_fov, 30.0f, 180.0f);
+			}
+			else {
+				ui.DrawLabelDisabled("FOV (not used in orthographic mode)");
+			}
+
+			ui.DrawCheckbox("Aspect Ratio Auto", &m_calculateAspectRatioWithWindow);
+
+			if (!m_calculateAspectRatioWithWindow) {
+				ui.DrawSliderFloat("Aspect Ratio", &m_aspectRatio, 0.5f, 3.0f);
+			}
+			else {
+				ui.DrawLabelDisabled("Aspect Ratio (not used when Aspect Ratio Auto is on)");
+			}
+
+			ui.DrawSeparatorText("Clipping Planes");
+
+			ui.DrawDragFloat("Near Plane", &m_nearPlane, 0.01f, 0.01f, m_farPlane - 0.01f);
+			ui.DrawDragFloat("Far Plane", &m_farPlane, 1.0f, m_nearPlane + 0.01f, 10000.0f);
+
+			m_projectionChanged = true;
+		}
+
 		#pragma region Get
 
 		float Camera::GetFOV() const {

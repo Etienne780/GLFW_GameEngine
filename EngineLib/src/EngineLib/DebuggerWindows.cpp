@@ -23,6 +23,22 @@ namespace EngineCore {
 
     DebuggerWindows::DebuggerWindows(Debugger* debugger) {
         m_debugger = debugger;
+
+        m_subscriberId = Log::Subscribe([this](const std::string& msg) {
+            m_log.push_back(msg);
+        });
+    }
+
+    DebuggerWindows::~DebuggerWindows() {
+        Log::Unsubscribe(m_subscriberId);
+    }
+
+    void DebuggerWindows::Shutdown() {
+        m_firstStatsWin = true;
+        m_firstCameraWin = true;
+        m_firstHierarchyWin = true;
+        m_firstInspectorWin = true;
+        m_firstIconWin = true;
     }
 
     void DebuggerWindows::SetIconFonts(ImFont* smallIcon, ImFont* largeIcon) {
@@ -71,20 +87,19 @@ namespace EngineCore {
                 m_iconWin = !m_iconWin;
             }
 
-            if (m_statsWin) StatsWindow(sidebarWidth + 10, buttonHeight * 1);
-            if (m_cameraWin) CameraWindow(sidebarWidth + 10, buttonHeight * 2);
-            if (m_hierarchyWin) HierarchyWindow(sidebarWidth + 10, buttonHeight * 3);
-            if (m_hierarchyWin) InspectorWindow(sidebarWidth + 10, buttonHeight * 4);
-            if (m_iconWin) IconDisplayWindow(sidebarWidth + 10, buttonHeight * 5);
+            if (m_statsWin) StatsWindow();
+            if (m_cameraWin) CameraWindow();
+            if (m_hierarchyWin) HierarchyWindow();
+            if (m_hierarchyWin) InspectorWindow();
+            if (m_iconWin) IconDisplayWindow();
         }
         ImGui::End();
     }
 
-    void DebuggerWindows::StatsWindow(float startX, float startY) {
-        static bool first = true;
-        if (first) {
-            ImGui::SetNextWindowPos(ImVec2(startX, startY));
-            ImGui::SetNextWindowSize(ImVec2(250, -1));
+    void DebuggerWindows::StatsWindow() {
+        if (m_firstStatsWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_statsWinState.x, m_statsWinState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_statsWinState.z, m_statsWinState.w));
         }
 
         ImGui::Begin("Stats", &m_statsWin, ImGuiWindowFlags_NoResize);
@@ -96,16 +111,18 @@ namespace EngineCore {
             ImGui::Text(FormatUtils::formatString("GameObject count: {}", m_debugger->GetGameObjectManager()->m_gameObjects.size()).c_str());
             ImGui::Text(FormatUtils::formatString("Camera count: {}", m_debugger->GetGameObjectManager()->m_cameras.size()).c_str());
         }
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_statsWinState.Set(pos.x, pos.y, size.x, -1);
         ImGui::End();
 
-        first = false;
+        m_firstStatsWin = false;
     }
 
-    void DebuggerWindows::CameraWindow(float startX, float startY) {
-        static bool first = true;
-        if (first) {
-            ImGui::SetNextWindowPos(ImVec2(startX, startY));
-            ImGui::SetNextWindowSize(ImVec2(300, 400));
+    void DebuggerWindows::CameraWindow() {
+        if (m_firstCameraWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_cameraWinState.x, m_cameraWinState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_cameraWinState.z, m_cameraWinState.w));
         }
 
         ImGui::Begin("Camera", &m_cameraWin);
@@ -173,54 +190,16 @@ namespace EngineCore {
             auto activeCam = sortedCameras[currentIndex];
             if (activeCam) {
                 m_debugger->SetMainCamera(activeCam);
-
-                ImGui::SeparatorText("Projection");
-
-                bool ortho = activeCam->GetOrthograpic();
-                if (ImGui::Checkbox("Orthographic", &ortho)) {
-                    activeCam->SetOrthograpic(ortho);
-                }
-
-                if (!ortho) {
-                    float fov = activeCam->GetFOV();
-                    if (ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f, "%.1f")) {
-                        activeCam->SetFOV(fov);
-                    }
-                }
-                else {
-                    ImGui::TextDisabled("FOV (not used in orthographic mode)");
-                }
-
-                bool aspectRatioAuto = activeCam->GetAspectRatioAuto();
-                if (ImGui::Checkbox("Aspect Ratio Auto", &aspectRatioAuto)) {
-                    activeCam->SetAspectRatioAuto(aspectRatioAuto);
-                }
-
-                if (!aspectRatioAuto) {
-                    float aspect = activeCam->GetAspectRatio();
-                    if (ImGui::SliderFloat("Aspect Ratio", &aspect, 0.5f, 3.0f, "%.2f")) {
-                        activeCam->SetAspectRatio(aspect);
-                    }
-                }
-                else {
-                    ImGui::TextDisabled("Aspect Ratio (not used when Aspect Ratio Auto is on)");
-                }
-
-                ImGui::SeparatorText("Clipping Planes");
-                float nearPlane = activeCam->GetNearPlane();
-                float farPlane = activeCam->GetFarPlane();
-
-                if (ImGui::DragFloat("Near Plane", &nearPlane, 0.01f, 0.01f, farPlane - 0.01f)) {
-                    activeCam->SetNearPlane(nearPlane);
-                }
-                if (ImGui::DragFloat("Far Plane", &farPlane, 1.0f, nearPlane + 0.01f, 10000.0f)) {
-                    activeCam->SetFarPlane(farPlane);
-                }
+                activeCam->OnInspectorGUIImpl(m_uiRenderer);
             }
         }
+
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_cameraWinState.Set(pos.x, pos.y, size.x, size.y);;
         ImGui::End();
 
-        first = false;
+        m_firstCameraWin = false;
     }
 
     void DebuggerWindows::DrawGameObjectNode(std::shared_ptr<GameObject>& obj) {
@@ -231,7 +210,16 @@ namespace EngineCore {
             flags |= ImGuiTreeNodeFlags_Leaf;
         }
 
+        // if disabled text gray
+        if (obj->IsDisabled()) {
+            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(120, 120, 120, 255));
+        }
+
         bool open = ImGui::TreeNodeEx((void*)(intptr_t)obj->GetID(), flags, "%s", obj->GetName().c_str());
+
+        if (obj->IsDisabled()) {
+            ImGui::PopStyleColor();
+        }
 
         if (ImGui::IsItemClicked()) {
             m_debugger->m_hierarchySelectedGO = obj;
@@ -246,11 +234,10 @@ namespace EngineCore {
         }
     }
 
-    void DebuggerWindows::HierarchyWindow(float startX, float startY) {
-        static bool first = true;
-        if (first) {
-            ImGui::SetNextWindowPos(ImVec2(startX, startY));
-            ImGui::SetNextWindowSize(ImVec2(250, 375));
+    void DebuggerWindows::HierarchyWindow() {
+        if (m_firstHierarchyWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_hierarchyWinState.x, m_hierarchyWinState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_hierarchyWinState.z, m_hierarchyWinState.w));
         }
 
         ImGui::Begin("Hierarchy", &m_hierarchyWin);
@@ -266,52 +253,79 @@ namespace EngineCore {
                 }
             }
         }
+
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_hierarchyWinState.Set(pos.x, pos.y, size.x, size.y);
         ImGui::End();
 
-        first = false;
+        m_firstHierarchyWin = false;
     }
 
-    void DebuggerWindows::InspectorWindow(float startX, float startY) {
-        static bool first = true;
-        if (first) {
-            ImGui::SetNextWindowPos(ImVec2(startX, startY));
-            ImGui::SetNextWindowSize(ImVec2(250, 375));
+    void DebuggerWindows::InspectorWindow() {
+        if (m_firstInspectorWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_inspectorWinState.x, m_inspectorWinState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_inspectorWinState.z, m_inspectorWinState.w));
         }
 
         ImGui::Begin("Inspector", &m_hierarchyWin);
         {
             auto selectedGO = m_debugger->m_hierarchySelectedGO;
             if (selectedGO) {
-                ImGui::Text("Name: %s", selectedGO->GetName().c_str());
+                // ----- GameObject small checkbox -----
+                bool goDisabled = !selectedGO->IsDisabled();
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // kleinere Checkbox
+                ImGui::Checkbox("##enabled", &goDisabled);
+                ImGui::PopStyleVar();
+                selectedGO->Disable(!goDisabled);
+                ImGui::SameLine();
+                ImGui::Text("GameObject: %s", selectedGO->GetName().c_str());
                 ImGui::Text("ID: %u", selectedGO->GetID());
 
                 ImGui::Separator();
 
+                // ----- Components -----
                 for (auto& comp : selectedGO->GetAllComponents()) {
                     if (!comp) continue;
 
-                    if (ImGui::TreeNode(comp->GetName().c_str())) {
-                        comp->OnInspectorGUI(m_uiRenderer);
+                    ImGui::PushID(comp.get());
+
+                    bool compDisabled = !comp->IsDisable();
+                    if (comp->CanDisalbe()) {
+                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // kleinere Checkbox
+                        ImGui::Checkbox("", &compDisabled);
+                        ImGui::PopStyleVar();
+                        comp->Disable(!compDisabled);
+                        ImGui::SameLine();
+                    }
+
+                    if (ImGui::TreeNode((comp->GetName() + "##tree").c_str())) {
+                        comp->OnInspectorGUIImpl(m_uiRenderer);
                         ImGui::TreePop();
                     }
+
+                    ImGui::PopID();
                 }
             }
             else {
                 ImGui::Text("No GameObject selected");
             }
         }
+
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_inspectorWinState.Set(pos.x, pos.y, size.x, size.y);
         ImGui::End();
 
-        first = false;
+        m_firstInspectorWin = false;
     }
 
-    void DebuggerWindows::IconDisplayWindow(float startX, float startY) {
-        static bool first = true;
+    void DebuggerWindows::IconDisplayWindow() {
         static int currentIndex = 0;
 
-        if (first) {
-            ImGui::SetNextWindowPos(ImVec2(startX, startY));
-            ImGui::SetNextWindowSize(ImVec2(375, 250));
+        if (m_firstIconWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_iconWinState.x, m_iconWinState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_iconWinState.z, m_iconWinState.w));
         }
 
         ImGui::Begin("Icon Preview", &m_iconWin, ImGuiWindowFlags_NoResize);
@@ -350,9 +364,12 @@ namespace EngineCore {
 
             ImGui::Columns(1);
         }
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_iconWinState.Set(pos.x, pos.y, size.x, size.y);
         ImGui::End();
 
-        first = false;
+        m_firstIconWin = false;
     }
 
 }

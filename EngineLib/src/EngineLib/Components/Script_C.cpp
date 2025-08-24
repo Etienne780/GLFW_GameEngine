@@ -7,9 +7,13 @@ namespace EngineCore {
 	ResourceManager& Script::resourceManager = EngineCore::ResourceManager::GetInstance();
 	Application* Script::app = nullptr;
 
-	Script::Script(unsigned int gameObjectID) :
-		ComponentBase(compName, gameObjectID) {
+	Script::Script(const std::string& scriptName, unsigned int gameObjectID) :
+		ComponentBase(compName + "(" + scriptName + ")", gameObjectID) {
 		app = Application::GetInstance();
+	}
+
+	void Script::OnInspectorGUIImpl(IUIRenderer& ui) {
+		OnInspectorGUI(ui);
 	}
 
 	void Script::UpdateAlwaysImpl() {

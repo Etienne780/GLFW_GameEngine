@@ -5,11 +5,38 @@ namespace EngineCore {
 
 	namespace Component {
 
-		FreeCameraController::FreeCameraController(unsigned int gameObjectID) : Script(gameObjectID){
+		FreeCameraController::FreeCameraController(unsigned int gameObjectID) 
+			: Script("FreeCameraController", gameObjectID) {
 			auto go = GetGameObject();
 			m_camera = go->GetComponent<Component::Camera>();
 			trans = go->GetTransform();
 		}
+
+		void FreeCameraController::OnInspectorGUI(IUIRenderer& ui) {
+			ui.DrawSeparatorText("Camera Control");
+			ui.DrawCheckbox("Disable if not Main Camera", &m_disableIfNotMainCamera);
+
+			ui.DrawSeparatorText("Zoom");
+			ui.DrawCheckbox("Disable Zoom", &m_isZoomDisabled);
+			ui.DrawDragFloat("FOV", &m_fov, 0.1f, m_minFov, m_maxFov);
+			ui.DrawInputFloat("Min FOV", &m_minFov);
+			ui.DrawInputFloat("Max FOV", &m_maxFov);
+
+			ui.DrawSeparatorText("Movement");
+			ui.DrawCheckbox("Disable Movement", &m_isMovementDisabled);
+			ui.DrawDragFloat("Movement Speed", &m_movementSpeed, 0.1f);
+			ui.DrawDragFloat("Sprint Multiplier", &m_sprintMultiplier, 0.01f);
+			ui.DrawDragFloat("Slow Multiplier", &m_slowMultiplier, 0.01f);
+			ui.DrawDragFloat("Vertical Movement Speed Multiplier", &m_verticalMovementspeedMultiplier, 0.01f);
+
+			ui.DrawSeparatorText("Rotation");
+			ui.DrawCheckbox("Disable Rotation", &m_isRotationDisabled);
+			ui.DrawCheckbox("Rotate with Arrow Keys", &m_canRotateWithArrow);
+			ui.DrawCheckbox("Rotate with Mouse", &m_canRotateWithMouse);
+			ui.DrawDragFloat("Arrow Sensitivity", &m_arrowSensitivity, 0.01f);
+			ui.DrawDragFloat("Mouse Sensitivity", &m_mouseSensitivity, 0.01f);
+		}
+
 
 		void FreeCameraController::UpdateAlways() {
 			// disalbes the camera if it is not the main camera

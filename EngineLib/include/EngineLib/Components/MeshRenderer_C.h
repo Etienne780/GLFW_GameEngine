@@ -10,6 +10,7 @@ namespace EngineCore {
 		class MeshRenderer : public EngineCore::ComponentBase {
 		public:
 			MeshRenderer(unsigned int gameObjectID);
+			void OnInspectorGUIImpl(IUIRenderer& ui) override;
 
 			COMPONENT_TYPE_DEFINITION(MeshRenderer);
 

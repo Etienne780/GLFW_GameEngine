@@ -54,8 +54,8 @@ namespace EngineCore {
 		bool HasComponent() const;
 		bool HasParent() const;
 
-		void Disable(bool value);
-		bool IsDisable() const;
+		GameObject* Disable(bool value);
+		bool IsDisabled() const;
 		bool IsPersistent() const;
 
 		std::shared_ptr<Component::Transform> GetTransform();

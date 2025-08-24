@@ -12,12 +12,20 @@ namespace EngineCore {
 
 	void ComponentBase::CUpdate() {
 		UpdateAlwaysImpl();
-		if (m_isDisabled) return;
+		if (m_isDisabled) 
+			return;
 		UpdateImpl();
 	}
 
+	void ComponentBase::CSubmitDrawCall() {
+		if (m_isDisabled)
+			return;
+		SubmitDrawCall();
+	}
+
 	void ComponentBase::Disable(bool value) {
-		if (!CanDisalbe()) return;
+		if (!CanDisalbe()) 
+			return;
 		m_isDisabled = value;
 	}
 

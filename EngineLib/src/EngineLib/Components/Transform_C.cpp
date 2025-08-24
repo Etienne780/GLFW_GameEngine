@@ -14,6 +14,12 @@ namespace EngineCore {
 			m_gameObject = GetGameObject();
 		}
 
+		void Transform::OnInspectorGUIImpl(IUIRenderer& ui) {
+			ui.DrawDragFloat3("Position", &m_position);
+			ui.DrawDragFloat3("Rotation", &m_rotation);
+			ui.DrawDragFloat3("Scale", &m_scale);
+		}
+
 		void Transform::CalculateLocalModelMat() {
 			using namespace GLTransform4x4;
 

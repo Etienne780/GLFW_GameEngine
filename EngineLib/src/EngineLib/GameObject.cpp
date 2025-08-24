@@ -119,11 +119,24 @@ namespace EngineCore {
 		return (m_parentObjPtr != nullptr);
 	}
 
-	void GameObject::Disable(bool value) {
+	GameObject* GameObject::Disable(bool value) {
+		if (IsDead("Cant Disable")) {
+			return this;
+		}
+
 		m_isDisabled = value;
+
+		// sets the childs also to disabled
+		if (!m_childObjPtrs.empty()) {
+			for (auto& childs : m_childObjPtrs) {
+				childs->Disable(value);
+			}
+		}
+
+		return this;
 	}
 
-	bool GameObject::IsDisable() const {
+	bool GameObject::IsDisabled() const {
 		return m_isDisabled;
 	}
 
@@ -246,10 +259,9 @@ namespace EngineCore {
 		// sets the childs also to persistent
 		if (!m_childObjPtrs.empty()) {
 			for (auto& childs : m_childObjPtrs) {
-				childs->m_isPersistent = value;
+				childs->SetPersistent(value);
 			}
 		}
-
 		return this;
 	}
 
@@ -315,7 +327,7 @@ namespace EngineCore {
 			return;
 
 		for (auto& comp : m_drawComponents) {
-			comp->SubmitDrawCall();
+			comp->CSubmitDrawCall();
 		}
 	}
 

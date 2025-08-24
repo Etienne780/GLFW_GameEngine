@@ -48,7 +48,7 @@ namespace EngineCore {
             Log::Warn("Renderer: Cant render, main Camera is disabled");
             return;
         }
-        if (camptr->GetGameObject()->IsDisable()) {
+        if (camptr->GetGameObject()->IsDisabled()) {
             Log::Warn("Renderer: Cant render, main Camera GameObject is disabled");
             return;
         }

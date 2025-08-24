@@ -25,7 +25,7 @@ namespace EngineCore {
 		:m_engine(engine), m_app(engine->m_app), m_window(engine->m_window), m_gameObjectManager(engine->m_gameObjectManager) {
 		m_debuggerWindows = std::make_unique<DebuggerWindows>(this);
 	}
-
+	
 	Debugger::~Debugger() = default;
 	
 	void Debugger::Init() {
@@ -104,6 +104,14 @@ namespace EngineCore {
 	void Debugger::Shutdown() {
 		GameObject::Delete(m_debugCameraGO);
 		m_debugCameraGO = nullptr;
+		m_hierarchySelectedGO = nullptr;
+
+		m_debuggerWindows->Shutdown();
+
+		m_cursorLock = true;
+		if (auto app = m_app.lock()) {
+			app->App_Application_Set_Window_Cursor_LockHidden(true);
+		}
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();

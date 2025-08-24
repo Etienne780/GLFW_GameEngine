@@ -18,6 +18,12 @@ namespace EngineCore {
 			m_gameObject = GetGameObject();
 		}
 
+		void MeshRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {
+			ui.DrawLabel(FormatUtils::formatString("Mesh ID: {}", m_meshID));
+			ui.DrawLabel(FormatUtils::formatString("Material ID: {}", m_materialID));
+			ui.DrawLabel(FormatUtils::formatString("Is Mesh inverted: {}", m_invertMesh));
+		}
+
 		MeshRenderer& MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh) {
 			if (IsDead("Cant set mesh")) {
 				return *this;
