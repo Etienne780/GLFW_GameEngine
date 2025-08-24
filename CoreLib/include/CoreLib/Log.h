@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -16,6 +17,9 @@ private:
     class AsyncLogger;
 
 public:
+    using LogCallback = std::function<void(const std::string&)>;
+    using SubscriberID = size_t;
+
     // Logging severity levels.
     enum Level : short {
         levelError,
@@ -23,6 +27,29 @@ public:
         levelInfo,
         levelDebug
     };
+    /*
+    * Log::Subscribe([](const std::string& msg) {
+    *   std::cout << "(FILE) " << msg << std::endl;
+    * });
+    */
+    
+    /*
+    * @brief Subscribes a callback function to the logging system.
+    *        The callback will be invoked whenever a new log message is generated.
+    * @note  The returned SubscriberID must be used to unsubscribe later.
+    *        It is the caller's responsibility to unsubscribe, typically in the destructor
+    *        of the subscribing class, to avoid dangling callbacks.
+    * @param callback The function to be called with each log message.
+    * @return A unique SubscriberID that can be used to unsubscribe.
+    */
+    static SubscriberID Subscribe(LogCallback callback);
+
+    /*
+    * @brief Removes a previously registered log callback from the logging system.
+    * @param id The SubscriberID returned by Subscribe.
+    * @note  Must be called before the subscriber is destroyed to prevent invalid access.
+    */
+    static void Unsubscribe(SubscriberID id);
 
     /// Clears the current output log (console).
     static void ClearLog();
@@ -191,6 +218,13 @@ private:
 
     static bool m_saveLogs;
     static std::unique_ptr<AsyncLogger> m_asyncLogger;
+    struct Subscriber {
+        SubscriberID id;
+        LogCallback callback;
+    };
+
+    static std::vector<Subscriber> m_subscribers;
+    static SubscriberID m_nextId;
 
     /// Low-level printer implementation (console output).
     static void m_print(const std::string& message);

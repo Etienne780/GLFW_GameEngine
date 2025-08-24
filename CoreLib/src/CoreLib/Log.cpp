@@ -14,8 +14,23 @@ bool Log::m_levelWarning = true;
 bool Log::m_levelInfo = true;
 bool Log::m_levelDebug = true;
 
+std::vector<Log::Subscriber> Log::m_subscribers;
+Log::SubscriberID Log::m_nextId = 0;
 bool Log::m_saveLogs = false;
 std::unique_ptr<Log::AsyncLogger> Log::m_asyncLogger = nullptr;
+
+Log::SubscriberID Log::Subscribe(LogCallback callback) {
+    m_subscribers.push_back({ ++m_nextId, callback });
+    return m_nextId;
+}
+
+void Log::Unsubscribe(SubscriberID id) {
+    m_subscribers.erase(
+        std::remove_if(m_subscribers.begin(), m_subscribers.end(),
+            [id](auto& sub) { return sub.id == id; }),
+        m_subscribers.end()
+    );
+}
 
 class Log::AsyncLogger::Impl {
 public:
@@ -115,6 +130,11 @@ void Log::SaveLogs(const std::string& path) {
 
 void Log::m_print(const std::string& message) {
     std::cout << message << std::endl;
+
+    for (auto& sub : m_subscribers) {
+        sub.callback(message);
+    }
+
     if (m_saveLogs) {
         m_asyncLogger->Log(message);
     }
