@@ -7,6 +7,7 @@
 #include <ImGUI/imgui.h>
 #include <ImGUI/imgui_impl_glfw.h>
 #include <ImGUI/imgui_impl_opengl3.h>
+#include <CoreLib/Math/Vector3.h>
 #include <CoreLib/Log.h>
 #include <CoreLib/FormatUtils.h>
 
@@ -215,14 +216,22 @@ namespace EngineCore {
             flags |= ImGuiTreeNodeFlags_Leaf;
         }
 
-        // if disabled text gray
-        if (obj->IsDisabled()) {
-            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(120, 120, 120, 255));
+        // if disabled text gray or if persistent yellow
+        if (obj->IsDisabled() || obj->IsPersistent()) {
+            Vector3 color(255, 255, 255);
+
+            if (obj->IsDisabled())
+                color -= 135;
+
+            if (obj->IsPersistent())
+                color.z = 55;
+
+            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(static_cast<int>(color.x), static_cast<int>(color.y), static_cast<int>(color.z), 255));
         }
 
         bool open = ImGui::TreeNodeEx((void*)(intptr_t)obj->GetID(), flags, "%s", obj->GetName().c_str());
 
-        if (obj->IsDisabled()) {
+        if (obj->IsDisabled() || obj->IsPersistent()) {
             ImGui::PopStyleColor();
         }
 
@@ -279,13 +288,14 @@ namespace EngineCore {
             if (selectedGO) {
                 // ----- GameObject small checkbox -----
                 bool goDisabled = !selectedGO->IsDisabled();
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // kleinere Checkbox
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // smaller checkbox
                 ImGui::Checkbox("##enabled", &goDisabled);
                 ImGui::PopStyleVar();
                 selectedGO->Disable(!goDisabled);
+
                 ImGui::SameLine();
-                ImGui::Text("GameObject: %s", selectedGO->GetName().c_str());
-                ImGui::Text("ID: %u", selectedGO->GetID());
+                ImGui::Text("GameObject: %s(%u)", selectedGO->GetName().c_str(), selectedGO->GetID());
+                ImGui::Text("Persistent: %s", selectedGO->IsPersistent() ? "true" : "false");
 
                 ImGui::Separator();
 
@@ -297,7 +307,7 @@ namespace EngineCore {
 
                     bool compDisabled = !comp->IsDisable();
                     if (comp->CanDisalbe()) {
-                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // kleinere Checkbox
+                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // smaller checkbox
                         ImGui::Checkbox("", &compDisabled);
                         ImGui::PopStyleVar();
                         comp->Disable(!compDisabled);
