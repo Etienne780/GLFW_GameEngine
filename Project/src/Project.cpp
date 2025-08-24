@@ -11,11 +11,9 @@ Project::Project()
 	App_Application_Set_Window_Decoration(true);
 	App_Application_Set_Window_Floating(false);
 	App_Application_Set_Window_Cursor_LockHidden(true);
+	App_Application_Set_Header(true);
 
 	App_OpenGL_Set_Version(3, 3);
-	App_OpenGL_Set_DepthTesting(true);
-
-	App_Application_Set_Header(true);
 
 	// Log::SaveLogs("Logs/");
 }
@@ -25,10 +23,11 @@ void GenerateCubesSphere();
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 10; // horizontale Segmente
-size_t cubeCountPhi = 10;   // vertikale Segmente
+size_t cubeCountTheta = 20; // horizontale Segmente
+size_t cubeCountPhi = 20;   // vertikale Segmente
 float sphereRadius = 50.0f;
 void Project::Start() {
+	App_OpenGL_Set_DepthTesting(true);
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	App_OpenGL_Set_FaceCulling(true);
@@ -58,7 +57,7 @@ void GenerateCubesSphere() {
 			auto cubeGO = GameObject::Create(FormatUtils::formatString("Cube_{}_{}", i, j));
 			cubeGO->SetParent(container);
 			auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
-			mr->SetMesh(ID::MESH::ENGINE::Cube()).SetMaterial(ID::MATERIAL::ENGINE::Default());
+			mr->SetMesh(ID::MESH::ENGINE::Cube())->SetMaterial(ID::MATERIAL::ENGINE::Default());
 
 			cubeGO->GetTransform()->SetPosition(x, y, z);
 			cubeGO->GetTransform()->SetScale(5, 5, 5);
@@ -86,7 +85,7 @@ void Project::Update() {
 		GameObject::ClearAll();
 	}
 
-	UpdateCubesSphere(Time::GetTime());
+	// UpdateCubesSphere(Time::GetTime());
 }
 
 void Project::Shutdown() {

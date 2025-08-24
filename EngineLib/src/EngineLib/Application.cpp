@@ -211,7 +211,6 @@ void Application::App_OpenGL_Set_DepthTesting(bool value) {
     }
 
     m_appOpenGLDepthTesting = value;
-    Log::Debug("Application: OpenGL: Depth testing set: ", value);
 }
 
 void Application::App_OpenGL_Set_Version(int major, int minor) {
@@ -236,9 +235,8 @@ void Application::App_OpenGL_Set_ManuallyClearBackground(bool value) {
 }
 
 void Application::App_OpenGL_Set_PolygonMode(GLenum face, GLenum mode) {
-
-    if (m_appOpenGLPolygonModeFace != face || 
-        m_appOpenGLPolygonModeMode != mode) {
+    if (m_window != nullptr && (m_appOpenGLPolygonModeFace != face ||
+        m_appOpenGLPolygonModeMode != mode)) {
         m_appOpenGLPolygonModeFace = face;
         m_appOpenGLPolygonModeMode = mode;
 
@@ -260,22 +258,17 @@ void Application::App_OpenGL_Set_PolygonMode(GLenum face, GLenum mode) {
     case GL_POINT: modeStr = "POINT"; break;
     default:       modeStr = "UNKNOWN"; break;
     }
-
-    Log::Debug("Application: OpenGL: PolygonMode set: Face = {}, Mode = {}", faceStr, modeStr);
 }
 
 
 void Application::App_OpenGL_Set_FaceCulling(bool value) {
-    
-    if (m_appOpenGLFaceCulling != value) {
+    if (m_window != nullptr && m_appOpenGLFaceCulling != value) {
         m_appOpenGLFaceCulling = value;
         if (value)
             glEnable(GL_CULL_FACE);
         else
             glDisable(GL_CULL_FACE);
     }
-
-    Log::Debug("Application: OpenGL: Face culling set: {}", value);
 }
 
 //Debug

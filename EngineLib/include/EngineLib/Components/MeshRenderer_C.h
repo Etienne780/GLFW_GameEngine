@@ -17,14 +17,14 @@ namespace EngineCore {
 			bool IsDrawable() const override { return true; }
 			void SubmitDrawCall() override;
 
-			MeshRenderer& SetMesh(std::shared_ptr<Mesh> mesh);
-			MeshRenderer& SetMesh(unsigned int id);
-			MeshRenderer& SetMaterial(unsigned int id);
+			MeshRenderer* SetMesh(std::shared_ptr<Mesh> mesh);
+			MeshRenderer* SetMesh(unsigned int id);
+			MeshRenderer* SetMaterial(unsigned int id);
 			/**
 			* @brief inverts the direction of the faces of a mesh
 			* @param value is the value that it gets set to
 			*/
-			MeshRenderer& SetInvertMesh(bool value);
+			MeshRenderer* SetInvertMesh(bool value);
 
 		private:
 			static Renderer& m_renderer;

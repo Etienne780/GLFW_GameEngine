@@ -11,7 +11,9 @@ namespace {
     unsigned int g_textureEngineMissingId = EngineCore::ENGINE_INVALID_ID;
 	unsigned int g_meshEngineCubeId = EngineCore::ENGINE_INVALID_ID;
     unsigned int g_shaderEngineDefaultId = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_shaderEngineOutlineId = EngineCore::ENGINE_INVALID_ID;
     unsigned int g_materialEngineDefaultId = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_materialEngineOutlineId = EngineCore::ENGINE_INVALID_ID;
 }
 
 namespace EngineCore::ID::TEXTURE::ENGINE {
@@ -24,10 +26,12 @@ namespace EngineCore::ID::MESH::ENGINE {
 
 namespace EngineCore::ID::SHADER::ENGINE {
     unsigned int Default() { return g_shaderEngineDefaultId; }
+    unsigned int Outline() { return g_shaderEngineOutlineId; }
 }
 
 namespace EngineCore::ID::MATERIAL::ENGINE {
     unsigned int Default() { return g_materialEngineDefaultId; }
+    unsigned int Outline() { return g_materialEngineOutlineId; }
 }
 
 namespace EngineCore {
@@ -142,11 +146,55 @@ namespace EngineCore {
         }
         #pragma endregion
 
+        #pragma region SHADER::ENGINE::Outline
+        {
+            std::string outlineVert = R"(
+                #version 330 core
+                layout(location = 0) in vec3 aPos;
+                layout(location = 3) in mat4 instanceModel;
+            
+                uniform mat4 view;
+                uniform mat4 projection;
+                uniform float outlineThickness;
+            
+                void main() {
+                    mat4 scaledModel = instanceModel * mat4(
+                        vec4(1.0 + outlineThickness, 0.0, 0.0, 0.0),
+                        vec4(0.0, 1.0 + outlineThickness, 0.0, 0.0),
+                        vec4(0.0, 0.0, 1.0 + outlineThickness, 0.0),
+                        vec4(0.0, 0.0, 0.0, 1.0)
+                    );
+                    gl_Position = projection * view * scaledModel * vec4(aPos, 1.0);
+                }
+            )";
+
+            std::string outlineFrag = R"(
+                #version 330 core
+                out vec4 FragColor;
+            
+                uniform vec3 outlineColor;
+            
+                void main() {
+                    FragColor = vec4(outlineColor, 1.0);
+                }
+            )";
+            g_shaderEngineOutlineId = rm.AddShaderFromMemory(outlineVert, outlineFrag);
+        }
+        #pragma endregion
+
         #pragma region MATERIAL::ENGINE::Default
         {
             g_materialEngineDefaultId = rm.AddMaterial(g_shaderEngineDefaultId);
             Material* mat = rm.GetMaterial(g_materialEngineDefaultId);
             mat->SetParam("texture", g_textureEngineMissingId);
+        }
+        #pragma endregion
+
+        #pragma region MATERIAL::ENGINE::Outline
+        {
+            g_materialEngineOutlineId = rm.AddMaterial(g_shaderEngineOutlineId);
+            // Material* mat = rm.GetMaterial(g_materialEngineOutlineId);
+            // mat->SetParam("texture", g_textureEngineMissingId);
         }
         #pragma endregion
 

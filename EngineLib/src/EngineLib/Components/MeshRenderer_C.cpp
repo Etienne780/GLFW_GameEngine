@@ -24,47 +24,47 @@ namespace EngineCore {
 			ui.DrawLabel(FormatUtils::formatString("Is Mesh inverted: {}", m_invertMesh));
 		}
 
-		MeshRenderer& MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh) {
+		MeshRenderer* MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh) {
 			if (IsDead("Cant set mesh")) {
-				return *this;
+				return this;
 			}
 			m_mesh = mesh;
-			return *this;
+			return this;
 		}
 
-		MeshRenderer& MeshRenderer::SetMesh(unsigned int id) {
+		MeshRenderer* MeshRenderer::SetMesh(unsigned int id) {
 			if (IsDead("Cant set mesh")) {
-				return *this;
+				return this;
 			}
 			Mesh* mesh = ResourceManager::GetInstance().GetMesh(id);
 			if (!mesh) {
 				Log::Error("MeshRenderer: Cant set mesh on gameObject {}, mesh is nullptr", m_gameObject->GetName());
-				return *this;
+				return this;
 			}
 			m_meshID = id;
-			return *this;
+			return this;
 		}
 
-		MeshRenderer& MeshRenderer::SetMaterial(unsigned int id) {
+		MeshRenderer* MeshRenderer::SetMaterial(unsigned int id) {
 			if (IsDead("Cant set material")) {
-				return *this;
+				return this;
 			}
 			Material* mat = ResourceManager::GetInstance().GetMaterial(id);
 			if (!mat) {
 				Log::Error("MeshRenderer: Cant set material on gameObject {}, material is nullptr", m_gameObject->GetName());
-				return *this;
+				return this;
 			}
 			m_materialID = id;
-			return *this;
+			return this;
 		}
 
-		MeshRenderer& MeshRenderer::SetInvertMesh(bool value) {
+		MeshRenderer* MeshRenderer::SetInvertMesh(bool value) {
 			if (IsDead("Cant set invert Mesh")) {
-				return *this;
+				return this;
 			}
 
 			m_invertMesh = value;
-			return *this;
+			return this;
 		}
 
 		void MeshRenderer::SubmitDrawCall() {

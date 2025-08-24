@@ -18,12 +18,14 @@ namespace EngineCore {
 		namespace SHADER {
 			namespace ENGINE {
 				unsigned int Default();
+				unsigned int Outline();
 			}
 		}
 
 		namespace MATERIAL {
 			namespace ENGINE {
 				unsigned int Default();
+				unsigned int Outline();
 			}
 		}
 	}

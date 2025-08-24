@@ -58,8 +58,6 @@ namespace EngineCore {
         glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0, instanceCount);
     }
 
-
-
     void Mesh::CreateGL() {
         if (m_exists) return;
 
