@@ -80,17 +80,22 @@ namespace EngineCore {
                 m_hierarchyWin = !m_hierarchyWin;
             }
 
-            if (SidebarButton(ICON_FA_COG, "Settings")) {
+            if (SidebarButton(ICON_FA_TERMINAL, "Console")) {
+                m_consoleWin = !m_consoleWin;
             }
 
             if (SidebarButton(ICON_FA_ICONS, "Icon")) {
                 m_iconWin = !m_iconWin;
             }
 
+            if (SidebarButton(ICON_FA_COG, "Settings")) {
+            }
+
             if (m_statsWin) StatsWindow();
             if (m_cameraWin) CameraWindow();
             if (m_hierarchyWin) HierarchyWindow();
             if (m_hierarchyWin) InspectorWindow();
+            if (m_consoleWin) ConsoleWindow();
             if (m_iconWin) IconDisplayWindow();
         }
         ImGui::End();
@@ -318,6 +323,46 @@ namespace EngineCore {
         ImGui::End();
 
         m_firstInspectorWin = false;
+    }
+
+    void DebuggerWindows::ConsoleWindow() {
+        if (m_firstConsoleWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_consoleWinState.x, m_consoleWinState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_consoleWinState.z, m_consoleWinState.w));
+        }
+
+        ImGui::Begin("Console", &m_consoleWin);
+        {
+            if (ImGui::Button("Clear")) {
+                m_log.clear();
+            }
+            ImGui::SameLine();
+            static bool autoScroll = true;
+            ImGui::Checkbox("Auto-scroll", &autoScroll);
+
+            ImGui::Separator();
+
+            ImGui::BeginChild("ConsoleScrollRegion", ImVec2(0, 0), false,
+                ImGuiWindowFlags_HorizontalScrollbar);
+
+            for (auto& msg : m_log) {
+                ImGui::TextUnformatted(msg.c_str());
+            }
+
+            if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+                ImGui::SetScrollHereY(1.0f);
+            }
+
+            ImGui::EndChild();
+        }
+
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_consoleWinState.Set(pos.x, pos.y, size.x, size.y);
+
+        ImGui::End();
+
+        m_firstConsoleWin = false;
     }
 
     void DebuggerWindows::IconDisplayWindow() {
