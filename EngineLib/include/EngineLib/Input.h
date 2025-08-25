@@ -7,6 +7,9 @@ class Vector2;
 
 namespace EngineCore {
 
+	enum KeyCode;
+	enum MouseCode;
+
 	class Key {
 	public:
 		bool isPressed = false;     // true, if key pressed
