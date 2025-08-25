@@ -242,8 +242,8 @@ private:
         void Log(const std::string& message);
 
     private:
-        void ProcessQueue();
-        // Hier nur Deklaration der Member, Implementierung im cpp
+        //void ProcessQueue();
+
         class Impl;
         std::unique_ptr<Impl> pImpl;
     };
