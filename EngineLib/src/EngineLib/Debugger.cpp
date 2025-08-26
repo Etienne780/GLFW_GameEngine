@@ -128,14 +128,14 @@ namespace EngineCore {
 
 	void Debugger::HandleCursorLock() {
 		static bool toggleCursorLock = false;
-		if (Input::KeyPressed(GLFW_KEY_LEFT_ALT)) {
+		if (Input::KeyPressed(KeyCode::LEFT_ALT)) {
 			m_cursorLock = false;
 		}
 		else {
 			m_cursorLock = true;
 		}
 
-		if (Input::KeyJustPressed(GLFW_KEY_F1)) {
+		if (Input::KeyJustPressed(KeyCode::F1)) {
 			toggleCursorLock = !toggleCursorLock;
 			if (!toggleCursorLock) m_cursorLock = true;
 		}

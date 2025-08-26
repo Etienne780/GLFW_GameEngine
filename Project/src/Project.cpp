@@ -44,6 +44,10 @@ void GenerateCubesSphere() {
 	auto container = GameObject::Create("Container");
 	containerTrans = container->GetTransform();
 
+	// ResourceManager& rm = ResourceManager::GetInstance();
+	// auto mat = rm.GetMaterial(ID::MATERIAL::ENGINE::Default());
+	// mat->SetParam("texture", ID::TEXTURE::ENGINE::Cursedmod3());
+
 	for (size_t i = 0; i < cubeCountTheta; ++i) {
 		float theta = static_cast<float>((static_cast<float>(i) / cubeCountTheta) * 2.0f * CORE_PI);
 
@@ -70,22 +74,18 @@ void UpdateCubesSphere(float time) {
 }
 
 void Project::Update() {
-	if (Input::KeyPressed(GLFW_KEY_ESCAPE))
+	if (Input::KeyPressed(KeyCode::ESCAPE))
 		glfwSetWindowShouldClose(App_Application_Get_Window(), true);
 
-	if (Input::KeyJustPressed(GLFW_KEY_L)) {
+	if (Input::KeyJustPressed(KeyCode::L)) {
 		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
 	}
 
-	if (Input::KeyJustPressed(GLFW_KEY_H)) {
+	if (Input::KeyJustPressed(KeyCode::H)) {
 		App_Debug_Set_Active(!App_Debug_Get_Active());
 	}
 
-	if (Input::KeyJustPressed(GLFW_KEY_U)) {
-		GameObject::ClearAll();
-	}
-
-	// UpdateCubesSphere(Time::GetTime());
+	//UpdateCubesSphere(Time::GetTime());
 }
 
 void Project::Shutdown() {

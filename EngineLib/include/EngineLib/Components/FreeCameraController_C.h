@@ -12,19 +12,19 @@ namespace EngineCore {
 
 			COMPONENT_TYPE_DEFINITION(FreeCameraController);
 
-			int m_keyMoveForward = GLFW_KEY_W;
-			int m_keyMoveBack = GLFW_KEY_S;
-			int m_keyMoveLeft = GLFW_KEY_A;
-			int m_keyMoveRight = GLFW_KEY_D;
-			int m_keyMoveUp = GLFW_KEY_SPACE;
-			int m_keyMoveDown = GLFW_KEY_LEFT_CONTROL;
-			int m_keyMoveSprint = GLFW_KEY_LEFT_SHIFT;
-			int m_keyMoveSlow = GLFW_KEY_LEFT_ALT;
+			KeyCode m_keyMoveForward = KeyCode::W;
+			KeyCode m_keyMoveBack = KeyCode::S;
+			KeyCode m_keyMoveLeft = KeyCode::A;
+			KeyCode m_keyMoveRight = KeyCode::D;
+			KeyCode m_keyMoveUp = KeyCode::SPACE;
+			KeyCode m_keyMoveDown = KeyCode::LEFT_CONTROL;
+			KeyCode m_keyMoveSprint = KeyCode::LEFT_SHIFT;
+			KeyCode m_keyMoveSlow = KeyCode::LEFT_ALT;
 
-			int m_keyRotateUp = GLFW_KEY_UP;
-			int m_keyRotateDown = GLFW_KEY_DOWN;
-			int m_keyRotateLeft = GLFW_KEY_LEFT;
-			int m_keyRotateRight = GLFW_KEY_RIGHT;
+			KeyCode m_keyRotateUp = KeyCode::UP;
+			KeyCode m_keyRotateDown = KeyCode::DOWN;
+			KeyCode m_keyRotateLeft = KeyCode::LEFT;
+			KeyCode m_keyRotateRight = KeyCode::RIGHT;
 
 			bool m_isZoomDisabled = false;
 			bool m_isMovementDisabled = false;
@@ -34,7 +34,7 @@ namespace EngineCore {
 			bool m_canRotateWithMouse = true;
 
 			float m_arrowSensitivity = 0.8f;
-			float m_mouseSensitivity = 0.3f;
+			float m_mouseSensitivity = 0.2f;
 
 			float m_movementSpeed = 30.0f;
 			float m_sprintMultiplier = 2.5f;
