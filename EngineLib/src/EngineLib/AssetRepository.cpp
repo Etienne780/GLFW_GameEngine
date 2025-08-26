@@ -9,6 +9,7 @@
 
 namespace {
     unsigned int g_textureEngineMissingId = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_textureEngineCursedmod3Id = EngineCore::ENGINE_INVALID_ID;
 	unsigned int g_meshEngineCubeId = EngineCore::ENGINE_INVALID_ID;
     unsigned int g_shaderEngineDefaultId = EngineCore::ENGINE_INVALID_ID;
     unsigned int g_shaderEngineOutlineId = EngineCore::ENGINE_INVALID_ID;
@@ -18,6 +19,7 @@ namespace {
 
 namespace EngineCore::ID::TEXTURE::ENGINE {
     unsigned int Missing() { return g_textureEngineMissingId; }
+    unsigned int Cursedmod3() { return g_textureEngineCursedmod3Id; }
 }
 
 namespace EngineCore::ID::MESH::ENGINE {
@@ -39,6 +41,12 @@ namespace EngineCore {
 	void LoadBaseAsset() {
 		auto& rm = ResourceManager::GetInstance();
 
+        #pragma region TEXTURE::ENGINE::Missing
+        {
+            g_textureEngineCursedmod3Id = rm.AddTexture2DFromFile("assets\\images.jpg");
+        }
+        #pragma endregion
+        
         #pragma region TEXTURE::ENGINE::Missing
         {
             g_textureEngineMissingId = rm.AddTexture2DFromMemory(nullptr, 0, 0, 0);
@@ -186,7 +194,7 @@ namespace EngineCore {
         {
             g_materialEngineDefaultId = rm.AddMaterial(g_shaderEngineDefaultId);
             Material* mat = rm.GetMaterial(g_materialEngineDefaultId);
-            mat->SetParam("texture", g_textureEngineMissingId);
+            mat->SetParam("texture", g_textureEngineCursedmod3Id);
         }
         #pragma endregion
 

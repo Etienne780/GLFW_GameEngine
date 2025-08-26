@@ -6,6 +6,7 @@ namespace EngineCore {
 		namespace TEXTURE {
 			namespace ENGINE {
 				unsigned int Missing();
+				unsigned int Cursedmod3();
 			}
 		}
 		
