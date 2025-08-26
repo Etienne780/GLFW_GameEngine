@@ -67,6 +67,12 @@ public:
     bool ReadAll(std::string& outContent);
 
     /**
+    * @brief Reads the entire file content into a string called Data. (Replaces the old Data that was previously read)
+    * @return True on success, false if file could not be read.
+    */
+    bool ReadAll();
+
+    /**
      * @brief Checks if the file exists (non-static version).
      * @return True if file exists, false otherwise.
      */
@@ -77,6 +83,18 @@ public:
      * @return True if file is open, false otherwise.
      */
     bool IsFileOpen() const;
+
+    /**
+    * @brief Gets the Data that was previously read with ReadAll()
+    * @return a copy of the data string
+    */
+    std::string GetData();
+
+    /**
+    * @brief Gets the Data that was previously read with ReadAll()
+    * @return a ptr to the data string
+    */
+    std::string* GetDataPtr();
 
     /**
      * @brief Gets the size of the file in bytes.
@@ -182,6 +200,7 @@ private:
     std::ifstream m_ifstream;   // Input file stream (for reading)
     std::ofstream m_ofstream;   // Output file stream (for writing)
     FileState m_fileState = FileState::FILE_CLOSE; // Current state of the file
+    std::string m_data;
 
     static std::string GetExecutablePath();
 };

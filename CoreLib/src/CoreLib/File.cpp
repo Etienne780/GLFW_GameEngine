@@ -129,6 +129,21 @@ bool File::ReadAll(std::string& outContent) {
     return true;
 }
 
+bool File::ReadAll() {
+    if (m_fileState != FileState::FILE_READ || !m_ifstream.is_open()) {
+        Log::Error("File: Cannot read, file '{}' not open for reading!", m_path);
+        return false;
+    }
+
+    m_ifstream.seekg(0, std::ios::beg);
+
+    std::ostringstream ss;
+    ss << m_ifstream.rdbuf();
+    m_data = ss.str();
+
+    return true;
+}
+
 bool File::Exists() const {
     std::ifstream file(m_path);
     return file.good();
@@ -142,6 +157,14 @@ bool File::IsFileOpen() const {
         return m_ifstream.is_open();
     }
     return false;
+}
+
+std::string File::GetData() {
+    return m_data;
+}
+
+std::string* File::GetDataPtr() {
+    return &m_data;
 }
 
 size_t File::GetFileSize() const {
