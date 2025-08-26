@@ -167,7 +167,7 @@ namespace EngineCore {
             return ENGINE_INVALID_ID;
         }
         #endif
-        m_texture2Ds.emplace(id, std::make_unique<Texture2D>(path.c_str()));
+        m_texture2Ds.emplace(id, std::make_unique<Texture2D>(path));
         return id;
     }
 
