@@ -8,8 +8,11 @@ class Vector2;
 
 namespace EngineCore {
 
-    // Constant to improve code readability when passing 'FALLBACK' mode.
+    // Constant to improve code readability when passing 'useFallBack'.
     const bool TEXTURE2D_FALLBACK = true;
+
+    // Constant to improve code readability when passing 'useAbsolutDir'.
+    const bool TEXTURE2D_ABSOLUTDIR = true;
 
     /**
     * @brief Represents a 2D texture that can be loaded from file and used in OpenGL.
@@ -17,14 +20,17 @@ namespace EngineCore {
     class Texture2D {
     public:
         /**
-        * @brief Default constructor. Does not create/load a texture.
+        * @brief Default constructor. Does not create/load a texture. (use TEXTURE2D_FALLBACK for param)
+        * @param useFallBack uses the texture fallback for the texture
         */
         Texture2D(bool useFallBack = false);
 
         /**
-        * @brief Creats/loads a texture with default settings
+        * @brief Does not Creats/loads a texture.
+        * @param path the path to the image from the application
+        * @param useAbsolutDir uses absolut path instead of relative path 
         */
-        Texture2D(const char* path);
+        Texture2D(const std::string& path, bool useAbsolutDir = false);
 
         /**
         * @brief Creats an image with the raw data.

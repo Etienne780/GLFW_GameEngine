@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <CoreLib\Log.h>
+#include <CoreLib\File.h>
 #include <CoreLib\Math.h>
 #include <CoreLib\stb_image.h>
 
@@ -13,8 +14,6 @@ namespace EngineCore {
 
 	Texture2D::Texture2D(bool useFallBack) {
 		if (!useFallBack) {
-			m_nrChannels = 3;
-
 			m_wrappingX = GL_REPEAT;
 			m_wrappingY = GL_REPEAT;
 
@@ -26,22 +25,21 @@ namespace EngineCore {
 		}
 	}
 
-	Texture2D::Texture2D(const char* path) {
-		m_nrChannels = 3;
-
+	Texture2D::Texture2D(const std::string& path, bool useAbsolutDir) {
 		m_wrappingX = GL_REPEAT;
 		m_wrappingY = GL_REPEAT;
 
 		m_filterMin = GL_LINEAR;
 		m_filterMag = GL_LINEAR;
 
-		m_path = path;
+		if(useAbsolutDir)
+			m_path = path;
+		else
+			m_path = File::GetExecutableDir() + "\\" + path;
 	}
 
 	Texture2D::Texture2D(const unsigned char* data, int width, int height, int nrChannels) {
 		if (data && width > 0 && height > 0 && nrChannels > 0) {
-			m_nrChannels = 3;
-
 			m_wrappingX = GL_REPEAT;
 			m_wrappingY = GL_REPEAT;
 
@@ -82,7 +80,7 @@ namespace EngineCore {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_filterMag);
 		// load and generate the texture
 		unsigned char* imageData = stbi_load(path, &m_width, &m_height, &m_nrChannels, 0);
-
+		
 		GLenum format;
 		if (imageData) {
 			if (m_nrChannels == 1)
@@ -168,10 +166,15 @@ namespace EngineCore {
 	void Texture2D::CreateGL() {
 		if (m_exists) return;
 
-		if (m_path.empty())
-			Create(m_imageData, m_width, m_height, m_nrChannels);
-		else
-			Create(m_path.c_str());
+		if (!m_path.empty()) {
+			if (File::Exists(m_path)) {
+				Create(m_path.c_str());
+				return;
+			}
+			Log::Error("Texture2D: Could not load texture. File '{}' dose not exist", m_path);
+		}
+	
+		Create(m_imageData, m_width, m_height, m_nrChannels);
 	}
 
 	void Texture2D::DeleteGL() {
