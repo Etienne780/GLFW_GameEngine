@@ -18,6 +18,8 @@ namespace EngineCore {
 			ui.DrawDragFloat3("Position", &m_position);
 			ui.DrawDragFloat3("Rotation", &m_rotation);
 			ui.DrawDragFloat3("Scale", &m_scale);
+
+			MarkDirty();
 		}
 
 		void Transform::CalculateLocalModelMat() {
