@@ -109,6 +109,8 @@ namespace EngineCore {
 			if(isDebugModeInitCalled) m_debugger->Shutdown();
 			isDebugModeInitCalled = false;
 		}
+
+		Input::SetLockDebug(!m_debugger->GetCursorLock());
 #endif 
 
 		Input::LateUpdate();
