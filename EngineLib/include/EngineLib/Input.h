@@ -66,16 +66,23 @@ namespace EngineCore {
 		static std::vector<KeyCode> KeysReleased();
 
 		static Vector2 GetMousePosition();
+
 	private:
 		Input();
 		static void Init(GLFWwindow* window);
 		static void LateUpdate();
+		/*
+		* @brief Locks the Input so all input methods return false
+		*/
+		static void SetLockDebug(bool value);
 
 		static std::unordered_map<int, KeyState> keyStates;
 		static Vector2 m_mousePosition;
 		static Vector2 m_lastFrameMousePosition;
 		static Vector2 m_mouseDelta;
 		static int m_scrollDir;
+		// Locks the input to false. only works in debug
+		static bool m_lockDebug;
 
 		static void GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void GLFWMouseCallBack(GLFWwindow* window, double xpos, double ypos);
@@ -83,6 +90,53 @@ namespace EngineCore {
 
 		static bool getAnyKeyState(bool keyPressed, bool justPressed);
 		static std::vector<KeyCode> getKeysState(bool keyPressed, bool justPressed);
+
+#ifndef NDEBUG
+		/**
+		* @brief gets the diff of the current mouse pos and the last frame pose (inverts the y axies for convenietios)
+		* (Can still be used even if Input is locked)
+		* @return returns a new Vector2 that is the delta of the mouse position
+		*/
+		static Vector2 LockedGetMousePosition();
+
+		//(Can still be used even if Input is locked)
+		static int LockedGetScrollDir();
+		//(Can still be used even if Input is locked)
+		static bool LockedGetScrollDir(int& dir);
+
+		// is only one frame true. (Can still be used even if Input is locked)
+		static bool LockedKeyJustPressed(KeyCode key);
+		// is only one frame true. (Can still be used even if Input is locked)
+		static bool LockedKeyJustReleased(KeyCode key);
+
+		// is true as long as the key has the right state. (Can still be used even if Input is locked)
+		static bool LockedKeyPressed(KeyCode key);
+		// is true as long as the key has the right state. (Can still be used even if Input is locked)
+		static bool LockedKeyRepeating(KeyCode key);
+
+		// is only one frame true. (Can still be used even if Input is locked)
+		static bool LockedAnyKeyJustPressed();
+		// is only one frame true. (Can still be used even if Input is locked)
+		static bool LockedAnyKeyJustReleased();
+
+		// is true as long as the key has the right state. (Can still be used even if Input is locked)
+		static bool LockedAnyKeyPressed();
+		// is true as long as the key has the right state. (Can still be used even if Input is locked)
+		static bool LockedAnyKeyReleased();
+
+		//(Can still be used even if Input is locked)
+		static std::vector<KeyCode> LockedKeysJustPressed();
+		//(Can still be used even if Input is locked)
+		static std::vector<KeyCode> LockedKeysJustReleased();
+
+		//(Can still be used even if Input is locked)
+		static std::vector<KeyCode> LockedKeysPressed();
+		//(Can still be used even if Input is locked)
+		static std::vector<KeyCode> LockedKeysReleased();
+
+		//(Can still be used even if Input is locked)
+		static Vector2 LockedGetMousePosition();
+#endif
 	};
 
 	enum class EngineCore::KeyCode {

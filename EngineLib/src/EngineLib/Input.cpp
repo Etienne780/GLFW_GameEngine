@@ -8,6 +8,7 @@ namespace EngineCore {
 	Vector2 Input::m_mousePosition;
 	Vector2 Input::m_lastFrameMousePosition;
 	Vector2 Input::m_mouseDelta;
+	bool Input::m_lockDebug = false;
 
 	int Input::m_scrollDir = 0;
 	std::unordered_map<int, KeyState> Input::keyStates;
@@ -30,7 +31,8 @@ namespace EngineCore {
 		m_scrollDir = static_cast<int>(yoffset);
 	}
 
-	Input::Input() {}
+	Input::Input() {
+	}
 
 	void Input::Init(GLFWwindow* window) {
 		if (window == nullptr) return;
@@ -50,6 +52,10 @@ namespace EngineCore {
 		}
 	}
 
+	void Input::SetLockDebug(bool value) {
+		m_lockDebug = value;
+	}
+
 	KeyCode Input::IntToKeyCode(int key) {
 		return static_cast<KeyCode>(key);
 	}
@@ -59,6 +65,10 @@ namespace EngineCore {
 	}
 
 	Vector2 Input::GetMousePositionDelta() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return Vector2 {};
+#endif 
 		m_mouseDelta.x = m_mousePosition.x - m_lastFrameMousePosition.x;
 		m_mouseDelta.y = m_lastFrameMousePosition.y - m_mousePosition.y;
 
@@ -66,67 +76,127 @@ namespace EngineCore {
 	}
 
 	int Input::GetScrollDir() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return 0;
+#endif 
 		return m_scrollDir;
 	}
 
 	bool Input::GetScrollDir(int& dir) {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		dir = m_scrollDir;
 		return (dir != 0);
 	}
 
 	bool Input::KeyJustPressed(KeyCode key) {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		auto it = keyStates.find(KeyCodeToInt(key));
 		return it != keyStates.end() && it->second.justPressed();
 	}
 
 	bool Input::KeyJustReleased(KeyCode key) {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		auto it = keyStates.find(KeyCodeToInt(key));
 		return it != keyStates.end() && it->second.justReleased();
 	}
 
 	bool Input::KeyPressed(KeyCode key) {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		auto it = keyStates.find(KeyCodeToInt(key));
 		return it != keyStates.end() && it->second.isPressed;
 	}
 
 	bool Input::KeyRepeating(KeyCode key) {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		auto it = keyStates.find(KeyCodeToInt(key));
 		return it != keyStates.end() && it->second.isRepeating;
 	}
 
 	bool Input::AnyKeyJustPressed() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		return getAnyKeyState(true, true);
 	}
 
 	bool Input::AnyKeyJustReleased() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		return getAnyKeyState(false, true);
 	}
 
 	bool Input::AnyKeyPressed() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		return getAnyKeyState(true, false);
 	}
 
 	bool Input::AnyKeyReleased() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return false;
+#endif 
 		return getAnyKeyState(false, false);
 	}
 
 	std::vector<KeyCode> Input::KeysJustPressed() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return std::vector<KeyCode> {};
+#endif 
 		return getKeysState(true, true);
 	}
 
 	std::vector<KeyCode> Input::KeysJustReleased() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return std::vector<KeyCode> {};
+#endif 
 		return getKeysState(false, true);
 	}
 
 	std::vector<KeyCode> Input::KeysPressed() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return std::vector<KeyCode> {};
+#endif 
 		return getKeysState(true, false);
 	}
 
 	std::vector<KeyCode> Input::KeysReleased() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return std::vector<KeyCode> {};
+#endif 
 		return getKeysState(false, false);
 	}
 
 	Vector2 Input::GetMousePosition() {
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return Vector2 {};
+#endif 
 		return m_mousePosition;
 	}
 
@@ -150,7 +220,10 @@ namespace EngineCore {
 
 	std::vector<KeyCode> Input::getKeysState(bool pressed, bool just) {
 		std::vector<KeyCode> keys;
-
+#ifndef NDEBUG
+		if (m_lockDebug)
+			return std::vector<KeyCode> {};
+#endif 
 		for (const auto& [key, state] : keyStates) {
 			if (just) {
 				if (pressed && state.justPressed())
@@ -210,4 +283,87 @@ namespace EngineCore {
 		return wasReleased;
 	}
 
+
+#ifndef NDEBUG
+	Vector2 Input::LockedGetMousePosition() {
+		m_mouseDelta.x = m_mousePosition.x - m_lastFrameMousePosition.x;
+		m_mouseDelta.y = m_lastFrameMousePosition.y - m_mousePosition.y;
+
+		return m_mouseDelta;
+	}
+
+
+	int Input::LockedGetScrollDir() {
+		return m_scrollDir;
+	}
+
+	bool Input::LockedGetScrollDir(int& dir) {
+		dir = m_scrollDir;
+		return (dir != 0);
+	}
+
+
+	bool Input::LockedKeyJustPressed(KeyCode key) {
+		auto it = keyStates.find(KeyCodeToInt(key));
+		return it != keyStates.end() && it->second.justPressed();
+	}
+
+	bool Input::LockedKeyJustReleased(KeyCode key) {
+		auto it = keyStates.find(KeyCodeToInt(key));
+		return it != keyStates.end() && it->second.justReleased();
+	}
+
+
+	bool Input::LockedKeyPressed(KeyCode key) {
+		auto it = keyStates.find(KeyCodeToInt(key));
+		return it != keyStates.end() && it->second.isPressed;
+	}
+
+	bool Input::LockedKeyRepeating(KeyCode key) {
+		auto it = keyStates.find(KeyCodeToInt(key));
+		return it != keyStates.end() && it->second.isRepeating;
+	}
+
+
+	bool Input::LockedAnyKeyJustPressed() {
+		return getAnyKeyState(true, true);
+	}
+
+	bool Input::LockedAnyKeyJustReleased() {
+		return getAnyKeyState(false, true);
+	}
+
+
+	bool Input::LockedAnyKeyPressed() {
+		return getAnyKeyState(true, false);
+	}
+
+	bool Input::LockedAnyKeyReleased() {
+		return getAnyKeyState(false, false);
+	}
+
+
+	std::vector<KeyCode> Input::LockedKeysJustPressed() {
+		return getKeysState(true, true);
+	}
+
+	std::vector<KeyCode> Input::LockedKeysJustReleased() {
+		return getKeysState(false, true);
+	}
+
+
+	std::vector<KeyCode> Input::LockedKeysPressed() {
+		return getKeysState(true, false);
+	}
+
+	std::vector<KeyCode> Input::LockedKeysReleased() {
+		return getKeysState(false, false);
+	}
+
+
+	Vector2 Input::LockedGetMousePosition() {
+		return m_mousePosition;
+	}
+
+#endif
 }
