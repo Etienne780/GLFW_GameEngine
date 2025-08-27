@@ -285,7 +285,7 @@ namespace EngineCore {
 
 
 #ifndef NDEBUG
-	Vector2 Input::LockedGetMousePosition() {
+	Vector2 Input::LockedGetMousePositionDelta() {
 		m_mouseDelta.x = m_mousePosition.x - m_lastFrameMousePosition.x;
 		m_mouseDelta.y = m_lastFrameMousePosition.y - m_mousePosition.y;
 

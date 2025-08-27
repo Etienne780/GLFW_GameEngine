@@ -25,6 +25,9 @@ namespace EngineCore {
 	};
 
 	class Input {
+#ifndef NDEBUG
+	friend class Debugger;
+#endif 
 	friend class Engine;
 	public:
 		static KeyCode IntToKeyCode(int key);
@@ -97,7 +100,7 @@ namespace EngineCore {
 		* (Can still be used even if Input is locked)
 		* @return returns a new Vector2 that is the delta of the mouse position
 		*/
-		static Vector2 LockedGetMousePosition();
+		static Vector2 LockedGetMousePositionDelta();
 
 		//(Can still be used even if Input is locked)
 		static int LockedGetScrollDir();
