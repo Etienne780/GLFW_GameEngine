@@ -1,7 +1,5 @@
-#include <algorithm> // für std::transform
-#include <cctype>    // für std::tolower
-
 #include <CoreLib/Log.h>
+#include <CoreLib/FormatUtils.h>
 
 #include "EngineLib/EngineTypes.h"
 #include "EngineLib/Renderlayer.h"
@@ -13,9 +11,7 @@ namespace EngineCore {
 			Log::Warn("Renderlayer: Cant add Layer '{}', Layers can only be added in the start method", layerName);
 			return -1;
 		}
-		std::string lowerName = layerName;
-		std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
-			[](unsigned char c) { return std::tolower(c); });
+		std::string lowerName = FormatUtils::toLowerCase(layerName);
 
 		m_layers.emplace(lowerName, m_layerCounter);
 		return m_layerCounter++;
@@ -30,9 +26,7 @@ namespace EngineCore {
 	}
 
 	unsigned int RenderLayer::GetLayerIndex(const std::string& layerName) {
-		std::string lowerName = layerName;
-		std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
-			[](unsigned char c) { return std::tolower(c); });
+		std::string lowerName = FormatUtils::toLowerCase(layerName);
 
 		auto it = m_layers.find(lowerName);
 		if (it != m_layers.end()) {
