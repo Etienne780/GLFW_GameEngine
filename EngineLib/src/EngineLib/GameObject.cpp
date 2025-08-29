@@ -236,7 +236,7 @@ namespace EngineCore {
 			return this;
 		}
 
-		if (RenderLayer::GetLayerCount() >= renderLayerIndex) {
+		if (renderLayerIndex >= RenderLayer::GetLayerCount()) {
 			Log::Error("GameObject: Cant set renderLayerIndex");
 			return this;
 		}

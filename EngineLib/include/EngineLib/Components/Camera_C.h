@@ -48,7 +48,7 @@ namespace EngineCore {
 			Camera& SetFarPlane(float farPlane);
 			Camera& SetPlanes(float nearPlane, float farPlane);
 			Camera& SetCameraLayers(std::vector<unsigned int> renderLayers);
-			Camera& AddCameraLayers(unsigned int renderLayer);
+			Camera& AddCameraLayer(unsigned int renderLayer);
 
 		private:
 			// gets updatet in the engine loop (before the update loop of the application)

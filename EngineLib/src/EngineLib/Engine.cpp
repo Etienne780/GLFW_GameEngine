@@ -34,7 +34,7 @@ namespace EngineCore {
 
 		PrintApplicationHeader();
 		stbi_set_flip_vertically_on_load(true);
-
+		
 		RenderLayer::SetupDefaultLayers();
 		m_app->Start();
 		RenderLayer::Lock();

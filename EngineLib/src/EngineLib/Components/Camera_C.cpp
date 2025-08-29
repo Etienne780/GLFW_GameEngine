@@ -206,7 +206,7 @@ namespace EngineCore {
 			return *this;
 		}
 
-		Camera& Camera::AddCameraLayers(unsigned int renderLayer) {
+		Camera& Camera::AddCameraLayer(unsigned int renderLayer) {
 			m_renderLayers.push_back(renderLayer);
 			return *this;
 		}
