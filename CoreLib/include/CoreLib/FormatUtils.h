@@ -3,11 +3,27 @@
 #include <string>
 #include <vector>
 #include <type_traits>
+#include <algorithm> // for std::transform
+#include <cctype>    // for std::tolower
 
 #include <cmath>
 
 class FormatUtils {
 public:
+    static std::string toUpperCase(std::string string) {
+        std::transform(string.begin(), string.end(), string.begin(),
+            [](unsigned char c) { return std::toupper(c); });
+
+        return string;
+    }
+
+    static std::string toLowerCase(std::string string) {
+        std::transform(string.begin(), string.end(), string.begin(),
+            [](unsigned char c) { return std::tolower(c); });
+
+        return string;
+    }
+
     template<typename T, std::size_t N>
     static std::string arrayToString(const T(&arr)[N]) {
         std::ostringstream result;
