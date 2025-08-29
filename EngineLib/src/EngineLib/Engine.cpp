@@ -8,7 +8,6 @@ namespace EngineCore {
 
 	Engine::Engine(std::shared_ptr<Application> app) {
 		m_app = app;
-		m_gameObjectManager = &GameObjectManager::GetInstance();
 	}
 
 	Engine::~Engine() = default;
@@ -24,6 +23,8 @@ namespace EngineCore {
 
 		m_app->m_window = m_window;
 		Input::Init(m_window);
+		GameObjectManager::Init();
+		m_gameObjectManager = GameObjectManager::GetInstance();
 		Material::m_maxTextureUnits = m_maxTextureUnits;
 
 		LoadBaseAsset();
@@ -125,7 +126,7 @@ namespace EngineCore {
 			m_debugger->Shutdown();
 		}
 #endif 
-
+		GameObjectManager::Shutdown();
 		ResourceManager& rm = ResourceManager::GetInstance();
 		rm.Cleanup();
 		glfwTerminate();

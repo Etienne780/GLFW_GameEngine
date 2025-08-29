@@ -5,8 +5,6 @@
 
 namespace EngineCore {
 
-	GameObjectManager* GameObject::m_gameObjectManager = nullptr;
-	
 	GameObject::GameObject(unsigned int id, const std::string& name)
 		: m_id(id), m_name(name) {
 	}
@@ -45,8 +43,8 @@ namespace EngineCore {
 			return nullptr;
 		}
 		auto go = std::shared_ptr<GameObject>(new GameObject(id, name));
-		m_gameObjectManager->AddGameObject(go);
 		go->InitComponents();
+		m_gameObjectManager->AddGameObject(go);
 		return go;
 	}
 

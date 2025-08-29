@@ -91,7 +91,7 @@ namespace EngineCore {
 		GameObject(unsigned int id, const std::string& name);
 		void InitComponents();
 
-		static GameObjectManager* m_gameObjectManager;
+		static inline GameObjectManager* m_gameObjectManager = nullptr;
 
 		unsigned int m_id = ENGINE_INVALID_ID;
 		unsigned int m_renderLayerIndex = 0;

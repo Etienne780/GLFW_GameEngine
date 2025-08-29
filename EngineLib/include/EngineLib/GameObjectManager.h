@@ -19,11 +19,13 @@ namespace EngineCore {
 	friend class Engine;
 	private:
 		GameObjectManager();
+		static void Init();
+		static void Shutdown();
 
 		GameObjectManager(const GameObjectManager&) = delete;
 		GameObjectManager& operator=(const GameObjectManager&) = delete;
 
-		static GameObjectManager& GetInstance();
+		static GameObjectManager* GetInstance();
 
 		unsigned int m_idCounter = 0;
 		bool m_idFallback = false;// gets set to true when the id limit(Integer.Max) is reached.

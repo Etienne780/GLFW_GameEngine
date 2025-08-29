@@ -1,8 +1,8 @@
-#include "CoreLib\FormatUtils.h"
-#include "CoreLib\Log.h"
+#include "CoreLib/FormatUtils.h"
+#include "CoreLib/Log.h"
 
-#include "EngineLib\GameObject.h"
-#include "EngineLib\ComponentBase.h"
+#include "EngineLib/GameObject.h"
+#include "EngineLib/ComponentBase.h"
 
 namespace EngineCore {
 

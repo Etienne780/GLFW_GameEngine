@@ -26,7 +26,6 @@
 #include "EngineLib/GameObject.h"
 #include "EngineLib/AllComponents.h"
 #include "EngineLib/RenderLayer.h"
-#include "EngineLib/PrefabManager.h"
 
 namespace EngineCore {
 

@@ -1,7 +1,8 @@
 #pragma once
-#include "..\ComponentBase.h"
-#include "CoreLib\Math\Vector3.h"
-#include "CoreLib\Math\Matrix4x4.h"
+#include "../GameObject.h"
+#include "../ComponentBase.h"
+#include "CoreLib/Math/Vector3.h"
+#include "CoreLib/Math/Matrix4x4.h"
 
 namespace EngineCore {
 

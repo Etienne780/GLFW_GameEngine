@@ -1,19 +1,28 @@
 ﻿#include <unordered_set>
-#include <CoreLib\Log.h>
+#include <CoreLib/Log.h>
 
-#include "EngineLib\Time.h"
-#include "EngineLib\Renderer.h"
-#include "EngineLib\EngineTypes.h"
-#include "EngineLib\GameObjectManager.h"
+#include "EngineLib/Time.h"
+#include "EngineLib/Renderer.h"
+#include "EngineLib/EngineTypes.h"
+#include "EngineLib/GameObjectManager.h"
 
 namespace EngineCore {
 
+	static GameObjectManager* instance;
+
 	GameObjectManager::GameObjectManager() {
-		GameObject::m_gameObjectManager = this;
 	}
 
-	GameObjectManager& GameObjectManager::GetInstance() {
-		static GameObjectManager instance;
+	void GameObjectManager::Init() {
+		instance = new GameObjectManager();
+		GameObject::m_gameObjectManager = instance;
+	}
+
+	void GameObjectManager::Shutdown() {
+		delete instance;
+	}
+
+	GameObjectManager* GameObjectManager::GetInstance() {
 		return instance;
 	}
 
