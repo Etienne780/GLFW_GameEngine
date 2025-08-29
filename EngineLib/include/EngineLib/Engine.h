@@ -25,6 +25,7 @@
 #include "EngineLib\GameObjectManager.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\AllComponents.h"
+#include "EngineLib\RenderLayer.h"
 
 namespace EngineCore {
 

@@ -21,7 +21,7 @@ namespace EngineCore {
 		void MeshRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {
 			ui.DrawLabel(FormatUtils::formatString("Mesh ID: {}", m_meshID));
 			ui.DrawLabel(FormatUtils::formatString("Material ID: {}", m_materialID));
-			ui.DrawLabel(FormatUtils::formatString("Is Mesh inverted: {}", m_invertMesh));
+			ui.DrawCheckbox("Mesh Inverted", &m_invertMesh);
 		}
 
 		MeshRenderer* MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh) {
@@ -77,8 +77,9 @@ namespace EngineCore {
 				m_cmd.mesh = nullptr;
 				m_cmd.meshID = m_meshID;
 			}
+			m_cmd.renderLayer = m_gameObject->GetRenderLayer();
 			m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
-			m_cmd.invertMesh = m_invertMesh;;
+			m_cmd.invertMesh = m_invertMesh;
 
 			m_renderer.Submit(m_cmd);
 		}

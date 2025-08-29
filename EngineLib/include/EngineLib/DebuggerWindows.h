@@ -55,7 +55,15 @@ namespace EngineCore {
 		Vector4 m_consoleWinState = { 80, 90, 425, 300 };
 		Vector4 m_iconWinState = { 80, 90, 375, 250 };
 
-		std::vector<std::string> m_log;
+		struct LogMsg {
+			std::string m_msg;
+			Log::Level m_logLevel;
+			LogMsg(Log::Level logLevel, const std::string& msg) 
+				: m_logLevel(logLevel), m_msg(msg) {};
+		};
+		std::vector<LogMsg> m_log;
+		// info = 1 bit, warn = 2 bit, error = 3 bit, debug = 4 bit
+		uint8_t m_logMask = 0b1111;
 		Log::SubscriberID m_subscriberId;
 	};
 

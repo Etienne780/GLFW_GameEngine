@@ -74,14 +74,18 @@ namespace EngineCore {
 		*/
 		const unsigned int* GetIDPtr() const;
 		std::shared_ptr<GameObject> GetParent() const;
+		unsigned int GetRenderLayer();
 		const std::vector<std::shared_ptr<GameObject>>& GetChildren() const;
 		std::string GetComponentListString() const;
 		std::string GetComponentListString(bool moreDetail) const;
 
 		GameObject* SetName(const std::string& name);
+		GameObject* SetRenderLayer(unsigned int renderLayerIndex);
+		GameObject* SetRenderLayerInChildren(unsigned int renderLayerIndex);
+		GameObject* SetRenderLayerAll(unsigned int renderLayerIndex);
 		GameObject* SetParent(std::shared_ptr<GameObject> parentPtr);
 		GameObject* SetPersistent(bool value);
-		GameObject* Detach();
+		GameObject* Detach();					
 
 	private:
 		GameObject(unsigned int id, const std::string& name);
@@ -90,6 +94,7 @@ namespace EngineCore {
 		static GameObjectManager* m_gameObjectManager;
 
 		unsigned int m_id = ENGINE_INVALID_ID;
+		unsigned int m_renderLayerIndex = 0;
 		bool m_alive = true;
 		bool m_isPersistent = false;
 		bool m_isDisabled = false;

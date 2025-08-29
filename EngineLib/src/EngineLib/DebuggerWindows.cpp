@@ -13,11 +13,12 @@
 
 #include "EngineLib/IconsFontAwesome5Pro.h"
 #include "EngineLib/Time.h"
-#include "EngineLib/Engine.h"
 #include "EngineLib/GameObject.h"
 #include "EngineLib/GameObjectManager.h"
 #include "EngineLib/Application.h"
+#include "EngineLib/RenderLayer.h"
 #include "EngineLib/Debugger.h"
+#include "EngineLib/Engine.h"
 #include "EngineLib/DebuggerWindows.h"
 
 namespace EngineCore {
@@ -25,8 +26,8 @@ namespace EngineCore {
     DebuggerWindows::DebuggerWindows(Debugger* debugger) {
         m_debugger = debugger;
 
-        m_subscriberId = Log::Subscribe([this](const std::string& msg) {
-            m_log.push_back(msg);
+        m_subscriberId = Log::Subscribe([this](Log::Level logLevel, const std::string& msg) {
+            m_log.push_back({ logLevel, msg });
         });
     }
 
@@ -111,12 +112,24 @@ namespace EngineCore {
         ImGui::Begin("Stats", &m_statsWin, ImGuiWindowFlags_NoResize);
         {
             int fps = (m_debugger->GetApp()) ? m_debugger->GetApp()->App_Application_Get_FramesPerSecond() : -1;
-            ImGui::Text(FormatUtils::formatString("FPS: {}", fps).c_str());
-            ImGui::Text(FormatUtils::formatString("Delta time: {}", Time::GetDeltaTime()).c_str());
-            ImGui::Text(FormatUtils::formatString("Frame count: {}", Time::GetFrameCount()).c_str());
-            ImGui::Text(FormatUtils::formatString("GameObject count: {}", m_debugger->GetGameObjectManager()->m_gameObjects.size()).c_str());
-            ImGui::Text(FormatUtils::formatString("Camera count: {}", m_debugger->GetGameObjectManager()->m_cameras.size()).c_str());
+            ImGui::Text("FPS: %d", fps);
+            ImGui::Text("Delta time: %.4f", Time::GetDeltaTime());
+            ImGui::Text("Frame count: %llu", Time::GetFrameCount());
+            ImGui::Text("GameObject count: %zu", m_debugger->GetGameObjectManager()->m_gameObjects.size());
+            ImGui::Text("Camera count: %zu", m_debugger->GetGameObjectManager()->m_cameras.size());
+
+            ImGui::Separator();
+
+            if (ImGui::CollapsingHeader("Render Layers", ImGuiTreeNodeFlags_DefaultOpen)) {
+                std::vector<std::string> layerNames = RenderLayer::GetLayerNames();
+                std::vector<unsigned int> layerIndices = RenderLayer::GetLayerIndices();
+
+                for (size_t i = 0; i < layerNames.size() && i < layerIndices.size(); i++) {
+                    ImGui::BulletText("%s (%u)", layerNames[i].c_str(), layerIndices[i]);
+                }
+            }
         }
+
         auto pos = ImGui::GetWindowPos();
         auto size = ImGui::GetWindowSize();
         m_statsWinState.Set(pos.x, pos.y, size.x, -1);
@@ -296,6 +309,7 @@ namespace EngineCore {
                 ImGui::SameLine();
                 ImGui::Text("GameObject: %s(%u)", selectedGO->GetName().c_str(), selectedGO->GetID());
                 ImGui::Text("Persistent: %s", selectedGO->IsPersistent() ? "true" : "false");
+                ImGui::Text(FormatUtils::formatString("Render-Layer: {}({})", RenderLayer::GetLayerName(selectedGO->GetRenderLayer()), selectedGO->GetRenderLayer()).c_str());
 
                 ImGui::Separator();
 
@@ -307,16 +321,13 @@ namespace EngineCore {
 
                     bool compDisabled = !comp->IsDisable();
                     if (comp->CanDisalbe()) {
-                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // smaller checkbox
-                        ImGui::Checkbox("", &compDisabled);
-                        ImGui::PopStyleVar();
+                        ImGui::Checkbox("##enabled", &compDisabled);
                         comp->Disable(!compDisabled);
                         ImGui::SameLine();
                     }
 
-                    if (ImGui::TreeNode((comp->GetName() + "##tree").c_str())) {
+                    if (ImGui::CollapsingHeader(comp->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
                         comp->OnInspectorGUIImpl(m_uiRenderer);
-                        ImGui::TreePop();
                     }
 
                     ImGui::PopID();
@@ -352,11 +363,47 @@ namespace EngineCore {
 
             ImGui::Separator();
 
+            // Filter options (check boxes for log levels)
+            ImGui::Text("Filter:");
+            ImGui::SameLine();
+            bool showInfo = (m_logMask & 0b0001) != 0;
+            bool showWarning = (m_logMask & 0b0010) != 0;
+            bool showError = (m_logMask & 0b0100) != 0;
+            bool showDebug = (m_logMask & 0b1000) != 0;
+
+            if (ImGui::Checkbox("Info", &showInfo)) {
+                if (showInfo) m_logMask |= 0b0001;
+                else          m_logMask &= ~0b0001;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("Warning", &showWarning)) {
+                if (showWarning) m_logMask |= 0b0010;
+                else             m_logMask &= ~0b0010;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("Error", &showError)) {
+                if (showError) m_logMask |= 0b0100;
+                else           m_logMask &= ~0b0100;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("Debug", &showDebug)) {
+                if (showDebug) m_logMask |= 0b1000;
+                else           m_logMask &= ~0b1000;
+            }
+
+            ImGui::Separator();
+
             ImGui::BeginChild("ConsoleScrollRegion", ImVec2(0, 0), false,
                 ImGuiWindowFlags_HorizontalScrollbar);
 
-            for (auto& msg : m_log) {
-                ImGui::TextUnformatted(msg.c_str());
+            for (auto& log : m_log) {
+                if ((log.m_logLevel == Log::levelInfo && (m_logMask & 0b0001)) ||
+                    (log.m_logLevel == Log::levelWarning && (m_logMask & 0b0010)) ||
+                    (log.m_logLevel == Log::levelError && (m_logMask & 0b0100)) ||
+                    (log.m_logLevel == Log::levelDebug && (m_logMask & 0b1000)))
+                {
+                    ImGui::TextUnformatted(log.m_msg.c_str());
+                }
             }
 
             if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {

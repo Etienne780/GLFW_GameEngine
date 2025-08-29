@@ -12,11 +12,12 @@
 
 #include "EngineLib/IconsFontAwesome5Pro.h"
 #include "EngineLib/GameObject.h"
-#include "EngineLib/Engine.h"
 #include "EngineLib/Application.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/Time.h"
+#include "EngineLib/RenderLayer.h"
 #include "EngineLib/DebuggerWindows.h"
+#include "EngineLib/Engine.h"
 #include "EngineLib/Debugger.h"
 
 namespace EngineCore {
@@ -75,7 +76,8 @@ namespace EngineCore {
 	void Debugger::DebugCameraInit() {
 		m_debugCameraGO = GameObject::Create("Debug-Camera");
 		m_debugCameraGO->SetPersistent(true);
-		m_debugCameraGO->AddComponent<Component::Camera>();
+		auto cam = m_debugCameraGO->AddComponent<Component::Camera>();
+		cam->AddCameraLayer(RenderLayer::GetLayerIndex("Debug"));
 		m_debugCameraGO->AddComponent<Component::FreeCameraController>()->m_isZoomDisabled = true;
 		m_debugCameraGO->Disable(true);
 	}
