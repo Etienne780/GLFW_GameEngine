@@ -25,8 +25,8 @@ namespace EngineCore {
     DebuggerWindows::DebuggerWindows(Debugger* debugger) {
         m_debugger = debugger;
 
-        m_subscriberId = Log::Subscribe([this](const std::string& msg) {
-            m_log.push_back(msg);
+        m_subscriberId = Log::Subscribe([this](Log::Level logLevel, const std::string& msg) {
+            m_log.push_back({ logLevel, msg });
         });
     }
 
@@ -352,11 +352,47 @@ namespace EngineCore {
 
             ImGui::Separator();
 
+            // Filter options (check boxes for log levels)
+            ImGui::Text("Filter:");
+            ImGui::SameLine();
+            bool showInfo = (m_logMask & 0b0001) != 0;
+            bool showWarning = (m_logMask & 0b0010) != 0;
+            bool showError = (m_logMask & 0b0100) != 0;
+            bool showDebug = (m_logMask & 0b1000) != 0;
+
+            if (ImGui::Checkbox("Info", &showInfo)) {
+                if (showInfo) m_logMask |= 0b0001;
+                else          m_logMask &= ~0b0001;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("Warning", &showWarning)) {
+                if (showWarning) m_logMask |= 0b0010;
+                else             m_logMask &= ~0b0010;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("Error", &showError)) {
+                if (showError) m_logMask |= 0b0100;
+                else           m_logMask &= ~0b0100;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("Debug", &showDebug)) {
+                if (showDebug) m_logMask |= 0b1000;
+                else           m_logMask &= ~0b1000;
+            }
+
+            ImGui::Separator();
+
             ImGui::BeginChild("ConsoleScrollRegion", ImVec2(0, 0), false,
                 ImGuiWindowFlags_HorizontalScrollbar);
 
-            for (auto& msg : m_log) {
-                ImGui::TextUnformatted(msg.c_str());
+            for (auto& log : m_log) {
+                if ((log.m_logLevel == Log::levelInfo && (m_logMask & 0b0001)) ||
+                    (log.m_logLevel == Log::levelWarning && (m_logMask & 0b0010)) ||
+                    (log.m_logLevel == Log::levelError && (m_logMask & 0b0100)) ||
+                    (log.m_logLevel == Log::levelDebug && (m_logMask & 0b1000)))
+                {
+                    ImGui::TextUnformatted(log.m_msg.c_str());
+                }
             }
 
             if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
