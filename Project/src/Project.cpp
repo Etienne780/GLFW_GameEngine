@@ -37,6 +37,11 @@ void Project::Start() {
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 
+	auto go = GameObject::Create("debug box");
+	go->SetRenderLayer(RenderLayer::GetLayerIndex("Debug"));
+	auto mr = go->AddComponent<Component::MeshRenderer>();
+	mr->SetMesh(ID::MESH::ENGINE::Cube())->SetMaterial(ID::MATERIAL::ENGINE::Default());
+
 	GenerateCubesSphere();
 }
 

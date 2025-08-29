@@ -1,9 +1,10 @@
-#include <CoreLib\Log.h>
-#include <CoreLib\Math\Matrix4x4.h>
+#include <CoreLib/Log.h>
+#include <CoreLib/Math/Matrix4x4.h>
 
-#include "EngineLib\Time.h"
-#include "EngineLib\GameObject.h"
-#include "EngineLib\Components\Camera_C.h"
+#include "EngineLib/RenderLayer.h"
+#include "EngineLib/Time.h"
+#include "EngineLib/GameObject.h"
+#include "EngineLib/Components\Camera_C.h"
 
 namespace EngineCore {
 
@@ -16,6 +17,7 @@ namespace EngineCore {
 		Camera::Camera(unsigned int gameObjectID) :
 			ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
+			m_renderLayers.push_back(RenderLayer::GetLayerIndex("Default"));
 		}
 
 		void Camera::OnInspectorGUIImpl(IUIRenderer& ui) {
@@ -120,6 +122,10 @@ namespace EngineCore {
 			return m_view;
 		}
 
+		const std::vector<unsigned int>& Camera::GetRenderLayers() const {
+			return m_renderLayers;
+		}
+
 		#pragma endregion
 
 		#pragma region Set
@@ -192,6 +198,16 @@ namespace EngineCore {
 			m_farPlane = farPlane;
 			m_projectionChanged = true;
 
+			return *this;
+		}
+
+		Camera& Camera::SetCameraLayers(std::vector<unsigned int> renderLayers) {
+			m_renderLayers = renderLayers;
+			return *this;
+		}
+
+		Camera& Camera::AddCameraLayers(unsigned int renderLayer) {
+			m_renderLayers.push_back(renderLayer);
 			return *this;
 		}
 

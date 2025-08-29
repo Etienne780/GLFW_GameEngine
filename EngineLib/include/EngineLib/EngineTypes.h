@@ -14,6 +14,7 @@ namespace EngineCore {
 	struct RenderCommand {
 		unsigned int materialID = 0;
 		unsigned int meshID = 0;
+		unsigned int renderLayer = -1;
 		Mesh* mesh;
 		const Matrix4x4* modelMatrix = nullptr;
 		bool invertMesh = false;

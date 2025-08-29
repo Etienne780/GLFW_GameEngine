@@ -77,8 +77,9 @@ namespace EngineCore {
 				m_cmd.mesh = nullptr;
 				m_cmd.meshID = m_meshID;
 			}
+			m_cmd.renderLayer = m_gameObject->GetRenderLayer();
 			m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
-			m_cmd.invertMesh = m_invertMesh;;
+			m_cmd.invertMesh = m_invertMesh;
 
 			m_renderer.Submit(m_cmd);
 		}

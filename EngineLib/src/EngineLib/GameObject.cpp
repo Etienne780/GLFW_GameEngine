@@ -1,6 +1,7 @@
-#include "EngineLib\GameObjectManager.h"
-#include "EngineLib\GameObject.h"
-#include "EngineLib\ComponentBase.h"
+#include "EngineLib/RenderLayer.h"
+#include "EngineLib/GameObjectManager.h"
+#include "EngineLib/GameObject.h"
+#include "EngineLib/ComponentBase.h"
 
 namespace EngineCore {
 
@@ -181,6 +182,13 @@ namespace EngineCore {
 		return m_parentObjPtr;
 	}
 
+	unsigned int GameObject::GetRenderLayer() {
+		if (IsDead("Cant get render-layer")) {
+			return -1;
+		}
+		return m_renderLayerIndex;
+	}
+
 	const std::vector<std::shared_ptr<GameObject>>& GameObject::GetChildren() const {
 		if (IsDead("Cant get children")) {
 			static const std::vector<std::shared_ptr<GameObject>> empty;
@@ -220,6 +228,44 @@ namespace EngineCore {
 			return this;
 		}
 		m_name = name;
+		return this;
+	}
+
+	GameObject* GameObject::SetRenderLayer(unsigned int renderLayerIndex) {
+		if (IsDead("Cant set render-layer")) {
+			return this;
+		}
+
+		if (RenderLayer::GetLayerCount() >= renderLayerIndex) {
+			Log::Error("GameObject: Cant set renderLayerIndex");
+			return this;
+		}
+
+		m_renderLayerIndex = renderLayerIndex;
+		return this;
+	}
+
+	GameObject* GameObject::SetRenderLayerInChildren(unsigned int renderLayerIndex) {
+		if (IsDead("Cant set render-layer in children")) {
+			return this;
+		}
+
+		// sets the renderLayer of childs 
+		if (!m_childObjPtrs.empty()) {
+			for (auto& childs : m_childObjPtrs) {
+				childs->SetRenderLayer(renderLayerIndex);
+			}
+		}
+		return this;
+	}
+
+	GameObject* GameObject::SetRenderLayerAll(unsigned int renderLayerIndex) {
+		if (IsDead("Cant set render-layer all")) {
+			return this;
+		}
+
+		SetRenderLayer(renderLayerIndex);
+		SetRenderLayerInChildren(renderLayerIndex);
 		return this;
 	}
 
