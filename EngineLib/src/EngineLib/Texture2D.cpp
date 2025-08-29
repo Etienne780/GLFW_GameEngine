@@ -81,14 +81,20 @@ namespace EngineCore {
 		// load and generate the texture
 		unsigned char* imageData = stbi_load(path, &m_width, &m_height, &m_nrChannels, 0);
 		
-		GLenum format;
 		if (imageData) {
-			if (m_nrChannels == 1)
-				format = GL_RED;
-			else if (m_nrChannels == 3)
-				format = GL_RGB;
-			else if (m_nrChannels == 4)
-				format = GL_RGBA;
+			GLenum dataFormat, internalFormat;
+			if (m_nrChannels == 1) {
+				dataFormat = GL_RED;
+				internalFormat = GL_R8;
+			}
+			else if (m_nrChannels == 3) {
+				dataFormat = GL_RGB;
+				internalFormat = GL_RGB8;
+			}
+			else if (m_nrChannels == 4) {
+				dataFormat = GL_RGBA;
+				internalFormat = GL_RGBA8;
+			}
 			else {
 				Log::Error("Texture2D: Unsupported number of channels: {}!", m_nrChannels);
 				LoadTextureFallback();
@@ -97,7 +103,15 @@ namespace EngineCore {
 				return;
 			}
 
-			glTexImage2D(GL_TEXTURE_2D, 0, format, m_width, m_height, 0, format, GL_UNSIGNED_BYTE, imageData);
+			int rowBytes = m_width * m_nrChannels;
+			int alignment = 4;
+			if (rowBytes % 4 != 0) alignment = 1;
+			glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat,
+				m_width, m_height, 0,
+				dataFormat, GL_UNSIGNED_BYTE, imageData);
+
 			if (m_createMipmaps) {
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
@@ -138,12 +152,19 @@ namespace EngineCore {
 
 		GLenum m_format;
 		if (data) {
-			if (m_nrChannels == 1)
-				m_format = GL_RED;
-			else if (m_nrChannels == 3)
-				m_format = GL_RGB;
-			else if (m_nrChannels == 4)
-				m_format = GL_RGBA;
+			GLenum dataFormat, internalFormat;
+			if (m_nrChannels == 1) {
+				dataFormat = GL_RED;
+				internalFormat = GL_R8;
+			}
+			else if (m_nrChannels == 3) {
+				dataFormat = GL_RGB;
+				internalFormat = GL_RGB8;
+			}
+			else if (m_nrChannels == 4) {
+				dataFormat = GL_RGBA;
+				internalFormat = GL_RGBA8;
+			}
 			else {
 				Log::Error("Texture2D: Unsupported number of channels: {}!", m_nrChannels);
 				LoadTextureFallback();
@@ -151,7 +172,15 @@ namespace EngineCore {
 				return;
 			}
 
-			glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, GL_UNSIGNED_BYTE, data);
+			int rowBytes = m_width * m_nrChannels;
+			int alignment = 4;
+			if (rowBytes % 4 != 0) alignment = 1;
+			glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat,
+				m_width, m_height, 0,
+				dataFormat, GL_UNSIGNED_BYTE, data);
+
 			if (m_createMipmaps) {
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
@@ -257,6 +286,8 @@ namespace EngineCore {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+	#pragma region Set
+
 	void Texture2D::SetWrapping(unsigned int wrappingMode) {
 		m_wrappingX = wrappingMode;
 		m_wrappingY = wrappingMode;
@@ -287,6 +318,10 @@ namespace EngineCore {
 		m_createMipmaps = enable;
 	}
 
+	#pragma endregion
+
+	#pragma region Get
+
 	unsigned int Texture2D::GetID() const {
 		return m_opengGLID;
 	}
@@ -310,5 +345,7 @@ namespace EngineCore {
 	int Texture2D::GetNrChannels() const {
 		return m_nrChannels;
 	}
+
+	#pragma endregion
 
 }
