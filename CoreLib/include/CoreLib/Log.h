@@ -17,9 +17,6 @@ private:
     class AsyncLogger;
 
 public:
-    using LogCallback = std::function<void(const std::string&)>;
-    using SubscriberID = size_t;
-
     // Logging severity levels.
     enum Level : short {
         levelError,
@@ -27,6 +24,9 @@ public:
         levelInfo,
         levelDebug
     };
+
+    using LogCallback = std::function<void(Level LogLevel, const std::string&)>;
+    using SubscriberID = size_t;
     /*
     * Log::Subscribe([](const std::string& msg) {
     *   std::cout << "(FILE) " << msg << std::endl;
@@ -99,14 +99,14 @@ public:
         >>
         static void Error(T&& format, Args&&... args) {
         if (!m_levelError) return;
-        m_print("[ERROR]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(levelError, "[ERROR]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs a raw error message composed from arguments, without format string.
     template<typename... Args>
     static void Error(Args&&... args) {
         if (!m_levelError) return;
-        m_print("[ERROR]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
+        m_print(levelError, "[ERROR]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
     }
 
     /// Logs a formatted warning message.
@@ -116,14 +116,14 @@ public:
         >>
         static void Warn(T&& format, Args&&... args) {
         if (!m_levelWarning) return;
-        m_print("[WARNING]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(levelWarning, "[WARNING]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs a raw warning message.
     template<typename... Args>
     static void Warn(Args&&... args) {
         if (!m_levelWarning) return;
-        m_print("[WARNING]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
+        m_print(levelWarning, "[WARNING]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
     }
 
     /// Logs an informational message using format string.
@@ -133,14 +133,14 @@ public:
         >>
         static void Info(T&& format, Args&&... args) {
         if (!m_levelInfo) return;
-        m_print("[INFO]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(levelInfo, "[INFO]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs an informational message with argument joining.
     template<typename... Args>
     static void Info(Args&&... args) {
         if (!m_levelInfo) return;
-        m_print("[INFO]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
+        m_print(levelInfo, "[INFO]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
     }
 
     /// Logs a debug message with formatting.
@@ -150,14 +150,14 @@ public:
         >>
         static void Debug(T&& format, Args&&... args) {
         if (!m_levelDebug) return;
-        m_print("[Debug]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(levelDebug, "[Debug]: " + FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Logs a debug message without formatting.
     template<typename... Args>
     static void Debug(Args&&... args) {
         if (!m_levelDebug) return;
-        m_print("[Debug]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
+        m_print(levelDebug, "[Debug]: " + FormatUtils::joinArgs(std::forward<Args>(args)...));
     }
 
     /// Prints a formatted string without log level prefix.
@@ -166,13 +166,13 @@ public:
         std::is_convertible_v<T, std::string> || std::is_convertible_v<T, const char*>
         >>
         static void Print(T&& format, Args&&... args) {
-        m_print(FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(levelInfo, FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Prints joined arguments without log level prefix.
     template<typename... Args>
     static void Print(Args&&... args) {
-        m_print(FormatUtils::joinArgs(std::forward<Args>(args)...));
+        m_print(levelInfo, FormatUtils::joinArgs(std::forward<Args>(args)...));
     }
 
     /// Conditionally prints a formatted string based on log level.
@@ -182,14 +182,14 @@ public:
         >>
         static void Print(Level level, T&& format, Args&&... args) {
         if (!IsLevelSelected(level)) return;
-        m_print(FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
+        m_print(level, FormatUtils::formatString(std::forward<T>(format), std::forward<Args>(args)...));
     }
 
     /// Conditionally prints joined arguments based on log level.
     template<typename... Args>
     static void Print(Level level, Args&&... args) {
         if (!IsLevelSelected(level)) return;
-        m_print(FormatUtils::joinArgs(std::forward<Args>(args)...));
+        m_print(level, FormatUtils::joinArgs(std::forward<Args>(args)...));
     }
 
     /// Returns a formatted string for reuse (without printing).
@@ -227,12 +227,12 @@ private:
     static SubscriberID m_nextId;
 
     /// Low-level printer implementation (console output).
-    static void m_print(const std::string& message);
+    static void m_print(const Level& logLevel, const std::string& message);
 
     /// Helper for formatted print with extra arguments.
     template<typename... Args>
-    static void m_print(const std::string& message, Args&&... args) {
-        m_print(FormatUtils::formatString(0, message, std::forward<Args>(args)...));
+    static void m_print(const Level& logLevel, const std::string& message, Args&&... args) {
+        m_print(logLevel, FormatUtils::formatString(0, message, std::forward<Args>(args)...));
     }
 
     class AsyncLogger {

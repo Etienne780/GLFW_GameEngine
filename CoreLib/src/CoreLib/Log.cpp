@@ -128,11 +128,11 @@ void Log::SaveLogs(const std::string& path) {
 }
 
 
-void Log::m_print(const std::string& message) {
+void Log::m_print(const Level& logLevel, const std::string& message) {
     std::cout << message << std::endl;
 
     for (auto& sub : m_subscribers) {
-        sub.callback(message);
+        sub.callback(logLevel, message);
     }
 
     if (m_saveLogs) {
