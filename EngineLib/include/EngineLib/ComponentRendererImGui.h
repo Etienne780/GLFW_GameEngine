@@ -140,11 +140,20 @@ namespace EngineCore {
         }
 
         bool DrawCollapsingHeader(const std::string& label, bool open) override {
-            if(open)
-                return ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
-            else 
-                return ImGui::CollapsingHeader(label.c_str());
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.35f, 0.35f, 0.35f, 1.0f));
+
+            bool result;
+            if (open)
+                result = ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+            else
+                result = ImGui::CollapsingHeader(label.c_str());
+
+            ImGui::PopStyleColor(3); // drei Farben wiederherstellen
+            return result;
         }
+
 
     };
 
