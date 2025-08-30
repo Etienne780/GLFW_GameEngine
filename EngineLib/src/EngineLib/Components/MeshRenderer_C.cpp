@@ -24,14 +24,6 @@ namespace EngineCore {
 			ui.DrawCheckbox("Mesh Inverted", &m_invertMesh);
 		}
 
-		MeshRenderer* MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh) {
-			if (IsDead("Cant set mesh")) {
-				return this;
-			}
-			m_mesh = mesh;
-			return this;
-		}
-
 		MeshRenderer* MeshRenderer::SetMesh(unsigned int id) {
 			if (IsDead("Cant set mesh")) {
 				return this;
@@ -69,14 +61,7 @@ namespace EngineCore {
 
 		void MeshRenderer::SubmitDrawCall() {
 			m_cmd.materialID = m_materialID;
-			if (m_mesh) {
-				m_cmd.mesh = m_mesh.get();
-				m_cmd.meshID = ENGINE_INVALID_ID;
-			}
-			else {
-				m_cmd.mesh = nullptr;
-				m_cmd.meshID = m_meshID;
-			}
+			m_cmd.meshID = m_meshID;
 			m_cmd.renderLayer = m_gameObject->GetRenderLayer();
 			m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
 			m_cmd.invertMesh = m_invertMesh;

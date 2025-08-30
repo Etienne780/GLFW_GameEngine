@@ -113,17 +113,13 @@ namespace EngineCore {
             }
         
             if (currentMeshID != cmd.meshID || 
-                (cmd.mesh != nullptr && currentMesh != cmd.mesh) || 
                 currentInvertMesh != cmd.invertMesh) {
 
                 flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
         
                 currentMeshID = cmd.meshID;
-                if (cmd.mesh == nullptr)
-                    currentMesh = rm.GetMesh(currentMeshID);
-                else
-                    currentMesh = cmd.mesh;
+                currentMesh = rm.GetMesh(currentMeshID);;
                 currentInvertMesh = cmd.invertMesh;
         
                 if (!currentMesh) {
