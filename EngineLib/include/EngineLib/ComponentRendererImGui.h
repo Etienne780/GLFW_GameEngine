@@ -138,6 +138,14 @@ namespace EngineCore {
         void DrawSeparator() override {
             ImGui::Separator();
         }
+
+        bool DrawCollapsingHeader(const std::string& label, bool open) override {
+            if(open)
+                return ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+            else 
+                return ImGui::CollapsingHeader(label.c_str());
+        }
+
     };
 
 }

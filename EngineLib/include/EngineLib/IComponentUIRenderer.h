@@ -40,6 +40,7 @@ namespace EngineCore {
         virtual void DrawCheckbox(const std::string& label, bool* value) = 0;
         virtual void DrawSeparatorText(const std::string& label) = 0;
         virtual void DrawSeparator() = 0;
+        virtual bool DrawCollapsingHeader(const std::string& label, bool open = false) = 0;
     };
 
 }
