@@ -19,14 +19,30 @@ namespace EngineCore {
 			ui.DrawDragFloat3("Rotation", &m_rotation);
 			ui.DrawDragFloat3("Scale", &m_scale);
 
+			if (ui.DrawCollapsingHeader("World Transform")) {
+				Vector3 worldPos = GetWorldPosition();
+				Vector3 worldRot = GetWorldRotation();
+				Vector3 worldScale = GetWorldScale();
+
+				ui.DrawLabel(FormatUtils::formatString("Position: ({}, {}, {})", worldPos.x, worldPos.y, worldPos.z));
+				ui.DrawLabel(FormatUtils::formatString("Rotation: ({}, {}, {})", worldRot.x, worldRot.y, worldRot.z));
+				ui.DrawLabel(FormatUtils::formatString("Scale: ({}, {}, {})", worldScale.x, worldScale.y, worldScale.z));
+			}
+
 			MarkDirty();
 		}
 
 		void Transform::CalculateLocalModelMat() {
 			using namespace GLTransform4x4;
 
+			Vector3 radians = { 
+				ConversionUtils::ToRadians(m_rotation.x),
+				ConversionUtils::ToRadians(m_rotation.y),
+				ConversionUtils::ToRadians(m_rotation.z) 
+			};
+
 			m_localMatrix = Scale(m_scale);
-			MakeRotateXYZ(m_localMatrix, m_rotation);
+			MakeRotateXYZ(m_localMatrix, radians);
 			MakeTranslate(m_localMatrix, m_position);
 		}
 
