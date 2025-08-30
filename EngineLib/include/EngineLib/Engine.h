@@ -26,6 +26,7 @@
 #include "EngineLib/GameObject.h"
 #include "EngineLib/AllComponents.h"
 #include "EngineLib/RenderLayer.h"
+#include "EngineLib/Profiler.h"
 
 namespace EngineCore {
 

@@ -74,6 +74,8 @@ namespace EngineCore {
 			m_fpsCounter -= 1.0;
 		}
 
+		Profiler::Start(m_framesPerSecond);
+
 		// cleares the window each frame
 		if (m_window != nullptr && !m_app->m_appOpenGLManuallyClearBackground) {
 			glClearColor(m_app->m_appOpenGLBackgroundColor.x, 
@@ -85,9 +87,13 @@ namespace EngineCore {
 		Component::Camera::SetWindowDimensions(m_app->m_appApplicationWindowWidth, m_app->m_appApplicationWindowHeight);
 		m_app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 
+		Profiler::SectionStart("GO Update");
 		m_gameObjectManager->UpdateGameObjects();
-
+		Profiler::SectionEnd();
+		
+		Profiler::SectionStart("App Update");
 		m_app->Update();
+		Profiler::SectionEnd();
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			m_gameObjectManager->DrawGameObjects();
 		}
@@ -179,7 +185,7 @@ namespace EngineCore {
 		glfwSetFramebufferSizeCallback(m_window, GLFWFramebufferSizeCallback);
 		glfwSetWindowFocusCallback(m_window, GLFWFocusCallback);
 
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 
 		auto cursorMode = GLFW_CURSOR_NORMAL;
 		if (m_app->m_appApplicationWindowCursorHidden)
