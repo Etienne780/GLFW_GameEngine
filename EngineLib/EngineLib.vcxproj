@@ -51,6 +51,7 @@
   <ItemGroup>
     <ClCompile Include="include\EngineLib\IComponentUIRenderer.h" />
     <ClCompile Include="include\EngineLib\ComponentRendererImGui.h" />
+    <ClCompile Include="include\EngineLib\Profiler.h" />
     <ClCompile Include="src\EngineLib\Components\FreeCameraController_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\Script_C.cpp" />
     <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
@@ -68,6 +69,7 @@
     <ClCompile Include="src\EngineLib\GameObject.cpp" />
     <ClCompile Include="src\EngineLib\glad.c" />
     <ClCompile Include="src\EngineLib\Input.cpp" />
+    <ClCompile Include="src\EngineLib\Profiler.cpp" />
     <ClCompile Include="src\EngineLib\Renderer.cpp" />
     <ClCompile Include="src\EngineLib\RenderLayer.cpp" />
     <ClCompile Include="src\EngineLib\ResourceManager.cpp" />
