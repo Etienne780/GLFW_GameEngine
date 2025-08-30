@@ -2,33 +2,27 @@
 
 namespace EngineCore {
 	
-	namespace ID{
-		namespace TEXTURE {
-			namespace ENGINE {
+	namespace ASSETS {
+
+		namespace ENGINE {
+			namespace TEXTURE {
 				unsigned int Missing();
 				unsigned int Cursedmod3();
 			}
-		}
-		
-		namespace MESH {
-			namespace ENGINE {
+
+			namespace MESH {
 				unsigned int Cube();
 			}
-		}
 
-		namespace SHADER {
-			namespace ENGINE {
+			namespace SHADER {
 				unsigned int Default();
-				unsigned int Outline();
+			}
+
+			namespace MATERIAL {
+				unsigned int Default();
 			}
 		}
-
-		namespace MATERIAL {
-			namespace ENGINE {
-				unsigned int Default();
-				unsigned int Outline();
-			}
-		}
+	
 	}
 
 	void LoadBaseAsset();

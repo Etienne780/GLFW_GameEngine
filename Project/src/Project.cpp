@@ -22,9 +22,9 @@ void GenerateCubesSphere();
 
 void GenerateTest(int index) {
 	auto parent = GameObject::Create(FormatUtils::formatString("Test_parent_{}", index));
-	parent->AddComponent<Component::MeshRenderer>()->SetMesh(ID::MESH::ENGINE::Cube())->SetMaterial(ID::MATERIAL::ENGINE::Default());
+	parent->AddComponent<Component::MeshRenderer>()->SetMesh(ASSETS::MESH::ENGINE::Cube())->SetMaterial(ASSETS::MATERIAL::ENGINE::Default());
 	auto child = GameObject::Create(FormatUtils::formatString("Test_child_{}", index));
-	child->AddComponent<Component::MeshRenderer>()->SetMesh(ID::MESH::ENGINE::Cube())->SetMaterial(ID::MATERIAL::ENGINE::Default());
+	child->AddComponent<Component::MeshRenderer>()->SetMesh(ASSETS::MESH::ENGINE::Cube())->SetMaterial(ASSETS::MATERIAL::ENGINE::Default());
 	child->SetParent(parent);
 	child->GetTransform()->AddPosition(20,0,0);
 }
@@ -49,7 +49,7 @@ void Project::Start() {
 	auto go = GameObject::Create("debug box");
 	go->GetTransform()->SetScale(20, 20 ,20);
 	auto mr = go->AddComponent<Component::MeshRenderer>();
-	mr->SetMesh(ID::MESH::ENGINE::Cube())->SetMaterial(ID::MATERIAL::ENGINE::Default());
+	mr->SetMesh(ASSETS::MESH::ENGINE::Cube())->SetMaterial(ASSETS::MATERIAL::ENGINE::Default());
 
 	GenerateCubesSphere();
 
@@ -72,7 +72,7 @@ void GenerateCubesSphere() {
 			auto cubeGO = GameObject::Create(FormatUtils::formatString("Cube_{}_{}", i, j));
 			cubeGO->SetParent(container);
 			auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
-			mr->SetMesh(ID::MESH::ENGINE::Cube())->SetMaterial(ID::MATERIAL::ENGINE::Default());
+			mr->SetMesh(ASSETS::MESH::ENGINE::Cube())->SetMaterial(ASSETS::MATERIAL::ENGINE::Default());
 
 			cubeGO->GetTransform()->SetPosition(x, y, z);
 			cubeGO->GetTransform()->SetScale(5, 5, 5);

@@ -8,52 +8,48 @@
 #include "EngineLib\AssetRepository.h"
 
 namespace {
-    unsigned int g_textureEngineMissingId = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_textureEngineCursedmod3Id = EngineCore::ENGINE_INVALID_ID;
-	unsigned int g_meshEngineCubeId = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_shaderEngineDefaultId = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_shaderEngineOutlineId = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_materialEngineDefaultId = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_materialEngineOutlineId = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_engineTextureMissingID = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_engineTextureCursedmod3ID = EngineCore::ENGINE_INVALID_ID;
+	unsigned int g_engineMeshCubeID = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_engineShaderDefaultID = EngineCore::ENGINE_INVALID_ID;
+    unsigned int g_engineMaterialDefaultID = EngineCore::ENGINE_INVALID_ID;
 }
 
-namespace EngineCore::ID::TEXTURE::ENGINE {
-    unsigned int Missing() { return g_textureEngineMissingId; }
-    unsigned int Cursedmod3() { return g_textureEngineCursedmod3Id; }
+namespace EngineCore::ASSETS::ENGINE::TEXTURE {
+    unsigned int Missing() { return g_engineTextureMissingID; }
+    unsigned int Cursedmod3() { return g_engineTextureCursedmod3ID; }
 }
 
-namespace EngineCore::ID::MESH::ENGINE {
-	unsigned int Cube() { return g_meshEngineCubeId; }
+namespace EngineCore::ASSETS::ENGINE::MESH {
+	unsigned int Cube() { return g_engineMeshCubeID; }
 }
 
-namespace EngineCore::ID::SHADER::ENGINE {
-    unsigned int Default() { return g_shaderEngineDefaultId; }
-    unsigned int Outline() { return g_shaderEngineOutlineId; }
+namespace EngineCore::ASSETSD::ENGINE::SHADER {
+    unsigned int Default() { return g_engineShaderDefaultID; }
 }
 
-namespace EngineCore::ID::MATERIAL::ENGINE {
-    unsigned int Default() { return g_materialEngineDefaultId; }
-    unsigned int Outline() { return g_materialEngineOutlineId; }
+namespace EngineCore::ASSETS::ENGINE::MATERIAL {
+    unsigned int Default() { return g_engineMaterialDefaultID; }
 }
 
 namespace EngineCore {
 	
 	void LoadBaseAsset() {
 		auto& rm = ResourceManager::GetInstance();
-
-        #pragma region TEXTURE::ENGINE::Missing
+    
+        #pragma region TEXTURE::Missing
         {
-            g_textureEngineCursedmod3Id = rm.AddTexture2DFromFile("assets\\images.jpg");
-        }
-        #pragma endregion
-        
-        #pragma region TEXTURE::ENGINE::Missing
-        {
-            g_textureEngineMissingId = rm.AddTexture2DFromMemory(nullptr, 0, 0, 0);
+            g_engineTextureMissingID = rm.AddTexture2DFromMemory(nullptr, 0, 0, 0);
         }
         #pragma endregion
 
-        #pragma region MESH::ENGINE::Cube
+        #pragma region TEXTURE::Missing
+        {
+            g_engineTextureCursedmod3ID = rm.AddTexture2DFromFile("assets\\images.jpg");
+        }
+        #pragma endregion
+
+        #pragma region MESH::Cube
 		{
             Vertex vertices[] = {
                 // Back
@@ -116,11 +112,11 @@ namespace EngineCore {
             size_t verticesSize = sizeof(vertices) / sizeof(vertices[0]);
             size_t indicesSize = sizeof(indices) / sizeof(indices[0]);
 
-            g_meshEngineCubeId = rm.AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
+            g_engineMeshCubeID = rm.AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
 		}
         #pragma endregion
 
-        #pragma region SHADER::ENGINE::Default
+        #pragma region SHADER::Default
         {
             std::string vert = R"(
                 #version 330 core
@@ -150,59 +146,15 @@ namespace EngineCore {
                 	FragColor = texture(utexture, TexCoord);
                 }
             )";
-            g_shaderEngineDefaultId = rm.AddShaderFromMemory(vert, frag);
+            g_engineShaderDefaultID = rm.AddShaderFromMemory(vert, frag);
         }
         #pragma endregion
 
-        #pragma region SHADER::ENGINE::Outline
+        #pragma region MATERIAL::Default
         {
-            std::string outlineVert = R"(
-                #version 330 core
-                layout(location = 0) in vec3 aPos;
-                layout(location = 3) in mat4 instanceModel;
-            
-                uniform mat4 view;
-                uniform mat4 projection;
-                uniform float outlineThickness;
-            
-                void main() {
-                    mat4 scaledModel = instanceModel * mat4(
-                        vec4(1.0 + outlineThickness, 0.0, 0.0, 0.0),
-                        vec4(0.0, 1.0 + outlineThickness, 0.0, 0.0),
-                        vec4(0.0, 0.0, 1.0 + outlineThickness, 0.0),
-                        vec4(0.0, 0.0, 0.0, 1.0)
-                    );
-                    gl_Position = projection * view * scaledModel * vec4(aPos, 1.0);
-                }
-            )";
-
-            std::string outlineFrag = R"(
-                #version 330 core
-                out vec4 FragColor;
-            
-                uniform vec3 outlineColor;
-            
-                void main() {
-                    FragColor = vec4(outlineColor, 1.0);
-                }
-            )";
-            g_shaderEngineOutlineId = rm.AddShaderFromMemory(outlineVert, outlineFrag);
-        }
-        #pragma endregion
-
-        #pragma region MATERIAL::ENGINE::Default
-        {
-            g_materialEngineDefaultId = rm.AddMaterial(g_shaderEngineDefaultId);
-            Material* mat = rm.GetMaterial(g_materialEngineDefaultId);
-            mat->SetParam("texture", g_textureEngineMissingId);
-        }
-        #pragma endregion
-
-        #pragma region MATERIAL::ENGINE::Outline
-        {
-            g_materialEngineOutlineId = rm.AddMaterial(g_shaderEngineOutlineId);
-            // Material* mat = rm.GetMaterial(g_materialEngineOutlineId);
-            // mat->SetParam("texture", g_textureEngineMissingId);
+            g_engineMaterialDefaultID = rm.AddMaterial(g_engineShaderDefaultID);
+            Material* mat = rm.GetMaterial(g_engineMaterialDefaultID);
+            mat->SetParam("texture", g_engineTextureMissingID);
         }
         #pragma endregion
 
