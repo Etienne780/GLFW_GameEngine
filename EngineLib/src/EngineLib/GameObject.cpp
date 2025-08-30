@@ -43,8 +43,8 @@ namespace EngineCore {
 			return nullptr;
 		}
 		auto go = std::shared_ptr<GameObject>(new GameObject(id, name));
-		go->InitComponents();
-		m_gameObjectManager->AddGameObject(go);
+		m_gameObjectManager->AddGameObject(go);// add gameobject to list
+		go->InitComponents();// inits the transform comp (gets the go from the list as a ref)
 		return go;
 	}
 
