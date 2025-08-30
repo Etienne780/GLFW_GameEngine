@@ -324,6 +324,10 @@ namespace EngineCore {
 		for (auto& comp : m_components) {
 			comp->CUpdate();
 		}
+
+		for (auto& comp : m_drawComponents) {
+			comp->CUpdate();
+		}
 	}
 
 	void GameObject::UpdateComponentIDs() {
