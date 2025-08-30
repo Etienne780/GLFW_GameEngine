@@ -197,6 +197,7 @@ namespace GLTransform4x4 {
     */
     Matrix4x4 Orthographic(float left, float right, float bottom, float top, float zNear, float zFar);
     Matrix4x4 LookAt(const Vector3& position, const Vector3& target, const Vector3& up);
+    Matrix4x4 LookRotation(const Vector3& forward, const Vector3& up);
 
     void MakeIdentity(Matrix4x4& out);
     void MakeScale(Matrix4x4& out, float x, float y, float z);
@@ -208,4 +209,6 @@ namespace GLTransform4x4 {
     void MakeRotateZ(Matrix4x4& out, float radians);
     void MakeRotateXYZ(Matrix4x4& out, float rx, float ry, float rz);
     void MakeRotateXYZ(Matrix4x4& out, const Vector3& radians);
+
+    Vector3 MatrixToEuler(const Matrix4x4& m);
 }

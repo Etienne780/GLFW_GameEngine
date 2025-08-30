@@ -481,6 +481,21 @@ namespace GLTransform4x4 {
         return Matrix4x4(data);
     }
 
+    Matrix4x4 LookRotation(const Vector3& forward, const Vector3& up) {
+        Vector3 f = forward.Normalized();
+        Vector3 r = up.Cross(f).Normalize();
+        Vector3 u = f.Cross(r);
+
+        float data[16] = {
+            r.x, u.x, f.x, 0,
+            r.y, u.y, f.y, 0,
+            r.z, u.z, f.z, 0,
+            0,   0,   0,   1
+        };
+
+        return Matrix4x4(data);
+    }
+
     void MakeIdentity(Matrix4x4& out) {
         std::memset(out.GetData(), 0, 16 * sizeof(float));
         float* data = out.GetData();
@@ -567,5 +582,20 @@ namespace GLTransform4x4 {
 
     void MakeRotateXYZ(Matrix4x4& out, const Vector3& radians) {
         MakeRotateXYZ(out, radians.x, radians.y, radians.z);
+    }
+
+    Vector3 MatrixToEuler(const Matrix4x4& m) {
+        Vector3 euler;
+
+        // yaw (Y-Achse)
+        euler.y = atan2(m(0, 2), m(2, 2));
+
+        // pitch (X-Achse)
+        euler.x = -asin(m(1, 2));
+
+        // roll (Z-Achse)
+        euler.z = atan2(m(1, 0), m(1, 1));
+
+        return euler;
     }
 }
