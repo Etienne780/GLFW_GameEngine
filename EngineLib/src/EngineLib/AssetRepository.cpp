@@ -194,7 +194,7 @@ namespace EngineCore {
         {
             g_materialEngineDefaultId = rm.AddMaterial(g_shaderEngineDefaultId);
             Material* mat = rm.GetMaterial(g_materialEngineDefaultId);
-            mat->SetParam("texture", g_textureEngineCursedmod3Id);
+            mat->SetParam("texture", g_textureEngineMissingId);
         }
         #pragma endregion
 
