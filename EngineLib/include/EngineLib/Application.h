@@ -68,6 +68,10 @@ public:
 	void App_Application_Set_Window_Cursor_Hidden(bool value);
 	void App_Application_Set_CloseAppOnWindowClose(bool value);
 	void App_Application_Set_WindowClose();
+	/*
+	* @brief same as glfwSetWindowShouldClose(App_Application_Get_Window(), true);
+	*/
+	void App_Application_CloseWindow();
 
 	// OpenGL
 	void App_OpenGL_Get_Version(int& major, int& minor) const;
