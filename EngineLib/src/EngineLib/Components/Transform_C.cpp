@@ -71,6 +71,40 @@ namespace EngineCore {
 			}
 		}
 
+		void Transform::LookAt(float x, float y, float z) {
+			LookAt(x, y, z, Vector3::up);
+		}
+
+		void Transform::LookAt(float x, float y, float z, const Vector3& worldUp) {
+			Vector3 forward = (Vector3{x, y, z} - GetWorldPosition()).Normalize();
+			Matrix4x4 rotMat = GLTransform4x4::LookRotation(forward, worldUp);
+
+			Vector3 eulerRad = GLTransform4x4::MatrixToEuler(rotMat);
+			Vector3 eulerDeg{
+				ConversionUtils::ToDegrees(eulerRad.x),
+				ConversionUtils::ToDegrees(eulerRad.y),
+				ConversionUtils::ToDegrees(eulerRad.z)
+			};
+			SetRotation(eulerDeg);
+		}
+
+		void Transform::LookAt(const Vector3& target) {
+			LookAt(target, Vector3::up);
+		}
+
+		void Transform::LookAt(const Vector3& target, const Vector3& worldUp) {
+			Vector3 forward = (target - GetWorldPosition()).Normalize();
+			Matrix4x4 rotMat = GLTransform4x4::LookRotation(forward, worldUp);
+
+			Vector3 eulerRad = GLTransform4x4::MatrixToEuler(rotMat);
+			Vector3 eulerDeg{
+				ConversionUtils::ToDegrees(eulerRad.x),
+				ConversionUtils::ToDegrees(eulerRad.y),
+				ConversionUtils::ToDegrees(eulerRad.z)
+			};
+			SetRotation(eulerDeg);
+		}
+
 		#pragma region Get
 
 		Vector3 Transform::GetLocalPosition() const {

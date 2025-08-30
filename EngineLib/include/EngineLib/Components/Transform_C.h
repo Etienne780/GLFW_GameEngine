@@ -17,6 +17,11 @@ namespace EngineCore {
 
 			COMPONENT_TYPE_DEFINITION(Transform);
 
+			void LookAt(float x, float y, float z);
+			void LookAt(float x, float y, float z, const Vector3& worldUp);
+			void LookAt(const Vector3& target);
+			void LookAt(const Vector3& target, const Vector3& worldUp);
+
 			/**
 			* @brief Gets the Position local to the parent GameObject if it has one
 			*/
