@@ -46,12 +46,12 @@ namespace EngineCore {
 		while (m_isEngineRunning) {
 			bool hasWindow = m_window != nullptr;
 
-			Update(glfwGetTime());
-
 			if (hasWindow) {
 				glfwSwapBuffers(m_window);
 				glfwPollEvents();
 			}
+
+			Update(glfwGetTime());
 
 			if (hasWindow && glfwWindowShouldClose(m_window)) {
 				if (m_app->m_appApplicationCloseAppOnWindowClose)
