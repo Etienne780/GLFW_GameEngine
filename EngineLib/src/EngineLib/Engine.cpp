@@ -31,6 +31,7 @@ namespace EngineCore {
 
 #ifndef NDEBUG
 		m_debugger = std::unique_ptr<Debugger>(new Debugger(this));
+		m_debugger->Init();
 #endif
 
 		PrintApplicationHeader();
@@ -99,19 +100,11 @@ namespace EngineCore {
 
 	void Engine::LateUpdate() {
 #ifndef NDEBUG
-		static bool isDebugModeInitCalled = false;
 		if (m_app->m_appDebugActive) {
-			if(!isDebugModeInitCalled) m_debugger->Init();
-			isDebugModeInitCalled = true;
 			m_debugger->Update();
 			m_app->m_appDebugIsCursorLockDisabled = m_debugger->GetCursorLock();
 			m_app->m_appDebugIsDebugCameraActive = m_debugger->IsDebugCameraActive();
 		}
-		else {
-			if(isDebugModeInitCalled) m_debugger->Shutdown();
-			isDebugModeInitCalled = false;
-		}
-
 		Input::SetLockDebug(!m_debugger->GetCursorLock());
 #endif 
 
@@ -121,9 +114,7 @@ namespace EngineCore {
 	void Engine::Shutdown() {
 		m_app->Shutdown();
 #ifndef NDEBUG
-		if (m_app->m_appDebugActive) {
-			m_debugger->Shutdown();
-		}
+		m_debugger->Shutdown();
 #endif 
 		GameObjectManager::Shutdown();
 		ResourceManager& rm = ResourceManager::GetInstance();

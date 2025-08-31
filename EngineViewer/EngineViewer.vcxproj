@@ -19,11 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AssetManager.cpp" />
+    <ClCompile Include="src\Exporter.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\EngineViewer.cpp" />
+    <ClCompile Include="src\ProjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AssetManager.h" />
     <ClInclude Include="include\EngineViewer.h" />
+    <ClInclude Include="include\Exporter.h" />
+    <ClInclude Include="include\ProjectManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
