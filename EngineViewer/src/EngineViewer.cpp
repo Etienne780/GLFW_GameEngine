@@ -1,10 +1,7 @@
-#include "EngineViewerDataStruct.h"
-#include "UI.h"
 #include "EngineViewer.h"
 
 using namespace EngineCore;
 
-EngineViewerData engineViewerData;
 EngineViewer::EngineViewer()
 	: Application("Engine Viewer", "1.0.0") {
 
@@ -21,20 +18,25 @@ EngineViewer::EngineViewer()
 }
 
 void EngineViewer::Start() {
-	UI::Setup(&engineViewerData, App_Application_Get_Window(), glfwGetPrimaryMonitor());
+	App_OpenGL_Set_DepthTesting(true);
+	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
+	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	App_OpenGL_Set_FaceCulling(true);
+
+	auto go = GameObject::Create("Test");
+	go->AddComponent<Component::MeshRenderer>()
+		->SetMesh(ASSETS::ENGINE::MESH::Cube())
+		->SetMaterial(ASSETS::ENGINE::MATERIAL::Default());
 }
 
 void EngineViewer::Update() {
-    if (Input::KeyJustPressed(GLFW_KEY_ESCAPE))
+    if (Input::KeyJustPressed(KeyCode::ESCAPE))
         App_Application_Set_WindowClose();
 
-
-
-	// UI::StartDraw();
-	// // RenderGame
-	// UI::EndDraw();// Renders UI
+	if (Input::KeyJustPressed(KeyCode::H)) {
+		App_Debug_Set_Active(!App_Debug_Get_Active());
+	}
 }
 
 void EngineViewer::Shutdown() {
-	UI::Shutdown();
 }

@@ -1,7 +1,7 @@
 #include "EngineViewer.h"
 
 int main() {
-	EngineCore::Engine engine(std::make_unique<EngineViewer>();
+	EngineCore::Engine engine(std::make_shared<EngineViewer>());
 
 	const int result = engine.EngineStart();
 	if (result != 0) {
