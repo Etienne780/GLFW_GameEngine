@@ -24,7 +24,7 @@ namespace EngineCore::ASSETS::ENGINE::MESH {
 	unsigned int Cube() { return g_engineMeshCubeID; }
 }
 
-namespace EngineCore::ASSETSD::ENGINE::SHADER {
+namespace EngineCore::ASSETS::ENGINE::SHADER {
     unsigned int Default() { return g_engineShaderDefaultID; }
 }
 
