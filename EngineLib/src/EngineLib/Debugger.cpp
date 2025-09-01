@@ -66,8 +66,6 @@ namespace EngineCore {
 
 		ImGui::StyleColorsDark();
 
-		DebugCameraInit();
-
 		ImGui_ImplGlfw_InitForOpenGL(m_window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 		Log::Debug("ImGui Debugger initialized");
@@ -80,6 +78,10 @@ namespace EngineCore {
 		cam->AddCameraLayer(RenderLayer::GetLayerIndex("Debug"));
 		m_debugCameraGO->AddComponent<Component::FreeCameraController>()->m_isZoomDisabled = true;
 		m_debugCameraGO->Disable(true);
+	}
+
+	void Debugger::Start() {
+		DebugCameraInit();
 	}
 
 	void Debugger::Update() {
@@ -103,17 +105,19 @@ namespace EngineCore {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
-	void Debugger::Shutdown() {
+	void Debugger::Close() {
 		GameObject::Delete(m_debugCameraGO);
 		m_debugCameraGO = nullptr;
-		m_hierarchySelectedGO = nullptr;
-
-		m_debuggerWindows->Shutdown();
 
 		m_cursorLock = true;
 		if (auto app = m_app.lock()) {
 			app->App_Application_Set_Window_Cursor_LockHidden(true);
 		}
+	}
+
+	void Debugger::Shutdown() {
+		m_hierarchySelectedGO = nullptr;
+		m_debuggerWindows->Shutdown();
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();

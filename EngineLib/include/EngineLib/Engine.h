@@ -54,6 +54,7 @@ namespace EngineCore {
 
 #ifndef NDEBUG
 		std::unique_ptr<Debugger> m_debugger = nullptr;
+		bool m_isDebuggerStart = false;
 #endif 
 		GLFWwindow* m_window = nullptr;
 		GameObjectManager* m_gameObjectManager = nullptr;

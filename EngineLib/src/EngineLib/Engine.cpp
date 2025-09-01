@@ -101,9 +101,19 @@ namespace EngineCore {
 	void Engine::LateUpdate() {
 #ifndef NDEBUG
 		if (m_app->m_appDebugActive) {
+			if (!m_isDebuggerStart) {
+				m_debugger->Start();
+				m_isDebuggerStart = true;
+			}
 			m_debugger->Update();
 			m_app->m_appDebugIsCursorLockDisabled = m_debugger->GetCursorLock();
 			m_app->m_appDebugIsDebugCameraActive = m_debugger->IsDebugCameraActive();
+		}
+		else {
+			if (m_isDebuggerStart) {
+				m_debugger->Close();
+				m_isDebuggerStart = false;
+			}
 		}
 		Input::SetLockDebug(!m_debugger->GetCursorLock());
 #endif 
