@@ -32,8 +32,8 @@ void GenerateTest(int index) {
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 70; // horizontale Segmente
-size_t cubeCountPhi = 50;   // vertikale Segmente
+size_t cubeCountTheta = 25; // horizontale Segmente
+size_t cubeCountPhi = 20;   // vertikale Segmente
 float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_DepthTesting(true);
@@ -46,10 +46,15 @@ void Project::Start() {
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 
-	auto go = GameObject::Create("debug box");
+	ResourceManager& rm = ResourceManager::GetInstance();
+	auto matID = rm.AddMaterial(ASSETS::ENGINE::SHADER::Default());
+	auto mat = rm.GetMaterial(matID);
+	mat->SetParam("texture", ASSETS::ENGINE::TEXTURE::Cursedmod3());
+
+	auto go = GameObject::Create("box");
 	go->GetTransform()->SetScale(20, 20 ,20);
 	auto mr = go->AddComponent<Component::MeshRenderer>();
-	mr->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(ASSETS::ENGINE::MATERIAL::Default());
+	mr->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(matID);
 
 	GenerateCubesSphere();
 
