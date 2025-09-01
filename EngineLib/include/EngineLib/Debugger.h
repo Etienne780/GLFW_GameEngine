@@ -25,7 +25,9 @@ namespace EngineCore {
 		~Debugger();
 
 		void Init();
+		void Start();
 		void Update();
+		void Close();
 		void Shutdown();
 
 		bool GetCursorLock() const;
