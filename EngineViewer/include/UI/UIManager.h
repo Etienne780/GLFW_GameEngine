@@ -1,6 +1,8 @@
 #pragma once
-#include <memory>
 #include <ImGui/imgui.h>
+
+#include "UI/ProjectManagerUI.h"
+#include "UI/AssetManagerUI.h"
 
 class ProjectManager;
 class AssetManager;
@@ -18,8 +20,8 @@ public:
     void Shutdown();
 
 private:
-    std::unique_ptr<ProjectManagerUI> m_projectManagerUI = nullptr;
-    std::unique_ptr<AssetManagerUI> m_assetManagerUI = nullptr;
+    ProjectManagerUI m_projectManagerUI{ nullptr };
+    AssetManagerUI m_assetManagerUI{ nullptr };
 
     void BeginFrame();
 };

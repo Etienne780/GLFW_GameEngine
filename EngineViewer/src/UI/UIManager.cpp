@@ -8,8 +8,8 @@
 #include <GLFW/glfw3.h>
 
 void UIManager::Init(void* window, ProjectManager* projectManager, AssetManager* assetManager) {
-    m_projectManagerUI = std::make_unique<ProjectManagerUI>(projectManager);
-    m_assetManagerUI = std::make_unique<AssetManagerUI>(assetManager);
+    m_projectManagerUI = ProjectManagerUI(projectManager);
+    m_assetManagerUI = AssetManagerUI(assetManager);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -30,8 +30,8 @@ void UIManager::BeginFrame() {
 void UIManager::Render() {
     BeginFrame();
 
-    if (!m_projectManagerUI->GetManager()->HasProjectOpen()) {
-        m_projectManagerUI->DrawSelectProject();
+    if (!m_projectManagerUI.GetManager()->HasProjectOpen()) {
+        m_projectManagerUI.DrawSelectProject();
     }
     else {
         
