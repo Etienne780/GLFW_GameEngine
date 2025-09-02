@@ -1,20 +1,24 @@
 #include "ProjectManager.h"
 
 void ProjectManager::Open() {
-	do {
-		
-	} while (true);
+	
 }
 
 void ProjectManager::Close() {
 
 }
 
-
-void ProjectManager::Update() {
-
+bool ProjectManager::HasProjectOpen() const { 
+	return m_state == ProjectState::Opened; 
 }
 
+ProjectState ProjectManager::GetState() const { 
+	return m_state; 
+}
+
+const std::string& ProjectManager::GetProjectName() const { 
+	return m_name; 
+}
 
 void ProjectManager::LoadSettings() {
 

@@ -1,6 +1,7 @@
 #include <EngineLib/ComponentRendererImGui.h>
 #include "EngineViewer.h"
 #include "AssetManager.h"
+#include "UI/UIManager.h"
 #include "ProjectManager.h"
 #include "Exporter.h"
 
@@ -10,6 +11,7 @@ using namespace EngineCore;
 static AssetManager g_AssetManager;
 static ProjectManager g_ProjectManager;
 static Exporter g_Exporter;
+static UIManager g_UIManager;
 
 EngineViewer::EngineViewer()
 	: Application("Engine Viewer", "1.0.0") {
@@ -32,22 +34,23 @@ void EngineViewer::Start() {
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	App_OpenGL_Set_FaceCulling(true);
 
+	g_UIManager.Init(App_Application_Get_Window(), &g_ProjectManager, &g_AssetManager);
+
 	// opens file dialog to open a project
 	g_ProjectManager.Open();
 }
 
 void EngineViewer::Update() {
-    if (Input::KeyJustPressed(KeyCode::ESCAPE))
-        App_Application_Set_WindowClose();
 
-	// Top bar
-	g_ProjectManager.Update();
-	// Renders and updates asset manager
-	g_AssetManager.Update();
+	g_UIManager.Render();
+
+	if (Input::KeyJustPressed(KeyCode::ESCAPE))
+		App_Application_Set_WindowClose();
 }
 
 void EngineViewer::Shutdown() {
 	g_ProjectManager.Close();
+	g_UIManager.Shutdown();
 }
 
 /*
