@@ -10,6 +10,10 @@ namespace EngineCore {
 		: m_name(name), m_gameObjectID(goID) {
 	}
 
+	ComponentBase::ComponentBase(const std::string& name, ExecutionOrder executionOrder, unsigned int goID)
+		: m_name(name), m_executionOrder(executionOrder), m_gameObjectID(goID) {
+	}
+
 	void ComponentBase::CUpdate() {
 		UpdateAlwaysImpl();
 		if (m_isDisabled) 

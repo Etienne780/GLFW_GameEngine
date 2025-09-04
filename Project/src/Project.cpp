@@ -20,15 +20,6 @@ Project::Project()
 
 void GenerateCubesSphere();
 
-void GenerateTest(int index) {
-	auto parent = GameObject::Create(FormatUtils::formatString("Test_parent_{}", index));
-	parent->AddComponent<Component::MeshRenderer>()->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(ASSETS::ENGINE::MATERIAL::Default());
-	auto child = GameObject::Create(FormatUtils::formatString("Test_child_{}", index));
-	child->AddComponent<Component::MeshRenderer>()->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(ASSETS::ENGINE::MATERIAL::Default());
-	child->SetParent(parent);
-	child->GetTransform()->AddPosition(20,0,0);
-}
-
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
@@ -56,8 +47,7 @@ void Project::Start() {
 	auto mr = go->AddComponent<Component::MeshRenderer>();
 	mr->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(matID);
 
-	GenerateCubesSphere();
-
+	// GenerateCubesSphere();
 }
 
 void GenerateCubesSphere() {
@@ -102,7 +92,7 @@ void Project::Update() {
 		App_Debug_Set_Active(!App_Debug_Get_Active());
 	}
 
-	UpdateCubesSphere(Time::GetTime());
+	// UpdateCubesSphere(Time::GetTime());
 }
 
 void Project::Shutdown() {

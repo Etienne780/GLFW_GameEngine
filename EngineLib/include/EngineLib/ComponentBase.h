@@ -54,7 +54,18 @@ namespace EngineCore {
 		}
 
 	protected:
+		// needs to be a normal enum so that it can be easly used as an index(order). Dosent have to be a enum class 
+		// because it is only visible in ComponentBase and subclasses
+		// components get sorted when added to a GO
+		enum ExecutionOrder {
+			ScriptComponent = 0,
+			BaseComponent,
+			PhysicsComponent,
+			CollisionComponent
+		};
+
 		ComponentBase(const std::string& name, unsigned int goID);
+		ComponentBase(const std::string& name, ExecutionOrder executionOrder, unsigned int goID);
 
 		bool m_alive = true;
 		bool m_isDisabled = false;
@@ -80,6 +91,9 @@ namespace EngineCore {
 		void CSubmitDrawCall();
 		virtual void SubmitDrawCall() {}
 		virtual void OnInspectorGUIImpl(IUIRenderer& ui) { ui.DrawLabel("No Component UI defined"); }
+	
+	private:
+		ExecutionOrder m_executionOrder = ExecutionOrder::BaseComponent;
 	};
 
 }

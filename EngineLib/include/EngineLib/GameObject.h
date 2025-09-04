@@ -13,6 +13,7 @@ namespace EngineCore {
 	class GameObjectManager;
 
 	class GameObject : public std::enable_shared_from_this<GameObject> {
+	friend class ComponentBase;
 	friend class GameObjectManager;
 	public:
 		~GameObject();
@@ -105,7 +106,6 @@ namespace EngineCore {
 		bool m_hasCamera = false;
 
 		std::vector<std::shared_ptr<ComponentBase>> m_components;
-		std::vector<std::shared_ptr<ComponentBase>> m_drawComponents;
 
 		/**
 		* @brief calls the start and update methods of the components
@@ -116,6 +116,10 @@ namespace EngineCore {
 		void RegisterCamera(std::weak_ptr<Component::Camera> camera);
 		void UnregisterCamera(std::weak_ptr<Component::Camera> camera);
 		void UnregisterCameraFromManager();
+		/*
+		* @brief sorts all the components of this gameobject after the ExecutionOrder enum
+		*/
+		void SortComponents();
 		/**
 		* @brief sets all the components alive variabel to false
 		*/

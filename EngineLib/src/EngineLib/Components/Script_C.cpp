@@ -1,3 +1,4 @@
+#include <CoreLib/FormatUtils.h>
 #include "EngineLib\Components\Script_C.h"
 
 namespace EngineCore {
@@ -7,8 +8,8 @@ namespace EngineCore {
 	ResourceManager& Script::resourceManager = EngineCore::ResourceManager::GetInstance();
 	Application* Script::app = nullptr;
 
-	Script::Script(const std::string& scriptName, unsigned int gameObjectID) :
-		ComponentBase(compName + "(" + scriptName + ")", gameObjectID) {
+	Script::Script(const std::string& scriptName, unsigned int gameObjectID)
+		: ComponentBase(FormatUtils::formatString("{}({})", compName, scriptName), ScriptComponent, gameObjectID){
 		app = Application::GetInstance();
 	}
 

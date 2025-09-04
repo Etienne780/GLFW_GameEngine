@@ -100,14 +100,10 @@ namespace EngineCore {
 
 	std::vector<std::shared_ptr<ComponentBase>> GameObject::GetAllComponents() const {
 		std::vector<std::shared_ptr<ComponentBase>> comps;
-		comps.reserve(m_components.size() + m_drawComponents.size() + 1);
+		comps.reserve(m_components.size() + 1);
 
 		comps.push_back(m_transform);
 		for (auto& comp : m_components) {
-			comps.push_back(comp);
-		}
-
-		for (auto& comp : m_drawComponents) {
 			comps.push_back(comp);
 		}
 
@@ -324,19 +320,11 @@ namespace EngineCore {
 		for (auto& comp : m_components) {
 			comp->CUpdate();
 		}
-
-		for (auto& comp : m_drawComponents) {
-			comp->CUpdate();
-		}
 	}
 
 	void GameObject::UpdateComponentIDs() {
 		m_transform->m_gameObjectID = m_id;
 		for (auto& comp : m_components) {
-			comp->m_gameObjectID = m_id;
-		}
-
-		for (auto& comp : m_drawComponents) {
 			comp->m_gameObjectID = m_id;
 		}
 	}
@@ -353,6 +341,13 @@ namespace EngineCore {
 		if (!m_hasCamera) return;
 		auto c = GetComponent<Component::Camera>();
 		m_gameObjectManager->RemoveCamera(c);
+	}
+
+	void GameObject::SortComponents() {
+		std::sort(m_components.begin(), m_components.end(), 
+		[](const std::shared_ptr<ComponentBase>& a, const std::shared_ptr<ComponentBase>& b) {
+			return a->m_executionOrder < b->m_executionOrder;
+		});
 	}
 
 	void GameObject::UnaliveComponents() {
@@ -374,8 +369,10 @@ namespace EngineCore {
 		if (m_isDisabled)
 			return;
 
-		for (auto& comp : m_drawComponents) {
-			comp->CSubmitDrawCall();
+		for (auto& comp : m_components) {
+			if (comp->IsDrawable()) {
+				comp->CSubmitDrawCall();
+			}
 		}
 	}
 
