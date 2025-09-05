@@ -10,7 +10,7 @@
 
 namespace EngineCore {
 
-	unsigned int Shader::GetID() {
+	Asset_ShaderID Shader::GetID() {
 		return m_ID;
 	}
 
@@ -18,7 +18,7 @@ namespace EngineCore {
 		GLint currentProgram = 0;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 
-		return (static_cast<GLint>(m_ID) == currentProgram);
+		return (static_cast<GLint>(m_ID.value) == currentProgram);
 	}
 
 	Shader::Shader() {
@@ -72,11 +72,11 @@ namespace EngineCore {
 	}
 
 	void Shader::Bind() {
-		if (m_ID == ENGINE_INVALID_ID) {
+		if (m_ID.value == ENGINE_INVALID_ID) {
 			Log::Warn("Shader: Could not Use Shader. GL ShaderProgram was not created");
 			return;
 		}
-		glUseProgram(m_ID);
+		glUseProgram(m_ID.value);
 	}
 
 	void Shader::Unbind() {
@@ -85,7 +85,7 @@ namespace EngineCore {
 	}
 
 	void Shader::CreateGL() {
-		if (m_ID != ENGINE_INVALID_ID) return;
+		if (m_ID.value != ENGINE_INVALID_ID) return;
 
 		if (m_vertexCode.empty() || m_fragmentCode.empty()) {
 			Log::Warn("Shader: Could not create Shader. Shader code '{}' was empty!",
@@ -123,15 +123,15 @@ namespace EngineCore {
 			Log::Error("Shader: FRAGMENT::COMPILATION_FAILED\n{}", infoLog);
 		};
 
-		m_ID = glCreateProgram();
-		glAttachShader(m_ID, vertex);
-		glAttachShader(m_ID, fragment);
-		glLinkProgram(m_ID);
+		m_ID.value = glCreateProgram();
+		glAttachShader(m_ID.value, vertex);
+		glAttachShader(m_ID.value, fragment);
+		glLinkProgram(m_ID.value);
 		// print linking errors if any
-		glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
+		glGetProgramiv(m_ID.value, GL_LINK_STATUS, &success);
 		if (!success)
 		{
-			glGetProgramInfoLog(m_ID, 512, NULL, infoLog);
+			glGetProgramInfoLog(m_ID.value, 512, NULL, infoLog);
 			Log::Error("Shader: PROGRAM::LINKING_FAILED\n{}", infoLog);
 		}
 		// delete shaders; they’re linked into our program and no longer necessary
@@ -140,13 +140,13 @@ namespace EngineCore {
 	}
 
 	void Shader::DeleteGL() {
-		if (m_ID == ENGINE_INVALID_ID) return;
-		glDeleteProgram(m_ID);
-		m_ID = ENGINE_INVALID_ID;
+		if (m_ID.value == ENGINE_INVALID_ID) return;
+		glDeleteProgram(m_ID.value);
+		m_ID.value = ENGINE_INVALID_ID;
 	}
 
 	bool Shader::CanSetValue(const std::string& funcName, const std::string& paramName) const {
-		if (m_ID == ENGINE_INVALID_ID) {
+		if (m_ID.value == ENGINE_INVALID_ID) {
 			Log::Warn("Shader: Could not {} ({}). Shader was not created", funcName, paramName);
 			return false;
 		}
@@ -161,37 +161,37 @@ namespace EngineCore {
 	void Shader::SetBool(const std::string& name, bool value) const {
 		if (!CanSetValue("SetBool", name)) return;
 
-		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
+		glUniform1i(glGetUniformLocation(m_ID.value, name.c_str()), (int)value);
 	}
 
 	void Shader::SetInt(const std::string& name, int value) const {
 		if (!CanSetValue("SetInt", name)) return;
 
-		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
+		glUniform1i(glGetUniformLocation(m_ID.value, name.c_str()), value);
 	}
 
 	void Shader::SetFloat(const std::string& name, float value) const {
 		if (!CanSetValue("SetFloat", name)) return;
 
-		glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+		glUniform1f(glGetUniformLocation(m_ID.value, name.c_str()), value);
 	}
 
 	void Shader::SetVector2(const std::string& name, const Vector2& value) const {
 		if (!CanSetValue("SetVector2", name)) return;
 
-		glUniform2f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y);
+		glUniform2f(glGetUniformLocation(m_ID.value, name.c_str()), value.x, value.y);
 	}
 
 	void Shader::SetVector3(const std::string& name, const Vector3& value) const {
 		if (!CanSetValue("SetVector3", name)) return;
 
-		glUniform3f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z);
+		glUniform3f(glGetUniformLocation(m_ID.value, name.c_str()), value.x, value.y, value.z);
 	}
 
 	void Shader::SetVector4(const std::string& name, const Vector4& value) const {
 		if (!CanSetValue("SetVector4", name)) return;
 
-		glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
+		glUniform4f(glGetUniformLocation(m_ID.value, name.c_str()), value.x, value.y, value.z, value.w);
 	}
 
 #pragma region SetMatrix
@@ -253,7 +253,7 @@ namespace EngineCore {
 #pragma endregion
 
 	int Shader::GetUniformLocation(const std::string& name) const {
-		int location = glGetUniformLocation(m_ID, name.c_str());
+		int location = glGetUniformLocation(m_ID.value, name.c_str());
 		if (location == -1) {
 			Log::Warn("Shader: Param {} was not found", name);
 			return -1;

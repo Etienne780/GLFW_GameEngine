@@ -9,12 +9,12 @@ namespace EngineCore {
 
 	unsigned int Material::m_maxTextureUnits = 0;
 
-	Material::Material(unsigned int shaderID) 
+	Material::Material(Asset_ShaderID shaderID) 
 		: m_shaderID(shaderID){
 	}
 
 	Shader* Material::BindToShader() const {
-		if (m_shaderID == ENGINE_INVALID_ID) {
+		if (m_shaderID.value == ENGINE_INVALID_ID) {
 			Log::Error("Material: Cant apply params to shader, shaderID is invalid!");
 			return nullptr;
 		}
@@ -25,7 +25,7 @@ namespace EngineCore {
 			return nullptr;
 		}
 
-		if (shader->GetID() == ENGINE_INVALID_ID)
+		if (shader->GetID().value == ENGINE_INVALID_ID)
 			shader->CreateGL();
 		shader->Bind();
 
@@ -68,7 +68,7 @@ namespace EngineCore {
 		unsigned int counter = 0;
 		for (const auto& [name, value] : m_textureParams) {
 			if (counter >= m_maxTextureUnits) break;
-			if (value == ENGINE_INVALID_ID) continue;
+			if (value.value == ENGINE_INVALID_ID) continue;
 
 			Texture2D* texture = rm.GetTexture2D(value);
 			if (texture) {
@@ -125,7 +125,7 @@ namespace EngineCore {
 
 	std::string Material::GetParamString() const {
 		std::string pStr = FormatUtils::formatString("Material params:\n");
-		pStr.append(FormatUtils::formatString(" - ShaderID: {}\n", m_shaderID));
+		pStr.append(FormatUtils::formatString(" - ShaderID: {}\n", m_shaderID.value));
 
 		for (const auto& [name, value] : m_boolParams) {
 			pStr.append(FormatUtils::formatString(" - bool: {}; {}\n", name, value));
@@ -157,13 +157,13 @@ namespace EngineCore {
 		}
 
 		for (const auto& [name, value] : m_textureParams) {
-			pStr.append(FormatUtils::formatString(" - textureID: {}; {}\n", name, value));
+			pStr.append(FormatUtils::formatString(" - textureID: {}; {}\n", name, value.value));
 		}
 
 		return pStr;
 	}
 
-	unsigned int Material::GetShaderID() const {
+	Asset_ShaderID Material::GetShaderID() const {
 		return m_shaderID;
 	}
 

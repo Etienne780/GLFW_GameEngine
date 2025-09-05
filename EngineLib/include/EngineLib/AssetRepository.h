@@ -1,4 +1,5 @@
 #pragma once
+#include "EngineTypes.h"
 
 namespace EngineCore {
 	
@@ -6,20 +7,20 @@ namespace EngineCore {
 
 		namespace ENGINE {
 			namespace TEXTURE {
-				unsigned int Missing();
-				unsigned int Cursedmod3();
+				Asset_Texture2DID Missing();
+				Asset_Texture2DID Cursedmod3();
 			}
 
 			namespace MESH {
-				unsigned int Cube();
+				Asset_MeshID Cube();
 			}
 
 			namespace SHADER {
-				unsigned int Default();
+				Asset_ShaderID Default();
 			}
 
 			namespace MATERIAL {
-				unsigned int Default();
+				Asset_MaterialID Default();
 			}
 		}
 	

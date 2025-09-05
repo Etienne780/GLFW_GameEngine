@@ -150,7 +150,6 @@ namespace EngineCore {
 		m_height = height;
 		m_nrChannels = nrChannels;
 
-		GLenum m_format;
 		if (data) {
 			GLenum dataFormat, internalFormat;
 			if (m_nrChannels == 1) {

@@ -16,7 +16,7 @@ namespace EngineCore {
 	friend class Engine;
 	public:
 		Material() = default;
-		Material(unsigned int shaderID);
+		Material(Asset_ShaderID shaderID);
 
 		template<typename T>
 		void SetParam(const std::string& name, const T& value);
@@ -28,11 +28,11 @@ namespace EngineCore {
 		void ApplyParamsOnly(Shader* s) const;
 
 		std::string GetParamString() const;
-		unsigned int GetShaderID() const;
+		Asset_ShaderID GetShaderID() const;
 		
 	private:
 		static unsigned int m_maxTextureUnits;
-		unsigned int m_shaderID = ENGINE_INVALID_ID;
+		Asset_ShaderID m_shaderID = Asset_ShaderID(ENGINE_INVALID_ID);
 
 		std::unordered_map<std::string, bool> m_boolParams;
 		std::unordered_map<std::string, int> m_intParams;
@@ -41,7 +41,7 @@ namespace EngineCore {
 		std::unordered_map<std::string, Vector3> m_vector3Params;
 		std::unordered_map<std::string, Vector4> m_vector4Params;
 		std::unordered_map<std::string, Matrix> m_matrixParams;
-		std::unordered_map<std::string, unsigned int> m_textureParams;
+		std::unordered_map<std::string, Asset_Texture2DID> m_textureParams;
 
 		void SetMatrixParam(Shader* shader, const std::string& name, Matrix m) const;
 	};

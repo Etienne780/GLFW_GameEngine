@@ -2,34 +2,31 @@
 #include <glad/glad.h>
 #include <CoreLib\Log.h>
 
-#include "EngineLib\ResourceManager.h"
-#include "EngineLib\Vertex.h"
-#include "EngineLib\EngineTypes.h"
-#include "EngineLib\AssetRepository.h"
+#include "EngineLib/ResourceManager.h"
+#include "EngineLib/Vertex.h"
+#include "EngineLib/AssetRepository.h"
 
-namespace {
-    unsigned int g_engineTextureMissingID = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_engineTextureCursedmod3ID = EngineCore::ENGINE_INVALID_ID;
-	unsigned int g_engineMeshCubeID = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_engineShaderDefaultID = EngineCore::ENGINE_INVALID_ID;
-    unsigned int g_engineMaterialDefaultID = EngineCore::ENGINE_INVALID_ID;
-}
+EngineCore::Asset_Texture2DID g_engineTextureMissingID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Asset_Texture2DID g_engineTextureCursedmod3ID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Asset_MeshID g_engineMeshCubeID = EngineCore::Asset_MeshID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Asset_ShaderID g_engineShaderDefaultID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Asset_MaterialID g_engineMaterialDefaultID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
 
 namespace EngineCore::ASSETS::ENGINE::TEXTURE {
-    unsigned int Missing() { return g_engineTextureMissingID; }
-    unsigned int Cursedmod3() { return g_engineTextureCursedmod3ID; }
+    Asset_Texture2DID Missing() { return g_engineTextureMissingID; }
+    Asset_Texture2DID Cursedmod3() { return g_engineTextureCursedmod3ID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MESH {
-	unsigned int Cube() { return g_engineMeshCubeID; }
+	Asset_MeshID Cube() { return g_engineMeshCubeID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::SHADER {
-    unsigned int Default() { return g_engineShaderDefaultID; }
+    Asset_ShaderID Default() { return g_engineShaderDefaultID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
-    unsigned int Default() { return g_engineMaterialDefaultID; }
+    Asset_MaterialID Default() { return g_engineMaterialDefaultID; }
 }
 
 namespace EngineCore {

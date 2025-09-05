@@ -19,12 +19,12 @@ namespace EngineCore {
 		}
 
 		void MeshRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {
-			ui.DrawLabel(FormatUtils::formatString("Mesh ID: {}", m_meshID));
-			ui.DrawLabel(FormatUtils::formatString("Material ID: {}", m_materialID));
+			ui.DrawLabel(FormatUtils::formatString("Mesh ID: {}", m_meshID.value));
+			ui.DrawLabel(FormatUtils::formatString("Material ID: {}", m_materialID.value));
 			ui.DrawCheckbox("Mesh Inverted", &m_invertMesh);
 		}
 
-		MeshRenderer* MeshRenderer::SetMesh(unsigned int id) {
+		MeshRenderer* MeshRenderer::SetMesh(Asset_MeshID id) {
 			if (IsDead("Cant set mesh")) {
 				return this;
 			}
@@ -37,7 +37,7 @@ namespace EngineCore {
 			return this;
 		}
 
-		MeshRenderer* MeshRenderer::SetMaterial(unsigned int id) {
+		MeshRenderer* MeshRenderer::SetMaterial(Asset_MaterialID id) {
 			if (IsDead("Cant set material")) {
 				return this;
 			}

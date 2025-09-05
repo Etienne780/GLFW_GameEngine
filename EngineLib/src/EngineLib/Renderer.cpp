@@ -36,11 +36,11 @@ namespace EngineCore {
         });
         
         Shader* currentShader = nullptr;
-        unsigned int currentShaderID = ENGINE_INVALID_ID;
+        Asset_ShaderID currentShaderID(ENGINE_INVALID_ID);
         Material* currentMaterial = nullptr;
-        unsigned int currentMaterialID = ENGINE_INVALID_ID;
+        Asset_MaterialID currentMaterialID(ENGINE_INVALID_ID);
         Mesh* currentMesh = nullptr;
-        unsigned int currentMeshID = ENGINE_INVALID_ID;
+        Asset_MeshID currentMeshID(ENGINE_INVALID_ID);
         bool currentInvertMesh = false;
         
         ResourceManager& rm = ResourceManager::GetInstance();
@@ -82,21 +82,21 @@ namespace EngineCore {
                 flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
         
-                if (cmd.materialID == ENGINE_INVALID_ID) continue;
+                if (cmd.materialID.value == ENGINE_INVALID_ID) continue;
         
                 currentMaterialID = cmd.materialID;
                 currentMaterial = rm.GetMaterial(currentMaterialID);
                 if (!currentMaterial) {
-                    currentMaterialID = ENGINE_INVALID_ID;
+                    currentMaterialID.value = ENGINE_INVALID_ID;
                     continue;
                 }
         
-                unsigned int newShaderID = currentMaterial->GetShaderID();
+                Asset_ShaderID newShaderID = currentMaterial->GetShaderID();
                 if (currentShaderID != newShaderID) {
                     currentShaderID = newShaderID;
                     currentShader = currentMaterial->BindToShader();
                     if (!currentShader) {
-                        currentShaderID = ENGINE_INVALID_ID;
+                        currentShaderID.value = ENGINE_INVALID_ID;
                         continue;
                     }
                     currentShader->SetMatrix4("projection", cameraProjectionMat.ToOpenGLData());
@@ -107,8 +107,8 @@ namespace EngineCore {
                 }
             }
         
-            if (currentMaterialID == ENGINE_INVALID_ID ||
-                currentShaderID == ENGINE_INVALID_ID) {
+            if (currentMaterialID.value == ENGINE_INVALID_ID ||
+                currentShaderID.value == ENGINE_INVALID_ID) {
                 continue;
             }
         
@@ -123,7 +123,7 @@ namespace EngineCore {
                 currentInvertMesh = cmd.invertMesh;
         
                 if (!currentMesh) {
-                    currentMeshID = ENGINE_INVALID_ID;
+                    currentMeshID.value = ENGINE_INVALID_ID;
                     continue;
                 }
             }

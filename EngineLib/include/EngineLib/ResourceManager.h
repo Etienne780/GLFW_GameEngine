@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Material.h"
+#include "EngineTypes.h"
 
 namespace EngineCore {
 
@@ -18,37 +19,40 @@ namespace EngineCore {
         void operator=(const ResourceManager&) = delete;
 
         // Creates opengl object
-        void CreateGLTexture2D(unsigned int id);
+        void CreateGLTexture2D(Asset_Texture2DID id);
         // Creates opengl object
-        void CreateGLMesh(unsigned int id);
+        void CreateGLMesh(Asset_MeshID id);
         // Creates opengl object
-        void CreateGLShader(unsigned int id);
+        void CreateGLShader(Asset_ShaderID id);
         
         // Deletes opengl object
-        void DeleteGLTexture2D(unsigned int id);
+        void DeleteGLTexture2D(Asset_Texture2DID id);
         // Deletes opengl object
-        void DeleteGLMesh(unsigned int id);
+        void DeleteGLMesh(Asset_MeshID id);
         // Deletes opengl object
-        void DeleteGLShader(unsigned int id);
+        void DeleteGLShader(Asset_ShaderID id);
 
-        Texture2D* GetTexture2D(unsigned int id);
-        Mesh* GetMesh(unsigned int id);
-        Shader* GetShader(unsigned int id);
-        Material* GetMaterial(unsigned int id);
+        Texture2D* GetTexture2D(Asset_Texture2DID id);
+        Mesh* GetMesh(Asset_MeshID id);
+        Shader* GetShader(Asset_ShaderID id);
+        Material* GetMaterial(Asset_MaterialID id);
 
-        unsigned int AddTexture2DFromFile(const std::string& path);
-        unsigned int AddTexture2DFromMemory(const unsigned char* data, int width, int height, int channels);
-        unsigned int AddMeshFromFile(const std::string& path);
-        unsigned int AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);
-        unsigned int AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
-        unsigned int AddShaderFromMemory(const std::string& vertexCode, const std::string& fragmentCode);
-        unsigned int AddMaterial(unsigned int shaderID);
+        Asset_Texture2DID AddTexture2DFromFile(const std::string& path);
+        Asset_Texture2DID AddTexture2DFromMemory(const unsigned char* data, int width, int height, int channels);
+        Asset_MeshID AddMeshFromFile(const std::string& path);
+        Asset_MeshID AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);
+        Asset_ShaderID AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
+        Asset_ShaderID AddShaderFromMemory(const std::string& vertexCode, const std::string& fragmentCode);
+        Asset_MaterialID AddMaterial(Asset_ShaderID shaderID);
 
     private:
-        unsigned int ASSET_TEXTURE2D = 0;
-        unsigned int ASSET_MESH = 1;
-        unsigned int ASSET_SHADER = 2;
-        unsigned int ASSET_MATERIAL = 3;
+        enum class IDCounter{
+            TEXTURE2D = 0,
+            MESH,
+            SHADER,
+            MATERIAL,
+        };
+
         struct IDCounters {
             unsigned int m_texture2DIDCounter = 0;
             unsigned int m_meshIDCounter = 0;
@@ -57,12 +61,12 @@ namespace EngineCore {
             unsigned int m_default = 0;
 
             IDCounters() = default;
-            unsigned int& operator[](unsigned int index) {
-                switch (index) {
-                case 0: return m_texture2DIDCounter;
-                case 1: return m_meshIDCounter;
-                case 2: return m_shaderIDCounter;
-                case 3: return m_materialsIDCounter;
+            unsigned int& operator[](IDCounter counter) {
+                switch (counter) {
+                case IDCounter::TEXTURE2D: return m_texture2DIDCounter;
+                case IDCounter::MESH: return m_meshIDCounter;
+                case IDCounter::SHADER: return m_shaderIDCounter;
+                case IDCounter::MATERIAL: return m_materialsIDCounter;
                 default: return m_default;
                 }
             }
@@ -70,13 +74,13 @@ namespace EngineCore {
 
         ResourceManager() = default;
 
-        unsigned int GetNewUniqueId(int assetIndex);
+        unsigned int GetNewUniqueId(IDCounter counter);
 
         IDCounters m_idCounters;
-        std::unordered_map<unsigned int, std::unique_ptr<Texture2D>> m_texture2Ds;
-        std::unordered_map<unsigned int, std::unique_ptr<Mesh>> m_meshes;
-        std::unordered_map<unsigned int, std::unique_ptr<Shader>> m_shaders;
-        std::unordered_map<unsigned int, std::unique_ptr<Material>> m_materials;
+        std::unordered_map<Asset_Texture2DID, std::unique_ptr<Texture2D>> m_texture2Ds;
+        std::unordered_map<Asset_MeshID, std::unique_ptr<Mesh>> m_meshes;
+        std::unordered_map<Asset_ShaderID, std::unique_ptr<Shader>> m_shaders;
+        std::unordered_map<Asset_MaterialID, std::unique_ptr<Material>> m_materials;
 
         void Cleanup();
     };
