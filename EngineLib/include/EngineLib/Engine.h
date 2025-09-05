@@ -78,3 +78,59 @@ namespace EngineCore {
 	};
 
 }
+
+/*
+features:
+Input
+- Get just pressed/released keys
+- Get pressed/released keys
+- Get mouse pos
+- Get delta mouse pos
+- Can be locked by the engine 
+
+Time
+- Get time
+- Get delta time
+- Get frame count
+
+Application
+- application state
+
+GameObjects
+- Can have a specific RenderLayer
+- Can have components
+- Can have childs
+- Can be Persistant
+
+Components
+- Transform
+- Camera
+- - Can see diffrent kind of Render-Layers
+- MeshRenderer
+- Script
+- - FreeCameraScript
+
+ResourceManager
+- Texture2D
+- Mesh
+- Shader
+- Material
+
+Render-Layers
+- Add custom Render-Layers
+
+Renderer
+- Renders batches
+- Renders what the camera can see
+
+Debugger with ImGui
+- General stats
+- Hierarchy
+- Inspector
+- Camera
+- Console
+
+Simple Profiler
+- section start/end
+- get the data
+*/
