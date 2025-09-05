@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include "EngineTypes.h"
+
 namespace EngineCore {
 
 	class RenderLayer {
@@ -14,27 +16,27 @@ namespace EngineCore {
 		* @param layerName Name of the layer to add.
 		* @return The index of the newly added layer.
 		*/
-		static unsigned int AddLayer(const std::string& layerName);
+		static RenderLayerID AddLayer(const std::string& layerName);
 
 		/*
 		* @brief Retrieves the name of a render layer given its index.
-		* @param layerIndex The index of the layer.
+		* @param layerID The ID of the layer.
 		* @return The name of the layer, or "UNKNOWN" if not found.
 		*/
-		static std::string GetLayerName(unsigned int layerIndex);
+		static std::string GetLayerName(RenderLayerID layerID);
 
 		/*
-		* @brief Retrieves the index of a render layer given its name.
+		* @brief Retrieves the ID of a render layer given its name.
 		* @param layerName The name of the layer.
-		* @return The index of the layer.
+		* @return The ID of the layer.
 		*/
-		static unsigned int GetLayerIndex(const std::string& layerName);
+		static RenderLayerID GetLayerID(const std::string& layerName);
 
 		/*
 		* @brief Returns a reference to the internal mapping of layer names to their indices.
 		* @return The map of all layer names and their corresponding indices.
 		*/
-		static const std::unordered_map<std::string, unsigned int>& GetLayers();
+		static const std::unordered_map<std::string, RenderLayerID>& GetLayers();
 
 		/*
 		* @brief Returns a vector containing all layer names.
@@ -43,10 +45,10 @@ namespace EngineCore {
 		static std::vector<std::string> GetLayerNames();
 
 		/*
-		* @brief Returns a vector containing all layer indices.
-		* @return A vector of all layer indices.
+		* @brief Returns a vector containing all layer IDs.
+		* @return A vector of all layer IDs.
 		*/
-		static std::vector<unsigned int> GetLayerIndices();
+		static std::vector<RenderLayerID> GetLayerIDs();
 
 		/*
 		* @brief Returns the total number of layers currently defined.
@@ -56,7 +58,7 @@ namespace EngineCore {
 
 	private:
 		// Internal mapping of layer names to their unique indices
-		static inline std::unordered_map<std::string, unsigned int> m_layers;
+		static inline std::unordered_map<std::string, RenderLayerID> m_layers;
 
 		// Counter to assign the next available layer index
 		static inline unsigned int m_layerCounter = 0;

@@ -17,7 +17,7 @@ namespace EngineCore {
     }
 
     void Renderer::Submit(const RenderCommand& cmd) {
-        if (cmd.renderLayer == -1)
+        if (cmd.renderLayer.value == ENGINE_INVALID_ID)
             return;
         m_commands.push_back(cmd);
     }
@@ -56,7 +56,7 @@ namespace EngineCore {
         }
         Matrix4x4 cameraProjectionMat = camptr->GetProjectionMatrix();
         Matrix4x4 cameraViewMat = camptr->GetViewMatrix();
-        const std::vector<unsigned int>& renderLayers = camptr->GetRenderLayers();
+        const std::vector<RenderLayerID>& renderLayers = camptr->GetRenderLayers();
         
         auto flushBatch = [&](Mesh* mesh, Shader* shader, bool invert, const std::vector<Matrix4x4>& matrices) {
             if (mesh && shader && !matrices.empty()) {

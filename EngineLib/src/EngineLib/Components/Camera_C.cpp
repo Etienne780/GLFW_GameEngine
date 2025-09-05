@@ -17,7 +17,7 @@ namespace EngineCore {
 		Camera::Camera(GameObjectID gameObjectID) :
 			ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
-			m_renderLayers.push_back(RenderLayer::GetLayerIndex("Default"));
+			m_renderLayers.push_back(RenderLayer::GetLayerID("Default"));
 		}
 
 		void Camera::OnInspectorGUIImpl(IUIRenderer& ui) {
@@ -45,6 +45,31 @@ namespace EngineCore {
 
 			ui.DrawDragFloat("Near Plane", &m_nearPlane, 0.01f, 0.01f, m_farPlane - 0.01f);
 			ui.DrawDragFloat("Far Plane", &m_farPlane, 1.0f, m_nearPlane + 0.01f, 10000.0f);
+
+
+			if (ui.DrawCollapsingHeader("Render-Layers", false)) {
+				auto renderLayers = RenderLayer::GetLayers();
+				for (const auto& [name, ID] : renderLayers) {
+					auto it = std::find(m_renderLayers.begin(), m_renderLayers.end(), ID);
+					bool check = (it != m_renderLayers.end());
+					bool preCheck = check;
+					ui.DrawCheckbox(name, &check);
+
+					if (preCheck != check) {
+						if (check) {
+							// Add layer
+							m_renderLayers.push_back(ID);
+						}
+						else {
+							// Remove layer
+							auto it = std::find(m_renderLayers.begin(), m_renderLayers.end(), ID);
+							if (it != m_renderLayers.end()) {
+								m_renderLayers.erase(it);
+							}
+						}
+					}
+				}
+			}
 
 			m_projectionChanged = true;
 		}
@@ -122,7 +147,7 @@ namespace EngineCore {
 			return m_view;
 		}
 
-		const std::vector<unsigned int>& Camera::GetRenderLayers() const {
+		const std::vector<RenderLayerID>& Camera::GetRenderLayers() const {
 			return m_renderLayers;
 		}
 
@@ -201,12 +226,12 @@ namespace EngineCore {
 			return *this;
 		}
 
-		Camera& Camera::SetCameraLayers(std::vector<unsigned int> renderLayers) {
+		Camera& Camera::SetCameraLayers(std::vector<RenderLayerID> renderLayers) {
 			m_renderLayers = renderLayers;
 			return *this;
 		}
 
-		Camera& Camera::AddCameraLayer(unsigned int renderLayer) {
+		Camera& Camera::AddCameraLayer(RenderLayerID renderLayer) {
 			m_renderLayers.push_back(renderLayer);
 			return *this;
 		}

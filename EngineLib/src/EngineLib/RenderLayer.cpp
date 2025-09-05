@@ -6,26 +6,29 @@
 
 namespace EngineCore {
 
-	unsigned int RenderLayer::AddLayer(const std::string& layerName) {
+	RenderLayerID RenderLayer::AddLayer(const std::string& layerName) {
 		if (m_lock) {
 			Log::Warn("Renderlayer: Cant add Layer '{}', Layers can only be added in the start method", layerName);
-			return -1;
+			return RenderLayerID(ENGINE_INVALID_ID);
 		}
 		std::string lowerName = FormatUtils::toLowerCase(layerName);
 
-		m_layers.emplace(lowerName, m_layerCounter);
-		return m_layerCounter++;
+		// RenderLayerID r(m_layerCounter++);
+		RenderLayerID r(m_layerCounter);
+		m_layerCounter++;
+		m_layers.emplace(lowerName, r);
+		return r;
 	}
 
-	std::string RenderLayer::GetLayerName(unsigned int layerIndex) {
-		for (const auto& [name, index] : m_layers) {
-			if (index == layerIndex)
+	std::string RenderLayer::GetLayerName(RenderLayerID layerID) {
+		for (const auto& [name, ID] : m_layers) {
+			if (ID == layerID)
 				return name;
 		}
 		return "UNKNOWN";
 	}
 
-	unsigned int RenderLayer::GetLayerIndex(const std::string& layerName) {
+	RenderLayerID RenderLayer::GetLayerID(const std::string& layerName) {
 		std::string lowerName = FormatUtils::toLowerCase(layerName);
 
 		auto it = m_layers.find(lowerName);
@@ -33,11 +36,11 @@ namespace EngineCore {
 			return it->second;
 		}
 
-		return ENGINE_INVALID_ID;
+		return RenderLayerID(ENGINE_INVALID_ID);
 	}
 
 
-	const std::unordered_map<std::string, unsigned int>& RenderLayer::GetLayers() {
+	const std::unordered_map<std::string, RenderLayerID>& RenderLayer::GetLayers() {
 		return m_layers;
 	}
 
@@ -51,8 +54,8 @@ namespace EngineCore {
 		return names;
 	}
 
-	std::vector<unsigned int> RenderLayer::GetLayerIndices() {
-		std::vector<unsigned int> indices;
+	std::vector<RenderLayerID> RenderLayer::GetLayerIDs() {
+		std::vector<RenderLayerID> indices;
 		indices.reserve(m_layers.size());
 
 		for (const auto& [name, id] : m_layers) {

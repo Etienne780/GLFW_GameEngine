@@ -180,11 +180,11 @@ namespace EngineCore {
 		return m_parentObjPtr;
 	}
 
-	unsigned int GameObject::GetRenderLayer() {
+	RenderLayerID GameObject::GetRenderLayer() {
 		if (IsDead("Cant get render-layer")) {
-			return -1;
+			return RenderLayerID(ENGINE_INVALID_ID);
 		}
-		return m_renderLayerIndex;
+		return m_renderLayerID;
 	}
 
 	const std::vector<std::shared_ptr<GameObject>>& GameObject::GetChildren() const {
@@ -229,21 +229,21 @@ namespace EngineCore {
 		return this;
 	}
 
-	GameObject* GameObject::SetRenderLayer(unsigned int renderLayerIndex) {
+	GameObject* GameObject::SetRenderLayer(RenderLayerID renderLayerID) {
 		if (IsDead("Cant set render-layer")) {
 			return this;
 		}
 
-		if (renderLayerIndex >= RenderLayer::GetLayerCount()) {
-			Log::Error("GameObject: Cant set renderLayerIndex");
+		if (renderLayerID.value >= RenderLayer::GetLayerCount()) {
+			Log::Error("GameObject: Cant set render-layer, render-layer({}) dosent exist", renderLayerID.value);
 			return this;
 		}
 
-		m_renderLayerIndex = renderLayerIndex;
+		m_renderLayerID = renderLayerID;
 		return this;
 	}
 
-	GameObject* GameObject::SetRenderLayerInChildren(unsigned int renderLayerIndex) {
+	GameObject* GameObject::SetRenderLayerInChildren(RenderLayerID renderLayerID) {
 		if (IsDead("Cant set render-layer in children")) {
 			return this;
 		}
@@ -251,19 +251,19 @@ namespace EngineCore {
 		// sets the renderLayer of childs 
 		if (!m_childObjPtrs.empty()) {
 			for (auto& childs : m_childObjPtrs) {
-				childs->SetRenderLayer(renderLayerIndex);
+				childs->SetRenderLayerAll(renderLayerID);
 			}
 		}
 		return this;
 	}
 
-	GameObject* GameObject::SetRenderLayerAll(unsigned int renderLayerIndex) {
+	GameObject* GameObject::SetRenderLayerAll(RenderLayerID renderLayerID) {
 		if (IsDead("Cant set render-layer all")) {
 			return this;
 		}
 
-		SetRenderLayer(renderLayerIndex);
-		SetRenderLayerInChildren(renderLayerIndex);
+		SetRenderLayer(renderLayerID);
+		SetRenderLayerInChildren(renderLayerID);
 		return this;
 	}
 

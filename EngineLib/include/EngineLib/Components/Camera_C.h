@@ -31,7 +31,7 @@ namespace EngineCore {
 			float GetFarPlane() const;
 			Matrix4x4 GetProjectionMatrix();
 			Matrix4x4 GetViewMatrix();
-			const std::vector<unsigned int>& GetRenderLayers() const;
+			const std::vector<RenderLayerID>& GetRenderLayers() const;
 
 			Camera& SetFOV(float fov);
 			Camera& SetOrthograpic(bool value);
@@ -47,14 +47,14 @@ namespace EngineCore {
 			Camera& SetNearPlane(float nearPlane);
 			Camera& SetFarPlane(float farPlane);
 			Camera& SetPlanes(float nearPlane, float farPlane);
-			Camera& SetCameraLayers(std::vector<unsigned int> renderLayers);
-			Camera& AddCameraLayer(unsigned int renderLayer);
+			Camera& SetCameraLayers(std::vector<RenderLayerID> renderLayers);
+			Camera& AddCameraLayer(RenderLayerID renderLayer);
 
 		private:
 			// gets updatet in the engine loop (before the update loop of the application)
 			static int m_windowWidth, m_windowHeight;
 			std::shared_ptr<GameObject> m_gameObject;
-			std::vector<unsigned int> m_renderLayers;
+			std::vector<RenderLayerID> m_renderLayers;
 
 			float m_fov = 66.0f;
 			bool m_isOrthograpic = false;

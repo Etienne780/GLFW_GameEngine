@@ -37,17 +37,19 @@ namespace EngineCore {
 	struct ShaderTag {};
 	struct MaterialTag {};
 	struct GameObjectTag {};
+	struct RenderLayerTag {};
 
 	using Asset_Texture2DID = EngineID<Texture2DTag>;
 	using Asset_MeshID = EngineID<MeshTag>;
 	using Asset_ShaderID = EngineID<ShaderTag>;
 	using Asset_MaterialID = EngineID<MaterialTag>;
 	using GameObjectID = EngineID<GameObjectTag>;
+	using RenderLayerID = EngineID<RenderLayerTag>;
 
 	struct RenderCommand {
 		Asset_MaterialID materialID = Asset_MaterialID(ENGINE_INVALID_ID);
 		Asset_MeshID meshID = Asset_MeshID(ENGINE_INVALID_ID);
-		unsigned int renderLayer = -1;
+		RenderLayerID renderLayer = RenderLayerID(ENGINE_INVALID_ID);
 		const Matrix4x4* modelMatrix = nullptr;
 		bool invertMesh = false;
 	};
