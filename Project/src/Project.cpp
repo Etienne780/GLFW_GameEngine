@@ -1,4 +1,5 @@
-﻿#include "Project.h"
+﻿#include "Scenes.h"
+#include "Project.h"
 
 using namespace EngineCore;
 
@@ -18,14 +19,8 @@ Project::Project()
 	// Log::SaveLogs("Logs/");
 }
 
-void GenerateCubesSphere();
-
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
-std::shared_ptr<Component::Transform> containerTrans = nullptr;
 
-size_t cubeCountTheta = 25; // horizontale Segmente
-size_t cubeCountPhi = 20;   // vertikale Segmente
-float sphereRadius = 50.0f;
 void Project::Start() {
 	App_OpenGL_Set_DepthTesting(true);
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
@@ -37,47 +32,7 @@ void Project::Start() {
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 
-	ResourceManager& rm = ResourceManager::GetInstance();
-	auto matID = rm.AddMaterial(ASSETS::ENGINE::SHADER::Default());
-	auto mat = rm.GetMaterial(matID);
-	mat->SetParam("texture", ASSETS::ENGINE::TEXTURE::Cursedmod3());
-
-	auto go = GameObject::Create("box");
-	go->GetTransform()->SetScale(20, 20 ,20);
-	auto mr = go->AddComponent<Component::MeshRenderer>();
-	mr->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(matID);
-
-	// GenerateCubesSphere();
-}
-
-void GenerateCubesSphere() {
-	auto container = GameObject::Create("Container");
-	containerTrans = container->GetTransform();
-
-	for (size_t i = 0; i < cubeCountTheta; ++i) {
-		float theta = static_cast<float>((static_cast<float>(i) / cubeCountTheta) * 2.0f * CORE_PI);
-
-		for (size_t j = 0; j < cubeCountPhi; ++j) {
-			float phi = static_cast<float>((static_cast<float>(j) / cubeCountPhi) * CORE_PI);
-
-			float x = sphereRadius * sin(phi) * cos(theta);
-			float y = sphereRadius * cos(phi);
-			float z = sphereRadius * sin(phi) * sin(theta);
-
-			auto cubeGO = GameObject::Create(FormatUtils::formatString("Cube_{}_{}", i, j));
-			cubeGO->SetParent(container);
-			auto mr = cubeGO->AddComponent<Component::MeshRenderer>();
-			mr->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(ASSETS::ENGINE::MATERIAL::Default());
-
-			cubeGO->GetTransform()->SetPosition(x, y, z);
-			cubeGO->GetTransform()->SetScale(5, 5, 5);
-			cubeGO->GetTransform()->LookAt(0, 0, 0);
-		}
-	}
-}
-
-void UpdateCubesSphere(float time) {
-	containerTrans->SetRotation(time * 20, time * 30, 0);
+	Scenes::Start();
 }
 
 void Project::Update() {
@@ -91,8 +46,6 @@ void Project::Update() {
 	if (Input::KeyJustPressed(KeyCode::H)) {
 		App_Debug_Set_Active(!App_Debug_Get_Active());
 	}
-
-	// UpdateCubesSphere(Time::GetTime());
 }
 
 void Project::Shutdown() {
