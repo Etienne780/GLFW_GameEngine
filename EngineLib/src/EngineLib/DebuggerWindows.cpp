@@ -242,7 +242,7 @@ namespace EngineCore {
             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(static_cast<int>(color.x), static_cast<int>(color.y), static_cast<int>(color.z), 255));
         }
 
-        bool open = ImGui::TreeNodeEx((void*)(intptr_t)obj->GetID(), flags, "%s", obj->GetName().c_str());
+        bool open = ImGui::TreeNodeEx((void*)(intptr_t)obj->GetID().value, flags, "%s", obj->GetName().c_str());
 
         if (obj->IsDisabled() || obj->IsPersistent()) {
             ImGui::PopStyleColor();
@@ -298,7 +298,7 @@ namespace EngineCore {
         ImGui::Begin("Inspector", &m_hierarchyWin);
         {
             auto selectedGO = m_debugger->m_hierarchySelectedGO;
-            if (selectedGO) {
+            if (selectedGO && selectedGO->IsAlive()) {
                 // ----- GameObject small checkbox -----
                 bool goDisabled = !selectedGO->IsDisabled();
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2)); // smaller checkbox
@@ -334,6 +334,7 @@ namespace EngineCore {
                 }
             }
             else {
+                m_debugger->m_hierarchySelectedGO = nullptr;
                 ImGui::Text("No GameObject selected");
             }
         }

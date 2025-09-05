@@ -6,11 +6,11 @@
 
 namespace EngineCore {
 
-	ComponentBase::ComponentBase(const std::string& name, unsigned int goID)
+	ComponentBase::ComponentBase(const std::string& name, GameObjectID goID)
 		: m_name(name), m_gameObjectID(goID) {
 	}
 
-	ComponentBase::ComponentBase(const std::string& name, ExecutionOrder executionOrder, unsigned int goID)
+	ComponentBase::ComponentBase(const std::string& name, ExecutionOrder executionOrder, GameObjectID goID)
 		: m_name(name), m_executionOrder(executionOrder), m_gameObjectID(goID) {
 	}
 
@@ -47,15 +47,15 @@ namespace EngineCore {
 		return m_gameObject;
 	}
 
-	unsigned int ComponentBase::GetGameObjectID() const {
+	GameObjectID ComponentBase::GetGameObjectID() const {
 		if (IsDead("Cant get GameObjectID")) {
-			return ENGINE_INVALID_ID;
+			return GameObjectID(ENGINE_INVALID_ID);
 		}
 
 		return m_gameObjectID;
 	}
 
-	const unsigned int* ComponentBase::GetGameObjectIDPtr() const {
+	const GameObjectID* ComponentBase::GetGameObjectIDPtr() const {
 		if (IsDead("Cant get GameObjectID")) {
 			return nullptr;
 		}

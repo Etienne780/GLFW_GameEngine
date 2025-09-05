@@ -36,11 +36,13 @@ namespace EngineCore {
 	struct MeshTag {};
 	struct ShaderTag {};
 	struct MaterialTag {};
+	struct GameObjectTag {};
 
 	using Asset_Texture2DID = EngineID<Texture2DTag>;
 	using Asset_MeshID = EngineID<MeshTag>;
 	using Asset_ShaderID = EngineID<ShaderTag>;
 	using Asset_MaterialID = EngineID<MaterialTag>;
+	using GameObjectID = EngineID<GameObjectTag>;
 
 	struct RenderCommand {
 		Asset_MaterialID materialID = Asset_MaterialID(ENGINE_INVALID_ID);

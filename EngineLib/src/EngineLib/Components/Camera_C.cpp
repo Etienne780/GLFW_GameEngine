@@ -14,7 +14,7 @@ namespace EngineCore {
 		int Camera::m_windowWidth = 1;
 		int Camera::m_windowHeight = 1;
 
-		Camera::Camera(unsigned int gameObjectID) :
+		Camera::Camera(GameObjectID gameObjectID) :
 			ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
 			m_renderLayers.push_back(RenderLayer::GetLayerIndex("Default"));

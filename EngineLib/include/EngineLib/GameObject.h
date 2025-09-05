@@ -32,7 +32,7 @@ namespace EngineCore {
 		* @brief Deletes all GameObjects including persistent ones.
 		*/
 		static void DeleteAll();
-		static std::shared_ptr<GameObject> Get(unsigned int id);
+		static std::shared_ptr<GameObject> Get(GameObjectID id);
 		static std::shared_ptr<GameObject> Get(const std::string& name);
 		static std::shared_ptr<Component::Camera> GetMainCamera();
 		static void SetMainCamera(std::shared_ptr<Component::Camera> camera);
@@ -58,6 +58,7 @@ namespace EngineCore {
 		GameObject* Disable(bool value);
 		bool IsDisabled() const;
 		bool IsPersistent() const;
+		bool IsAlive() const;
 
 		std::shared_ptr<Component::Transform> GetTransform();
 		std::string GetName() const;
@@ -66,14 +67,14 @@ namespace EngineCore {
 		*        Note: For persistent GameObjects, the ID may change during runtime.
 		* @return The current ID of the GameObject.
 		*/
-		unsigned int GetID() const;
+		GameObjectID GetID() const;
 		/*
 		* @brief Returns a pointer to the internal ID of this GameObject.
 		*        Useful for persistent GameObjects, where the ID may be updated dynamically.
 		*        Do NOT modify the ID through this pointer, as it may cause internal inconsistencies.
 		* @return Pointer to the internal ID.
 		*/
-		const unsigned int* GetIDPtr() const;
+		const GameObjectID* GetIDPtr() const;
 		std::shared_ptr<GameObject> GetParent() const;
 		unsigned int GetRenderLayer();
 		const std::vector<std::shared_ptr<GameObject>>& GetChildren() const;
@@ -94,7 +95,7 @@ namespace EngineCore {
 
 		static inline GameObjectManager* m_gameObjectManager = nullptr;
 
-		unsigned int m_id = ENGINE_INVALID_ID;
+		GameObjectID m_id = GameObjectID(ENGINE_INVALID_ID);
 		unsigned int m_renderLayerIndex = 0;
 		bool m_alive = true;
 		bool m_isPersistent = false;

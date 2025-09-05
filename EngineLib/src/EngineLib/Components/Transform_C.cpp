@@ -9,7 +9,7 @@ namespace EngineCore {
 		
 		const std::string compName = "Transform";
 
-		Transform::Transform(unsigned int gameObjectID) :
+		Transform::Transform(GameObjectID gameObjectID) :
 			ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
 		}

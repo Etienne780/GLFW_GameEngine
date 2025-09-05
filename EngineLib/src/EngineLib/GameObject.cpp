@@ -78,14 +78,14 @@ namespace EngineCore {
 
 	#pragma endregion
 
-	std::shared_ptr<GameObject> GameObject::Get(unsigned int id) {
+	std::shared_ptr<GameObject> GameObject::Get(GameObjectID id) {
 #ifndef NDEBUG
-		auto go = m_gameObjectManager->GetGameObject(id);
+		auto go = m_gameObjectManager->GetGameObject(id.value);
 		if (!go)
-			Log::Warn("GameObject: no GameObject with ID '{}' found!", id);
+			Log::Warn("GameObject: no GameObject with ID '{}' found!", id.value);
 		return go;
 #endif
-		return m_gameObjectManager->GetGameObject(id);
+		return m_gameObjectManager->GetGameObject(id.value);
 	}
 
 	std::shared_ptr<GameObject> GameObject::Get(const std::string& name) {
@@ -139,6 +139,10 @@ namespace EngineCore {
 		return m_isPersistent;
 	}
 
+	bool GameObject::IsAlive() const {
+		return m_alive;
+	}
+
 	#pragma region Get
 
 	std::shared_ptr<Component::Transform> GameObject::GetTransform() {
@@ -155,14 +159,14 @@ namespace EngineCore {
 		return m_name;
 	}
 
-	unsigned int GameObject::GetID() const {
+	GameObjectID GameObject::GetID() const {
 		if (IsDead("Cant get id")) {
-			return ENGINE_INVALID_ID;
+			return GameObjectID(ENGINE_INVALID_ID);
 		}
 		return m_id;
 	}
 
-	const unsigned int* GameObject::GetIDPtr() const {
+	const GameObjectID* GameObject::GetIDPtr() const {
 		if (IsDead("Cant get id ptr")) {
 			return nullptr;
 		}
@@ -378,7 +382,7 @@ namespace EngineCore {
 
 	bool GameObject::IsDead(const std::string& msg) const {
 		if (!m_alive) {
-			Log::Warn("GameObject: {}, GameObject '{}({})' was deleted!", msg, m_name, m_id);
+			Log::Warn("GameObject: {}, GameObject '{}({})' was deleted!", msg, m_name, m_id.value);
 			return true;
 		}
 		return false;

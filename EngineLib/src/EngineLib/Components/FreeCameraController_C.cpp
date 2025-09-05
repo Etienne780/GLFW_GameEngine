@@ -5,7 +5,7 @@ namespace EngineCore {
 
 	namespace Component {
 
-		FreeCameraController::FreeCameraController(unsigned int gameObjectID) 
+		FreeCameraController::FreeCameraController(GameObjectID gameObjectID)
 			: Script("FreeCameraController", gameObjectID) {
 			auto go = GetGameObject();
 			m_camera = go->GetComponent<Component::Camera>();

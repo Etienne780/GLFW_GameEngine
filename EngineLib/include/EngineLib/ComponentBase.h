@@ -35,7 +35,7 @@ namespace EngineCore {
 		*        Note: For persistent GameObjects, the ID may change during runtime.
 		* @return The current ID of the associated GameObject.
 		*/
-		unsigned int GetGameObjectID() const;
+		GameObjectID GetGameObjectID() const;
 
 		/*
 		* @brief Returns a pointer to the internal ID of the GameObject this Component belongs to.
@@ -43,7 +43,7 @@ namespace EngineCore {
 		*        Do NOT modify the ID through this pointer, as it may cause internal inconsistencies.
 		* @return Pointer to the internal GameObject ID.
 		*/
-		const unsigned int* GetGameObjectIDPtr() const;
+		const GameObjectID* GetGameObjectIDPtr() const;
 
 
 		virtual ComponentTypeID GetTypeID() const { return ENGINE_INVALID_ID; }
@@ -64,13 +64,13 @@ namespace EngineCore {
 			CollisionComponent
 		};
 
-		ComponentBase(const std::string& name, unsigned int goID);
-		ComponentBase(const std::string& name, ExecutionOrder executionOrder, unsigned int goID);
+		ComponentBase(const std::string& name, GameObjectID goID);
+		ComponentBase(const std::string& name, ExecutionOrder executionOrder, GameObjectID goID);
 
 		bool m_alive = true;
 		bool m_isDisabled = false;
 		std::string m_name;
-		unsigned int m_gameObjectID = ENGINE_INVALID_ID;
+		GameObjectID m_gameObjectID = GameObjectID(ENGINE_INVALID_ID);
 		mutable std::shared_ptr<GameObject> m_gameObject = nullptr;
 		/**
 		* @brief checks if the gameobject is Dead

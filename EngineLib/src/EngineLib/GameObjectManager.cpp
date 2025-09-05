@@ -44,7 +44,7 @@ namespace EngineCore {
 	void GameObjectManager::AddGameObject(std::shared_ptr<GameObject> go) {
 		if (!go) return;
 
-		auto goPtr = GetGameObject(go->GetID());
+		auto goPtr = GetGameObject(go->GetID().value);
 		if (goPtr) {
 			Log::Warn("GameObjectManager: GameObject '{}' already added", go->GetName());
 			return;
@@ -69,7 +69,7 @@ namespace EngineCore {
 
 	bool GameObjectManager::DeleteGameObject(unsigned int id) {
 		for (auto& obj : m_gameObjects) {
-			if (obj->GetID() == id) {
+			if (obj->GetID().value == id) {
 				DeleteGameObjectInternal(obj);
 				return true;
 			}
@@ -99,7 +99,7 @@ namespace EngineCore {
 		}
 		
 		// adds free id to the pool
-		unsigned int id = gameObjectPtr->GetID();
+		unsigned int id = gameObjectPtr->GetID().value;
 		if (id != ENGINE_INVALID_ID) {
 			m_freeIDs.push(id);
 		}
@@ -126,7 +126,7 @@ namespace EngineCore {
 
 		for (auto& obj : m_gameObjects) {
 			if (obj->IsPersistent()) {
-				obj->m_id = newID++;
+				obj->m_id = GameObjectID(newID++);
 				obj->UpdateComponentIDs();
 				persistentObjects.push_back(obj);
 			}
@@ -172,10 +172,10 @@ namespace EngineCore {
 				unsigned int mid = startIndex + (endIndex - startIndex) / 2;
 				auto go = m_gameObjects[mid];
 		
-				if (go->GetID() == id) {
+				if (go->GetID().value == id) {
 					return go;
 				}
-				else if (go->GetID() > id) {
+				else if (go->GetID().value > id) {
 					if (mid == 0) break;
 					endIndex = mid - 1;
 				}
@@ -187,7 +187,7 @@ namespace EngineCore {
 		
 		// lineare Suche
 		for (auto& obj : m_gameObjects) {
-			if (obj->GetID() == id) {
+			if (obj->GetID().value == id) {
 				return obj;
 			}
 		}
@@ -337,7 +337,7 @@ namespace EngineCore {
 		std::unordered_set<unsigned int> usedIDs;
 		usedIDs.reserve(m_gameObjects.size());
 		for (auto& go : m_gameObjects) {
-			usedIDs.insert(go->GetID());
+			usedIDs.insert(go->GetID().value);
 		}
 
 		unsigned int found = 0;
@@ -379,7 +379,7 @@ namespace EngineCore {
 		auto objptr = obj.lock();
 		outStr.append("|- ");
 		outStr.append(objptr->GetName());
-		unsigned int id = objptr->GetID();
+		unsigned int id = objptr->GetID().value;
 		if (id == ENGINE_INVALID_ID)
 			outStr.append("(INVALID_ID)");
 		else 

@@ -11,7 +11,7 @@ namespace EngineCore {
 		class Transform : public EngineCore::ComponentBase {
 		friend class GameObject;
 		public:
-			Transform(unsigned int gameObjectID);
+			Transform(GameObjectID gameObjectID);
 			void OnInspectorGUIImpl(IUIRenderer& ui) override;
 			bool CanDisalbe() const override { return false; }
 

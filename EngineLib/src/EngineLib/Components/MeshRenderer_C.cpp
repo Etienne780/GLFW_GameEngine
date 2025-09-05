@@ -13,7 +13,7 @@ namespace EngineCore {
 		Renderer& MeshRenderer::m_renderer = Renderer::GetInstance();
 		const std::string compName = "MeshRenderer";
 
-		MeshRenderer::MeshRenderer(unsigned int gameObjectID) :
+		MeshRenderer::MeshRenderer(GameObjectID gameObjectID) :
 			ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
 		}

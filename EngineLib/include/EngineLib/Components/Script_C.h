@@ -8,7 +8,7 @@ namespace EngineCore {
 
 	class Script : public ComponentBase {
 	protected:
-		Script(const std::string& scriptName, unsigned int gameObjectID);
+		Script(const std::string& scriptName, GameObjectID gameObjectID);
 
 		virtual void Update() {};
 		virtual void UpdateAlways() {};
