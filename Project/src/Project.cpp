@@ -32,7 +32,7 @@ void Project::Start() {
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 
-	Scenes::Start();
+	Scenes::Test();
 }
 
 void Project::Update() {
