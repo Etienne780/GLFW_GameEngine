@@ -6,109 +6,109 @@
 #include "../EngineTypes.h"
 
 namespace EngineCore {
-	
+
 	namespace StylingAttribute {
 		/*
 		* @brief Layouts the elements inside of a container
-		* @param valueHor:, valueVer: start, center, end, stretch 
+		* @param valueHor:, valueVer: start, center, end, stretch
 		*/
-		const char* layout = "engine_layout";
+		constexpr const char* layout = "layout";
 		/*
 		* @brief Horizontal Layouting of elements inside of a container
 		* @param start, center, end, stretch
 		*/
-		const char* layoutHor = "engine_layoutHor";
+		constexpr const char* layoutHor = "layoutHor";
 		/*
 		* @brief Vertical Layouting of elements inside of a container
 		* @param start, center, end, stretch
 		*/
-		const char* layoutVer = "engine_layoutVer";
+		constexpr const char* layoutVer = "layoutVer";
 		/*
 		* @brief Layouts the whole content inside of a container
 		* @param valueHor:, valueVer: start, center, end, space-evenly, space-around
 		*/
-		const char* layoutContent = "engine_layoutContent";
+		constexpr const char* layoutContent = "layoutContent";
 		/*
 		* @brief Horizontal Layouting of the whole content inside of a container
 		* @param start, center, end, space-evenly, space-around
 		*/
-		const char* layoutContentHor = "engine_layoutContentHor";
+		constexpr const char* layoutContentHor = "layoutContentHor";
 		/*
 		* @brief Vertical Layouting of the whole content inside of a container
 		* @param start, center, end, space-evenly, space-around
 		*/
-		const char* layoutContentVer = "engine_layoutContentVer";
+		constexpr const char* layoutContentVer = "layoutContentVer";
 		/*
 		* @brief Direction in which the elements will arranged
 		* @param row, column, row-start, row-end, column-start, column-end
 		*/
-		const char* layoutDirection = "engine_layoutDirection";
+		constexpr const char* layoutDirection = "layoutDirection";
 		/*
 		* @brief sets element wrapping
 		* @param no-wrap, wrap
 		*/
-		const char* layoutWrap = "engine_layoutWrap";
+		constexpr const char* layoutWrap = "layoutWrap";
 		/*
 		* @brief offset the position of this element, should not be used to often
 		* @param valueX:, valueY: number
 		*/
-		const char* position = "engine_position";
+		constexpr const char* position = "position";
 		/*
 		* @brief offset the X-position of this element, should not be used to often
 		* @param number
 		*/
-		const char* positionX = "engine_positionX";
+		constexpr const char* positionX = "positionX";
 		/*
 		* @brief offset the Y-position of this element, should not be used to often
 		* @param number
 		*/
-		const char* positionY = "engine_positionY";
+		constexpr const char* positionY = "positionY";
 		/*
 		* @brief rotation (z) of this element
 		* @param number
 		*/
-		const char* rotation = "engine_rotation";
+		constexpr const char* rotation = "rotation";
 		/*
 		* @brief margin of this element
 		* @param value all
 		* @param valueTop:, valueRight:, valueBottom:, valueLeft: number
 		*/
-		const char* margin = "engine_padding";
-		const char* marginTop = "engine_paddingTop";
-		const char* marginBottom = "engine_paddingBottom";
-		const char* marginLeft = "engine_paddingLeft";
-		const char* marginRight = "engine_paddingRight";
+		constexpr const char* margin = "padding";
+		constexpr const char* marginTop = "paddingTop";
+		constexpr const char* marginBottom = "paddingBottom";
+		constexpr const char* marginLeft = "paddingLeft";
+		constexpr const char* marginRight = "paddingRight";
 
 		/*
 		* @brief padding of this element
 		* @param value all
 		* @param valueTop:, valueRight:, valueBottom:, valueLeft: number
 		*/
-		const char* padding = "engine_padding";
-		const char* paddingTop = "engine_paddingTop";
-		const char* paddingBottom = "engine_paddingBottom";
-		const char* paddingLeft = "engine_paddingLeft";
-		const char* paddingRight = "engine_paddingRight";
+		constexpr const char* padding = "padding";
+		constexpr const char* paddingTop = "paddingTop";
+		constexpr const char* paddingBottom = "paddingBottom";
+		constexpr const char* paddingLeft = "paddingLeft";
+		constexpr const char* paddingRight = "paddingRight";
 		/*
 		* @brief Sets the overflow of this element
 		* @param hidden, none
 		*/
-		const char* overflow = "engine_overflow";
+		constexpr const char* overflow = "overflow";
 		/*
 		* @brief Sets the color of this element
 		* @param hex
 		*/
-		const char* color = "engine_color";
+		constexpr const char* color = "color";
 		/*
 		* @brief Sets the borderRadius of this element
 		* @param number
 		*/
-		const char* borderRadius = "engine_borderRadius";
+		constexpr const char* borderRadius = "borderRadius";
 		/*
 		* @brief Sets the transition duration time between styles
 		* @param number in sekunds
 		*/
-		const char* duration = "engine_duration";
+		constexpr const char* duration = "duration";
 	}
 
 	class UIStyle {
@@ -130,8 +130,7 @@ namespace EngineCore {
 				}
 			}
 
-			
-			return ENGINE_STYLING_BAD_TYPE;
+			return ENGINE_STYLING_NOT_FOUND;
 		}
 
 		const std::unordered_map<std::string, std::any>& GetAll() const;

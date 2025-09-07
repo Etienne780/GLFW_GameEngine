@@ -220,6 +220,9 @@
     <None Include="include\EngineLib\Material.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="include\EngineLib\UI\UIManager.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\fonts\fa-solid-900.ttf" />

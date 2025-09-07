@@ -16,6 +16,7 @@ namespace EngineCore {
 	constexpr int ENGINE_FAILURE = 1;
 
 	constexpr int ENGINE_STYLING_BAD_TYPE= 2;
+	constexpr int ENGINE_STYLING_NOT_FOUND = 3;
 
 	template<typename Tag>
 	struct EngineID {
@@ -40,6 +41,7 @@ namespace EngineCore {
 	struct MaterialTag {};
 	struct GameObjectTag {};
 	struct RenderLayerTag {};
+	struct UIElementTag {};
 
 	using Asset_Texture2DID = EngineID<Texture2DTag>;
 	using Asset_MeshID = EngineID<MeshTag>;
@@ -47,6 +49,7 @@ namespace EngineCore {
 	using Asset_MaterialID = EngineID<MaterialTag>;
 	using GameObjectID = EngineID<GameObjectTag>;
 	using RenderLayerID = EngineID<RenderLayerTag>;
+	using UIElementID = EngineID<UIElementTag>;
 
 	struct RenderCommand {
 		Asset_MaterialID materialID = Asset_MaterialID(ENGINE_INVALID_ID);

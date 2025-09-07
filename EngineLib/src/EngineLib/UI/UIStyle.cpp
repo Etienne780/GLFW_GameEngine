@@ -1,7 +1,7 @@
 #include "EngineLib/UI/UIStyle.h"
 
 namespace EngineCore {
-	
+
 	void UIStyle::Extend(const UIStyle& style) {
 		const auto att = style.GetAll();
 		for (const auto& [name, value] : att) {

@@ -21,6 +21,7 @@ namespace EngineCore {
 			if (GLADInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
 		}
 
+		UIManager::Init();
 		m_app->m_window = m_window;
 		Input::Init(m_window);
 		GameObjectManager::Init();
@@ -129,6 +130,7 @@ namespace EngineCore {
 		GameObjectManager::Shutdown();
 		ResourceManager& rm = ResourceManager::GetInstance();
 		rm.Cleanup();
+		UIManager::Shutdown();
 		glfwTerminate();
 	}
 

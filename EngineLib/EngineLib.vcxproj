@@ -90,6 +90,7 @@
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl" />
     <None Include="include\EngineLib\Material.inl" />
+    <None Include="include\EngineLib\UI\UIManager.inl" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\fonts\fa-solid-900.ttf" />
