@@ -26,7 +26,6 @@
     <ClCompile Include="src\ProjectManager.cpp" />
     <ClCompile Include="src\UI\AssetManagerUI.cpp" />
     <ClCompile Include="src\UI\ProjectManagerUI.cpp" />
-    <ClCompile Include="src\UI\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AssetManager.h" />
@@ -35,7 +34,6 @@
     <ClInclude Include="include\ProjectManager.h" />
     <ClInclude Include="include\UI\AssetManagerUI.h" />
     <ClInclude Include="include\UI\ProjectManagerUI.h" />
-    <ClInclude Include="include\UI\UIManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

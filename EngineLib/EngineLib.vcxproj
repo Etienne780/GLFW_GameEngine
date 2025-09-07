@@ -36,6 +36,7 @@
     <ClInclude Include="include\EngineLib\GameObject.h" />
     <ClInclude Include="include\EngineLib\GameObjectManager.h" />
     <ClInclude Include="include\EngineLib\IconsFontAwesome5Pro.h" />
+    <ClInclude Include="include\EngineLib\IDManager.h" />
     <ClInclude Include="include\EngineLib\Input.h" />
     <ClInclude Include="include\EngineLib\Material.h" />
     <ClInclude Include="include\EngineLib\Mesh.h" />
@@ -46,6 +47,9 @@
     <ClInclude Include="include\EngineLib\Shader.h" />
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
+    <ClInclude Include="include\EngineLib\UI.h" />
+    <ClInclude Include="include\EngineLib\UI\UIElement.h" />
+    <ClInclude Include="include\EngineLib\UI\UIManager.h" />
     <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +61,7 @@
     <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
     <ClCompile Include="src\EngineLib\Debugger.cpp" />
     <ClCompile Include="src\EngineLib\DebuggerWindows.cpp" />
+    <ClCompile Include="src\EngineLib\IDManager.cpp" />
     <ClCompile Include="src\EngineLib\Material.cpp" />
     <ClCompile Include="src\EngineLib\Mesh.cpp" />
     <ClCompile Include="src\EngineLib\Components\MeshRenderer_C.cpp" />
@@ -76,6 +81,8 @@
     <ClCompile Include="src\EngineLib\Shader.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />
     <ClCompile Include="src\EngineLib\Time.cpp" />
+    <ClCompile Include="src\EngineLib\UI\UIElement.cpp" />
+    <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
     <ClCompile Include="src\EngineLib\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>

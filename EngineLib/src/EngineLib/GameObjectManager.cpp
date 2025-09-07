@@ -20,6 +20,7 @@ namespace EngineCore {
 
 	void GameObjectManager::Shutdown() {
 		delete instance;
+		instance = nullptr;
 	}
 
 	GameObjectManager* GameObjectManager::GetInstance() {
@@ -101,7 +102,7 @@ namespace EngineCore {
 		// adds free id to the pool
 		unsigned int id = gameObjectPtr->GetID().value;
 		if (id != ENGINE_INVALID_ID) {
-			m_freeIDs.push(id);
+			m_idManager.FreeUniqueIdentifier(id);
 		}
 
 		gameObjectPtr->UnregisterCameraFromManager();
@@ -132,17 +133,14 @@ namespace EngineCore {
 			}
 		}
 
-		Log::Debug("Clearing {} game objects", static_cast<int>(m_gameObjects.size() - persistentObjects.size()));
+		Log::Debug("GameObjectManager: Clearing {} game objects", static_cast<int>(m_gameObjects.size() - persistentObjects.size()));
 		m_gameObjects = std::move(persistentObjects);
 
-		std::queue<unsigned int> empty;
-		std::swap(m_freeIDs, empty);
-		m_idCounter = static_cast<unsigned int>(m_gameObjects.size());
-		m_idFallback = false;
+		m_idManager.Reset(static_cast<unsigned int>(m_gameObjects.size()));
 	}
 
 	void GameObjectManager::DeleteAllGameObjects() {
-		Log::Debug("Deleted {} game objects", m_gameObjects.size());
+		Log::Debug("GameObjectManager: Deleted {} game objects", m_gameObjects.size());
 
 		for (auto& obj : m_gameObjects) {
 			obj->UnregisterCameraFromManager();
@@ -150,11 +148,7 @@ namespace EngineCore {
 			obj->m_alive = false;
 		}
 
-		m_gameObjects.clear();
-		std::queue<unsigned int> empty;
-		std::swap(m_freeIDs, empty);
-		m_idCounter = 0;
-		m_idFallback = false;
+		m_idManager.Reset();
 	}
 
 	#pragma endregion
@@ -164,7 +158,7 @@ namespace EngineCore {
 			return nullptr;
 		
 		// binary search if the ids are in order
-		if (!m_idFallback) {
+		if (!m_idManager.IsIDFallback()) {
 			unsigned int startIndex = 0;
 			unsigned int endIndex = static_cast<unsigned int>(m_gameObjects.size() - 1);
 		
@@ -296,44 +290,17 @@ namespace EngineCore {
 	}
 
 	unsigned int GameObjectManager::GetNewUniqueIdentifier() {
-		unsigned int id;
+		unsigned int id = m_idManager.GetNewUniqueIdentifier();
 
-		if (m_idFallback) {
-			id = GetNewUniqueIdentifierFallback();
-		}
-		else {
-			if (m_idCounter != ENGINE_INVALID_ID) {
-				id = m_idCounter++;
-			}
-			else {
-				id = GetNewUniqueIdentifierFallback();
-			}
+		if (id == ENGINE_INVALID_ID) {
+			SearchForFreeIDs(m_idSearchAmount);
+			id = m_idManager.GetNewUniqueIdentifier();
 		}
 
 		return id;
 	}
 
-	unsigned int GameObjectManager::GetNewUniqueIdentifierFallback() {
-		if (!m_idFallback) {
-			m_idFallback = true;
-			Log::Warn("Max ID limit reached, using fallback IDs from free pool");
-		}
-
-		if (m_freeIDs.empty()) {
-			SearchForFreeIDs(m_freeIDs, m_idSearchAmount);
-		}
-
-		if (!m_freeIDs.empty()) {
-			auto id = m_freeIDs.front();
-			m_freeIDs.pop();
-			return id;
-		}
-
-		Log::Warn("GameObjectManager: Cant find any free IDs");
-		return ENGINE_INVALID_ID;
-	}
-
-	void GameObjectManager::SearchForFreeIDs(std::queue<unsigned int>& queue, unsigned int numberOfIDs) {
+	void GameObjectManager::SearchForFreeIDs(unsigned int numberOfIDs) {
 		std::unordered_set<unsigned int> usedIDs;
 		usedIDs.reserve(m_gameObjects.size());
 		for (auto& go : m_gameObjects) {
@@ -346,7 +313,7 @@ namespace EngineCore {
 				continue;
 
 			if (usedIDs.find(id) == usedIDs.end()) {
-				queue.push(id);
+				m_idManager.FreeUniqueIdentifier(id);
 				if (++found >= numberOfIDs)
 					break;
 			}
