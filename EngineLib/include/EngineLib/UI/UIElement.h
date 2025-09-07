@@ -13,13 +13,6 @@ namespace EngineCore {
 }
 
 /*
-algemeien atribute:
-- layout von childs
-- overflow
-- color
-- radius
-- duration
-
 Element:
 - Panel
 - Image

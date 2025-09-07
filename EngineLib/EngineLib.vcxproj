@@ -50,6 +50,7 @@
     <ClInclude Include="include\EngineLib\UI.h" />
     <ClInclude Include="include\EngineLib\UI\UIElement.h" />
     <ClInclude Include="include\EngineLib\UI\UIManager.h" />
+    <ClInclude Include="include\EngineLib\UI\UIStyle.h" />
     <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +84,7 @@
     <ClCompile Include="src\EngineLib\Time.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIElement.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
+    <ClCompile Include="src\EngineLib\UI\UIStyle.cpp" />
     <ClCompile Include="src\EngineLib\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
