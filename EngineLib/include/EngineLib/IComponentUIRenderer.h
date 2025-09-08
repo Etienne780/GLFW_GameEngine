@@ -16,6 +16,8 @@ namespace EngineCore {
         virtual void DrawLabelDisabled(const std::string& text) = 0;
 
         // Input
+        virtual void DrawInputText(const std::string& label, std::string* value) = 0;
+        virtual void DrawInputMultilineText(const std::string& label, std::string* value) = 0;
         virtual void DrawInputFloat(const std::string& label, float* value) = 0;
         virtual void DrawInputFloat2(const std::string& label, Vector2* value) = 0;
         virtual void DrawInputFloat3(const std::string& label, Vector3* value) = 0;
@@ -41,6 +43,16 @@ namespace EngineCore {
         virtual void DrawSeparatorText(const std::string& label) = 0;
         virtual void DrawSeparator() = 0;
         virtual bool DrawCollapsingHeader(const std::string& label, bool open = false) = 0;
+
+        // Color
+        virtual void DrawColorEdit3(const std::string& label, Vector3* color) = 0;
+        virtual void DrawColorEdit4(const std::string& label, Vector4* color) = 0;
+ 
+        virtual void DrawColorPicker3(const std::string& label, Vector3* color) = 0;
+        virtual void DrawColorPicker4(const std::string& label, Vector4* color) = 0;
+
+        virtual void DrawColorButton3(const std::string& label, const Vector3& color) = 0;
+        virtual void DrawColorButton4(const std::string& label, const Vector4& color) = 0;
     };
 
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include "..\ComponentBase.h"
-#include "EngineLib\EngineTypes.h"
+#include "../ComponentBase.h"
+#include "EngineLib/EngineTypes.h"
 
 namespace EngineCore {
 	class Renderer;

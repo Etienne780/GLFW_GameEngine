@@ -19,6 +19,28 @@ namespace EngineCore {
         }
 
         // Input
+        void DrawInputText(const std::string& label, std::string* value) {
+            if (value) {
+                char buffer[1024];
+                strncpy_s(buffer, sizeof(buffer), value->c_str(), _TRUNCATE);
+                buffer[sizeof(buffer) - 1] = '\0';
+                if (ImGui::InputText(label.c_str(), buffer, sizeof(buffer))) {
+                    *value = std::string(buffer);
+                }
+            }
+        }
+
+        void DrawInputMultilineText(const std::string& label, std::string* value) {
+            if (value) {
+                char buffer[4096];
+                strncpy_s(buffer, sizeof(buffer), value->c_str(), _TRUNCATE);
+                buffer[sizeof(buffer) - 1] = '\0';
+                if (ImGui::InputTextMultiline(label.c_str(), buffer, sizeof(buffer), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 8))) {
+                    *value = std::string(buffer);
+                }
+            }
+        }
+
         void DrawInputFloat(const std::string& label, float* value) override {
             ImGui::InputFloat(label.c_str(), value);
         }
@@ -62,27 +84,21 @@ namespace EngineCore {
         void DrawDragFloat2(const std::string& label, Vector2* value, float speed, float min, float max) override {
             float values[2] = { value->x, value->y };
             if (ImGui::DragFloat2(label.c_str(), values, speed, min, max)) {
-                value->x = values[0];
-                value->y = values[1];
+                value->Set(values[0], values[1]);
             }
         }
 
         void DrawDragFloat3(const std::string& label, Vector3* value, float speed, float min, float max) override {
             float values[3] = { value->x, value->y, value->z };
             if (ImGui::DragFloat3(label.c_str(), values, speed, min, max)) {
-                value->x = values[0];
-                value->y = values[1];
-                value->z = values[2];
+                value->Set(values[0], values[1], values[2]);
             }
         }
 
         void DrawDragFloat4(const std::string& label, Vector4* value, float speed, float min, float max) override {
             float values[4] = { value->x, value->y, value->z, value->w };
             if (ImGui::DragFloat4(label.c_str(), values, speed, min, max)) {
-                value->x = values[0];
-                value->y = values[1];
-                value->z = values[2];
-                value->w = values[3];
+                value->Set(values[0], values[1], values[2], values[3]);
             }
         }
 
@@ -98,27 +114,21 @@ namespace EngineCore {
         void DrawSliderFloat2(const std::string& label, Vector2* value, float min, float max) override {
             float values[2] = { value->x, value->y };
             if (ImGui::SliderFloat2(label.c_str(), values, min, max)) {
-                value->x = values[0];
-                value->y = values[1];
+                value->Set(values[0], values[1]);
             }
         }
 
         void DrawSliderFloat3(const std::string& label, Vector3* value, float min, float max) override {
             float values[3] = { value->x, value->y, value->z };
             if (ImGui::SliderFloat3(label.c_str(), values, min, max)) {
-                value->x = values[0];
-                value->y = values[1];
-                value->z = values[2];
+                value->Set(values[0], values[1], values[2]);
             }
         }
 
         void DrawSliderFloat4(const std::string& label, Vector4* value, float min, float max) override {
             float values[4] = { value->x, value->y, value->z, value->w };
             if (ImGui::SliderFloat4(label.c_str(), values, min, max)) {
-                value->x = values[0];
-                value->y = values[1];
-                value->z = values[2];
-                value->w = values[3];
+                value->Set(values[0], values[1], values[2], values[3]);
             }
         }
 
@@ -154,6 +164,44 @@ namespace EngineCore {
             return result;
         }
 
+        // Color
+        void DrawColorEdit3(const std::string& label, Vector3* color) override {
+            float col[3] = { color->x, color->y, color->z };
+            if (ImGui::ColorEdit3(label.c_str(), col)) {
+                color->Set(col[0], col[1], col[2]);
+            }
+        }
+          
+        void DrawColorEdit4(const std::string& label, Vector4* color) override {
+            float col[4] = { color->x, color->y, color->z, color->w };
+            if (ImGui::ColorEdit4(label.c_str(), col)) {
+                color->Set(col[0], col[1], col[2], col[3]);
+            }
+        }
+
+        void DrawColorPicker3(const std::string& label, Vector3* color) override {
+            float col[3] = { color->x, color->y, color->z };
+            if (ImGui::ColorPicker3(label.c_str(), col)) {
+                color->Set(col[0], col[1], col[2]);
+            }
+        }
+
+        void DrawColorPicker4(const std::string& label, Vector4* color) override {
+            float col[4] = { color->x, color->y, color->z, color->w };
+            if (ImGui::ColorPicker4(label.c_str(), col)) {
+                color->Set(col[0], col[1], col[2], col[3]);
+            }
+        }
+
+        void DrawColorButton3(const std::string& label, const Vector3& color) override {
+            ImVec4 col(color.x, color.y, color.z, 1.0f);
+            ImGui::ColorButton(label.c_str(), col);
+        }
+
+        void DrawColorButton4(const std::string& label, const Vector4& color) override {
+            ImVec4 col(color.x, color.y, color.z, color.w);
+            ImGui::ColorButton(label.c_str(), col);
+        }
 
     };
 

@@ -11,12 +11,12 @@ namespace EngineCore {
 	class Shader;
 	class Material;
 
-	constexpr unsigned int ENGINE_INVALID_ID = std::numeric_limits<unsigned int>::max();
-	constexpr int ENGINE_SUCCESS = 0;
-	constexpr int ENGINE_FAILURE = 1;
+	inline constexpr unsigned int ENGINE_INVALID_ID = std::numeric_limits<unsigned int>::max();
+	inline constexpr int ENGINE_SUCCESS = 0;
+	inline constexpr int ENGINE_FAILURE = 1;
 
-	constexpr int ENGINE_STYLING_BAD_TYPE= 2;
-	constexpr int ENGINE_STYLING_NOT_FOUND = 3;
+	inline constexpr int ENGINE_STYLING_BAD_TYPE = 2;
+	inline constexpr int ENGINE_STYLING_NOT_FOUND = 3;
 
 	template<typename Tag>
 	struct EngineID {

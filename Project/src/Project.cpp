@@ -31,6 +31,7 @@ void Project::Start() {
 	cameraGO->SetPersistent(true);
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
+	cameraGO->AddComponent<Component::TextRenderer>();
 
 	Scenes::Test();
 }

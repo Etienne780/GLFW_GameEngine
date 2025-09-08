@@ -1,5 +1,4 @@
 #include <CoreLib\Log.h>
-#include <glad\glad.h>
 
 #include "EngineLib\Renderer.h"
 #include "EngineLib\GameObject.h"
@@ -13,8 +12,8 @@ namespace EngineCore {
 		Renderer& MeshRenderer::m_renderer = Renderer::GetInstance();
 		const std::string compName = "MeshRenderer";
 
-		MeshRenderer::MeshRenderer(GameObjectID gameObjectID) :
-			ComponentBase(compName, gameObjectID) {
+		MeshRenderer::MeshRenderer(GameObjectID gameObjectID) 
+			: ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
 		}
 
