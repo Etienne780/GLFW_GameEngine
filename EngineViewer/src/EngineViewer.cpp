@@ -1,7 +1,6 @@
 #include <EngineLib/ComponentRendererImGui.h>
 #include "EngineViewer.h"
 #include "AssetManager.h"
-#include "UI/UIManager.h"
 #include "ProjectManager.h"
 #include "Exporter.h"
 
