@@ -15,9 +15,9 @@ namespace EngineCore {
 		}
 
 		void Transform::OnInspectorGUIImpl(IUIRenderer& ui) {
-			ui.DrawDragFloat3("Position", &m_position);
-			ui.DrawDragFloat3("Rotation", &m_rotation);
-			ui.DrawDragFloat3("Scale", &m_scale);
+			ui.DrawDragFloat3("Position", &m_position, 0.3f);
+			ui.DrawDragFloat3("Rotation", &m_rotation, 0.3f);
+			ui.DrawDragFloat3("Scale", &m_scale, 0.3f);
 
 			if (ui.DrawCollapsingHeader("World Transform")) {
 				Vector3 worldPos = GetWorldPosition();
