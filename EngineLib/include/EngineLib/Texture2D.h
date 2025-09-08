@@ -9,10 +9,10 @@ class Vector2;
 namespace EngineCore {
 
     // Constant to improve code readability when passing 'useFallBack'.
-    const bool TEXTURE2D_FALLBACK = true;
+    inline const bool TEXTURE2D_FALLBACK = true;
 
     // Constant to improve code readability when passing 'useAbsolutDir'.
-    const bool TEXTURE2D_ABSOLUTDIR = true;
+    inline const bool TEXTURE2D_ABSOLUTDIR = true;
 
     /**
     * @brief Represents a 2D texture that can be loaded from file and used in OpenGL.

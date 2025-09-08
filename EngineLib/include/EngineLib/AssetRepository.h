@@ -17,6 +17,7 @@ namespace EngineCore {
 
 			namespace SHADER {
 				Asset_ShaderID Default();
+				Asset_ShaderID DefaultText();
 			}
 
 			namespace MATERIAL {

@@ -13,13 +13,20 @@ namespace EngineCore {
 	Engine::~Engine() = default;
 
 	int Engine::EngineStart() {
-		if (m_app == nullptr) return ENGINE_FAILURE;
-		if (GLFWInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
+		if (m_app == nullptr) 
+			return ENGINE_FAILURE;
+		if (GLFWInit() != ENGINE_SUCCESS) 
+			return ENGINE_FAILURE;
 
 		if (m_app->m_appApplicationHeader) {
-			if (GLFWCreateWindow() != ENGINE_SUCCESS) return ENGINE_FAILURE;
-			if (GLADInit() != ENGINE_SUCCESS) return ENGINE_FAILURE;
+			if (GLFWCreateWindow() != ENGINE_SUCCESS) 
+				return ENGINE_FAILURE;
+			if (GLADInit() != ENGINE_SUCCESS) 
+				return ENGINE_FAILURE;
 		}
+
+		if (FontManager::Init() == ENGINE_FAILURE)
+			return ENGINE_FAILURE;
 
 		UIManager::Init();
 		m_app->m_window = m_window;
@@ -131,6 +138,8 @@ namespace EngineCore {
 		ResourceManager& rm = ResourceManager::GetInstance();
 		rm.Cleanup();
 		UIManager::Shutdown();
+		FontManager::Shutdown();
+
 		glfwTerminate();
 	}
 

@@ -11,6 +11,9 @@ namespace EngineCore {
 
 		bool IsIDFallback();
 
+		/*
+		* @brief returns a uniqe int id and ENGINE_INVALID_ID if no free id was found
+		*/
 		unsigned int GetNewUniqueIdentifier();
 		void FreeUniqueIdentifier(unsigned int id);
 		/*

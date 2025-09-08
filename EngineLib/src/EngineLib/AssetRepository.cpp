@@ -10,6 +10,7 @@ EngineCore::Asset_Texture2DID g_engineTextureMissingID = EngineCore::Asset_Textu
 EngineCore::Asset_Texture2DID g_engineTextureCursedmod3ID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_MeshID g_engineMeshCubeID = EngineCore::Asset_MeshID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_ShaderID g_engineShaderDefaultID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Asset_ShaderID g_engineShaderDefaultTextID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_MaterialID g_engineMaterialDefaultID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
 
 namespace EngineCore::ASSETS::ENGINE::TEXTURE {
@@ -23,6 +24,7 @@ namespace EngineCore::ASSETS::ENGINE::MESH {
 
 namespace EngineCore::ASSETS::ENGINE::SHADER {
     Asset_ShaderID Default() { return g_engineShaderDefaultID; }
+    Asset_ShaderID DefaultText() { return g_engineShaderDefaultTextID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
@@ -144,6 +146,42 @@ namespace EngineCore {
                 }
             )";
             g_engineShaderDefaultID = rm.AddShaderFromMemory(vert, frag);
+        }
+        #pragma endregion
+
+        #pragma region SHADER::DefaultText
+        {
+            std::string vert = R"(
+                #version 330 core
+                layout(location = 0) in vec3 aPos;
+                layout(location = 1) in vec2 aTexCoord;
+                layout(location = 2) in vec2 aNormal;
+                layout(location = 3) in mat4 instanceModel;
+                
+                out vec2 TexCoord;
+                uniform mat4 view;
+                uniform mat4 projection;
+                
+                void main() {
+                    gl_Position = projection * view * instanceModel * vec4(aPos, 1.0);
+                    TexCoord = aTexCoord;
+                }
+            )";
+            std::string frag = R"(
+                #version 330 core
+                out vec4 FragColor;
+                in vec2 TexCoord;
+
+                uniform sampler2D utexture;
+                uniform vec3 textColor;
+
+                void main()
+                {
+                    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(utexture, TexCoord).r);
+                    FragColor = vec4(textColor, 1.0) * sampled;
+                } 
+            )";
+            g_engineShaderDefaultTextID = rm.AddShaderFromMemory(vert, frag);
         }
         #pragma endregion
 

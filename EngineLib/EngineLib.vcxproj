@@ -33,6 +33,8 @@
     <ClInclude Include="include\EngineLib\Debugger.h" />
     <ClInclude Include="include\EngineLib\Engine.h" />
     <ClInclude Include="include\EngineLib\EngineTypes.h" />
+    <ClInclude Include="include\EngineLib\FontAsset.h" />
+    <ClInclude Include="include\EngineLib\FontManager.h" />
     <ClInclude Include="include\EngineLib\GameObject.h" />
     <ClInclude Include="include\EngineLib\GameObjectManager.h" />
     <ClInclude Include="include\EngineLib\IconsFontAwesome5Pro.h" />
@@ -54,6 +56,7 @@
     <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\EngineLib\FontAsset.cpp" />
     <ClCompile Include="include\EngineLib\IComponentUIRenderer.h" />
     <ClCompile Include="include\EngineLib\ComponentRendererImGui.h" />
     <ClCompile Include="include\EngineLib\Profiler.h" />
@@ -62,6 +65,7 @@
     <ClCompile Include="src\EngineLib\AssetRepository.cpp" />
     <ClCompile Include="src\EngineLib\Debugger.cpp" />
     <ClCompile Include="src\EngineLib\DebuggerWindows.cpp" />
+    <ClCompile Include="src\EngineLib\FontManager.cpp" />
     <ClCompile Include="src\EngineLib\IDManager.cpp" />
     <ClCompile Include="src\EngineLib\Material.cpp" />
     <ClCompile Include="src\EngineLib\Mesh.cpp" />
@@ -172,7 +176,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\FreeType\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;$(SolutionDir)FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -192,7 +196,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\FreeType\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;$(SolutionDir)FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -210,7 +214,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\FreeType\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;$(SolutionDir)FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -230,7 +234,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Dependencies\GLAD\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\FreeType\include;$(SolutionDir)CoreLib\include;$(SolutionDir)ImGUI\include;$(SolutionDir)FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

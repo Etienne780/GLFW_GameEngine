@@ -41,6 +41,7 @@ namespace EngineCore {
 	struct MaterialTag {};
 	struct GameObjectTag {};
 	struct RenderLayerTag {};
+	struct FontTag {};
 	struct UIElementTag {};
 
 	using Asset_Texture2DID = EngineID<Texture2DTag>;
@@ -49,6 +50,7 @@ namespace EngineCore {
 	using Asset_MaterialID = EngineID<MaterialTag>;
 	using GameObjectID = EngineID<GameObjectTag>;
 	using RenderLayerID = EngineID<RenderLayerTag>;
+	using FontID = EngineID<FontTag>;
 	using UIElementID = EngineID<UIElementTag>;
 
 	struct RenderCommand {
