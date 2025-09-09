@@ -4,6 +4,8 @@
 #include <CoreLib/Math/Matrix4x4.h>
 #include <CoreLib/FormatUtils.h>
 
+#include "Vertex.h"
+
 namespace EngineCore {
 
 	class Texture2D;
@@ -53,12 +55,31 @@ namespace EngineCore {
 	using FontID = EngineID<FontTag>;
 	using UIElementID = EngineID<UIElementTag>;
 
+	enum class RenderCommandType {
+		Mesh,
+		Text
+	};
+
+	struct TextQuad {
+		Vertex vertices[4];
+
+		static constexpr unsigned int indices[6] = {
+			0, 1, 2, 2, 3, 0
+		};
+	};
+
 	struct RenderCommand {
+		RenderCommandType type = RenderCommandType::Mesh;
+		bool invertMesh = false;
+
 		Asset_MaterialID materialID = Asset_MaterialID(ENGINE_INVALID_ID);
 		Asset_MeshID meshID = Asset_MeshID(ENGINE_INVALID_ID);
 		RenderLayerID renderLayer = RenderLayerID(ENGINE_INVALID_ID);
 		const Matrix4x4* modelMatrix = nullptr;
-		bool invertMesh = false;
+
+		// For text
+		FontID fontID = FontID(ENGINE_INVALID_ID);
+		std::vector<TextQuad> quads;  // precomputed from string
 	};
 
 }

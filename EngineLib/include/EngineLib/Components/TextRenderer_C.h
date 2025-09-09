@@ -2,8 +2,8 @@
 #include <string>
 #include <CoreLib/Math/Vector3.h>
 
-#include "..\ComponentBase.h"
-#include "EngineLib\EngineTypes.h"
+#include "../ComponentBase.h"
+#include "../EngineTypes.h"
 
 namespace EngineCore {
 	class Renderer;

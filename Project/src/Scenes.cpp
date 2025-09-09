@@ -10,7 +10,7 @@ namespace Scenes {
 		ResourceManager& rm = ResourceManager::GetInstance();
 		auto matID = rm.AddMaterial(ASSETS::ENGINE::SHADER::Default());
 		auto mat = rm.GetMaterial(matID);
-		mat->SetParam("texture", ASSETS::ENGINE::TEXTURE::Cursedmod3());
+		// mat->SetParam("texture", ASSETS::ENGINE::TEXTURE::Cursedmod3());
 
 		auto go = GameObject::Create("box");
 		go->GetTransform()->SetScale(20, 20, 20);

@@ -33,46 +33,126 @@ namespace EngineCore {
         }
 	}
 
-	void FontAsset::LoadBaseGlyphs() {
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    const FontAsset::Glyph& FontAsset::GetGlyph(char c, int pixelSize) {
+        auto it = m_atlases.find(pixelSize);
+        if (it == m_atlases.end()) {
+            BuildAtlas(pixelSize);
+            return GetGlyph(c, pixelSize);
+        }
+        return it->second.glyphs.at(c);
+    }
 
-        for (unsigned char c = 0; c < 128; c++)
-        {
-            // load character glyph 
+    unsigned int FontAsset::GetAtlasTextureID(int pixelSize) {
+        auto it = m_atlases.find(pixelSize);
+        if (it == m_atlases.end()) {
+            BuildAtlas(pixelSize);
+            return GetAtlasTextureID(pixelSize);
+        }
+        return it->second.glTextureID;
+    }
+
+    void FontAsset::DeleteFontAtlas(int pixelSize) {
+        auto it = m_atlases.find(pixelSize);
+        if (it != m_atlases.end()) {
+            glDeleteTextures(1, &it->second.glTextureID);
+            m_atlases.erase(it);
+            return;
+        }
+        Log::Warn("FontAsset: Could not delete font atlas (size {}), font was not found", pixelSize);
+    }
+
+    void FontAsset::DeleteAllAtlases() {
+        for (auto& [size, atlas] : m_atlases) {
+            if (atlas.glTextureID != ENGINE_INVALID_ID) {
+                glDeleteTextures(1, &atlas.glTextureID);
+                atlas.glTextureID = ENGINE_INVALID_ID;
+            }
+        }
+        m_atlases.clear();
+    }
+
+    void FontAsset::BuildAtlas(int pixelSize) {
+        auto it = m_atlases.find(pixelSize);
+        if (it != m_atlases.end()) {
+            Log::Warn("FontAsset: font pixelSize already build!");
+            return;
+        }
+
+        FT_Set_Pixel_Sizes(m_face, 0, pixelSize);
+
+        // ASCII 32–128
+        const int firstChar = 32;
+        const int lastChar = 128;
+
+        int atlasWidth = 0;
+        int atlasHeight = 0;
+
+        for (int c = firstChar; c < lastChar; ++c) {
             if (FT_Load_Char(m_face, c, FT_LOAD_RENDER)) {
-                Log::Error("FontAsset: Failed to load Glyph '{}', of font {}", c, m_path);
+                Log::Error("FontAsset: Failed to load Glyph '{}'", c);
                 continue;
             }
-            // generate texture
-            unsigned int texture;
-            glGenTextures(1, &texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(
-                GL_TEXTURE_2D,
-                0,
-                GL_RED,
-                m_face->glyph->bitmap.width,
-                m_face->glyph->bitmap.rows,
-                0,
-                GL_RED,
-                GL_UNSIGNED_BYTE,
-                m_face->glyph->bitmap.buffer
-            );
-            // set texture options
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            // now store character for later use
-            Glyph character = {
-                texture,
-                Vector2(static_cast<float>(m_face->glyph->bitmap.width), static_cast<float>(m_face->glyph->bitmap.rows)),
-                Vector2(static_cast<float>(m_face->glyph->bitmap_left), static_cast<float>(m_face->glyph->bitmap_top)),
-                static_cast<unsigned int>(m_face->glyph->advance.x)
-            };
-
-            m_glyphs.emplace(c, character);
+            atlasWidth += m_face->glyph->bitmap.width;
+            atlasHeight = std::max(atlasHeight, (int)m_face->glyph->bitmap.rows);
         }
-	}
+
+        std::vector<unsigned char> atlasBuffer(atlasWidth * atlasHeight, 0);
+
+        int xOffset = 0;
+        Atlas atlas;
+
+        for (int c = firstChar; c < lastChar; ++c) {
+            if (FT_Load_Char(m_face, c, FT_LOAD_RENDER)) continue;
+
+            FT_Bitmap& bmp = m_face->glyph->bitmap;
+
+            // Copy bitmap into atlas buffer
+            for (int row = 0; row < bmp.rows; ++row) {
+                for (int col = 0; col < bmp.width; ++col) {
+                    int x = xOffset + col;
+                    int y = row;
+                    atlasBuffer[y * atlasWidth + x] = bmp.buffer[row * bmp.pitch + col];
+                }
+            }
+
+            Glyph glyph;
+            glyph.size = Vector2((float)bmp.width, (float)bmp.rows);
+            glyph.bearing = Vector2((float)m_face->glyph->bitmap_left, (float)m_face->glyph->bitmap_top);
+            glyph.advance = (unsigned int)m_face->glyph->advance.x;
+
+            // Normierte UVs
+            glyph.uvMin = Vector2((float)xOffset / atlasWidth, 0.0f);
+            glyph.uvMax = Vector2((float)(xOffset + bmp.width) / atlasWidth,
+                (float)bmp.rows / atlasHeight);
+
+            atlas.glyphs.emplace((char)c, glyph);
+
+            xOffset += bmp.width;
+        }
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        unsigned int texID;
+        glGenTextures(1, &texID);
+        glBindTexture(GL_TEXTURE_2D, texID);
+        glTexImage2D(GL_TEXTURE_2D,
+            0,
+            GL_RED,
+            atlasWidth,
+            atlasHeight,
+            0,
+            GL_RED,
+            GL_UNSIGNED_BYTE,
+            atlasBuffer.data());
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        atlas.glTextureID = texID;
+
+        m_atlases[pixelSize] = atlas;
+    }
 
 }

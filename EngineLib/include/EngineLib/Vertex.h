@@ -14,7 +14,7 @@ namespace EngineCore {
 		Vector3 position;
 		// Texture coordinate (x = u, y = v)
 		Vector2 uv;
-		// Gets calculated by the Mesh
+		// Gets calculated by the Mesh (not implemented)
 		Vector3 normal;
 	};
 

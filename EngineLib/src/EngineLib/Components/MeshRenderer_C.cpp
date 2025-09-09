@@ -59,6 +59,7 @@ namespace EngineCore {
 		}
 
 		void MeshRenderer::SubmitDrawCall() {
+			m_cmd.type = RenderCommandType::Mesh;
 			m_cmd.materialID = m_materialID;
 			m_cmd.meshID = m_meshID;
 			m_cmd.renderLayer = m_gameObject->GetRenderLayer();
