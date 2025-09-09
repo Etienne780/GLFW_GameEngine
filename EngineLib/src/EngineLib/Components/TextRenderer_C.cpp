@@ -31,9 +31,12 @@ namespace EngineCore::Component {
 		ui.DrawLabel(FormatUtils::formatString("Font ID: {}", (m_fontID.value == ENGINE_INVALID_ID) ? std::string("ENGINE_INVALID_ID") : std::to_string(m_fontID.value).c_str()));
 		ui.DrawInputText("Text", &m_text);
 		ui.DrawDragFloat("Text Size", &m_textSize, 0.075F, 1, 256);
-		ui.DrawDragInt("Text Reselution", &m_textResolution, 0.075F, 0.1f);
+		ui.DrawDragInt("Text Reselution", &m_textResolution, 0.075F, 1);
 		ui.DrawDragInt("Visible Chars", &m_visibleChar, MathUtil::Min(0.6F, 0.02F * m_text.length()/2), -1, static_cast<int>(m_text.length()));
 		ui.DrawColorEdit3("Text Color", &m_textColor);
+
+		m_textSize = abs(m_textSize);
+		m_textResolution = abs(m_textResolution);
 
 		m_textChanged = true;
 	}
@@ -85,9 +88,10 @@ namespace EngineCore::Component {
 		return this;
 	}
 
-	TextRenderer* TextRenderer::SetTextSize(int textSize) {
+	TextRenderer* TextRenderer::SetTextSize(float textSize) {
 		m_textChanged = true;
 		m_textSize = textSize;
+		m_textSize = abs(m_textSize);
 
 		return this;
 	}
@@ -95,6 +99,7 @@ namespace EngineCore::Component {
 	TextRenderer* TextRenderer::SetTextResolution(int textResolution) {
 		m_textChanged = true;
 		m_textResolution = textResolution;
+		m_textResolution = abs(m_textResolution);
 
 		return this;
 	}
@@ -114,8 +119,12 @@ namespace EngineCore::Component {
 		return m_textColor;
 	}
 
-	int TextRenderer::GetTextSize() const {
+	float TextRenderer::GetTextSize() const {
 		return m_textSize;
+	}
+
+	int TextRenderer::GetTextResolution() const {
+		return m_textResolution;
 	}
 
 	int TextRenderer::GetNumberOfVisibleChar() const {

@@ -88,6 +88,8 @@ namespace EngineCore {
 
 			float w = g.size.x * scale;
 			float h = g.size.y * scale;
+			float xOffset = 0;
+			float yOffset = 0;
 
 			TextQuad q{};
 
@@ -98,10 +100,10 @@ namespace EngineCore {
 			q.vertices[3].position = { xpos + w, ypos + h, 0.0f };
 
 			// UVs
-			q.vertices[0].uv = { g.uvMin.x, g.uvMin.y };// oben links
-			q.vertices[1].uv = { g.uvMin.x, g.uvMax.y };// unten links
-			q.vertices[2].uv = { g.uvMax.x, g.uvMax.y };// unten rechts
-			q.vertices[3].uv = { g.uvMax.x, g.uvMin.y };// oben rechts
+			q.vertices[0].uv = { g.uvMin.x + xOffset, g.uvMin.y - yOffset };// top left
+			q.vertices[1].uv = { g.uvMin.x + xOffset, g.uvMax.y + yOffset };// bottom left
+			q.vertices[2].uv = { g.uvMax.x - xOffset, g.uvMax.y + yOffset };// bottom right
+			q.vertices[3].uv = { g.uvMax.x - xOffset, g.uvMin.y - yOffset };// top right
 
 			result.push_back(q);
 

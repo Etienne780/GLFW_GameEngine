@@ -130,7 +130,10 @@ namespace EngineCore {
             atlasHeight = std::max(atlasHeight, (int)m_face->glyph->bitmap.rows);
         }
 
-        std::vector<unsigned char> atlasBuffer(atlasWidth * atlasHeight, 0);
+        int padding = 1; // oder 2 Pixel
+        int paddedAtlasWidth = atlasWidth + (lastChar - firstChar) * padding;
+        int paddedAtlasHeight = atlasHeight + padding * 2;
+        std::vector<unsigned char> atlasBuffer(paddedAtlasWidth * paddedAtlasHeight, 0);
 
         int xOffset = 0;
         Atlas atlas;
@@ -143,9 +146,9 @@ namespace EngineCore {
             // Copy bitmap into atlas buffer
             for (unsigned int row = 0; row < bmp.rows; ++row) {
                 for (unsigned int col = 0; col < bmp.width; ++col) {
-                    int x = xOffset + col;
-                    int y = row;
-                    size_t dstIndex = static_cast<size_t>(y) * static_cast<size_t>(atlasWidth) + static_cast<size_t>(x);
+                    int x = xOffset + col + padding;
+                    int y = row + padding;
+                    size_t dstIndex = static_cast<size_t>(y) * static_cast<size_t>(paddedAtlasWidth) + static_cast<size_t>(x);
                     size_t srcIndex = static_cast<size_t>(row) * static_cast<size_t>(bmp.pitch) + static_cast<size_t>(col);
 
                     atlasBuffer[dstIndex] = bmp.buffer[srcIndex];
@@ -158,13 +161,13 @@ namespace EngineCore {
             glyph.advance = static_cast<unsigned int>(m_face->glyph->advance.x >> 6);
 
             // Normierte UVs
-            glyph.uvMin = Vector2((float)xOffset / atlasWidth, 0.0f);
-            glyph.uvMax = Vector2((float)(xOffset + bmp.width) / atlasWidth,
-                (float)bmp.rows / atlasHeight);
+            glyph.uvMin = Vector2((float)(xOffset + padding) / paddedAtlasWidth, padding / (float)paddedAtlasHeight);
+            glyph.uvMax = Vector2((float)(xOffset + bmp.width + padding) / paddedAtlasWidth, 
+                (bmp.rows + padding) / (float)paddedAtlasHeight);
 
             atlas.glyphs.emplace((char)c, glyph);
 
-            xOffset += bmp.width;
+            xOffset += bmp.width + padding;
         }
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -175,8 +178,8 @@ namespace EngineCore {
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RED,
-            atlasWidth,
-            atlasHeight,
+            paddedAtlasWidth,
+            paddedAtlasHeight,
             0,
             GL_RED,
             GL_UNSIGNED_BYTE,

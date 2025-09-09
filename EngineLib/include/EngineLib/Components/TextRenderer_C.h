@@ -25,14 +25,15 @@ namespace EngineCore {
 			TextRenderer* SetText(const std::string& text);
 			TextRenderer* SetTextColor(float r, float g, float b);
 			TextRenderer* SetTextColor(const Vector3& color);
-			TextRenderer* SetTextSize(int textSize);
+			TextRenderer* SetTextSize(float textSize);
 			TextRenderer* SetTextResolution(int textResolution);
 			// -1 = all chars visible
 			TextRenderer* SetNumberOfVisibleChar(unsigned int numberOfVisibleChars);
 
 			const std::string& GetText() const;
 			const Vector3& GetTextColor() const;
-			int GetTextSize() const;
+			float GetTextSize() const;
+			int GetTextResolution() const;
 			int GetNumberOfVisibleChar() const;
 
 		private:
