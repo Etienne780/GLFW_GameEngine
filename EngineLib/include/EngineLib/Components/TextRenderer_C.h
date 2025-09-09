@@ -13,6 +13,7 @@ namespace EngineCore {
 		class TextRenderer : public EngineCore::ComponentBase {
 		public:
 			TextRenderer(GameObjectID gameObjectID);
+			TextRenderer(GameObjectID gameObjectID, FontID id);
 			void OnInspectorGUIImpl(IUIRenderer& ui) override;
 
 			COMPONENT_TYPE_DEFINITION(TextRenderer);
@@ -20,16 +21,18 @@ namespace EngineCore {
 			bool IsDrawable() const override { return true; }
 			void SubmitDrawCall() override;
 
-			void SetText(const std::string& text);
-			void SetTextColor(float r, float g, float b);
-			void SetTextColor(const Vector3& color);
-			void SetTextSize(float textSize);
+			TextRenderer* SetFontID(FontID id);
+			TextRenderer* SetText(const std::string& text);
+			TextRenderer* SetTextColor(float r, float g, float b);
+			TextRenderer* SetTextColor(const Vector3& color);
+			TextRenderer* SetTextSize(int textSize);
+			TextRenderer* SetTextResolution(int textResolution);
 			// -1 = all chars visible
-			void SetNumberOfVisibleChar(unsigned int numberOfVisibleChars);
+			TextRenderer* SetNumberOfVisibleChar(unsigned int numberOfVisibleChars);
 
 			const std::string& GetText() const;
 			const Vector3& GetTextColor() const;
-			float GetTextSize() const;
+			int GetTextSize() const;
 			int GetNumberOfVisibleChar() const;
 
 		private:
@@ -37,10 +40,16 @@ namespace EngineCore {
 			std::shared_ptr<GameObject> m_gameObject = nullptr;
 			RenderCommand m_cmd;
 
+			bool m_textChanged = true;
+			FontID m_fontID = FontID(ENGINE_INVALID_ID);
 			std::string m_text;
-			Vector3 m_textColor;
-			float m_textSize = 24;
+			Vector3 m_textColor{ 1, 1, 1 };
+			float m_textSize = 5.0f;
+			int m_textResolution = 60;
 			int m_visibleChar = -1;
+			std::vector<TextQuad> m_textQuads;
+
+			std::vector<TextQuad>& GetTextQuads();
 		};
 
 	}

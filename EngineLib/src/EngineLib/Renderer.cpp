@@ -3,6 +3,7 @@
 
 #include "EngineLib\ResourceManager.h"
 #include "EngineLib\Components\Camera_C.h"
+#include "EngineLib\FontManager.h"
 #include "EngineLib\GameObject.h"
 #include "EngineLib\Mesh.h"
 #include "EngineLib\Material.h"
@@ -27,7 +28,56 @@ namespace EngineCore {
         m_instanceMatrices.reserve(count);
     }
 
+    unsigned int textVAO = 0;
+    unsigned int textVBO = 0;
+    unsigned int textEBO = 0;
+    void InitTextRenderer()
+    {
+        glGenVertexArrays(1, &textVAO);
+        glGenBuffers(1, &textVBO);
+        glGenBuffers(1, &textEBO);
+
+        glBindVertexArray(textVAO);
+
+        // VBO für 4 Vertices
+        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(TextVertex) * 4, nullptr, GL_DYNAMIC_DRAW);
+
+        // EBO für Quad-Indizes
+        unsigned int indices[6] = { 0,1,2,2,3,0 };
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, textEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+        // Vertex-Attribs: position (vec3) + uv (vec2)
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TextVertex), (void*)0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextVertex), (void*)offsetof(TextVertex, uv));
+
+        glBindVertexArray(0);
+    }
+
+    void DrawQuad(const TextQuad& quad) {
+        glBindVertexArray(textVAO);
+
+        // Quad-Daten hochladen (dynamisch)
+        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad.vertices), quad.vertices);
+
+        // Zeichnen
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(0);
+    }
+
     void Renderer::DrawAll() {
+
+        static bool once = true;
+        if (once) {
+            InitTextRenderer();
+            once = false;
+        }
 
         std::sort(m_commands.begin(), m_commands.end(), [](const auto& a, const auto& b) {
             if (a.materialID != b.materialID) return a.materialID < b.materialID;
@@ -73,9 +123,38 @@ namespace EngineCore {
                 if (layer == cmd.renderLayer)
                     isInLayer = true;
             }
-
             if (!isInLayer)
                 continue;
+
+            if (cmd.type == RenderCommandType::Text) {
+                // Flush evtl. aktiven Mesh-Batch
+                flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
+                m_instanceMatrices.clear();
+
+                // Text-Rendering
+                unsigned int texID = FontManager::GetAtlasTextureID(cmd.fontID, cmd.pixelSize);
+                glBindTexture(GL_TEXTURE_2D, texID);
+
+                auto mat = rm.GetMaterial(cmd.materialID);
+                // Shader aktivieren
+                Shader* textShader = rm.GetShader(mat->GetShaderID());
+                textShader->Bind();
+                textShader->SetMatrix4("projection", cameraProjectionMat.ToOpenGLData());
+                textShader->SetMatrix4("view", cameraViewMat.ToOpenGLData());
+                textShader->SetVector3("textColor", cmd.textColor);
+
+                if (cmd.modelMatrix)
+                    textShader->SetMatrix4("model", cmd.modelMatrix->ToOpenGLData());
+
+                // Alle Quads zeichnen
+                for (const auto& quad : cmd.textQuads) {
+                    // Position & UV-Daten uploaden
+                    // -> z.B. in ein dynamisches VBO oder via glBufferSubData
+                    // -> oder besser: vorbereitete Quad-Mesh-Struktur und pro Quad nur die Uniforms setzen
+                    DrawQuad(quad); // musst du implementieren
+                }
+                continue;
+            }
 
             // material change
             if (currentMaterialID != cmd.materialID) {

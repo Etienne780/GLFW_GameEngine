@@ -244,5 +244,6 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\fonts\fa-solid-900.ttf" />
+    <Font Include="assets\fonts\arial.ttf" />
   </ItemGroup>
 </Project>

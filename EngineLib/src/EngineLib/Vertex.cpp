@@ -16,4 +16,18 @@ namespace EngineCore {
 		uv = { u, v };
 	}
 
+	TextVertex::TextVertex(const Vector3& _position) {
+		position = _position;
+	}
+
+	TextVertex::TextVertex(const Vector3& _position, const Vector2& _uv) {
+		position = _position;
+		uv = _uv;
+	}
+
+	TextVertex::TextVertex(float x, float y, float z, float u, float v) {
+		position = { x, y, z };
+		uv = { u, v };
+	}
+
 }

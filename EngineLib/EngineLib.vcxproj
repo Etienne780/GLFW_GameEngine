@@ -99,6 +99,7 @@
     <None Include="include\EngineLib\UI\UIManager.inl" />
   </ItemGroup>
   <ItemGroup>
+    <Font Include="assets\fonts\arial.ttf" />
     <Font Include="assets\fonts\fa-solid-900.ttf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -16,6 +16,12 @@ namespace EngineCore {
 		FontAsset(const FT_Library& lib, const std::string& path, bool useAbsolutDir);
 		~FontAsset();
 
+		FontAsset(const FontAsset&) = delete;
+		FontAsset& operator=(const FontAsset&) = delete;
+
+		FontAsset(FontAsset&&) = delete;
+		FontAsset& operator=(FontAsset&&) = delete;
+
 		struct Glyph {
 			Vector2 size;       // Size of glyph in pixels
 			Vector2 bearing;    // Offset from baseline
@@ -24,6 +30,8 @@ namespace EngineCore {
 			Vector2 uvMax;      // Top-right corner in atlas
 		};
 
+		void SetNumberOfMaxAtlases(size_t maxAtlases);
+
 		const Glyph& GetGlyph(char c, int pixelSize);
 		unsigned int GetAtlasTextureID(int pixelSize);
 
@@ -31,16 +39,21 @@ namespace EngineCore {
 
 		void DeleteFontAtlas(int pixelSize);
 		void DeleteAllAtlases();
-	private:	
+	private:
 		std::string m_path;
 		FT_Face m_face;
+		size_t m_maxAtlases = 8;
 
 		struct Atlas {
 			unsigned int glTextureID = ENGINE_INVALID_ID;
 			std::unordered_map<char, Glyph> glyphs;
+			mutable uint64_t lastUsedFrame = 0; // gets updated whenever atlas is accessed
 		};
-
+		
 		std::unordered_map<int, Atlas> m_atlases;
+		uint64_t m_accessCounter = 0;
+
+		void EnforceAtlasLimit();
 	};
 
 }

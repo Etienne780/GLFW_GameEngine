@@ -248,6 +248,10 @@ namespace EngineCore {
 		}
 		Log::Info("Engine::GLAD: Initialized GLAD successfully");
 
+		// (for text rendering)
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glPolygonMode(GL_FRONT, GL_FILL);
 		glViewport(0, 0, m_app->m_appApplicationWindowWidth, m_app->m_appApplicationWindowHeight);
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);

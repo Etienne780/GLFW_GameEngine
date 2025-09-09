@@ -12,6 +12,7 @@ EngineCore::Asset_MeshID g_engineMeshCubeID = EngineCore::Asset_MeshID(EngineCor
 EngineCore::Asset_ShaderID g_engineShaderDefaultID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_ShaderID g_engineShaderDefaultTextID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_MaterialID g_engineMaterialDefaultID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Asset_MaterialID g_engineMaterialDefaultTextID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
 
 namespace EngineCore::ASSETS::ENGINE::TEXTURE {
     Asset_Texture2DID Missing() { return g_engineTextureMissingID; }
@@ -29,6 +30,10 @@ namespace EngineCore::ASSETS::ENGINE::SHADER {
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
     Asset_MaterialID Default() { return g_engineMaterialDefaultID; }
+}
+
+namespace EngineCore::ASSETS::ENGINE::MATERIAL {
+    Asset_MaterialID DefaultText() { return g_engineMaterialDefaultTextID; }
 }
 
 namespace EngineCore {
@@ -155,15 +160,14 @@ namespace EngineCore {
                 #version 330 core
                 layout(location = 0) in vec3 aPos;
                 layout(location = 1) in vec2 aTexCoord;
-                layout(location = 2) in vec2 aNormal;
-                layout(location = 3) in mat4 instanceModel;
                 
                 out vec2 TexCoord;
+                uniform mat4 model;
                 uniform mat4 view;
                 uniform mat4 projection;
                 
                 void main() {
-                    gl_Position = projection * view * instanceModel * vec4(aPos, 1.0);
+                    gl_Position = projection * view * model * vec4(aPos, 1.0);
                     TexCoord = aTexCoord;
                 }
             )";
@@ -190,6 +194,13 @@ namespace EngineCore {
             g_engineMaterialDefaultID = rm.AddMaterial(g_engineShaderDefaultID);
             Material* mat = rm.GetMaterial(g_engineMaterialDefaultID);
             mat->SetParam("texture", g_engineTextureMissingID);
+        }
+        #pragma endregion
+
+        #pragma region MATERIAL::DefaultText
+        {
+            g_engineMaterialDefaultTextID = rm.AddMaterial(g_engineShaderDefaultTextID);
+            Material* mat = rm.GetMaterial(g_engineMaterialDefaultTextID);
         }
         #pragma endregion
 

@@ -31,7 +31,11 @@ void Project::Start() {
 	cameraGO->SetPersistent(true);
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
-	cameraGO->AddComponent<Component::TextRenderer>();
+
+	FontID id = FontManager::LoadFont("assets/fonts/arial.ttf");
+	auto fontGO = GameObject::Create("FontTest");
+	auto tr = fontGO->AddComponent<Component::TextRenderer>(id);
+	tr->SetText("Zerschta stinkt ghkaslG");
 
 	Scenes::Test();
 }

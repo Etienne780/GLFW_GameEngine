@@ -22,6 +22,7 @@ namespace EngineCore {
 
 			namespace MATERIAL {
 				Asset_MaterialID Default();
+				Asset_MaterialID DefaultText();
 			}
 		}
 	

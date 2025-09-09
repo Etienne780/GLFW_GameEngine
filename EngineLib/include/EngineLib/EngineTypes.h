@@ -61,11 +61,7 @@ namespace EngineCore {
 	};
 
 	struct TextQuad {
-		Vertex vertices[4];
-
-		static constexpr unsigned int indices[6] = {
-			0, 1, 2, 2, 3, 0
-		};
+		TextVertex vertices[4];
 	};
 
 	struct RenderCommand {
@@ -79,7 +75,9 @@ namespace EngineCore {
 
 		// For text
 		FontID fontID = FontID(ENGINE_INVALID_ID);
-		std::vector<TextQuad> quads;  // precomputed from string
+		int pixelSize = 0;
+		Vector3 textColor;
+		std::vector<TextQuad> textQuads;  // precomputed from string
 	};
 
 }
