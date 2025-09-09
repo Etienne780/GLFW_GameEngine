@@ -31,8 +31,7 @@ namespace EngineCore {
     unsigned int textVAO = 0;
     unsigned int textVBO = 0;
     unsigned int textEBO = 0;
-    void InitTextRenderer()
-    {
+    void InitTextRenderer() {
         glGenVertexArrays(1, &textVAO);
         glGenBuffers(1, &textVBO);
         glGenBuffers(1, &textEBO);
@@ -80,6 +79,7 @@ namespace EngineCore {
         }
 
         std::sort(m_commands.begin(), m_commands.end(), [](const auto& a, const auto& b) {
+            if (a.type != b.type) return a.type < b.type;
             if (a.materialID != b.materialID) return a.materialID < b.materialID;
             if (a.meshID != b.meshID) return a.meshID < b.meshID;
             return a.invertMesh < b.invertMesh;
@@ -130,7 +130,6 @@ namespace EngineCore {
                 // Flush evtl. aktiven Mesh-Batch
                 flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
-
                 // Text-Rendering
                 unsigned int texID = FontManager::GetAtlasTextureID(cmd.fontID, cmd.pixelSize);
                 glBindTexture(GL_TEXTURE_2D, texID);

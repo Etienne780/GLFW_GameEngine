@@ -181,8 +181,8 @@ namespace EngineCore {
 
                 void main()
                 {
-                    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(utexture, TexCoord).r);
-                    FragColor = vec4(textColor, 1.0) * sampled;
+                    float alpha = texture(utexture, TexCoord).r;
+                    FragColor = vec4(textColor, alpha);
                 } 
             )";
             g_engineShaderDefaultTextID = rm.AddShaderFromMemory(vert, frag);

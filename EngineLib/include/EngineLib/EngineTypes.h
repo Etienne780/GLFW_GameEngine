@@ -56,7 +56,7 @@ namespace EngineCore {
 	using UIElementID = EngineID<UIElementTag>;
 
 	enum class RenderCommandType {
-		Mesh,
+		Mesh = 0,
 		Text
 	};
 
