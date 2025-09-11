@@ -35,7 +35,7 @@ namespace EngineCore {
 		if(useAbsolutDir)
 			m_path = path;
 		else
-			m_path = File::GetExecutableDir() + "\\" + path;
+			m_path = File::GetExecutableDir() + path;
 	}
 
 	Texture2D::Texture2D(const unsigned char* data, int width, int height, int nrChannels) {
