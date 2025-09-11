@@ -1,5 +1,6 @@
 #pragma once
 #include <fstream>
+#include <vector>
 
 // Represents the current open state of the file.
 // Helps distinguish between read, write, or closed states.
