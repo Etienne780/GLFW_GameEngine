@@ -24,6 +24,10 @@ namespace EngineCore {
 				Asset_MaterialID Default();
 				Asset_MaterialID DefaultText();
 			}
+
+			namespace FONT {
+				FontID Default();
+			}
 		}
 	
 	}

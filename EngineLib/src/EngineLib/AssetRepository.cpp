@@ -1,9 +1,11 @@
 #include <vector>
 #include <glad/glad.h>
-#include <CoreLib\Log.h>
+#include <CoreLib/Log.h>
 
 #include "EngineLib/ResourceManager.h"
 #include "EngineLib/Vertex.h"
+#include "EngineLib/NotoSans_Regular_ttf.h"
+#include "EngineLib/FontManager.h"
 #include "EngineLib/AssetRepository.h"
 
 EngineCore::Asset_Texture2DID g_engineTextureMissingID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
@@ -13,6 +15,7 @@ EngineCore::Asset_ShaderID g_engineShaderDefaultID = EngineCore::Asset_ShaderID(
 EngineCore::Asset_ShaderID g_engineShaderDefaultTextID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_MaterialID g_engineMaterialDefaultID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_MaterialID g_engineMaterialDefaultTextID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::FontID g_engineFontDefaultID = EngineCore::FontID(EngineCore::ENGINE_INVALID_ID);
 
 namespace EngineCore::ASSETS::ENGINE::TEXTURE {
     Asset_Texture2DID Missing() { return g_engineTextureMissingID; }
@@ -34,6 +37,10 @@ namespace EngineCore::ASSETS::ENGINE::MATERIAL {
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
     Asset_MaterialID DefaultText() { return g_engineMaterialDefaultTextID; }
+}
+
+namespace EngineCore::ASSETS::ENGINE::FONT {
+    FontID Default() { return g_engineFontDefaultID; }
 }
 
 namespace EngineCore {
@@ -203,6 +210,13 @@ namespace EngineCore {
             Material* mat = rm.GetMaterial(g_engineMaterialDefaultTextID);
         }
         #pragma endregion
+
+        #pragma region FONT::Default
+        {
+            g_engineFontDefaultID = FontManager::LoadFontMemory(StaticFont::NotoSans_Regular_ttf, StaticFont::NotoSans_Regular_ttf_len);
+        }
+        #pragma endregion
+
 
 	}
 
