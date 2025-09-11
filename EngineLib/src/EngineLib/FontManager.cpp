@@ -1,4 +1,5 @@
-﻿#include <CoreLib/File.h>
+﻿#include <glad\glad.h>
+#include <CoreLib/File.h>
 #include <CoreLib/Log.h>
 
 #include "EngineLib/FontManager.h"
@@ -14,6 +15,7 @@ namespace EngineCore {
 			return ENGINE_FAILURE;
 		}
 
+		InitTextRenderer();
 		Log::Info("Engine::FreeType: Initialized FreeType successfully");
 		return ENGINE_SUCCESS;
 	}
@@ -21,6 +23,7 @@ namespace EngineCore {
 	void FontManager::Shutdown() {
 		m_fonts.clear();
 		FT_Done_FreeType(m_ftLib);
+		ShutdownTextRenderer();
 		m_init = false;
 	}
 
@@ -135,4 +138,57 @@ namespace EngineCore {
 		return GetFont(id)->GetAtlasTextureID(pixelSize);
 	}
 
+	void FontManager::InitTextRenderer() {
+		glGenVertexArrays(1, &m_textVAO);
+		glGenBuffers(1, &m_textVBO);
+		glGenBuffers(1, &m_textEBO);
+
+		glBindVertexArray(m_textVAO);
+
+		// VBO für 4 Vertices
+		glBindBuffer(GL_ARRAY_BUFFER, m_textVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(TextVertex) * 4, nullptr, GL_DYNAMIC_DRAW);
+
+		// EBO für Quad-Indizes
+		unsigned int indices[6] = { 0,1,2,2,3,0 };
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_textEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		// Vertex-Attribs: position (vec3) + uv (vec2)
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TextVertex), (void*)0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextVertex), (void*)offsetof(TextVertex, uv));
+
+		glBindVertexArray(0);
+	}
+
+	void FontManager::ShutdownTextRenderer() {
+		if (m_textVAO != ENGINE_INVALID_ID) {
+			glDeleteTextures(1, &m_textVAO);
+			m_textVAO = ENGINE_INVALID_ID;
+		}
+		if (m_textVBO != ENGINE_INVALID_ID) {
+			glDeleteTextures(1, &m_textVBO);
+			m_textVBO = ENGINE_INVALID_ID;
+		}
+		if (m_textEBO != ENGINE_INVALID_ID) {
+			glDeleteTextures(1, &m_textEBO);
+			m_textEBO = ENGINE_INVALID_ID;
+		}
+	}
+
+	void FontManager::DrawQuad(const TextQuad& quad) {
+		glBindVertexArray(m_textVAO);
+
+		// Quad-Daten hochladen (dynamisch)
+		glBindBuffer(GL_ARRAY_BUFFER, m_textVBO);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad.vertices), quad.vertices);
+
+		// Zeichnen
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+	
 }

@@ -15,6 +15,7 @@ namespace EngineCore {
 	inline const bool FONT_ABSOLUTDIR = true;
 
 	class FontManager {
+	friend class Renderer;
 	public:
 		static int Init();
 		static void Shutdown();
@@ -34,6 +35,14 @@ namespace EngineCore {
 		inline static IDManager m_idManager;
 
 		inline static std::unordered_map<FontID, std::shared_ptr<FontAsset>> m_fonts;
+
+		inline static unsigned int m_textVAO = ENGINE_INVALID_ID;
+		inline static unsigned int m_textVBO = ENGINE_INVALID_ID;
+		inline static unsigned int m_textEBO = ENGINE_INVALID_ID;
+
+		static void InitTextRenderer();
+		static void ShutdownTextRenderer();
+		static void DrawQuad(const TextQuad& quad);
 	};
 
 }
