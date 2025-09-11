@@ -144,6 +144,54 @@ bool File::ReadAll() {
     return true;
 }
 
+bool File::ReadAllBinary(std::vector<unsigned char>& outData) {
+    if (m_fileState != FileState::FILE_READ || !m_ifstream.is_open()) {
+        Log::Error("File: Cannot read binary, file '{}' not open for reading!", m_path);
+        return false;
+    }
+
+    // Jump to end to get file size
+    m_ifstream.seekg(0, std::ios::end);
+    std::streamsize size = m_ifstream.tellg();
+    if (size <= 0) {
+        Log::Error("File: Binary read failed, file '{}' has invalid size!", m_path);
+        return false;
+    }
+
+    // Allocate vector and read back
+    outData.resize(static_cast<size_t>(size));
+    m_ifstream.seekg(0, std::ios::beg);
+    if (!m_ifstream.read(reinterpret_cast<char*>(outData.data()), size)) {
+        Log::Error("File: Binary read failed for file '{}'", m_path);
+        return false;
+    }
+
+    return true;
+}
+
+bool File::ReadAllBinary() {
+    if (m_fileState != FileState::FILE_READ || !m_ifstream.is_open()) {
+        Log::Error("File: Cannot read binary, file '{}' not open for reading!", m_path);
+        return false;
+    }
+
+    m_ifstream.seekg(0, std::ios::end);
+    std::streamsize size = m_ifstream.tellg();
+    if (size <= 0) {
+        Log::Error("File: Binary read failed, file '{}' has invalid size!", m_path);
+        return false;
+    }
+
+    m_binaryData.resize(static_cast<size_t>(size));
+    m_ifstream.seekg(0, std::ios::beg);
+    if (!m_ifstream.read(reinterpret_cast<char*>(m_binaryData.data()), size)) {
+        Log::Error("File: Binary read failed for file '{}'", m_path);
+        return false;
+    }
+
+    return true;
+}
+
 bool File::Exists() const {
     std::ifstream file(m_path);
     return file.good();
@@ -159,12 +207,16 @@ bool File::IsFileOpen() const {
     return false;
 }
 
-std::string File::GetData() {
+std::string File::GetData() const {
     return m_data;
 }
 
-std::string* File::GetDataPtr() {
-    return &m_data;
+const std::string& File::GetDataPtr() {
+    return m_data;
+}
+
+const std::vector<unsigned char>& File::GetBinaryData() const {
+    return m_binaryData;
 }
 
 size_t File::GetFileSize() const {
@@ -293,7 +345,7 @@ std::string File::ConvertFilterString(const std::string& extensions) {
 }
 
 std::string File::GetExecutableDir() {
-    return std::filesystem::path(GetExecutablePath()).parent_path().string();
+    return std::filesystem::path(GetExecutablePath()).parent_path().string() + "\\";
 }
 
 #pragma endregion

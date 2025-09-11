@@ -60,10 +60,10 @@ public:
     bool Write(const void* data, size_t size);
 
     /**
-     * @brief Reads the entire file content into a string.
-     * @param outContent String where the file's content will be stored.
-     * @return True on success, false if file could not be read.
-     */
+    * @brief Reads the entire file content into a string.
+    * @param outContent String where the file's content will be stored.
+    * @return True on success, false if file could not be read.
+    */
     bool ReadAll(std::string& outContent);
 
     /**
@@ -71,6 +71,28 @@ public:
     * @return True on success, false if file could not be read.
     */
     bool ReadAll();
+
+    /**
+    * @brief Reads the entire file content as raw binary data into the provided vector.
+    *
+    * This variant stores the result in the caller-provided buffer `outData`.
+    * Useful when you want to manage the buffer yourself instead of storing it inside the File object.
+    *
+    * @param outData Vector where the binary content will be written.
+    * @return True on success, false if file could not be read.
+    */
+    bool ReadAllBinary(std::vector<unsigned char>& outData);
+
+    /**
+    * @brief Reads the entire file content as raw binary data and stores it internally.
+    *
+    * The data will be stored in the member variable `m_binaryData`.
+    * Use GetBinaryData() to access the loaded binary content after calling this function.
+    *
+    * @return True on success, false if file could not be read.
+    */
+    bool ReadAllBinary();
+
 
     /**
      * @brief Checks if the file exists (non-static version).
@@ -88,13 +110,20 @@ public:
     * @brief Gets the Data that was previously read with ReadAll()
     * @return a copy of the data string
     */
-    std::string GetData();
+    std::string GetData() const;
 
     /**
     * @brief Gets the Data that was previously read with ReadAll()
     * @return a ptr to the data string
     */
-    std::string* GetDataPtr();
+    const std::string& GetDataPtr();
+
+    /**
+    * @brief Returns the binary data previously read with ReadAllBinary().
+    *
+    * @return Const reference to the internal binary data buffer `m_binaryData`.
+    */
+    const std::vector<unsigned char>& GetBinaryData() const;
 
     /**
      * @brief Gets the size of the file in bytes.
@@ -136,6 +165,16 @@ public:
      */
     static bool CreateDir(const std::string& dir);
 
+    /**
+    * @brief Opens a native folder selection dialog.
+    *
+    * This uses tinyfiledialogs to show a system-native folder selection window.
+    * If the user cancels, an empty string is returned.
+    *
+    * @param title       Title of the dialog window.
+    * @param defaultPath Optional initial path shown in the dialog. If empty, the system default is used.
+    * @return std::string Absolute path to the selected folder, or empty string if cancelled.
+    */
     static std::string SelectFolderDialog(const std::string& title, const std::string& defaultPath = "");
 
     /**
@@ -201,6 +240,7 @@ private:
     std::ofstream m_ofstream;   // Output file stream (for writing)
     FileState m_fileState = FileState::FILE_CLOSE; // Current state of the file
     std::string m_data;
+    std::vector<unsigned char> m_binaryData;
 
     static std::string GetExecutablePath();
 };
