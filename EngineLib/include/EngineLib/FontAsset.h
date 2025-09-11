@@ -13,7 +13,14 @@ namespace EngineCore {
 
 	class FontAsset {
 	public:
+		/*
+		* @brief creats a FontAsset from a file path
+		*/
 		FontAsset(const FT_Library& lib, const std::string& path, bool useAbsolutDir);
+		/*
+		* @brief Creats a FontAsset from raw memory
+		*/
+		FontAsset(const FT_Library& lib, const FT_Byte* data, FT_Long size);
 		~FontAsset();
 
 		FontAsset(const FontAsset&) = delete;
@@ -40,6 +47,8 @@ namespace EngineCore {
 		void DeleteFontAtlas(int pixelSize);
 		void DeleteAllAtlases();
 	private:
+		// says if the FontAsset was created from memory
+		bool m_isFromMemory = false;
 		std::string m_path;
 		FT_Face m_face;
 		size_t m_maxAtlases = 8;

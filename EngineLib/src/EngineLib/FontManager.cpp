@@ -39,9 +39,25 @@ namespace EngineCore {
 			Log::Error("FontManager: No free font id was found");
 		}
 		else {
-			m_fonts.emplace(id, std::make_unique<FontAsset>(m_ftLib, path, useAbsolutDir));
+			m_fonts.emplace(id, std::make_shared<FontAsset>(m_ftLib, path, useAbsolutDir));
 		}
+		return FontID(id);
+	}
 
+	FontID FontManager::LoadFontMemory(const FT_Byte* data, FT_Long size) {
+#ifndef NDEBUG
+		if (!m_init) {
+			Log::Error("FontManager: Failed to load font from memory, FontManager was not initiated");
+			return FontID(ENGINE_INVALID_ID);
+		}
+#endif 
+		int id = m_idManager.GetNewUniqueIdentifier();
+		if (id == ENGINE_INVALID_ID) {
+			Log::Error("FontManager: No free font id was found");
+		}
+		else {
+			m_fonts.emplace(id, std::make_shared<FontAsset>(m_ftLib, data, size));
+		}
 		return FontID(id);
 	}
 

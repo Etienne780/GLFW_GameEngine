@@ -10,6 +10,7 @@
 
 namespace EngineCore {
 
+    // From path
 	FontAsset::FontAsset(const FT_Library& lib, const std::string& path, bool useAbsolutDir = false) {
         std::string fullPath;
         if (useAbsolutDir) {
@@ -36,6 +37,17 @@ namespace EngineCore {
         m_path = newPath;
 	}
 
+    // From memory
+    FontAsset::FontAsset(const FT_Library& lib, const FT_Byte* data, FT_Long size) {
+        FT_Error error = FT_New_Memory_Face(lib, data, size, 0, &m_face);
+        if (error) {
+            Log::Error("FontManager: Failed to load font from memory, FreeType error {}", error);
+            m_face = nullptr;
+        }
+
+        m_isFromMemory = true;
+    }
+
 	FontAsset::~FontAsset() {
         if (m_face) {
             FT_Done_Face(m_face);
@@ -58,7 +70,10 @@ namespace EngineCore {
         auto glyphIt = it->second.glyphs.find(c);
         if (glyphIt == it->second.glyphs.end()) {
             Log::Warn("FontAsset: Glyph '{}' not found in atlas (size {})", c, pixelSize);
-            Log::Print(Log::levelWarning, "                      {}", m_path);
+            if(m_isFromMemory)
+                Log::Print(Log::levelWarning, "                      Was created from memory");
+            else
+                Log::Print(Log::levelWarning, "                      {}", m_path);
             static Glyph dummy{};
             return dummy;
         }
@@ -210,9 +225,13 @@ namespace EngineCore {
             if (lru == m_atlases.end())
                 break;
 
+#ifndef NDEBUG
             Log::Debug("FontAsset: Deleted least recently used atlas (size {})", lru->first);
-            Log::Print(Log::levelDebug, "                    {}", m_path);
-
+            if (m_isFromMemory)
+                Log::Print(Log::levelDebug, "                    Was created from memory");
+            else
+                Log::Print(Log::levelDebug, "                    {}", m_path);
+#endif
             glDeleteTextures(1, &lru->second.glTextureID);
             m_atlases.erase(lru);
         }

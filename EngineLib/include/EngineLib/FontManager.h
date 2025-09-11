@@ -21,6 +21,10 @@ namespace EngineCore {
 		static void Shutdown();
 
 		static FontID LoadFont(const std::string& path, bool useAbsolutDir = false);
+		/*
+		* @brief IMPORTANT the data ptr has to be alive as long as this FontAsset exist
+		*/
+		static FontID LoadFontMemory(const FT_Byte* data, FT_Long size);
 		static std::shared_ptr<FontAsset> GetFont(FontID id);
 		static std::vector<TextQuad> BuildTextQuads(const std::string& text, FontID fontID, Vector2 startPos, int pixelSize, float scale);
 		
