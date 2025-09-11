@@ -52424,6 +52424,6 @@ static const unsigned char NotoSans_Regular_ttf[] = {
     0x2E,0x34,0x0A,0x24,0x1E,0x1F,0x23,0x00
 };
 
-static const unsigned int NotoSans_Regular_ttf_len = 99920;
+static const size_t NotoSans_Regular_ttf_len = sizeof(NotoSans_Regular_ttf);
 
 }

@@ -217,7 +217,6 @@ namespace EngineCore {
         }
         #pragma endregion
 
-
 	}
 
 }

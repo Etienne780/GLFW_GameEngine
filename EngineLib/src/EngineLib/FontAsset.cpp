@@ -6,6 +6,7 @@
 #include <CoreLib/File.h>
 #include <CoreLib/Log.h>
 
+#include "EngineLib/NotoSans_Regular_ttf.h"
 #include "EngineLib/FontAsset.h"
 
 namespace EngineCore {
@@ -17,35 +18,40 @@ namespace EngineCore {
             fullPath = path;
         }
         else {
-            fullPath = File::GetExecutableDir() + "\\" + path;
+            fullPath = File::GetExecutableDir() + path;
         }
         const char* newPath = fullPath.c_str();
 
-		if (!File::Exists(newPath)) {
-			Log::Error("FontManager: Failed to load font, font not found");
-			Log::Print(Log::levelError, "             {}", newPath);
+        if (!File::Exists(newPath)) {
+            Log::Error("FontAsset: Failed to load font, font not found");
+            Log::Print(Log::levelError, "             {}", newPath);
 
-			Log::Error("FontManager: Not implementd, should load a default font here or somthing like that. (i am lazy)");
-		}
-
-        FT_Error error = FT_New_Face(lib, newPath, 0, &m_face);
-        if (error) {
-            Log::Error("FontManager: Failed to load font '{}', FreeType error {}", newPath, error);
-            m_face = nullptr;
+            LoadFallback(lib);
         }
-
-        m_path = newPath;
+        else {
+            FT_Error error = FT_New_Face(lib, newPath, 0, &m_face);
+            if (error) {
+                Log::Error("FontAsset: Failed to load font '{}', FreeType error {}", newPath, error);
+                m_face = nullptr;
+                LoadFallback(lib);
+            }
+            else {
+                m_path = newPath;
+            }
+        }
 	}
 
     // From memory
     FontAsset::FontAsset(const FT_Library& lib, const FT_Byte* data, FT_Long size) {
         FT_Error error = FT_New_Memory_Face(lib, data, size, 0, &m_face);
         if (error) {
-            Log::Error("FontManager: Failed to load font from memory, FreeType error {}", error);
+            Log::Error("FontAsset: Failed to load font from memory, FreeType error {}", error);
             m_face = nullptr;
+            LoadFallback(lib);
         }
-
-        m_isFromMemory = true;
+        else {
+            m_isFromMemory = true;
+        }
     }
 
 	FontAsset::~FontAsset() {
@@ -235,6 +241,20 @@ namespace EngineCore {
             glDeleteTextures(1, &lru->second.glTextureID);
             m_atlases.erase(lru);
         }
+    }
+
+    void FontAsset::LoadFallback(const FT_Library& lib) {
+        FT_Error error = FT_New_Memory_Face(lib, StaticFont::NotoSans_Regular_ttf, StaticFont::NotoSans_Regular_ttf_len, 0, &m_face);
+        if (error) {
+            Log::Error("FontAsset: Failed to default font, FreeType error {}", error);
+            m_face = nullptr;
+        }
+        else {
+            Log::Warn("FontAsset: Loaded default font!");
+        }
+
+        m_isFromMemory = true;
+        m_loadedFallback = true;
     }
 
 }

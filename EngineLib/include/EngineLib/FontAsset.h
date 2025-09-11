@@ -49,6 +49,7 @@ namespace EngineCore {
 	private:
 		// says if the FontAsset was created from memory
 		bool m_isFromMemory = false;
+		bool m_loadedFallback = false;
 		std::string m_path;
 		FT_Face m_face;
 		size_t m_maxAtlases = 8;
@@ -63,6 +64,7 @@ namespace EngineCore {
 		uint64_t m_accessCounter = 0;
 
 		void EnforceAtlasLimit();
+		void LoadFallback(const FT_Library& lib);
 	};
 
 }

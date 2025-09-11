@@ -32,9 +32,9 @@ void Project::Start() {
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 
-	FontID id = FontManager::LoadFont("assets/fonts/arial.ttf");
+	// FontID id = FontManager::LoadFont("assets/fonts/arial.ttf");
 	auto fontGO = GameObject::Create("FontTest");
-	auto tr = fontGO->AddComponent<Component::TextRenderer>(id);
+	auto tr = fontGO->AddComponent<Component::TextRenderer>(ASSETS::ENGINE::FONT::Default());
 	tr->SetText("Das ist ein Test");
 
 	Scenes::Test();
