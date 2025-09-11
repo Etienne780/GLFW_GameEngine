@@ -42,6 +42,7 @@
     <ClInclude Include="include\EngineLib\Input.h" />
     <ClInclude Include="include\EngineLib\Material.h" />
     <ClInclude Include="include\EngineLib\Mesh.h" />
+    <ClInclude Include="include\EngineLib\NotoSans_Regular_ttf.h" />
     <ClInclude Include="include\EngineLib\Renderer.h" />
     <ClInclude Include="include\EngineLib\RenderLayer.h" />
     <ClInclude Include="include\EngineLib\ResourceManager.h" />
@@ -99,7 +100,6 @@
     <None Include="include\EngineLib\UI\UIManager.inl" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="assets\fonts\arial.ttf" />
     <Font Include="assets\fonts\fa-solid-900.ttf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

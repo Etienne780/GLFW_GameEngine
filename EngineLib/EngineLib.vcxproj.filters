@@ -120,6 +120,9 @@
     <ClInclude Include="include\EngineLib\FontAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EngineLib\NotoSans_Regular_ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EngineLib\Application.cpp">
@@ -244,6 +247,5 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\fonts\fa-solid-900.ttf" />
-    <Font Include="assets\fonts\arial.ttf" />
   </ItemGroup>
 </Project>
