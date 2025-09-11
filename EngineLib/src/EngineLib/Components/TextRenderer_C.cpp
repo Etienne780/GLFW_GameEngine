@@ -24,10 +24,7 @@ namespace EngineCore::Component {
 		m_fontID = id;
 	}
 
-	void TextRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {
-		if (m_text.length() < m_visibleChar)
-			m_visibleChar = static_cast<int>(m_text.length());
-		
+	void TextRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {		
 		ui.DrawLabel(FormatUtils::formatString("Font ID: {}", (m_fontID.value == ENGINE_INVALID_ID) ? std::string("ENGINE_INVALID_ID") : std::to_string(m_fontID.value).c_str()));
 		ui.DrawInputText("Text", &m_text);
 		ui.DrawDragFloat("Text Size", &m_textSize, 0.075F, 1, 256);
@@ -35,8 +32,9 @@ namespace EngineCore::Component {
 		ui.DrawDragInt("Visible Chars", &m_visibleChar, MathUtil::Min(0.6F, 0.02F * m_text.length()/2), -1, static_cast<int>(m_text.length()));
 		ui.DrawColorEdit3("Text Color", &m_textColor);
 
-		m_textSize = abs(m_textSize);
+		m_textSize = abs(MathUtil::Max(1, m_textSize));
 		m_textResolution = abs(m_textResolution);
+		AdjustVisibleChars();
 
 		m_textChanged = true;
 	}
@@ -67,9 +65,7 @@ namespace EngineCore::Component {
 	TextRenderer* TextRenderer::SetText(const std::string& text) {
 		m_textChanged = true;
 		m_text = text;
-
-		if (m_text.length() < m_visibleChar)
-			m_visibleChar = static_cast<int>(m_text.length());
+		AdjustVisibleChars();
 
 		return this;
 	}
@@ -91,7 +87,7 @@ namespace EngineCore::Component {
 	TextRenderer* TextRenderer::SetTextSize(float textSize) {
 		m_textChanged = true;
 		m_textSize = textSize;
-		m_textSize = abs(m_textSize);
+		m_textSize = abs(MathUtil::Max(1, m_textSize));
 
 		return this;
 	}
@@ -146,6 +142,27 @@ namespace EngineCore::Component {
 			m_textChanged = false;
 		}
 		return m_textQuads;
+	}
+
+	void TextRenderer::AdjustVisibleChars() {
+		/*
+		* Code to to adjust the number of visible chars
+		int currentTextSize = static_cast<int>(m_text.length());
+		// int diff = currentTextSize - m_lastTextSize;
+
+		if (m_visibleChar != -1) {
+			// if (diff > 0) {
+			// 	// moves visible chars when new char added
+			// 	// posi (+)
+			// 	m_visibleChar += diff;
+			// } diff < 0 && 
+			if (m_visibleChar >= currentTextSize) {
+				// nege (-)
+				m_visibleChar = currentTextSize;
+			}
+		}*/
+
+		// m_lastTextSize = currentTextSize;
 	}
 
 }

@@ -48,9 +48,11 @@ namespace EngineCore {
 			float m_textSize = 5.0f;
 			int m_textResolution = 60;
 			int m_visibleChar = -1;
+			// int m_lastTextSize = 0; could be used in AdjustVisibleChars idk what i want
 			std::vector<TextQuad> m_textQuads;
 
 			std::vector<TextQuad>& GetTextQuads();
+			void AdjustVisibleChars();
 		};
 
 	}

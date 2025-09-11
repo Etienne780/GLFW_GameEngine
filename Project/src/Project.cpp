@@ -35,7 +35,7 @@ void Project::Start() {
 	FontID id = FontManager::LoadFont("assets/fonts/arial.ttf");
 	auto fontGO = GameObject::Create("FontTest");
 	auto tr = fontGO->AddComponent<Component::TextRenderer>(id);
-	tr->SetText("Zerschta stinkt ghkaslG");
+	tr->SetText("Das ist ein Test");
 
 	Scenes::Test();
 }
