@@ -118,6 +118,14 @@ public:
     */
     static float Distance(const Vector4& a, const Vector4& b);
 
+    /**
+    * @brief Computes the Euclidean distance between two vectors Squared.
+    * @param a First vector.
+    * @param b Second vector.
+    * @return Distance as a float Squared.
+    */
+    static float SquaredDistance(const Vector4& a, const Vector4& b);
+
     // Compound assignment operators modifying this vector
 
     Vector4& operator+=(const Vector4& other); 

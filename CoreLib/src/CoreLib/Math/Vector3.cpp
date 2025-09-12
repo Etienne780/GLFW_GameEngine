@@ -113,7 +113,10 @@ float Vector3::Distance(const Vector3& a, const Vector3& b) {
     return (a - b).Magnitude();
 }
 
-// Adds another vector to the current vector
+float Vector3::SquaredDistance(const Vector3& a, const Vector3& b) {
+    return (a - b).SquaredMagnitude();
+}
+
 Vector3& Vector3::operator+=(const Vector3& other) {
     x += other.x;
     y += other.y;

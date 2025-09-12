@@ -91,6 +91,10 @@ float Vector2::Distance(const Vector2& a, const Vector2& b) {
     return (a - b).Magnitude();
 }
 
+float Vector2::SquaredDistance(const Vector2& a, const Vector2& b) {
+    return (a - b).SquaredMagnitude();
+}
+
 Vector2& Vector2::operator+=(const Vector2& other) {
     x += other.x;
     y += other.y;
