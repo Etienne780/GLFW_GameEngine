@@ -35,7 +35,7 @@ void Project::Start() {
 	cameraGO->SetPersistent(true);
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
-
+	
 	auto fontGO = GameObject::Create("FontTest");
 	auto tr = fontGO->AddComponent<Component::TextRenderer>();
 	tr->SetText("Das ist ein Test");
