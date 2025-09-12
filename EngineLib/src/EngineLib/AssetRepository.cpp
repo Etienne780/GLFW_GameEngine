@@ -4,7 +4,7 @@
 
 #include "EngineLib/ResourceManager.h"
 #include "EngineLib/Vertex.h"
-#include "EngineLib/NotoSans_Regular_ttf.h"
+#include "EngineLib/Nurom_Bold_ttf.h"
 #include "EngineLib/FontManager.h"
 #include "EngineLib/AssetRepository.h"
 
@@ -213,7 +213,7 @@ namespace EngineCore {
 
         #pragma region FONT::Default
         {
-            g_engineFontDefaultID = FontManager::LoadFontMemory(StaticFont::NotoSans_Regular_ttf, StaticFont::NotoSans_Regular_ttf_len);
+           g_engineFontDefaultID = FontManager::LoadFontMemory(StaticFont::Nurom_Bold_ttf, StaticFont::Nurom_Bold_ttf_len);
         }
         #pragma endregion
 

@@ -21,6 +21,10 @@ Project::Project()
 
 std::shared_ptr<Component::FreeCameraController> camController = nullptr;
 
+#include <vector>
+#include <iomanip>
+#include <sstream>
+
 void Project::Start() {
 	App_OpenGL_Set_DepthTesting(true);
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
@@ -32,9 +36,8 @@ void Project::Start() {
 	auto cam = cameraGO->AddComponent<Component::Camera>();
 	camController = cameraGO->AddComponent<Component::FreeCameraController>();
 
-	// FontID id = FontManager::LoadFont("assets/fonts/arial.ttf");
 	auto fontGO = GameObject::Create("FontTest");
-	auto tr = fontGO->AddComponent<Component::TextRenderer>(ASSETS::ENGINE::FONT::Default());
+	auto tr = fontGO->AddComponent<Component::TextRenderer>();
 	tr->SetText("Das ist ein Test");
 
 	Scenes::Test();

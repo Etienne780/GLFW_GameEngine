@@ -42,7 +42,7 @@ namespace EngineCore {
 			RenderCommand m_cmd;
 
 			bool m_textChanged = true;
-			FontID m_fontID = FontID(ENGINE_INVALID_ID);
+			FontID m_fontID = FontID(0);
 			std::string m_text;
 			Vector3 m_textColor{ 1, 1, 1 };
 			float m_textSize = 5.0f;

@@ -6,7 +6,7 @@
 #include <CoreLib/File.h>
 #include <CoreLib/Log.h>
 
-#include "EngineLib/NotoSans_Regular_ttf.h"
+#include "EngineLib/Nurom_Bold_ttf.h"
 #include "EngineLib/FontAsset.h"
 
 namespace EngineCore {
@@ -142,6 +142,7 @@ namespace EngineCore {
         int atlasWidth = 0;
         int atlasHeight = 0;
 
+        m_path;
         for (int c = firstChar; c < lastChar; ++c) {
             if (FT_Load_Char(m_face, c, FT_LOAD_RENDER)) {
                 Log::Error("FontAsset: Failed to load Glyph '{}'", c);
@@ -244,15 +245,17 @@ namespace EngineCore {
     }
 
     void FontAsset::LoadFallback(const FT_Library& lib) {
-        FT_Error error = FT_New_Memory_Face(lib, StaticFont::NotoSans_Regular_ttf, StaticFont::NotoSans_Regular_ttf_len, 0, &m_face);
+        if (m_loadedFallback)
+            return;
+        FT_Error error = FT_New_Memory_Face(lib, StaticFont::Fallback_ttf, StaticFont::Fallback_ttf_len, 0, &m_face);
         if (error) {
-            Log::Error("FontAsset: Failed to default font, FreeType error {}", error);
+            Log::Error("FontAsset: Failed to fallback font, FreeType error {}", error);
             m_face = nullptr;
         }
         else {
-            Log::Warn("FontAsset: Loaded default font!");
+            Log::Warn("FontAsset: Loaded fallback font!");
         }
-
+        
         m_isFromMemory = true;
         m_loadedFallback = true;
     }
