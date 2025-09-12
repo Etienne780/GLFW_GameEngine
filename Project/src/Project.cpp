@@ -19,28 +19,13 @@ Project::Project()
 	// Log::SaveLogs("Logs/");
 }
 
-std::shared_ptr<Component::FreeCameraController> camController = nullptr;
-
-#include <vector>
-#include <iomanip>
-#include <sstream>
-
 void Project::Start() {
 	App_OpenGL_Set_DepthTesting(true);
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	App_OpenGL_Set_FaceCulling(true);
 
-	auto cameraGO = GameObject::Create("MainCamera");
-	cameraGO->SetPersistent(true);
-	auto cam = cameraGO->AddComponent<Component::Camera>();
-	camController = cameraGO->AddComponent<Component::FreeCameraController>();
-	
-	auto fontGO = GameObject::Create("FontTest");
-	auto tr = fontGO->AddComponent<Component::TextRenderer>();
-	tr->SetText("Das ist ein Test");
-
-	Scenes::Test();
+	Scenes::LoadTest();
 }
 
 void Project::Update() {

@@ -13,6 +13,7 @@ namespace EngineCore {
 
 			namespace MESH {
 				Asset_MeshID Cube();
+				Asset_MeshID Plain();
 			}
 
 			namespace SHADER {

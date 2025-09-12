@@ -2,6 +2,6 @@
 
 namespace Scenes {
 
-	void Test();
+	void LoadTest();
 
 }

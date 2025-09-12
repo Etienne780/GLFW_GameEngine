@@ -11,6 +11,7 @@
 EngineCore::Asset_Texture2DID g_engineTextureMissingID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_Texture2DID g_engineTextureCursedmod3ID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_MeshID g_engineMeshCubeID = EngineCore::Asset_MeshID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Asset_MeshID g_engineMeshPlainID = EngineCore::Asset_MeshID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_ShaderID g_engineShaderDefaultID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_ShaderID g_engineShaderDefaultTextID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Asset_MaterialID g_engineMaterialDefaultID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
@@ -24,6 +25,7 @@ namespace EngineCore::ASSETS::ENGINE::TEXTURE {
 
 namespace EngineCore::ASSETS::ENGINE::MESH {
 	Asset_MeshID Cube() { return g_engineMeshCubeID; }
+    Asset_MeshID Plain() { return g_engineMeshPlainID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::SHADER {
@@ -127,6 +129,28 @@ namespace EngineCore {
 		}
         #pragma endregion
 
+        #pragma region MESH::Plain
+        {
+            Vertex vertices[] = {
+                { -0.5f, -0.5f,  0, 0.0f, 0.0f }, // 4
+                {  0.5f, -0.5f,  0, 1.0f, 0.0f }, // 5
+                {  0.5f,  0.5f,  0, 1.0f, 1.0f }, // 6
+                { -0.5f,  0.5f,  0, 0.0f, 1.0f }, // 7
+            };
+
+            unsigned int indices[] = {
+                // Back (Z-)
+                0, 1, 2, 0, 2, 3,
+            };
+
+            size_t verticesSize = sizeof(vertices) / sizeof(vertices[0]);
+            size_t indicesSize = sizeof(indices) / sizeof(indices[0]);
+
+            g_engineMeshPlainID = rm.AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
+        }
+        #pragma endregion
+
+
         #pragma region SHADER::Default
         {
             std::string vert = R"(
@@ -154,7 +178,10 @@ namespace EngineCore {
 
                 void main()
                 {
-                	FragColor = texture(utexture, TexCoord);
+                    vec4 texColor = texture(utexture, TexCoord);
+                    if(texColor.a < 0.1)
+                        discard;
+                	FragColor = texColor;
                 }
             )";
             g_engineShaderDefaultID = rm.AddShaderFromMemory(vert, frag);
@@ -189,6 +216,8 @@ namespace EngineCore {
                 void main()
                 {
                     float alpha = texture(utexture, TexCoord).r;
+                    if(alpha < 0.1)
+                        discard;
                     FragColor = vec4(textColor, alpha);
                 } 
             )";
