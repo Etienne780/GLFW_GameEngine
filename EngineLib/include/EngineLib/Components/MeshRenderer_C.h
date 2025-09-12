@@ -1,4 +1,6 @@
 #pragma once
+#include <CoreLib/Math/Vector4.h>
+
 #include "../ComponentBase.h"
 #include "EngineLib/EngineTypes.h"
 
@@ -31,7 +33,8 @@ namespace EngineCore {
 			RenderCommand m_cmd;
 			Asset_MeshID m_meshID = Asset_MeshID(ENGINE_INVALID_ID);
 			Asset_MaterialID m_materialID = Asset_MaterialID(ENGINE_INVALID_ID);
-
+			Vector4 m_meshColor{ 1, 1, 1, 1 };
+			bool m_isTransparent = false;
 			bool m_invertMesh = false;
 		};
 

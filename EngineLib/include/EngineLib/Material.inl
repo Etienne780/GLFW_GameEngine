@@ -37,6 +37,7 @@ namespace EngineCore {
             m_matrixParams[name] = value;
         }
         else if constexpr (std::is_same<T, Asset_Texture2DID>::value) {
+            SetIsTransparent(value);
             m_textureParams[name] = value;
         }
     }

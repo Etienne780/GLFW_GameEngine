@@ -49,7 +49,7 @@ namespace EngineCore {
 		m_app->Start();
 		RenderLayer::Lock();
 		return ENGINE_SUCCESS;
-	}
+}
 
 	void Engine::EngineLoop() {
 		while (m_isEngineRunning) {
@@ -248,7 +248,7 @@ namespace EngineCore {
 		}
 		Log::Info("Engine::GLAD: Initialized GLAD successfully");
 
-		// (for text rendering)
+		glEnable(GL_BLEND);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

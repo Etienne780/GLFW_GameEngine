@@ -79,10 +79,9 @@ Vector3 Matrix4x4::GetTranslation() const {
 }
 
 Vector3 Matrix4x4::GetRotation() const {
-    // First remove scale
     Vector3 scale = GetScale();
 
-    // Create normalized rotation matrix
+    // Create normalized rotation matrix (remove scale)
     float m00 = m_data[0] / scale.x, m01 = m_data[1] / scale.x, m02 = m_data[2] / scale.x;
     float m10 = m_data[4] / scale.y, m11 = m_data[5] / scale.y, m12 = m_data[6] / scale.y;
     float m20 = m_data[8] / scale.z, m21 = m_data[9] / scale.z, m22 = m_data[10] / scale.z;

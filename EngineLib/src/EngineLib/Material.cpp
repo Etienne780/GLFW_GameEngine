@@ -9,8 +9,8 @@ namespace EngineCore {
 
 	unsigned int Material::m_maxTextureUnits = 0;
 
-	Material::Material(Asset_ShaderID shaderID) 
-		: m_shaderID(shaderID){
+	Material::Material(Asset_ShaderID shaderID)
+		: m_shaderID(shaderID) {
 	}
 
 	Shader* Material::BindToShader() const {
@@ -90,9 +90,9 @@ namespace EngineCore {
 
 		if (row == column) {
 			switch (row) {
-				case 2: shader->SetMatrix2(name, m.ToOpenGLData()); break;
-				case 3: shader->SetMatrix3(name, m.ToOpenGLData()); break;
-				case 4: shader->SetMatrix4(name, m.ToOpenGLData()); break;
+			case 2: shader->SetMatrix2(name, m.ToOpenGLData()); break;
+			case 3: shader->SetMatrix3(name, m.ToOpenGLData()); break;
+			case 4: shader->SetMatrix4(name, m.ToOpenGLData()); break;
 			}
 		}
 		else {
@@ -121,6 +121,13 @@ namespace EngineCore {
 				}
 			}
 		}
+	}
+
+	void Material::SetIsTransparent(Asset_Texture2DID id) {
+		auto& rm = ResourceManager::GetInstance();
+		auto tex = rm.GetTexture2D(id);
+		if (tex->GetNrChannels() > 3)
+			m_isTransparent = true;
 	}
 
 	std::string Material::GetParamString() const {
@@ -165,6 +172,10 @@ namespace EngineCore {
 
 	Asset_ShaderID Material::GetShaderID() const {
 		return m_shaderID;
+	}
+
+	bool Material::GetIsTransparent() const {
+		return m_isTransparent;
 	}
 
 }

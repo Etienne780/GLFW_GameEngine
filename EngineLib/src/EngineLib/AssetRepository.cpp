@@ -175,6 +175,7 @@ namespace EngineCore {
                 in vec2 TexCoord;
 
                 uniform sampler2D utexture;
+                uniform vec4 umeshColor;
 
                 void main()
                 {
@@ -209,17 +210,18 @@ namespace EngineCore {
                 #version 330 core
                 out vec4 FragColor;
                 in vec2 TexCoord;
-
+                
                 uniform sampler2D utexture;
-                uniform vec3 textColor;
-
+                uniform vec4 umeshColor;
+                
                 void main()
                 {
                     float alpha = texture(utexture, TexCoord).r;
                     if(alpha < 0.1)
                         discard;
-                    FragColor = vec4(textColor, alpha);
-                } 
+                
+                    FragColor = vec4(umeshColor.rgb, umeshColor.a * alpha);
+                }
             )";
             g_engineShaderDefaultTextID = rm.AddShaderFromMemory(vert, frag);
         }

@@ -21,6 +21,7 @@ namespace EngineCore {
 			ui.DrawLabel(FormatUtils::formatString("Mesh ID: {}", m_meshID.value));
 			ui.DrawLabel(FormatUtils::formatString("Material ID: {}", m_materialID.value));
 			ui.DrawCheckbox("Mesh Inverted", &m_invertMesh);
+			ui.DrawColorEdit4("Mesh Color", &m_meshColor);
 		}
 
 		MeshRenderer* MeshRenderer::SetMesh(Asset_MeshID id) {
@@ -45,6 +46,8 @@ namespace EngineCore {
 				Log::Error("MeshRenderer: Cant set material on gameObject {}, material is nullptr", m_gameObject->GetName());
 				return this;
 			}
+
+			m_isTransparent = mat->GetIsTransparent();
 			m_materialID = id;
 			return this;
 		}
@@ -60,11 +63,13 @@ namespace EngineCore {
 
 		void MeshRenderer::SubmitDrawCall() {
 			m_cmd.type = RenderCommandType::Mesh;
+			m_cmd.invertMesh = m_invertMesh;
 			m_cmd.materialID = m_materialID;
 			m_cmd.meshID = m_meshID;
 			m_cmd.renderLayer = m_gameObject->GetRenderLayer();
 			m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
-			m_cmd.invertMesh = m_invertMesh;
+			m_cmd.meshColor = m_meshColor;
+			m_cmd.isTransparent = (m_isTransparent || m_meshColor.w < 1.0);
 
 			m_renderer.Submit(m_cmd);
 		}

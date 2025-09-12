@@ -152,7 +152,7 @@ namespace EngineCore {
         return it->second.get();
     }
 
-    Asset_Texture2DID ResourceManager::AddTexture2DFromFile(const std::string& path) {
+    Asset_Texture2DID ResourceManager::AddTexture2DFromFile(const std::string& path, bool useAbsolutDir) {
         unsigned int id = GetNewUniqueId(IDCounter::TEXTURE2D);
         #ifndef NDEBUG
         if (id == ENGINE_INVALID_ID) {
@@ -160,7 +160,7 @@ namespace EngineCore {
             return Asset_Texture2DID(ENGINE_INVALID_ID);
         }
         #endif
-        m_texture2Ds.emplace(id, std::make_unique<Texture2D>(path));
+        m_texture2Ds.emplace(id, std::make_unique<Texture2D>(path, useAbsolutDir));
         return Asset_Texture2DID(id);
     }
 

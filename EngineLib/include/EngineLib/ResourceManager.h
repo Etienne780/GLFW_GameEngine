@@ -37,7 +37,7 @@ namespace EngineCore {
         Shader* GetShader(Asset_ShaderID id);
         Material* GetMaterial(Asset_MaterialID id);
 
-        Asset_Texture2DID AddTexture2DFromFile(const std::string& path);
+        Asset_Texture2DID AddTexture2DFromFile(const std::string& path, bool useAbsolutDir = false);
         Asset_Texture2DID AddTexture2DFromMemory(const unsigned char* data, int width, int height, int channels);
         Asset_MeshID AddMeshFromFile(const std::string& path);
         Asset_MeshID AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);

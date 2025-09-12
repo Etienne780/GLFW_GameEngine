@@ -36,6 +36,8 @@ namespace EngineCore {
 			m_path = path;
 		else
 			m_path = File::GetExecutableDir() + path;
+
+		CreateGL();
 	}
 
 	Texture2D::Texture2D(const unsigned char* data, int width, int height, int nrChannels) {

@@ -30,7 +30,8 @@ namespace EngineCore::Component {
 		ui.DrawDragFloat("Text Size", &m_textSize, 0.075F, 1, 256);
 		ui.DrawDragInt("Text Reselution", &m_textResolution, 0.075F, 1);
 		ui.DrawDragInt("Visible Chars", &m_visibleChar, MathUtil::Min(0.6F, 0.02F * m_text.length()/2), -1, static_cast<int>(m_text.length()));
-		ui.DrawColorEdit3("Text Color", &m_textColor);
+		ui.DrawColorEdit4("Text Color", &m_textColor);
+		ui.DrawCheckbox("Invert Mesh", &m_invertMesh);
 
 		m_textSize = abs(MathUtil::Max(1, m_textSize));
 		m_textResolution = abs(m_textResolution);
@@ -44,13 +45,15 @@ namespace EngineCore::Component {
 			return;
 
 		m_cmd.type = RenderCommandType::Text;
+		m_cmd.invertMesh = m_invertMesh;
 		m_cmd.materialID = ASSETS::ENGINE::MATERIAL::DefaultText();
 		m_cmd.renderLayer = m_gameObject->GetRenderLayer();
 		m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
 		m_cmd.fontID = m_fontID;
 		m_cmd.pixelSize = m_textResolution;
-		m_cmd.textColor = m_textColor;
 		m_cmd.textQuads = GetTextQuads();
+		m_cmd.meshColor = m_textColor;
+		m_cmd.isTransparent = true;
 
 		m_renderer.Submit(m_cmd);
 	}
@@ -70,14 +73,14 @@ namespace EngineCore::Component {
 		return this;
 	}
 
-	TextRenderer* TextRenderer::SetTextColor(float r, float g, float b) {
+	TextRenderer* TextRenderer::SetTextColor(float r, float g, float b, float a) {
 		m_textChanged = true;
-		m_textColor.Set(r, g, b);
+		m_textColor.Set(r, g, b, a);
 
 		return this;
 	}
 
-	TextRenderer* TextRenderer::SetTextColor(const Vector3& color) {
+	TextRenderer* TextRenderer::SetTextColor(const Vector4& color) {
 		m_textChanged = true;
 		m_textColor = color;
 
@@ -107,11 +110,16 @@ namespace EngineCore::Component {
 		return this;
 	}
 
+	TextRenderer* TextRenderer::SetInvertMesh(bool value) {
+		m_invertMesh = value;
+		return this;
+	}
+
 	const std::string& TextRenderer::GetText() const {
 		return m_text;
 	}
 
-	const Vector3& TextRenderer::GetTextColor() const {
+	const Vector4& TextRenderer::GetTextColor() const {
 		return m_textColor;
 	}
 
@@ -125,6 +133,10 @@ namespace EngineCore::Component {
 
 	int TextRenderer::GetNumberOfVisibleChar() const {
 		return m_visibleChar;
+	}
+
+	bool TextRenderer::GetInvertMesh() const {
+		return m_invertMesh;
 	}
 
 	std::vector<TextQuad>& TextRenderer::GetTextQuads() {

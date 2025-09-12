@@ -1,7 +1,7 @@
 #pragma once
 #include <limits>
 
-#include <CoreLib/Math/Matrix4x4.h>
+#include <CoreLib/Math.h>
 #include <CoreLib/FormatUtils.h>
 
 #include "Vertex.h"
@@ -72,11 +72,12 @@ namespace EngineCore {
 		Asset_MeshID meshID = Asset_MeshID(ENGINE_INVALID_ID);
 		RenderLayerID renderLayer = RenderLayerID(ENGINE_INVALID_ID);
 		const Matrix4x4* modelMatrix = nullptr;
+		Vector4 meshColor = { 1, 1, 1, 1 };
+		bool isTransparent = false;
 
 		// For text
 		FontID fontID = FontID(ENGINE_INVALID_ID);
 		int pixelSize = 0;
-		Vector3 textColor;
 		std::vector<TextQuad> textQuads;  // precomputed from string
 	};
 

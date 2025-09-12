@@ -2,10 +2,12 @@
 #include <unordered_map>
 #include <string>
 
-#include "CoreLib\Math\Vector2.h"
-#include "CoreLib\Math\Vector3.h"
-#include "CoreLib\Math\Vector4.h"
-#include "CoreLib\Math\Matrix.h"
+#include <CoreLib\Math\Vector2.h>
+#include <CoreLib\Math\Vector3.h>
+#include <CoreLib\Math\Vector4.h>
+#include <CoreLib\Math\Matrix.h>
+
+#include "ResourceManager.h"
 #include "EngineTypes.h"
 
 namespace EngineCore {
@@ -29,10 +31,12 @@ namespace EngineCore {
 
 		std::string GetParamString() const;
 		Asset_ShaderID GetShaderID() const;
+		bool GetIsTransparent() const;
 		
 	private:
 		static unsigned int m_maxTextureUnits;
 		Asset_ShaderID m_shaderID = Asset_ShaderID(ENGINE_INVALID_ID);
+		bool m_isTransparent = false;
 
 		std::unordered_map<std::string, bool> m_boolParams;
 		std::unordered_map<std::string, int> m_intParams;
@@ -44,6 +48,7 @@ namespace EngineCore {
 		std::unordered_map<std::string, Asset_Texture2DID> m_textureParams;
 
 		void SetMatrixParam(Shader* shader, const std::string& name, Matrix m) const;
+		void SetIsTransparent(Asset_Texture2DID id);
 	};
 
 }
