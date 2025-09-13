@@ -15,7 +15,7 @@
 #include "EngineLib/Application.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/Time.h"
-#include "EngineLib/RenderLayer.h"
+#include "EngineLib/RenderLayerManager.h"
 #include "EngineLib/DebuggerWindows.h"
 #include "EngineLib/Engine.h"
 #include "EngineLib/Debugger.h"
@@ -75,7 +75,7 @@ namespace EngineCore {
 		m_debugCameraGO = GameObject::Create("Debug-Camera");
 		m_debugCameraGO->SetPersistent(true);
 		auto cam = m_debugCameraGO->AddComponent<Component::Camera>();
-		cam->AddCameraLayer(RenderLayer::GetLayerID("Debug"));
+		cam->AddCameraLayer(RenderLayerManager::GetRenderLayerID("Debug"));
 		m_debugCameraGO->AddComponent<Component::FreeCameraController>()->m_isZoomDisabled = true;
 		m_debugCameraGO->Disable(true);
 	}

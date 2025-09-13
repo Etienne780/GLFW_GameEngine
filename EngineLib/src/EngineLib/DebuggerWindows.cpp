@@ -16,7 +16,7 @@
 #include "EngineLib/GameObject.h"
 #include "EngineLib/GameObjectManager.h"
 #include "EngineLib/Application.h"
-#include "EngineLib/RenderLayer.h"
+#include "EngineLib/RenderLayerManager.h"
 #include "EngineLib/Debugger.h"
 #include "EngineLib/Engine.h"
 #include "EngineLib/DebuggerWindows.h"
@@ -121,8 +121,8 @@ namespace EngineCore {
             ImGui::Separator();
 
             if (ImGui::CollapsingHeader("Render Layers", ImGuiTreeNodeFlags_DefaultOpen)) {
-                std::vector<std::string> layerNames = RenderLayer::GetLayerNames();
-                std::vector<RenderLayerID> layerIndices = RenderLayer::GetLayerIDs();
+                std::vector<std::string> layerNames = RenderLayerManager::GetAllRenderLayerNames();
+                std::vector<RenderLayerID> layerIndices = RenderLayerManager::GetAllRenderLayerIDs();
 
                 for (size_t i = 0; i < layerNames.size() && i < layerIndices.size(); i++) {
                     ImGui::BulletText("%s (%u)", layerNames[i].c_str(), layerIndices[i].value);
@@ -309,7 +309,7 @@ namespace EngineCore {
                 ImGui::SameLine();
                 ImGui::Text("GameObject: %s(%u)", selectedGO->GetName().c_str(), selectedGO->GetID());
                 ImGui::Text("Persistent: %s", selectedGO->IsPersistent() ? "true" : "false");
-                ImGui::Text(FormatUtils::formatString("Render-Layer: {}({})", RenderLayer::GetLayerName(selectedGO->GetRenderLayer()), selectedGO->GetRenderLayer().value).c_str());
+                ImGui::Text(FormatUtils::formatString("Render-Layer: {}({})", RenderLayerManager::GetRenderLayerName(selectedGO->GetRenderLayer()), selectedGO->GetRenderLayer().value).c_str());
 
                 ImGui::Separator();
 

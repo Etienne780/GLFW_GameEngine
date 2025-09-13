@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "EngineTypes.h"
 
 class Matrix4x4;
@@ -6,6 +8,9 @@ class Matrix4x4;
 namespace EngineCore {
 
     class GameObjectManager;
+    namespace Component {
+        class Camera;
+    }
 
     class Renderer {
     friend class GameObjectManager;
@@ -21,6 +26,7 @@ namespace EngineCore {
         std::vector<Matrix4x4> m_instanceMatrices;
 
         void DrawAll();
+        void SortDrawCommands(std::shared_ptr<Component::Camera> cameraPtr);
     };
 
 }

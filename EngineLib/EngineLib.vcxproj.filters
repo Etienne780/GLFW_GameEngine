@@ -96,7 +96,7 @@
     <ClInclude Include="include\EngineLib\IconsFontAwesome5Pro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EngineLib\RenderLayer.h">
+    <ClInclude Include="include\EngineLib\RenderLayerManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EngineLib\UI.h">
@@ -200,7 +200,7 @@
     <ClCompile Include="include\EngineLib\ComponentRendererImGui.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EngineLib\RenderLayer.cpp">
+    <ClCompile Include="src\EngineLib\RenderLayerManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\EngineLib\Profiler.h">

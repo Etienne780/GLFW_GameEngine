@@ -45,9 +45,9 @@ namespace EngineCore {
 		PrintApplicationHeader();
 		stbi_set_flip_vertically_on_load(true);
 		
-		RenderLayer::SetupDefaultLayers();
+		RenderLayerManager::SetupDefaultRenderLayers();
 		m_app->Start();
-		RenderLayer::Lock();
+		RenderLayerManager::Lock();
 		return ENGINE_SUCCESS;
 }
 
@@ -190,7 +190,7 @@ namespace EngineCore {
 		glfwSetFramebufferSizeCallback(m_window, GLFWFramebufferSizeCallback);
 		glfwSetWindowFocusCallback(m_window, GLFWFocusCallback);
 
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 
 		auto cursorMode = GLFW_CURSOR_NORMAL;
 		if (m_app->m_appApplicationWindowCursorHidden)
@@ -248,7 +248,6 @@ namespace EngineCore {
 		}
 		Log::Info("Engine::GLAD: Initialized GLAD successfully");
 
-		glEnable(GL_BLEND);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

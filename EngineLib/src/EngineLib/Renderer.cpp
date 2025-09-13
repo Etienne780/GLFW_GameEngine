@@ -68,42 +68,7 @@ namespace EngineCore {
 
         ResourceManager& rm = ResourceManager::GetInstance();
         
-        std::vector<RenderCommand> opaques;
-        std::vector<RenderCommand> transparents;
-        opaques.reserve(m_commands.size());
-        transparents.reserve(m_commands.size());
-
-        for (auto& cmd : m_commands) {
-            if (cmd.isTransparent)
-                transparents.push_back(cmd);
-            else
-                opaques.push_back(cmd);
-        }
-
-        // Sort Opaque to minize state changes
-        std::sort(opaques.begin(), opaques.end(), [](const auto& a, const auto& b) {
-            if (a.type != b.type) return a.type < b.type;
-            if (a.materialID != b.materialID) return a.materialID < b.materialID;
-            if (a.meshID != b.meshID) return a.meshID < b.meshID;
-            return a.invertMesh < b.invertMesh;
-        });
-
-        // Sort transparent Objects from back to front with distance
-        Vector3 camPos = camptr->GetGameObject()->GetTransform()->GetWorldPosition();
-        std::sort(transparents.begin(), transparents.end(),
-            [&](const auto& a, const auto& b) {
-                Vector3 posA = a.modelMatrix ? a.modelMatrix->GetTranslation() : Vector3::zero;
-                Vector3 posB = b.modelMatrix ? b.modelMatrix->GetTranslation() : Vector3::zero;
-                float distA = Vector3::SquaredDistance(camPos, posA);
-                float distB = Vector3::SquaredDistance(camPos, posB);
-                return distA > distB;
-            }
-        );
-
-        // Adds the to list together
-        m_commands.clear();
-        m_commands.insert(m_commands.end(), opaques.begin(), opaques.end());
-        m_commands.insert(m_commands.end(), transparents.begin(), transparents.end());
+        SortDrawCommands(camptr);
 
         auto flushBatch = [&](Mesh* mesh, Shader* shader, bool invert, const std::vector<Matrix4x4>& matrices) {
             if (mesh && shader && !matrices.empty()) {
@@ -242,6 +207,45 @@ namespace EngineCore {
         
         m_commands.clear();
         m_instanceMatrices.clear();
+    }
+
+    void Renderer::SortDrawCommands(std::shared_ptr<Component::Camera> cameraPtr) {
+        std::vector<RenderCommand> opaques;
+        std::vector<RenderCommand> transparents;
+        opaques.reserve(m_commands.size());
+        transparents.reserve(m_commands.size());
+
+        for (auto& cmd : m_commands) {
+            if (cmd.isTransparent)
+                transparents.push_back(cmd);
+            else
+                opaques.push_back(cmd);
+        }
+
+        // Sort Opaque to minize state changes
+        std::sort(opaques.begin(), opaques.end(), [](const auto& a, const auto& b) {
+            if (a.type != b.type) return a.type < b.type;
+            if (a.materialID != b.materialID) return a.materialID < b.materialID;
+            if (a.meshID != b.meshID) return a.meshID < b.meshID;
+            return a.invertMesh < b.invertMesh;
+            });
+
+        // Sort transparent Objects from back to front with distance
+        Vector3 camPos = cameraPtr->GetGameObject()->GetTransform()->GetWorldPosition();
+        std::sort(transparents.begin(), transparents.end(),
+            [&](const auto& a, const auto& b) {
+                Vector3 posA = a.modelMatrix ? a.modelMatrix->GetTranslation() : Vector3::zero;
+                Vector3 posB = b.modelMatrix ? b.modelMatrix->GetTranslation() : Vector3::zero;
+                float distA = Vector3::SquaredDistance(camPos, posA);
+                float distB = Vector3::SquaredDistance(camPos, posB);
+                return distA > distB;
+            }
+        );
+
+        // Adds the to list together
+        m_commands.clear();
+        m_commands.insert(m_commands.end(), opaques.begin(), opaques.end());
+        m_commands.insert(m_commands.end(), transparents.begin(), transparents.end());
     }
 
 }

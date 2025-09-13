@@ -1,7 +1,7 @@
 #include <CoreLib/Log.h>
 #include <CoreLib/Math/Matrix4x4.h>
 
-#include "EngineLib/RenderLayer.h"
+#include "EngineLib/RenderLayerManager.h"
 #include "EngineLib/Time.h"
 #include "EngineLib/GameObject.h"
 #include "EngineLib/Components\Camera_C.h"
@@ -17,7 +17,7 @@ namespace EngineCore {
 		Camera::Camera(GameObjectID gameObjectID) :
 			ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
-			m_renderLayers.push_back(RenderLayer::GetLayerID("Default"));
+			m_renderLayers.push_back(RenderLayerManager::GetRenderLayerID("Default"));
 		}
 
 		void Camera::OnInspectorGUIImpl(IUIRenderer& ui) {
@@ -48,7 +48,7 @@ namespace EngineCore {
 
 
 			if (ui.DrawCollapsingHeader("Render-Layers", false)) {
-				auto renderLayers = RenderLayer::GetLayers();
+				auto renderLayers = RenderLayerManager::GetNameToRenderLayer();
 				for (const auto& [name, ID] : renderLayers) {
 					auto it = std::find(m_renderLayers.begin(), m_renderLayers.end(), ID);
 					bool check = (it != m_renderLayers.end());

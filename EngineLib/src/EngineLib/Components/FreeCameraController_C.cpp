@@ -94,7 +94,7 @@ namespace EngineCore {
 				mouseDelta.SquaredMagnitude() > 0 || 
 				first) {
 				if (m_canRotateWithMouse) {
-					mouseDelta *= m_mouseSensitivity * Time::GetDeltaTime() * 100;
+					mouseDelta *= m_mouseSensitivity;
 					cameraRotation.y += mouseDelta.x; // yaw (horizontal)
 					cameraRotation.x += mouseDelta.y; // pitch (vertikal)	
 				}

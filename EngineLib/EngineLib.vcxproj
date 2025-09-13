@@ -44,7 +44,7 @@
     <ClInclude Include="include\EngineLib\Mesh.h" />
     <ClInclude Include="include\EngineLib\Nurom_Bold_ttf.h" />
     <ClInclude Include="include\EngineLib\Renderer.h" />
-    <ClInclude Include="include\EngineLib\RenderLayer.h" />
+    <ClInclude Include="include\EngineLib\RenderLayerManager.h" />
     <ClInclude Include="include\EngineLib\ResourceManager.h" />
     <ClInclude Include="include\EngineLib\Script.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
@@ -84,7 +84,7 @@
     <ClCompile Include="src\EngineLib\Input.cpp" />
     <ClCompile Include="src\EngineLib\Profiler.cpp" />
     <ClCompile Include="src\EngineLib\Renderer.cpp" />
-    <ClCompile Include="src\EngineLib\RenderLayer.cpp" />
+    <ClCompile Include="src\EngineLib\RenderLayerManager.cpp" />
     <ClCompile Include="src\EngineLib\ResourceManager.cpp" />
     <ClCompile Include="src\EngineLib\Shader.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />

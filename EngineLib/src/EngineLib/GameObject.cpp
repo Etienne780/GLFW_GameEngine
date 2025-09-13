@@ -1,4 +1,4 @@
-#include "EngineLib/RenderLayer.h"
+#include "EngineLib/RenderLayerManager.h"
 #include "EngineLib/GameObjectManager.h"
 #include "EngineLib/GameObject.h"
 #include "EngineLib/ComponentBase.h"
@@ -234,7 +234,7 @@ namespace EngineCore {
 			return this;
 		}
 
-		if (renderLayerID.value >= RenderLayer::GetLayerCount()) {
+		if (renderLayerID.value >= RenderLayerManager::GetRenderLayerCount()) {
 			Log::Error("GameObject: Cant set render-layer, render-layer({}) dosent exist", renderLayerID.value);
 			return this;
 		}
