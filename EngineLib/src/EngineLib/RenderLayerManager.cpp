@@ -89,7 +89,7 @@ namespace EngineCore {
 
 	void RenderLayerManager::SetupDefaultRenderLayers() {
 		AddLayer("Default");
-		AddLayer("Debug");
+		AddLayer("Debug", 1);
 	}
 
 }

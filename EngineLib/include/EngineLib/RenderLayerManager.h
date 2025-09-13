@@ -96,7 +96,7 @@ namespace EngineCore {
 		*/
 		static bool IsLocked();
 		/*
-		* @brief Sets up default layers for the engine (e.g., "Default", "Debug").
+		* @brief Sets up default layers for the engine (e.g., "Default (Prio = 0)", "Debug (Prio = 1)").
 		*/
 		static void SetupDefaultRenderLayers();
 	};
