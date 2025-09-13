@@ -82,9 +82,17 @@ namespace EngineCore {
 		std::string GetComponentListString(bool moreDetail) const;
 
 		GameObject* SetName(const std::string& name);
+
+		// Is Slower than with ID
+		GameObject* SetRenderLayer(const std::string& renderLayerName);
+		GameObject* SetRenderLayerInChildren(const std::string& renderLayerName);
+		GameObject* SetRenderLayerAll(const std::string& renderLayerName);
+
+		// Is Faster than with Layer name
 		GameObject* SetRenderLayer(RenderLayerID renderLayerID);
 		GameObject* SetRenderLayerInChildren(RenderLayerID renderLayerID);
 		GameObject* SetRenderLayerAll(RenderLayerID renderLayerID);
+
 		GameObject* SetParent(std::shared_ptr<GameObject> parentPtr);
 		GameObject* SetPersistent(bool value);
 		GameObject* Detach();					

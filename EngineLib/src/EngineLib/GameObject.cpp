@@ -229,6 +229,18 @@ namespace EngineCore {
 		return this;
 	}
 
+	GameObject* GameObject::SetRenderLayer(const std::string& renderLayerName) {
+		return SetRenderLayer(RenderLayerManager::GetRenderLayerID(renderLayerName));
+	}
+
+	GameObject* GameObject::SetRenderLayerInChildren(const std::string& renderLayerName) {
+		return SetRenderLayerInChildren(RenderLayerManager::GetRenderLayerID(renderLayerName));
+	}
+
+	GameObject* GameObject::SetRenderLayerAll(const std::string& renderLayerName) {
+		return SetRenderLayerAll(RenderLayerManager::GetRenderLayerID(renderLayerName));
+	}
+
 	GameObject* GameObject::SetRenderLayer(RenderLayerID renderLayerID) {
 		if (IsDead("Cant set render-layer")) {
 			return this;
