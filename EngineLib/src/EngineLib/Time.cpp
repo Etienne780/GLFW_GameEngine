@@ -6,9 +6,6 @@
 #include "EngineLib\Time.h"
 
 namespace EngineCore {
-	double Time::m_lastFrameTimeSec = 0.0;
-	double Time::m_deltaTimeSec = 0.0;
-	int Time::m_frameCount = 0;
 	
 	Time::Time() {}
 

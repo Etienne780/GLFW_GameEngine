@@ -24,8 +24,8 @@ namespace EngineCore {
 		static void UpdateTime(double currentTimeSec);
 		static void CalculateDeltaTime(double currentTimeSec);
 
-		static double m_lastFrameTimeSec;
-		static double m_deltaTimeSec;
-		static int m_frameCount;
+		static inline double m_lastFrameTimeSec = 0.0;
+		static inline double m_deltaTimeSec = 0.0;
+		static inline unsigned int m_frameCount = 0;// maybe std::uint64_t
 	};
 }
