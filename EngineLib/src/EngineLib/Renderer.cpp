@@ -5,6 +5,7 @@
 #include <CoreLib/Math/Vector3.h>
 
 #include "EngineLib/ResourceManager.h"
+#include "EngineLib/RenderLayerManager.h"
 #include "EngineLib/Components/Camera_C.h"
 #include "EngineLib/FontManager.h"
 #include "EngineLib/GameObject.h"
@@ -21,7 +22,7 @@ namespace EngineCore {
     }
 
     void Renderer::Submit(const RenderCommand& cmd) {
-        if (cmd.renderLayer.value == ENGINE_INVALID_ID)
+        if (cmd.renderLayerID.value == ENGINE_INVALID_ID)
             return;
         m_commands.push_back(cmd);
     }
@@ -65,6 +66,8 @@ namespace EngineCore {
         bool currentInvertMesh = m_commands[0].invertMesh;
         FontID currentFontID(ENGINE_INVALID_ID);
         int currentFontPixelSize = -1;
+        int currentRenderLayerPriority = RenderLayerManager::GetRenderLayerPriority(m_commands[0].renderLayerID);
+        int currentZOrder = m_commands[0].zOrder;
 
         ResourceManager& rm = ResourceManager::GetInstance();
         
@@ -82,11 +85,31 @@ namespace EngineCore {
             // if element is not in renderlayers of the cam
             bool isInLayer = false;
             for (auto& layer : renderLayers) {
-                if (layer == cmd.renderLayer)
+                if (layer == cmd.renderLayerID)
                     isInLayer = true;
             }
             if (!isInLayer)
                 continue;
+
+            int renderLayerPrio = RenderLayerManager::GetRenderLayerPriority(cmd.renderLayerID);
+            // clear depth buffer if render prio changed
+            if (currentRenderLayerPriority != renderLayerPrio) {
+                currentRenderLayerPriority = renderLayerPrio;
+                currentZOrder = cmd.zOrder;
+                //draw the rest
+                flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
+                m_instanceMatrices.clear();
+
+                glClear(GL_DEPTH_BUFFER_BIT);
+            }// clear if z order changed
+            else if (currentZOrder != cmd.zOrder) {
+                currentZOrder = cmd.zOrder;
+                //draw the rest
+                flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
+                m_instanceMatrices.clear();
+
+                glClear(GL_DEPTH_BUFFER_BIT);
+            }
 
             if (cmd.type == RenderCommandType::Text) {
                 flushBatch(currentMesh, currentShader, currentInvertMesh, m_instanceMatrices);
@@ -210,42 +233,38 @@ namespace EngineCore {
     }
 
     void Renderer::SortDrawCommands(std::shared_ptr<Component::Camera> cameraPtr) {
-        std::vector<RenderCommand> opaques;
-        std::vector<RenderCommand> transparents;
-        opaques.reserve(m_commands.size());
-        transparents.reserve(m_commands.size());
-
-        for (auto& cmd : m_commands) {
-            if (cmd.isTransparent)
-                transparents.push_back(cmd);
-            else
-                opaques.push_back(cmd);
-        }
-
-        // Sort Opaque to minize state changes
-        std::sort(opaques.begin(), opaques.end(), [](const auto& a, const auto& b) {
-            if (a.type != b.type) return a.type < b.type;
-            if (a.materialID != b.materialID) return a.materialID < b.materialID;
-            if (a.meshID != b.meshID) return a.meshID < b.meshID;
-            return a.invertMesh < b.invertMesh;
-            });
-
-        // Sort transparent Objects from back to front with distance
         Vector3 camPos = cameraPtr->GetGameObject()->GetTransform()->GetWorldPosition();
-        std::sort(transparents.begin(), transparents.end(),
+        std::sort(m_commands.begin(), m_commands.end(),
             [&](const auto& a, const auto& b) {
-                Vector3 posA = a.modelMatrix ? a.modelMatrix->GetTranslation() : Vector3::zero;
-                Vector3 posB = b.modelMatrix ? b.modelMatrix->GetTranslation() : Vector3::zero;
-                float distA = Vector3::SquaredDistance(camPos, posA);
-                float distB = Vector3::SquaredDistance(camPos, posB);
-                return distA > distB;
+                // Layer Priority
+                int prioA = RenderLayerManager::GetRenderLayerPriority(a.renderLayerID);
+                int prioB = RenderLayerManager::GetRenderLayerPriority(b.renderLayerID);
+                if (prioA != prioB)
+                    return prioA < prioB;
+
+                // Sort after z order
+                if (a.zOrder != b.zOrder)
+                    return a.zOrder < b.zOrder;
+
+                // Opaque: sort Material/Mesh
+                if (!a.isTransparent && !b.isTransparent) {
+                    if (a.materialID != b.materialID) return a.materialID < b.materialID;
+                    if (a.meshID != b.meshID) return a.meshID < b.meshID;
+                    return a.invertMesh < b.invertMesh;
+                }
+
+                // Transparent: sort Distance
+                if (a.isTransparent && b.isTransparent) {
+                    Vector3 posA = a.modelMatrix ? a.modelMatrix->GetTranslation() : Vector3::zero;
+                    Vector3 posB = b.modelMatrix ? b.modelMatrix->GetTranslation() : Vector3::zero;
+                    float distA = Vector3::SquaredDistance(camPos, posA);
+                    float distB = Vector3::SquaredDistance(camPos, posB);
+                    return distA > distB;
+                }
+
+                return a.isTransparent < b.isTransparent; // Opaque first
             }
         );
-
-        // Adds the to list together
-        m_commands.clear();
-        m_commands.insert(m_commands.end(), opaques.begin(), opaques.end());
-        m_commands.insert(m_commands.end(), transparents.begin(), transparents.end());
     }
 
 }

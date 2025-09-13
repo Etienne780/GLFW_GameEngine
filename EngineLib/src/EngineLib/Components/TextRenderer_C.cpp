@@ -47,7 +47,7 @@ namespace EngineCore::Component {
 		m_cmd.type = RenderCommandType::Text;
 		m_cmd.invertMesh = m_invertMesh;
 		m_cmd.materialID = ASSETS::ENGINE::MATERIAL::DefaultText();
-		m_cmd.renderLayer = m_gameObject->GetRenderLayer();
+		m_cmd.renderLayerID = m_gameObject->GetRenderLayer();
 		m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
 		m_cmd.fontID = m_fontID;
 		m_cmd.pixelSize = m_textResolution;

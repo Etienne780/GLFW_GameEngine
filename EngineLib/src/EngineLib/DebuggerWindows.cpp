@@ -120,12 +120,14 @@ namespace EngineCore {
 
             ImGui::Separator();
 
-            if (ImGui::CollapsingHeader("Render Layers", ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::CollapsingHeader("Render Layers")) {
                 std::vector<std::string> layerNames = RenderLayerManager::GetAllRenderLayerNames();
                 std::vector<RenderLayerID> layerIndices = RenderLayerManager::GetAllRenderLayerIDs();
+                RenderLayerID rID;
 
                 for (size_t i = 0; i < layerNames.size() && i < layerIndices.size(); i++) {
-                    ImGui::BulletText("%s (%u)", layerNames[i].c_str(), layerIndices[i].value);
+                    rID = layerIndices[i];
+                    ImGui::BulletText("%s (%u Priority: %u)", layerNames[i].c_str(), rID.value, RenderLayerManager::GetRenderLayerPriority(rID));
                 }
             }
         }

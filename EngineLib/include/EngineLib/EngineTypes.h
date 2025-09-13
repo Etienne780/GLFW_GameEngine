@@ -70,7 +70,7 @@ namespace EngineCore {
 
 		Asset_MaterialID materialID = Asset_MaterialID(ENGINE_INVALID_ID);
 		Asset_MeshID meshID = Asset_MeshID(ENGINE_INVALID_ID);
-		RenderLayerID renderLayer = RenderLayerID(ENGINE_INVALID_ID);
+		RenderLayerID renderLayerID = RenderLayerID(ENGINE_INVALID_ID);
 		int zOrder = 0;
 		const Matrix4x4* modelMatrix = nullptr;
 		Vector4 meshColor = { 1, 1, 1, 1 };

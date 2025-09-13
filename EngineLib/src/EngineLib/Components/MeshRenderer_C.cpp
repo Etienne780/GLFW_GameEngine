@@ -66,7 +66,7 @@ namespace EngineCore {
 			m_cmd.invertMesh = m_invertMesh;
 			m_cmd.materialID = m_materialID;
 			m_cmd.meshID = m_meshID;
-			m_cmd.renderLayer = m_gameObject->GetRenderLayer();
+			m_cmd.renderLayerID = m_gameObject->GetRenderLayer();
 			m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();
 			m_cmd.meshColor = m_meshColor;
 			m_cmd.isTransparent = (m_isTransparent || m_meshColor.w < 1.0);

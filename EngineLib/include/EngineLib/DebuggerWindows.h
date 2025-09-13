@@ -48,7 +48,7 @@ namespace EngineCore {
 
 		// pos, size				x	y	w	h
 
-		Vector4 m_statsWinState = { 80, 30, 250, -1 };
+		Vector4 m_statsWinState = { 80, 30, 250, 150 };
 		Vector4 m_cameraWinState = { 80, 50, 300, 400 };
 		Vector4 m_hierarchyWinState = { 80, 70, 250, 400 };
 		Vector4 m_inspectorWinState = { 80, 70, 250, 400 };
