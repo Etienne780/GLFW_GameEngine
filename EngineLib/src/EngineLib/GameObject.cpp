@@ -52,8 +52,8 @@ namespace EngineCore {
 		return m_gameObjectManager->DeleteGameObject(gameObjectPtr);
 	}
 
-	bool GameObject::Delete(unsigned int id) {
-		return m_gameObjectManager->DeleteGameObject(id);
+	bool GameObject::Delete(GameObjectID id) {
+		return m_gameObjectManager->DeleteGameObject(id.value);
 	}
 
 	bool GameObject::Delete(const std::string& name) {

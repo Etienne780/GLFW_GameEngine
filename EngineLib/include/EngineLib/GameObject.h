@@ -22,7 +22,7 @@ namespace EngineCore {
 		static size_t GetGameObjectCount();
 		static std::shared_ptr<GameObject> Create(const std::string& name);
 		static bool Delete(std::shared_ptr<GameObject> gameObjectPtr);
-		static bool Delete(unsigned int id);
+		static bool Delete(GameObjectID id);
 		static bool Delete(const std::string& name);
 		/*
 		* @brief Deletes all GameObjects except persistent ones.
