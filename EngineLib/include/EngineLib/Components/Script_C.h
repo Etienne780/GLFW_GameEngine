@@ -14,8 +14,8 @@ namespace EngineCore {
 		virtual void UpdateAlways() {};
 		virtual void OnInspectorGUI(IUIRenderer& ui) { ui.DrawLabel("Script has UI defined"); };
 
-		static ResourceManager& resourceManager;
-		static Application* app;
+		static inline ResourceManager* resourceManager = ResourceManager::GetInstance();
+		static inline Application* app = nullptr;
 
 	private:
 		void OnInspectorGUIImpl(IUIRenderer& ui) override;

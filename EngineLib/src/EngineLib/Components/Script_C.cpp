@@ -5,9 +5,6 @@ namespace EngineCore {
 
 	std::string compName = "Script";
 
-	ResourceManager& Script::resourceManager = EngineCore::ResourceManager::GetInstance();
-	Application* Script::app = nullptr;
-
 	Script::Script(const std::string& scriptName, GameObjectID gameObjectID)
 		: ComponentBase(FormatUtils::formatString("{}({})", compName, scriptName), ScriptComponent, gameObjectID){
 		app = Application::GetInstance();

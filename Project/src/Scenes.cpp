@@ -23,11 +23,11 @@ namespace Scenes {
 		auto tr = fontGO->AddComponent<Component::TextRenderer>();
 		tr->SetText("Das ist ein Test");
 
-		ResourceManager& rm = ResourceManager::GetInstance();
-		auto transparentWinTextureID = rm.AddTexture2DFromFile("assets/blending_transparent_window.png");
+		ResourceManager* rm = ResourceManager::GetInstance();
+		auto transparentWinTextureID = rm->AddTexture2DFromFile("assets/blending_transparent_window.png");
 
-		auto matID = rm.AddMaterial(ASSETS::ENGINE::SHADER::Default());
-		auto mat = rm.GetMaterial(matID);
+		auto matID = rm->AddMaterial(ASSETS::ENGINE::SHADER::Default());
+		auto mat = rm->GetMaterial(matID);
 		mat->SetParam("texture", transparentWinTextureID);
 
 		auto go = GameObject::Create("box");

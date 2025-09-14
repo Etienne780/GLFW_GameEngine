@@ -10,7 +10,7 @@ namespace EngineCore {
             std::is_same<T, Vector3>::value ||
             std::is_same<T, Vector4>::value ||
             std::is_same<T, Matrix>::value ||
-            std::is_same<T, Asset_Texture2DID>::value,
+            std::is_same<T, Texture2DID>::value,
             "T is not a valid param type. Must be bool, int, float, Vector2, Vector3, Vector4, Matrix, or Asset_Texture2DID"
             );
 
@@ -36,7 +36,7 @@ namespace EngineCore {
         else if constexpr (std::is_same<T, Matrix>::value) {
             m_matrixParams[name] = value;
         }
-        else if constexpr (std::is_same<T, Asset_Texture2DID>::value) {
+        else if constexpr (std::is_same<T, Texture2DID>::value) {
             SetIsTransparent(value);
             m_textureParams[name] = value;
         }

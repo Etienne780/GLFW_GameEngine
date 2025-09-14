@@ -37,7 +37,7 @@ namespace EngineCore {
 
         ~Shader();
 
-        Asset_ShaderID GetID();
+        ShaderID GetID();
 
         /**
         * @brief Gets the location in the current shader programm
@@ -176,7 +176,7 @@ namespace EngineCore {
 
     private:
         /// OpenGL shader program ID
-        Asset_ShaderID m_ID = Asset_ShaderID(ENGINE_INVALID_ID);
+        ShaderID m_ID = ShaderID(ENGINE_INVALID_ID);
         std::string m_vertexCode, m_fragmentCode;
 
         /**

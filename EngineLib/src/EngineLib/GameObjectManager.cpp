@@ -8,23 +8,23 @@
 
 namespace EngineCore {
 
-	static GameObjectManager* instance;
+	static GameObjectManager* g_instance;
 
 	GameObjectManager::GameObjectManager() {
 	}
 
 	void GameObjectManager::Init() {
-		instance = new GameObjectManager();
-		GameObject::m_gameObjectManager = instance;
+		g_instance = new GameObjectManager();
+		GameObject::m_gameObjectManager = g_instance;
 	}
 
 	void GameObjectManager::Shutdown() {
-		delete instance;
-		instance = nullptr;
+		delete g_instance;
+		g_instance = nullptr;
 	}
 
 	GameObjectManager* GameObjectManager::GetInstance() {
-		return instance;
+		return g_instance;
 	}
 
 	void GameObjectManager::UpdateGameObjects() {

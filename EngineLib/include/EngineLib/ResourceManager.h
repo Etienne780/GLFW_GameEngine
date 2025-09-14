@@ -6,82 +6,98 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Material.h"
+#include "FontAsset.h"
+#include "IDManager.h"
 #include "EngineTypes.h"
 
 namespace EngineCore {
 
+    enum class AssetType {
+        TEXTURE2D = 0,
+        MESH,
+        SHADER,
+        MATERIAL,
+        FONT
+    };
+
     class ResourceManager {
     friend class Engine;
     public:
-        static ResourceManager& GetInstance();
+        ResourceManager();
+        static int Init();
+        static void Shutdown();
 
         ResourceManager(const ResourceManager&) = delete;
-        void operator=(const ResourceManager&) = delete;
+        ResourceManager& operator=(const ResourceManager&) = delete;
+
+        static ResourceManager* GetInstance();
 
         // Creates opengl object
-        void CreateGLTexture2D(Asset_Texture2DID id);
+        void CreateGLTexture2D(Texture2DID id);
         // Creates opengl object
-        void CreateGLMesh(Asset_MeshID id);
+        void CreateGLMesh(MeshID id);
         // Creates opengl object
-        void CreateGLShader(Asset_ShaderID id);
+        void CreateGLShader(ShaderID id);
         
         // Deletes opengl object
-        void DeleteGLTexture2D(Asset_Texture2DID id);
+        void DeleteGLTexture2D(Texture2DID id);
         // Deletes opengl object
-        void DeleteGLMesh(Asset_MeshID id);
+        void DeleteGLMesh(MeshID id);
         // Deletes opengl object
-        void DeleteGLShader(Asset_ShaderID id);
+        void DeleteGLShader(ShaderID id);
 
-        Texture2D* GetTexture2D(Asset_Texture2DID id);
-        Mesh* GetMesh(Asset_MeshID id);
-        Shader* GetShader(Asset_ShaderID id);
-        Material* GetMaterial(Asset_MaterialID id);
+        Texture2D* GetTexture2D(Texture2DID id);
+        Mesh* GetMesh(MeshID id);
+        Shader* GetShader(ShaderID id);
+        Material* GetMaterial(MaterialID id);
+        FontAsset* GetFontAsset(FontID id);
 
-        Asset_Texture2DID AddTexture2DFromFile(const std::string& path, bool useAbsolutDir = false);
-        Asset_Texture2DID AddTexture2DFromMemory(const unsigned char* data, int width, int height, int channels);
-        Asset_MeshID AddMeshFromFile(const std::string& path);
-        Asset_MeshID AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);
-        Asset_ShaderID AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
-        Asset_ShaderID AddShaderFromMemory(const std::string& vertexCode, const std::string& fragmentCode);
-        Asset_MaterialID AddMaterial(Asset_ShaderID shaderID);
+        const FontAsset::Glyph& GetFontGlyph(FontID id, char c, int pixelSize);
+        unsigned int GetFontAtlasTextureID(FontID id, int pixelSize);
+
+        Texture2DID AddTexture2DFromFile(const std::string& path, bool useAbsolutDir = false);
+        Texture2DID AddTexture2DFromMemory(const unsigned char* data, int width, int height, int channels);
+        MeshID AddMeshFromFile(const std::string& path);
+        MeshID AddMeshFromMemory(const Vertex* vertices, size_t verticesSize, const unsigned int* indices, size_t indicesSize);
+        ShaderID AddShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
+        ShaderID AddShaderFromMemory(const std::string& vertexCode, const std::string& fragmentCode);
+        MaterialID AddMaterial(ShaderID shaderID);
+        FontID AddFontFromFile(const std::string& path, bool useAbsolutDir = false);
+        /*
+        * @brief IMPORTANT the data ptr has to be alive as long as this FontAsset exist
+        */
+        FontID AddFontFromMemory(const FT_Byte* data, FT_Long size);
 
     private:
-        enum class IDCounter{
-            TEXTURE2D = 0,
-            MESH,
-            SHADER,
-            MATERIAL,
-        };
+        struct AssetIDCounter {
+            IDManager m_texture2DIDCounter;
+            IDManager m_meshIDCounter;
+            IDManager m_shaderIDCounter;
+            IDManager m_materialsIDCounter;
+            IDManager m_fontAssetsIDCounter;
+            IDManager m_default;
 
-        struct IDCounters {
-            unsigned int m_texture2DIDCounter = 0;
-            unsigned int m_meshIDCounter = 0;
-            unsigned int m_shaderIDCounter = 0;
-            unsigned int m_materialsIDCounter = 0;
-            unsigned int m_default = 0;
-
-            IDCounters() = default;
-            unsigned int& operator[](IDCounter counter) {
+            AssetIDCounter() = default;
+            unsigned int operator[](AssetType counter) {
                 switch (counter) {
-                case IDCounter::TEXTURE2D: return m_texture2DIDCounter;
-                case IDCounter::MESH: return m_meshIDCounter;
-                case IDCounter::SHADER: return m_shaderIDCounter;
-                case IDCounter::MATERIAL: return m_materialsIDCounter;
-                default: return m_default;
+                case AssetType::TEXTURE2D: return m_texture2DIDCounter.GetNewUniqueIdentifier();
+                case AssetType::MESH: return m_meshIDCounter.GetNewUniqueIdentifier();
+                case AssetType::SHADER: return m_shaderIDCounter.GetNewUniqueIdentifier();
+                case AssetType::MATERIAL: return m_materialsIDCounter.GetNewUniqueIdentifier();
+                case AssetType::FONT: return m_fontAssetsIDCounter.GetNewUniqueIdentifier();
+                default: return m_default.GetNewUniqueIdentifier();
                 }
             }
         };
 
-        ResourceManager() = default;
+        AssetIDCounter m_assetIDCounter;
+        std::unordered_map<Texture2DID, std::unique_ptr<Texture2D>> m_texture2Ds;
+        std::unordered_map<MeshID, std::unique_ptr<Mesh>> m_meshes;
+        std::unordered_map<ShaderID, std::unique_ptr<Shader>> m_shaders;
+        std::unordered_map<MaterialID, std::unique_ptr<Material>> m_materials;
+        std::unordered_map<FontID, std::unique_ptr<FontAsset>> m_fonts;
 
-        unsigned int GetNewUniqueId(IDCounter counter);
-
-        IDCounters m_idCounters;
-        std::unordered_map<Asset_Texture2DID, std::unique_ptr<Texture2D>> m_texture2Ds;
-        std::unordered_map<Asset_MeshID, std::unique_ptr<Mesh>> m_meshes;
-        std::unordered_map<Asset_ShaderID, std::unique_ptr<Shader>> m_shaders;
-        std::unordered_map<Asset_MaterialID, std::unique_ptr<Material>> m_materials;
-
+        unsigned int GetNewUniqueId(AssetType counter);
         void Cleanup();
     };
 

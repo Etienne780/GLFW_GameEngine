@@ -24,11 +24,11 @@ namespace EngineCore {
 			ui.DrawColorEdit4("Mesh Color", &m_meshColor);
 		}
 
-		MeshRenderer* MeshRenderer::SetMesh(Asset_MeshID id) {
+		MeshRenderer* MeshRenderer::SetMesh(MeshID id) {
 			if (IsDead("Cant set mesh")) {
 				return this;
 			}
-			Mesh* mesh = ResourceManager::GetInstance().GetMesh(id);
+			Mesh* mesh = ResourceManager::GetInstance()->GetMesh(id);
 			if (!mesh) {
 				Log::Error("MeshRenderer: Cant set mesh on gameObject {}, mesh is nullptr", m_gameObject->GetName());
 				return this;
@@ -37,11 +37,11 @@ namespace EngineCore {
 			return this;
 		}
 
-		MeshRenderer* MeshRenderer::SetMaterial(Asset_MaterialID id) {
+		MeshRenderer* MeshRenderer::SetMaterial(MaterialID id) {
 			if (IsDead("Cant set material")) {
 				return this;
 			}
-			Material* mat = ResourceManager::GetInstance().GetMaterial(id);
+			Material* mat = ResourceManager::GetInstance()->GetMaterial(id);
 			if (!mat) {
 				Log::Error("MeshRenderer: Cant set material on gameObject {}, material is nullptr", m_gameObject->GetName());
 				return this;

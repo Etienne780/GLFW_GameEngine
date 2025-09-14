@@ -38,7 +38,7 @@ namespace EngineCore {
 		/*
 		* @brief returns a uniqe int id and ENGINE_INVALID_ID if no free id was found
 		*/
-		unsigned int GetNewUniqueIdentifier();
+		unsigned int GetNewUniqueIdentifier() const;
 
 		/*
 		* @brief Frees an ID so it can be reused later.
@@ -77,16 +77,16 @@ namespace EngineCore {
 		void SetIDOrder(IDOrder value);
 
 	private:
-		unsigned int m_idCounter = 0;
-		bool m_idFallback = false;// gets set to true when the id limit(Integer.Max) is reached.
-		std::queue<unsigned int> m_freeIDs;
+		mutable unsigned int m_idCounter = 0;
+		mutable bool m_idFallback = false;// gets set to true when the id limit(Integer.Max) is reached.
+		mutable std::queue<unsigned int> m_freeIDs;
 		IDOrder m_order = IDOrder::RANDOME;
 
-		unsigned int GetNewUniqueIdentifierFallback();
+		unsigned int GetNewUniqueIdentifierFallback() const;
 
-		unsigned int GetNewUniqueIdentifierRandom();
-		unsigned int GetNewUniqueIdentifierAscending();
-		unsigned int GetNewUniqueIdentifierDescending();
+		unsigned int GetNewUniqueIdentifierRandom() const;
+		unsigned int GetNewUniqueIdentifierAscending() const;
+		unsigned int GetNewUniqueIdentifierDescending() const;
 	};
 
 }

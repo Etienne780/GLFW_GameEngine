@@ -2,11 +2,15 @@
 #include <CoreLib/File.h>
 #include <CoreLib/Log.h>
 
+#include "EngineLib/ResourceManager.h"
 #include "EngineLib/FontManager.h"
 
 namespace EngineCore {
 
 	int FontManager::Init() {
+		if (m_init)
+			return ENGINE_SUCCESS;
+
 		m_init = true;
 
 		FT_Error err = FT_Init_FreeType(&m_ftLib);
@@ -21,59 +25,12 @@ namespace EngineCore {
 	}
 	
 	void FontManager::Shutdown() {
-		m_fonts.clear();
+		if (!m_init)
+			return;
+
 		FT_Done_FreeType(m_ftLib);
 		ShutdownTextRenderer();
 		m_init = false;
-	}
-
-	FontID FontManager::LoadFont(const std::string& path, bool useAbsolutDir) {
-#ifndef NDEBUG
-		if (!m_init) {
-			Log::Error("FontManager: Failed to load font, FontManager was not initiated");
-			return FontID(ENGINE_INVALID_ID);
-		}
-#endif 
-		int id = m_idManager.GetNewUniqueIdentifier();
-		if (id == ENGINE_INVALID_ID) {
-			Log::Error("FontManager: No free font id was found");
-		}
-		else {
-			m_fonts.emplace(id, std::make_shared<FontAsset>(m_ftLib, path, useAbsolutDir));
-		}
-		return FontID(id);
-	}
-
-	FontID FontManager::LoadFontMemory(const FT_Byte* data, FT_Long size) {
-#ifndef NDEBUG
-		if (!m_init) {
-			Log::Error("FontManager: Failed to load font from memory, FontManager was not initiated");
-			return FontID(ENGINE_INVALID_ID);
-		}
-#endif 
-		int id = m_idManager.GetNewUniqueIdentifier();
-		if (id == ENGINE_INVALID_ID) {
-			Log::Error("FontManager: No free font id was found");
-		}
-		else {
-			m_fonts.emplace(id, std::make_shared<FontAsset>(m_ftLib, data, size));
-		}
-		return FontID(id);
-	}
-
-	std::shared_ptr<FontAsset> FontManager::GetFont(FontID id) {
-#ifndef NDEBUG
-		if (!m_init) {
-			Log::Error("FontManager: Failed to get font, FontManager was not initiated");
-			return nullptr;
-		}
-#endif 
-		auto it = m_fonts.find(id);
-		if (it == m_fonts.end()) {
-			Log::Error("FontManager: Font({}) not found", id.value);
-			return nullptr;
-		}
-		return it->second;
 	}
 
 	std::vector<TextQuad> FontManager::BuildTextQuads(
@@ -88,7 +45,7 @@ namespace EngineCore {
 			return std::vector<TextQuad>();
 		}
 #endif 
-		auto fontAsset = FontManager::GetFont(fontID);
+		auto fontAsset = ResourceManager::GetInstance()->GetFontAsset(fontID);
 		if (!fontAsset) {
 			Log::Error("FontManager: Invalid fontID");
 			return {};
@@ -132,26 +89,9 @@ namespace EngineCore {
 
 		return result;
 	}
-	
-	const FontAsset::Glyph& FontManager::GetGlyph(FontID id, char c, int pixelSize) {
-#ifndef NDEBUG
-		if (!m_init) {
-			Log::Error("FontManager: Failed to get Glyph, FontManager was not initiated");
-			static FontAsset::Glyph dummy{};
-			return dummy;
-		}
-#endif 
-		return GetFont(id)->GetGlyph(c, pixelSize);
-	}
 
-	unsigned int FontManager::GetAtlasTextureID(FontID id, int pixelSize) {
-#ifndef NDEBUG
-		if (!m_init) {
-			Log::Error("FontManager: Failed to get AtlasTextureID, FontManager was not initiated");
-			return ENGINE_INVALID_ID;
-		}
-#endif 
-		return GetFont(id)->GetAtlasTextureID(pixelSize);
+	FT_Library& FontManager::GetFTLib() {
+		return m_ftLib;
 	}
 
 	void FontManager::InitTextRenderer() {

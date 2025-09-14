@@ -25,7 +25,7 @@ namespace EngineCore {
 				return ENGINE_FAILURE;
 		}
 
-		if (FontManager::Init() == ENGINE_FAILURE)
+		if (ResourceManager::Init() == ENGINE_FAILURE)
 			return ENGINE_FAILURE;
 
 		UIManager::Init();
@@ -134,11 +134,9 @@ namespace EngineCore {
 #ifndef NDEBUG
 		m_debugger->Shutdown();
 #endif 
-		GameObjectManager::Shutdown();
-		ResourceManager& rm = ResourceManager::GetInstance();
-		rm.Cleanup();
 		UIManager::Shutdown();
-		FontManager::Shutdown();
+		GameObjectManager::Shutdown();
+		ResourceManager::Shutdown();
 
 		glfwTerminate();
 	}

@@ -10,7 +10,7 @@
 
 namespace EngineCore {
 
-	Asset_ShaderID Shader::GetID() {
+	ShaderID Shader::GetID() {
 		return m_ID;
 	}
 

@@ -58,18 +58,18 @@ namespace EngineCore {
         const std::vector<RenderLayerID>& renderLayers = camptr->GetRenderLayers();
 
         Shader* currentShader = nullptr;
-        Asset_ShaderID currentShaderID(ENGINE_INVALID_ID);
+        ShaderID currentShaderID(ENGINE_INVALID_ID);
         Material* currentMaterial = nullptr;
-        Asset_MaterialID currentMaterialID(ENGINE_INVALID_ID);
+        MaterialID currentMaterialID(ENGINE_INVALID_ID);
         Mesh* currentMesh = nullptr;
-        Asset_MeshID currentMeshID(ENGINE_INVALID_ID);
+        MeshID currentMeshID(ENGINE_INVALID_ID);
         bool currentInvertMesh = m_commands[0].invertMesh;
         FontID currentFontID(ENGINE_INVALID_ID);
         int currentFontPixelSize = -1;
         int currentRenderLayerPriority = RenderLayerManager::GetRenderLayerPriority(m_commands[0].renderLayerID);
         int currentZOrder = m_commands[0].zOrder;
 
-        ResourceManager& rm = ResourceManager::GetInstance();
+        ResourceManager* rm = ResourceManager::GetInstance();
         
         SortDrawCommands(camptr);
 
@@ -119,7 +119,7 @@ namespace EngineCore {
                 if (currentFontID != cmd.fontID || currentFontPixelSize != cmd.pixelSize) {
                     currentFontID = cmd.fontID;
                     currentFontPixelSize = cmd.pixelSize;
-                    unsigned int texID = FontManager::GetAtlasTextureID(cmd.fontID, cmd.pixelSize);
+                    unsigned int texID = rm->GetFontAtlasTextureID(cmd.fontID, cmd.pixelSize);
                     // if valid texture
                     if (texID != ENGINE_INVALID_ID) {
                         glBindTexture(GL_TEXTURE_2D, texID);
@@ -127,13 +127,13 @@ namespace EngineCore {
                 }
 
                 currentMaterialID = cmd.materialID;
-                currentMaterial = rm.GetMaterial(currentMaterialID);
+                currentMaterial = rm->GetMaterial(currentMaterialID);
                 if (!currentMaterial) {
                     currentMaterialID.value = ENGINE_INVALID_ID;
                     continue;
                 }
 
-                Asset_ShaderID newShaderID = currentMaterial->GetShaderID();
+                ShaderID newShaderID = currentMaterial->GetShaderID();
                 if (currentShaderID != newShaderID) {
                     currentShaderID = newShaderID;
                     currentShader = currentMaterial->BindToShader();
@@ -178,13 +178,13 @@ namespace EngineCore {
                 if (cmd.materialID.value == ENGINE_INVALID_ID) continue;
         
                 currentMaterialID = cmd.materialID;
-                currentMaterial = rm.GetMaterial(currentMaterialID);
+                currentMaterial = rm->GetMaterial(currentMaterialID);
                 if (!currentMaterial) {
                     currentMaterialID.value = ENGINE_INVALID_ID;
                     continue;
                 }
         
-                Asset_ShaderID newShaderID = currentMaterial->GetShaderID();
+                ShaderID newShaderID = currentMaterial->GetShaderID();
                 if (currentShaderID != newShaderID) {
                     currentShaderID = newShaderID;
                     currentShader = currentMaterial->BindToShader();
@@ -212,7 +212,7 @@ namespace EngineCore {
                 m_instanceMatrices.clear();
         
                 currentMeshID = cmd.meshID;
-                currentMesh = rm.GetMesh(currentMeshID);;
+                currentMesh = rm->GetMesh(currentMeshID);;
                 currentInvertMesh = cmd.invertMesh;
         
                 if (!currentMesh) {

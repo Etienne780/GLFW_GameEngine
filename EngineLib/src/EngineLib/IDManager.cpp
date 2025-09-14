@@ -15,7 +15,7 @@ namespace EngineCore {
 		return m_idFallback;
 	}
 
-	unsigned int IDManager::GetNewUniqueIdentifier() {
+	unsigned int IDManager::GetNewUniqueIdentifier() const {
 		switch (m_order) {
 		case IDOrder::RANDOME: return GetNewUniqueIdentifierRandom();
 		case IDOrder::ASCENDING: return GetNewUniqueIdentifierAscending();
@@ -29,7 +29,7 @@ namespace EngineCore {
 		m_freeIDs.push(id);
 	}
 
-	unsigned int IDManager::GetNewUniqueIdentifierFallback() {
+	unsigned int IDManager::GetNewUniqueIdentifierFallback() const {
 		if (!m_idFallback) {
 			m_idFallback = true;
 			Log::Warn("IDManager: Max ID limit reached, using fallback IDs from free pool");
@@ -70,7 +70,7 @@ namespace EngineCore {
 		Reset((value == IDOrder::DESCENDING) ? ENGINE_INVALID_ID : 0);
 	}
 
-	unsigned int IDManager::GetNewUniqueIdentifierRandom() {
+	unsigned int IDManager::GetNewUniqueIdentifierRandom() const {
 		unsigned int id;
 		
 		if (!m_freeIDs.empty()) {
@@ -89,7 +89,7 @@ namespace EngineCore {
 		return id;
 	}
 
-	unsigned int IDManager::GetNewUniqueIdentifierAscending() {
+	unsigned int IDManager::GetNewUniqueIdentifierAscending() const {
 		unsigned int id;
 
 		if (m_idFallback) {
@@ -107,7 +107,7 @@ namespace EngineCore {
 		return id;
 	}
 
-	unsigned int IDManager::GetNewUniqueIdentifierDescending() {
+	unsigned int IDManager::GetNewUniqueIdentifierDescending() const {
 		unsigned int id;
 
 		if (m_idFallback) {

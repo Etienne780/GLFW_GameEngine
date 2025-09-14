@@ -8,37 +8,37 @@
 #include "EngineLib/FontManager.h"
 #include "EngineLib/AssetRepository.h"
 
-EngineCore::Asset_Texture2DID g_engineTextureMissingID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
-EngineCore::Asset_Texture2DID g_engineTextureCursedmod3ID = EngineCore::Asset_Texture2DID(EngineCore::ENGINE_INVALID_ID);
-EngineCore::Asset_MeshID g_engineMeshCubeID = EngineCore::Asset_MeshID(EngineCore::ENGINE_INVALID_ID);
-EngineCore::Asset_MeshID g_engineMeshPlainID = EngineCore::Asset_MeshID(EngineCore::ENGINE_INVALID_ID);
-EngineCore::Asset_ShaderID g_engineShaderDefaultID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
-EngineCore::Asset_ShaderID g_engineShaderDefaultTextID = EngineCore::Asset_ShaderID(EngineCore::ENGINE_INVALID_ID);
-EngineCore::Asset_MaterialID g_engineMaterialDefaultID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
-EngineCore::Asset_MaterialID g_engineMaterialDefaultTextID = EngineCore::Asset_MaterialID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Texture2DID g_engineTextureMissingID = EngineCore::Texture2DID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::Texture2DID g_engineTextureCursedmod3ID = EngineCore::Texture2DID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::MeshID g_engineMeshCubeID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::MeshID g_engineMeshPlainID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::ShaderID g_engineShaderDefaultID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::ShaderID g_engineShaderDefaultTextID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::MaterialID g_engineMaterialDefaultID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::MaterialID g_engineMaterialDefaultTextID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::FontID g_engineFontDefaultID = EngineCore::FontID(EngineCore::ENGINE_INVALID_ID);
 
 namespace EngineCore::ASSETS::ENGINE::TEXTURE {
-    Asset_Texture2DID Missing() { return g_engineTextureMissingID; }
-    Asset_Texture2DID Cursedmod3() { return g_engineTextureCursedmod3ID; }
+    Texture2DID Missing() { return g_engineTextureMissingID; }
+    Texture2DID Cursedmod3() { return g_engineTextureCursedmod3ID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MESH {
-	Asset_MeshID Cube() { return g_engineMeshCubeID; }
-    Asset_MeshID Plain() { return g_engineMeshPlainID; }
+	MeshID Cube() { return g_engineMeshCubeID; }
+    MeshID Plain() { return g_engineMeshPlainID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::SHADER {
-    Asset_ShaderID Default() { return g_engineShaderDefaultID; }
-    Asset_ShaderID DefaultText() { return g_engineShaderDefaultTextID; }
+    ShaderID Default() { return g_engineShaderDefaultID; }
+    ShaderID DefaultText() { return g_engineShaderDefaultTextID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
-    Asset_MaterialID Default() { return g_engineMaterialDefaultID; }
+    MaterialID Default() { return g_engineMaterialDefaultID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
-    Asset_MaterialID DefaultText() { return g_engineMaterialDefaultTextID; }
+    MaterialID DefaultText() { return g_engineMaterialDefaultTextID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::FONT {
@@ -48,17 +48,17 @@ namespace EngineCore::ASSETS::ENGINE::FONT {
 namespace EngineCore {
 	
 	void LoadBaseAsset() {
-		auto& rm = ResourceManager::GetInstance();
+		auto* rm = ResourceManager::GetInstance();
     
         #pragma region TEXTURE::Missing
         {
-            g_engineTextureMissingID = rm.AddTexture2DFromMemory(nullptr, 0, 0, 0);
+            g_engineTextureMissingID = rm->AddTexture2DFromMemory(nullptr, 0, 0, 0);
         }
         #pragma endregion
 
         #pragma region TEXTURE::Missing
         {
-            g_engineTextureCursedmod3ID = rm.AddTexture2DFromFile("assets\\images.jpg");
+            g_engineTextureCursedmod3ID = rm->AddTexture2DFromFile("assets\\images.jpg");
         }
         #pragma endregion
 
@@ -125,7 +125,7 @@ namespace EngineCore {
             size_t verticesSize = sizeof(vertices) / sizeof(vertices[0]);
             size_t indicesSize = sizeof(indices) / sizeof(indices[0]);
 
-            g_engineMeshCubeID = rm.AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
+            g_engineMeshCubeID = rm->AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
 		}
         #pragma endregion
 
@@ -146,7 +146,7 @@ namespace EngineCore {
             size_t verticesSize = sizeof(vertices) / sizeof(vertices[0]);
             size_t indicesSize = sizeof(indices) / sizeof(indices[0]);
 
-            g_engineMeshPlainID = rm.AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
+            g_engineMeshPlainID = rm->AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
         }
         #pragma endregion
 
@@ -185,7 +185,7 @@ namespace EngineCore {
                 	FragColor = texColor;
                 }
             )";
-            g_engineShaderDefaultID = rm.AddShaderFromMemory(vert, frag);
+            g_engineShaderDefaultID = rm->AddShaderFromMemory(vert, frag);
         }
         #pragma endregion
 
@@ -223,28 +223,28 @@ namespace EngineCore {
                     FragColor = vec4(umeshColor.rgb, umeshColor.a * alpha);
                 }
             )";
-            g_engineShaderDefaultTextID = rm.AddShaderFromMemory(vert, frag);
+            g_engineShaderDefaultTextID = rm->AddShaderFromMemory(vert, frag);
         }
         #pragma endregion
 
         #pragma region MATERIAL::Default
         {
-            g_engineMaterialDefaultID = rm.AddMaterial(g_engineShaderDefaultID);
-            Material* mat = rm.GetMaterial(g_engineMaterialDefaultID);
+            g_engineMaterialDefaultID = rm->AddMaterial(g_engineShaderDefaultID);
+            Material* mat = rm->GetMaterial(g_engineMaterialDefaultID);
             mat->SetParam("texture", g_engineTextureMissingID);
         }
         #pragma endregion
 
         #pragma region MATERIAL::DefaultText
         {
-            g_engineMaterialDefaultTextID = rm.AddMaterial(g_engineShaderDefaultTextID);
-            Material* mat = rm.GetMaterial(g_engineMaterialDefaultTextID);
+            g_engineMaterialDefaultTextID = rm->AddMaterial(g_engineShaderDefaultTextID);
+            Material* mat = rm->GetMaterial(g_engineMaterialDefaultTextID);
         }
         #pragma endregion
 
         #pragma region FONT::Default
         {
-           g_engineFontDefaultID = FontManager::LoadFontMemory(StaticFont::Nurom_Bold_ttf, StaticFont::Nurom_Bold_ttf_len);
+           g_engineFontDefaultID = rm->AddFontFromMemory(StaticFont::Nurom_Bold_ttf, StaticFont::Nurom_Bold_ttf_len);
         }
         #pragma endregion
 

@@ -9,7 +9,7 @@ namespace EngineCore {
 
 	unsigned int Material::m_maxTextureUnits = 0;
 
-	Material::Material(Asset_ShaderID shaderID)
+	Material::Material(ShaderID shaderID)
 		: m_shaderID(shaderID) {
 	}
 
@@ -18,8 +18,8 @@ namespace EngineCore {
 			Log::Error("Material: Cant apply params to shader, shaderID is invalid!");
 			return nullptr;
 		}
-		auto& rm = ResourceManager::GetInstance();
-		Shader* shader = rm.GetShader(m_shaderID);
+		auto* rm = ResourceManager::GetInstance();
+		Shader* shader = rm->GetShader(m_shaderID);
 		if (!shader) {
 			Log::Error("Material: Cant apply params to shader, shader is nullptr");
 			return nullptr;
@@ -35,7 +35,7 @@ namespace EngineCore {
 	}
 
 	void Material::ApplyParamsOnly(Shader* shader) const {
-		auto& rm = ResourceManager::GetInstance();
+		auto* rm = ResourceManager::GetInstance();
 
 		for (const auto& [name, value] : m_boolParams) {
 			shader->SetBool(name, value);
@@ -70,7 +70,7 @@ namespace EngineCore {
 			if (counter >= m_maxTextureUnits) break;
 			if (value.value == ENGINE_INVALID_ID) continue;
 
-			Texture2D* texture = rm.GetTexture2D(value);
+			Texture2D* texture = rm->GetTexture2D(value);
 			if (texture) {
 				texture->CreateGL();
 				texture->Bind(counter);
@@ -123,9 +123,9 @@ namespace EngineCore {
 		}
 	}
 
-	void Material::SetIsTransparent(Asset_Texture2DID id) {
-		auto& rm = ResourceManager::GetInstance();
-		auto tex = rm.GetTexture2D(id);
+	void Material::SetIsTransparent(Texture2DID id) {
+		auto* rm = ResourceManager::GetInstance();
+		auto tex = rm->GetTexture2D(id);
 		if (tex->GetNrChannels() > 3)
 			m_isTransparent = true;
 	}
@@ -170,7 +170,7 @@ namespace EngineCore {
 		return pStr;
 	}
 
-	Asset_ShaderID Material::GetShaderID() const {
+	ShaderID Material::GetShaderID() const {
 		return m_shaderID;
 	}
 

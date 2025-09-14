@@ -46,13 +46,14 @@ namespace EngineCore {
 	struct FontTag {};
 	struct UIElementTag {};
 
-	using Asset_Texture2DID = EngineID<Texture2DTag>;
-	using Asset_MeshID = EngineID<MeshTag>;
-	using Asset_ShaderID = EngineID<ShaderTag>;
-	using Asset_MaterialID = EngineID<MaterialTag>;
+	using Texture2DID = EngineID<Texture2DTag>;
+	using MeshID = EngineID<MeshTag>;
+	using ShaderID = EngineID<ShaderTag>;
+	using MaterialID = EngineID<MaterialTag>;
+	using FontID = EngineID<FontTag>;
+
 	using GameObjectID = EngineID<GameObjectTag>;
 	using RenderLayerID = EngineID<RenderLayerTag>;
-	using FontID = EngineID<FontTag>;
 	using UIElementID = EngineID<UIElementTag>;
 
 	enum class RenderCommandType {
@@ -68,8 +69,8 @@ namespace EngineCore {
 		RenderCommandType type = RenderCommandType::Mesh;
 		bool invertMesh = false;
 
-		Asset_MaterialID materialID = Asset_MaterialID(ENGINE_INVALID_ID);
-		Asset_MeshID meshID = Asset_MeshID(ENGINE_INVALID_ID);
+		MaterialID materialID = MaterialID(ENGINE_INVALID_ID);
+		MeshID meshID = MeshID(ENGINE_INVALID_ID);
 		RenderLayerID renderLayerID = RenderLayerID(ENGINE_INVALID_ID);
 		int zOrder = 0;
 		const Matrix4x4* modelMatrix = nullptr;

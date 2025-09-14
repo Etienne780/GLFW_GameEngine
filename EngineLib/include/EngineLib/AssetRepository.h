@@ -7,23 +7,23 @@ namespace EngineCore {
 
 		namespace ENGINE {
 			namespace TEXTURE {
-				Asset_Texture2DID Missing();
-				Asset_Texture2DID Cursedmod3();
+				Texture2DID Missing();
+				Texture2DID Cursedmod3();
 			}
 
 			namespace MESH {
-				Asset_MeshID Cube();
-				Asset_MeshID Plain();
+				MeshID Cube();
+				MeshID Plain();
 			}
 
 			namespace SHADER {
-				Asset_ShaderID Default();
-				Asset_ShaderID DefaultText();
+				ShaderID Default();
+				ShaderID DefaultText();
 			}
 
 			namespace MATERIAL {
-				Asset_MaterialID Default();
-				Asset_MaterialID DefaultText();
+				MaterialID Default();
+				MaterialID DefaultText();
 			}
 
 			namespace FONT {

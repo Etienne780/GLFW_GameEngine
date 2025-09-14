@@ -18,7 +18,7 @@ namespace EngineCore {
 	friend class Engine;
 	public:
 		Material() = default;
-		Material(Asset_ShaderID shaderID);
+		Material(ShaderID shaderID);
 
 		template<typename T>
 		void SetParam(const std::string& name, const T& value);
@@ -30,12 +30,12 @@ namespace EngineCore {
 		void ApplyParamsOnly(Shader* s) const;
 
 		std::string GetParamString() const;
-		Asset_ShaderID GetShaderID() const;
+		ShaderID GetShaderID() const;
 		bool GetIsTransparent() const;
 		
 	private:
 		static unsigned int m_maxTextureUnits;
-		Asset_ShaderID m_shaderID = Asset_ShaderID(ENGINE_INVALID_ID);
+		ShaderID m_shaderID = ShaderID(ENGINE_INVALID_ID);
 		bool m_isTransparent = false;
 
 		std::unordered_map<std::string, bool> m_boolParams;
@@ -45,10 +45,10 @@ namespace EngineCore {
 		std::unordered_map<std::string, Vector3> m_vector3Params;
 		std::unordered_map<std::string, Vector4> m_vector4Params;
 		std::unordered_map<std::string, Matrix> m_matrixParams;
-		std::unordered_map<std::string, Asset_Texture2DID> m_textureParams;
+		std::unordered_map<std::string, Texture2DID> m_textureParams;
 
 		void SetMatrixParam(Shader* shader, const std::string& name, Matrix m) const;
-		void SetIsTransparent(Asset_Texture2DID id);
+		void SetIsTransparent(Texture2DID id);
 	};
 
 }
