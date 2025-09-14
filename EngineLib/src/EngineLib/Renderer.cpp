@@ -87,8 +87,6 @@ namespace EngineCore {
             }
         };
 
-        Log::Print("");
-        Log::Info("Start");
         for (auto& cmd : m_commands) {
             // if element is not in renderlayers of the cam inefficient
             bool isInLayer = false;
