@@ -1,5 +1,3 @@
-#include <CoreLib\Log.h>
-
 #include "EngineLib\FontManager.h"
 #include "EngineLib\ResourceManager.h"
 
@@ -20,6 +18,7 @@ namespace EngineCore {
         g_instance->Cleanup();
         FontManager::Shutdown();
         delete g_instance;
+        g_instance = nullptr;
     }
 
     ResourceManager* ResourceManager::GetInstance() {
@@ -345,8 +344,33 @@ namespace EngineCore {
 
     #pragma endregion
 
+    #pragma region Delete_Asset
+
+    void ResourceManager::DeleteAsset(Texture2DID id) {
+        DeleteAssetInternal<Texture2DID, std::unique_ptr<Texture2D>>(m_texture2Ds, AssetType::TEXTURE2D, id);
+    }
+
+    void ResourceManager::DeleteAsset(MeshID id) {
+        DeleteAssetInternal<MeshID, std::unique_ptr<Mesh>>(m_meshes, AssetType::MESH, id);
+    }
+
+    void ResourceManager::DeleteAsset(ShaderID id) {
+        DeleteAssetInternal<ShaderID, std::unique_ptr<Shader>>(m_shaders, AssetType::SHADER, id);
+    }
+
+    void ResourceManager::DeleteAsset(MaterialID id) {
+        DeleteAssetInternal<MaterialID, std::unique_ptr<Material>>(m_materials, AssetType::MATERIAL, id);
+    }
+
+    void ResourceManager::DeleteAsset(FontID id) {
+        DeleteAssetInternal<FontID, std::unique_ptr<FontAsset>>(m_fonts, AssetType::FONT, id);
+    }
+
+    #pragma endregion
+
+
     unsigned int ResourceManager::GetNewUniqueId(AssetType counter) {
-        return m_assetIDCounter[counter];
+        return m_assetIDCounter.GetNewFreeID(counter);
     }
 
     void ResourceManager::Cleanup() {
