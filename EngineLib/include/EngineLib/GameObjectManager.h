@@ -28,7 +28,7 @@ namespace EngineCore {
 
 		static GameObjectManager* GetInstance();
 		
-		IDManager m_idManager;
+		IDManager m_idManager{ IDOrder::ASCENDING };
 		const unsigned int m_idSearchAmount = 50;// number of ids that get added when in fallback and queue empty
 
 		std::vector<std::shared_ptr<GameObject>> m_gameObjects;

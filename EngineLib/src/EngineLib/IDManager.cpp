@@ -7,26 +7,22 @@
 
 namespace EngineCore {
 
+	IDManager::IDManager(IDOrder order) {
+		SetIDOrder(order);
+	}
+
 	bool IDManager::IsIDFallback() {
 		return m_idFallback;
 	}
 
 	unsigned int IDManager::GetNewUniqueIdentifier() {
-		unsigned int id;
-
-		if (m_idFallback) {
-			id = GetNewUniqueIdentifierFallback();
-		}
-		else {
-			if (m_idCounter != ENGINE_INVALID_ID) {
-				id = m_idCounter++;
-			}
-			else {
-				id = GetNewUniqueIdentifierFallback();
-			}
+		switch (m_order) {
+		case IDOrder::RANDOME: return GetNewUniqueIdentifierRandom();
+		case IDOrder::ASCENDING: return GetNewUniqueIdentifierAscending();
+		case IDOrder::DESCENDING: return GetNewUniqueIdentifierDescending();
 		}
 
-		return id;
+		return ENGINE_INVALID_ID;
 	}
 
 	void IDManager::FreeUniqueIdentifier(unsigned int id) {
@@ -52,8 +48,81 @@ namespace EngineCore {
 	void IDManager::Reset(unsigned int startValue) {
 		std::queue<unsigned int> empty;
 		std::swap(m_freeIDs, empty);
-		m_idCounter = startValue;
-		m_idFallback = false;
+
+		switch (m_order) {
+		case IDOrder::RANDOME:
+			m_idCounter = startValue;
+			m_idFallback = true;
+			break;
+		case IDOrder::ASCENDING:
+			m_idCounter = startValue;
+			m_idFallback = false;
+			break;
+		case IDOrder::DESCENDING:
+			m_idCounter = startValue;
+			m_idFallback = false;
+			break;
+		}
+	}
+
+	void IDManager::SetIDOrder(IDOrder value) {
+		m_order = value;
+		Reset((value == IDOrder::DESCENDING) ? ENGINE_INVALID_ID : 0);
+	}
+
+	unsigned int IDManager::GetNewUniqueIdentifierRandom() {
+		unsigned int id;
+		
+		if (!m_freeIDs.empty()) {
+			id = m_freeIDs.front();
+			m_freeIDs.pop();
+		}
+		else {
+			if (m_idCounter != ENGINE_INVALID_ID) {
+				id = m_idCounter++;
+			}
+			else {
+				id = ENGINE_INVALID_ID;
+			}
+		}
+
+		return id;
+	}
+
+	unsigned int IDManager::GetNewUniqueIdentifierAscending() {
+		unsigned int id;
+
+		if (m_idFallback) {
+			id = GetNewUniqueIdentifierFallback();
+		}
+		else {
+			if (m_idCounter != ENGINE_INVALID_ID) {
+				id = m_idCounter++;
+			}
+			else {
+				id = GetNewUniqueIdentifierFallback();
+			}
+		}
+
+		return id;
+	}
+
+	unsigned int IDManager::GetNewUniqueIdentifierDescending() {
+		unsigned int id;
+
+		if (m_idFallback) {
+			id = GetNewUniqueIdentifierFallback();
+		}
+		else {
+			if (m_idCounter != 0) {
+				id = m_idCounter--;
+			}
+			else {
+				id = GetNewUniqueIdentifierFallback();
+			}
+		}
+
+		return id;
 	}
 
 }
