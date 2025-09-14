@@ -36,10 +36,10 @@ namespace EngineCore {
 			float m_arrowSensitivity = 0.8f;
 			float m_mouseSensitivity = 0.2f;
 
-			float m_movementSpeed = 20.0f;
+			float m_movementSpeed = 30.0f;
 			float m_sprintMultiplier = 3.0f;
 			float m_slowMultiplier = 0.3f;
-			float m_verticalMovementspeedMultiplier = 1.2f;
+			float m_verticalMovementspeedMultiplier = 1.5f;
 
 			float m_fov = 66.0f;
 			float m_minFov = 1.0f;
