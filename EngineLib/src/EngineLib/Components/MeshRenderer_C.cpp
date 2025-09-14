@@ -42,7 +42,7 @@ namespace EngineCore {
 			if (IsDead("Cant get mesh color")) {
 				return Vector4();
 			}
-			m_meshColor;
+			return m_meshColor;
 		}
 
 		bool MeshRenderer::GetInvertMesh() const {
