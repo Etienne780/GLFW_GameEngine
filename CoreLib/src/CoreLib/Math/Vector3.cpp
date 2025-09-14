@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "CoreLib\Math\Vector2.h"
+#include "CoreLib\Math\Vector4.h"
 #include "CoreLib\Math\Matrix.h"
 #include "CoreLib\Math\MathUtils.h"
 #include "CoreLib\FormatUtils.h"
@@ -24,6 +25,10 @@ Vector3::Vector3(float x, float y, float z)
 }
 Vector3::Vector3(const Vector2& vec, float z) 
     : x(vec.x), y(vec.y), z(z) {
+}
+
+Vector3::Vector3(const Vector4& vec) 
+    : x(vec.x), y(vec.y), z(vec.z) {
 }
 
 std::string Vector3::ToString() const {

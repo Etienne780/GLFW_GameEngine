@@ -3,6 +3,8 @@
 #include "CoreLib\Math\Matrix.h"
 #include "CoreLib\Math\MathUtils.h"
 #include "CoreLib\FormatUtils.h"
+#include "CoreLib\Math\Vector3.h"
+#include "CoreLib\Math\Vector4.h"
 
 #include "CoreLib\Math\Vector2.h"
 
@@ -12,6 +14,21 @@ const Vector2 Vector2::left(-1, 0);
 const Vector2 Vector2::right(1, 0);
 const Vector2 Vector2::one(1, 1);
 const Vector2 Vector2::zero(0, 0);
+
+Vector2::Vector2() {
+}
+
+Vector2::Vector2(float x, float y) 
+    : x(x), y(y) {
+}
+
+Vector2::Vector2(const Vector3& vec) 
+    : x(vec.x), y(vec.y) {
+}
+
+Vector2::Vector2(const Vector4& vec) 
+    : x(vec.x), y(vec.y) {
+}
 
 std::string Vector2::ToString() const {
     return FormatUtils::formatString("[{}, {}]", x, y);

@@ -24,9 +24,10 @@ public:
     float y = 0; ///< Y component of the vector
     float z = 0; ///< Z component of the vector
 
-    Vector3(); ///< Default constructor initializes to (0, 0, 0)
+    Vector3();
     Vector3(float x, float y, float z);
     Vector3(const Vector2& vec, float z);
+    Vector3(const Vector4& vec);
 
     /**
      * @brief Converts the vector to a string representation.
