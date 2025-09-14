@@ -3,6 +3,7 @@
 
 class Matrix;
 class Vector2;
+class Vector4;
 
 /**
  * @class Vector3
