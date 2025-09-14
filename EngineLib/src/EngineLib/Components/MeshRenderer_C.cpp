@@ -24,6 +24,34 @@ namespace EngineCore {
 			ui.DrawColorEdit4("Mesh Color", &m_meshColor);
 		}
 
+		MeshID MeshRenderer::GetMeshID() const {
+			if (IsDead("Cant get mesh id")) {
+				return MeshID(ENGINE_INVALID_ID);
+			}
+			return m_meshID;
+		}
+
+		MaterialID MeshRenderer::GetMaterialID() const {
+			if (IsDead("Cant get material id")) {
+				return MaterialID(ENGINE_INVALID_ID);
+			}
+			return m_materialID;
+		}
+
+		Vector4 MeshRenderer::GetMeshColor() const {
+			if (IsDead("Cant get mesh color")) {
+				return Vector4();
+			}
+			m_meshColor;
+		}
+
+		bool MeshRenderer::GetInvertMesh() const {
+			if (IsDead("Cant get invert mesh")) {
+				return false;
+			}
+			return m_invertMesh;
+		}
+
 		MeshRenderer* MeshRenderer::SetMesh(MeshID id) {
 			if (IsDead("Cant set mesh")) {
 				return this;
@@ -49,6 +77,25 @@ namespace EngineCore {
 
 			m_isTransparent = mat->GetIsTransparent();
 			m_materialID = id;
+			return this;
+		}
+
+
+		MeshRenderer* MeshRenderer::SetMeshColor(float r, float g, float b, float a) {
+			if (IsDead("Cant set mesh color")) {
+				return this;
+			}
+			m_meshColor.Set(r, g, b, a);
+
+			return this;
+		}
+
+		MeshRenderer* MeshRenderer::SetMeshColor(const Vector4& color) {
+			if (IsDead("Cant set mesh color")) {
+				return this;
+			}
+			m_meshColor = color;
+
 			return this;
 		}
 

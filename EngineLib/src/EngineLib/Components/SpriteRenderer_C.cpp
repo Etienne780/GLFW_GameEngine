@@ -26,6 +26,34 @@ namespace EngineCore {
 			ui.DrawColorEdit4("Sprite Color", &m_meshColor);
 		}
 
+		Texture2DID SpriteRenderer::GetSpirte() const  {
+			if (IsDead("Cant get Sprite")) {
+				return Texture2DID(ENGINE_INVALID_ID);
+			}
+			return m_textureID;
+		}
+
+		int SpriteRenderer::GetZOrder() const {
+			if (IsDead("Cant get Z-Order")) {
+				return 0;
+			}
+			return m_zOrder;
+		}
+
+		Vector4 SpriteRenderer::GetSpriteColor() const {
+			if (IsDead("Cant get Sprite color")) {
+				return Vector4();
+			}
+			return m_meshColor;
+		}
+
+		bool SpriteRenderer::GetInvertMesh() const {
+			if (IsDead("Cant get invert mesh")) {
+				return false;
+			}
+			return m_invertMesh;
+		}
+
 		SpriteRenderer* SpriteRenderer::SetSprite(Texture2DID id) {
 			if (IsDead("Cant set Sprite")) {
 				return this;
@@ -63,7 +91,7 @@ namespace EngineCore {
 		}
 
 		SpriteRenderer* SpriteRenderer::SetSpriteColor(float r, float g, float b, float a) {
-			if (IsDead("Cant set mesh color")) {
+			if (IsDead("Cant set sprite color")) {
 				return this;
 			}
 			m_meshColor.Set(r, g, b, a);
@@ -72,7 +100,7 @@ namespace EngineCore {
 		}
 
 		SpriteRenderer* SpriteRenderer::SetSpriteColor(const Vector4& color) {
-			if (IsDead("Cant set mesh color")) {
+			if (IsDead("Cant set sprite color")) {
 				return this;
 			}
 			m_meshColor = color;

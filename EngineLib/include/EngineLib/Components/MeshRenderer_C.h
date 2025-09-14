@@ -19,8 +19,17 @@ namespace EngineCore {
 			bool IsDrawable() const override { return true; }
 			void SubmitDrawCall() override;
 
+			MeshID GetMeshID() const;
+			MaterialID GetMaterialID() const;
+			Vector4 GetMeshColor() const;
+			bool GetInvertMesh() const;
+			
 			MeshRenderer* SetMesh(MeshID id);
 			MeshRenderer* SetMaterial(MaterialID id);
+
+			MeshRenderer* SetMeshColor(float r, float g, float b, float a);
+			MeshRenderer* SetMeshColor(const Vector4& color);
+
 			/**
 			* @brief inverts the direction of the faces of a mesh
 			* @param value is the value that it gets set to

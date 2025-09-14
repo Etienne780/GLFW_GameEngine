@@ -19,6 +19,11 @@ namespace EngineCore {
 			bool IsDrawable() const override { return true; }
 			void SubmitDrawCall() override;
 
+			Texture2DID GetSpirte() const;
+			int GetZOrder() const;
+			Vector4 GetSpriteColor() const;
+			bool GetInvertMesh() const;
+
 			/*
 			* @brief Sets the spirte of the SpriteRenderer
 			* @param id the id of the texture
