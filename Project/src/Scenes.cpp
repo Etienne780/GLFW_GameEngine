@@ -1,5 +1,6 @@
 #include <EngineLib/Engine.h>
 
+#include "CustomComponents.h"
 #include "Scenes.h"
 
 using namespace EngineCore;
@@ -34,6 +35,7 @@ namespace Scenes {
 		go->GetTransform()->SetScale(20, 20, 20);
 		auto mr = go->AddComponent<Component::MeshRenderer>();
 		mr->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(ASSETS::ENGINE::MATERIAL::Default());
+		go->AddComponent<Component::Rainbow>();
 
 		go = GameObject::Create("plain");
 		go->GetTransform()->SetPosition(30, 0, 0);
