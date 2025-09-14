@@ -132,10 +132,10 @@ namespace EngineCore {
         #pragma region MESH::Plain
         {
             Vertex vertices[] = {
-                { -0.5f, -0.5f,  0, 0.0f, 0.0f }, // 4
-                {  0.5f, -0.5f,  0, 1.0f, 0.0f }, // 5
-                {  0.5f,  0.5f,  0, 1.0f, 1.0f }, // 6
-                { -0.5f,  0.5f,  0, 0.0f, 1.0f }, // 7
+                { -0.5f, -0.5f,  0, 1.0f, 1.0f }, // 4
+                {  0.5f, -0.5f,  0, 0.0f, 1.0f }, // 5
+                {  0.5f,  0.5f,  0, 0.0f, 0.0f }, // 6
+                { -0.5f,  0.5f,  0, 1.0f, 0.0f }, // 7
             };
 
             unsigned int indices[] = {
@@ -149,7 +149,6 @@ namespace EngineCore {
             g_engineMeshPlainID = rm->AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
         }
         #pragma endregion
-
 
         #pragma region SHADER::Default
         {
@@ -182,7 +181,7 @@ namespace EngineCore {
                     vec4 texColor = texture(utexture, TexCoord);
                     if(texColor.a < 0.1)
                         discard;
-                	FragColor = texColor;
+                	FragColor = texColor * umeshColor;
                 }
             )";
             g_engineShaderDefaultID = rm->AddShaderFromMemory(vert, frag);

@@ -148,6 +148,10 @@ namespace EngineCore {
 		}
 
 		const std::vector<RenderLayerID>& Camera::GetRenderLayers() const {
+			if (IsDead("Cant get RenderLayers")) {
+				static const std::vector<RenderLayerID> dummy;
+				return dummy;
+			}
 			return m_renderLayers;
 		}
 
@@ -155,85 +159,91 @@ namespace EngineCore {
 
 		#pragma region Set
 
-		Camera& Camera::SetFOV(float fov) {
+		Camera* Camera::SetFOV(float fov) {
 			if (IsDead("Cant set FOV")) {
-				return *this;
+				return this;
 			}
 			m_fov = fov;
 			m_projectionChanged = true;
 
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::SetOrthograpic(bool value) {
+		Camera* Camera::SetOrthograpic(bool value) {
 			if (IsDead("Cant set Orthograpic")) {
-				return *this;
+				return this;
 			}
 			m_isOrthograpic = value;
 			m_projectionChanged = true;
 
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::SetAspectRatioAuto(bool value) {
+		Camera* Camera::SetAspectRatioAuto(bool value) {
 			if (IsDead("Cant set AspectRatioAuto")) {
-				return *this;
+				return this;
 			}
 			m_calculateAspectRatioWithWindow = value;
 			m_projectionChanged = true;
 
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::SetAspectRatio(float aspectRatio) {
+		Camera* Camera::SetAspectRatio(float aspectRatio) {
 			if (IsDead("Cant set aspect ratio")) {
-				return *this;
+				return this;
 			}
 			m_aspectRatio = aspectRatio;
 			m_projectionChanged = true;
 
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::SetNearPlane(float nearPlane) {
+		Camera* Camera::SetNearPlane(float nearPlane) {
 			if (IsDead("Cant set near plane")) {
-				return *this;
+				return this;
 			}
 			m_nearPlane = nearPlane;
 			m_projectionChanged = true;
 			
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::SetFarPlane(float farPlane) {
+		Camera* Camera::SetFarPlane(float farPlane) {
 			if (IsDead("Cant set far plane")) {
-				return *this;
+				return this;
 			}
 			m_farPlane = farPlane;
 			m_projectionChanged = true;
 
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::SetPlanes(float nearPlane, float farPlane) {
+		Camera* Camera::SetPlanes(float nearPlane, float farPlane) {
 			if (IsDead("Cant set planes")) {
-				return *this;
+				return this;
 			}
 			m_nearPlane = nearPlane;
 			m_farPlane = farPlane;
 			m_projectionChanged = true;
 
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::SetCameraLayers(std::vector<RenderLayerID> renderLayers) {
+		Camera* Camera::SetCameraLayers(std::vector<RenderLayerID> renderLayers) {
+			if (IsDead("Cant get RenderLayers")) {
+				return this;
+			}
 			m_renderLayers = renderLayers;
-			return *this;
+			return this;
 		}
 
-		Camera& Camera::AddCameraLayer(RenderLayerID renderLayer) {
+		Camera* Camera::AddCameraLayer(RenderLayerID renderLayer) {
+			if (IsDead("Cant add RenderLayer")) {
+				return this;
+			}
 			m_renderLayers.push_back(renderLayer);
-			return *this;
+			return this;
 		}
 
 		#pragma endregion

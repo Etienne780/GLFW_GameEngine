@@ -28,14 +28,14 @@ namespace EngineCore {
 			TextRenderer* SetTextSize(float textSize);
 			TextRenderer* SetTextResolution(int textResolution);
 			// -1 = all chars visible
-			TextRenderer* SetNumberOfVisibleChar(unsigned int numberOfVisibleChars);
+			TextRenderer* SetNumberOfVisibleChars(unsigned int numberOfVisibleChars);
 			TextRenderer* SetInvertMesh(bool value);
 
 			const std::string& GetText() const;
 			const Vector4& GetTextColor() const;
 			float GetTextSize() const;
 			int GetTextResolution() const;
-			int GetNumberOfVisibleChar() const;
+			int GetNumberOfVisibleChars() const;
 			bool GetInvertMesh() const;
 
 		private:

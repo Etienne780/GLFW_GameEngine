@@ -59,6 +59,9 @@ namespace EngineCore::Component {
 	}
 
 	TextRenderer* TextRenderer::SetFontID(FontID id) {
+		if (IsDead("Cant set FontID")) {
+			return this;
+		}
 		m_textChanged = true;
 		m_fontID = id;
 
@@ -66,6 +69,9 @@ namespace EngineCore::Component {
 	}
 
 	TextRenderer* TextRenderer::SetText(const std::string& text) {
+		if (IsDead("Cant set text")) {
+			return this;
+		}
 		m_textChanged = true;
 		m_text = text;
 		AdjustVisibleChars();
@@ -74,6 +80,9 @@ namespace EngineCore::Component {
 	}
 
 	TextRenderer* TextRenderer::SetTextColor(float r, float g, float b, float a) {
+		if (IsDead("Cant set text color")) {
+			return this;
+		}
 		m_textChanged = true;
 		m_textColor.Set(r, g, b, a);
 
@@ -81,6 +90,9 @@ namespace EngineCore::Component {
 	}
 
 	TextRenderer* TextRenderer::SetTextColor(const Vector4& color) {
+		if (IsDead("Cant set text color")) {
+			return this;
+		}
 		m_textChanged = true;
 		m_textColor = color;
 
@@ -88,6 +100,9 @@ namespace EngineCore::Component {
 	}
 
 	TextRenderer* TextRenderer::SetTextSize(float textSize) {
+		if (IsDead("Cant set text size")) {
+			return this;
+		}
 		m_textChanged = true;
 		m_textSize = textSize;
 		m_textSize = abs(MathUtil::Max(1, m_textSize));
@@ -96,6 +111,9 @@ namespace EngineCore::Component {
 	}
 
 	TextRenderer* TextRenderer::SetTextResolution(int textResolution) {
+		if (IsDead("Cant set text resolution")) {
+			return this;
+		}
 		m_textChanged = true;
 		m_textResolution = textResolution;
 		m_textResolution = abs(m_textResolution);
@@ -103,7 +121,10 @@ namespace EngineCore::Component {
 		return this;
 	}
 
-	TextRenderer* TextRenderer::SetNumberOfVisibleChar(unsigned int numberOfVisibleChars) {
+	TextRenderer* TextRenderer::SetNumberOfVisibleChars(unsigned int numberOfVisibleChars) {
+		if (IsDead("Cant set Number of visible char")) {
+			return this;
+		}
 		m_textChanged = true;
 		m_visibleChar = numberOfVisibleChars;
 
@@ -111,6 +132,9 @@ namespace EngineCore::Component {
 	}
 
 	TextRenderer* TextRenderer::SetInvertMesh(bool value) {
+		if (IsDead("Cant set invert mesh")) {
+			return this;
+		}
 		m_invertMesh = value;
 		return this;
 	}
@@ -120,22 +144,38 @@ namespace EngineCore::Component {
 	}
 
 	const Vector4& TextRenderer::GetTextColor() const {
+		if (IsDead("Cant get text color")) {
+			static Vector4 dummy;
+			return dummy;
+		}
 		return m_textColor;
 	}
 
 	float TextRenderer::GetTextSize() const {
+		if (IsDead("Cant get text size")) {
+			return 0.0f;
+		}
 		return m_textSize;
 	}
 
 	int TextRenderer::GetTextResolution() const {
+		if (IsDead("Cant get text resolution")) {
+			return 0;
+		}
 		return m_textResolution;
 	}
 
-	int TextRenderer::GetNumberOfVisibleChar() const {
+	int TextRenderer::GetNumberOfVisibleChars() const {
+		if (IsDead("Cant get number of visible chars")) {
+			return 0;
+		}
 		return m_visibleChar;
 	}
 
 	bool TextRenderer::GetInvertMesh() const {
+		if (IsDead("Cant get invert mesh")) {
+			return false;
+		}
 		return m_invertMesh;
 	}
 

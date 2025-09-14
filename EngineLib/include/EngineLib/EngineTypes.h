@@ -71,6 +71,7 @@ namespace EngineCore {
 
 		MaterialID materialID = MaterialID(ENGINE_INVALID_ID);
 		MeshID meshID = MeshID(ENGINE_INVALID_ID);
+		Texture2DID textureOverrideID = Texture2DID(ENGINE_INVALID_ID);
 		RenderLayerID renderLayerID = RenderLayerID(ENGINE_INVALID_ID);
 		int zOrder = 0;
 		const Matrix4x4* modelMatrix = nullptr;

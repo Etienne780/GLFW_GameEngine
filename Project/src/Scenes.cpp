@@ -6,7 +6,7 @@ using namespace EngineCore;
 static RenderLayerID top = RenderLayerID(ENGINE_INVALID_ID);
 
 void SetupGame() {
-	top = RenderLayerManager::AddLayer("TOp", 10);
+	top = RenderLayerManager::AddLayer("TOp", 0);
 }
 
 namespace Scenes {
@@ -41,6 +41,12 @@ namespace Scenes {
 		mr = go->AddComponent<Component::MeshRenderer>();
 		mr->SetMesh(ASSETS::ENGINE::MESH::Plain())->SetMaterial(matID);
 
+		go = GameObject::Create("sprite test");
+		go->GetTransform()->SetPosition(60, 0, 0);
+		go->GetTransform()->SetScale(20, 20, 20);
+		auto sr = go->AddComponent<Component::SpriteRenderer>();
+		sr->SetSprite(ASSETS::ENGINE::TEXTURE::Cursedmod3());
+
 		go = GameObject::Create(FormatUtils::formatString("Opaque box"));
 		go->SetRenderLayer(top);
 		go->GetTransform()->SetPosition(-30.0f, 0.0f, 90.0f);
@@ -60,6 +66,7 @@ namespace Scenes {
 				childMR->SetMesh(ASSETS::ENGINE::MESH::Cube())->SetMaterial(matID);
 			}
 		}
+
 	}
 
 }

@@ -368,7 +368,6 @@ namespace EngineCore {
 
     #pragma endregion
 
-
     unsigned int ResourceManager::GetNewUniqueId(AssetType counter) {
         return m_assetIDCounter.GetNewFreeID(counter);
     }

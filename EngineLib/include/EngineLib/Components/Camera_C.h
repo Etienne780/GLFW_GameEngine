@@ -33,22 +33,22 @@ namespace EngineCore {
 			Matrix4x4 GetViewMatrix();
 			const std::vector<RenderLayerID>& GetRenderLayers() const;
 
-			Camera& SetFOV(float fov);
-			Camera& SetOrthograpic(bool value);
+			Camera* SetFOV(float fov);
+			Camera* SetOrthograpic(bool value);
 			/**
 			* @brief Sets if the aspect ratio should be created automaticly with the window dimensions or with a default value
 			* @param value 
 			*/
-			Camera& SetAspectRatioAuto(bool value);
+			Camera* SetAspectRatioAuto(bool value);
 			/**
 			* @brief changes the aspect ratio, need to call SetAspectRatioAuto(true) to take effect
 			*/
-			Camera& SetAspectRatio(float aspectRatio);
-			Camera& SetNearPlane(float nearPlane);
-			Camera& SetFarPlane(float farPlane);
-			Camera& SetPlanes(float nearPlane, float farPlane);
-			Camera& SetCameraLayers(std::vector<RenderLayerID> renderLayers);
-			Camera& AddCameraLayer(RenderLayerID renderLayer);
+			Camera* SetAspectRatio(float aspectRatio);
+			Camera* SetNearPlane(float nearPlane);
+			Camera* SetFarPlane(float farPlane);
+			Camera* SetPlanes(float nearPlane, float farPlane);
+			Camera* SetCameraLayers(std::vector<RenderLayerID> renderLayers);
+			Camera* AddCameraLayer(RenderLayerID renderLayer);
 
 		private:
 			// gets updatet in the engine loop (before the update loop of the application)

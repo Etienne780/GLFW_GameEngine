@@ -233,6 +233,12 @@
     <ClCompile Include="src\EngineLib\Components\TextRenderer_C.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\EngineLib\Components\SpriteRenderer_C.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\Components\SpriteRenderer_C.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl">
