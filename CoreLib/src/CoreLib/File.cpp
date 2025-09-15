@@ -232,6 +232,14 @@ std::string File::GetFilePath() const {
     return m_path;
 }
 
+std::string File::GetFileExtension() const {
+    return File::GetFileExtension(m_path);
+}
+
+std::string File::GetFileName() const {
+    return File::GetFileName(m_path);
+}
+
 File& File::SetFilePath(const std::string& path) {
     m_path = path;
     return *this;
@@ -260,7 +268,19 @@ std::string File::GetExecutablePath() {
 }
 
 #pragma region static
-    
+
+std::string File::GetFileExtension(const std::string& path) {
+    size_t pos = path.find_last_of('.');
+    if (pos == std::string::npos) return "";
+    return path.substr(pos + 1);
+}
+
+std::string File::GetFileName(const std::string& path) {
+    size_t pos = path.find_last_of("/\\");
+    if (pos == std::string::npos) return "";
+    return path.substr(pos + 1);
+}
+
 bool File::Exists(const std::string& path) {
     std::ifstream file(path);
     return file.good();

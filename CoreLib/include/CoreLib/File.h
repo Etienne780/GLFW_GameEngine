@@ -138,12 +138,40 @@ public:
      */
     std::string GetFilePath() const;
 
+    /*
+    * @brief Gets the file Extension of a given path or filename
+    * @param path path/filename
+    * @return returns the file extension without the dot or nothing
+    */
+    std::string GetFileExtension() const;
+
+    /*
+    * @brief Gets the file name of a given path or filename
+    * @param path path/filename
+    * @return returns the file name or nothing
+    */
+    std::string GetFileName() const;
+
     /**
      * @brief Sets a new file path for this object.
      * @param path The new file path.
      * @return Reference to the current File object for chaining.
      */
     File& SetFilePath(const std::string& path);
+
+    /*
+    * @brief Gets the file Extension of a given path or filename (static version).
+    * @param path path/filename
+    * @return returns the file extension without the dot or nothing
+    */
+    static std::string GetFileExtension(const std::string& path);
+
+    /*
+    * @brief Gets the file name of a given path or filename (static version).
+    * @param path path/filename
+    * @return returns the file name or nothing
+    */
+    static std::string GetFileName(const std::string& path);
 
     /**
      * @brief Checks if a file exists at the given path (static version).
@@ -153,7 +181,7 @@ public:
     static bool Exists(const std::string& path);
 
     /**
-     * @brief Deletes a file at the given path.
+     * @brief Deletes a file at the given path
      * @param path File path to delete.
      * @return True if file was deleted successfully, false otherwise.
      */
