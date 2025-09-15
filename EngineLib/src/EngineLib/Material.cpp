@@ -177,7 +177,7 @@ namespace EngineCore {
 		return m_isTransparent;
 	}
 
-	std::vector<bool> Material::GetParamBool() const {
+	std::vector<bool> Material::GetParamBools() const {
 		std::vector<bool> values;
 		values.resize(m_boolParams.size());
 
@@ -187,7 +187,7 @@ namespace EngineCore {
 		return values;
 	}
 
-	std::vector<int> Material::GetParamInt() const {
+	std::vector<int> Material::GetParamInts() const {
 		std::vector<int> values;
 		values.resize(m_intParams.size());
 
@@ -197,7 +197,7 @@ namespace EngineCore {
 		return values;
 	}
 
-	std::vector<float> Material::GetParamFloat() const {
+	std::vector<float> Material::GetParamFloats() const {
 		std::vector<float> values;
 		values.resize(m_floatParams.size());
 
@@ -207,7 +207,7 @@ namespace EngineCore {
 		return values;
 	}
 
-	std::vector<Vector2> Material::GetParamVector2() const {
+	std::vector<Vector2> Material::GetParamVector2s() const {
 		std::vector<Vector2> values;
 		values.resize(m_vector2Params.size());
 
@@ -217,7 +217,7 @@ namespace EngineCore {
 		return values;
 	}
 
-	std::vector<Vector3> Material::GetParamVector3() const {
+	std::vector<Vector3> Material::GetParamVector3s() const {
 		std::vector<Vector3> values;
 		values.resize(m_vector3Params.size());
 
@@ -227,7 +227,7 @@ namespace EngineCore {
 		return values;
 	}
 
-	std::vector<Vector4> Material::GetParamVector4() const {
+	std::vector<Vector4> Material::GetParamVector4s() const {
 		std::vector<Vector4> values;
 		values.resize(m_vector4Params.size());
 
@@ -237,7 +237,7 @@ namespace EngineCore {
 		return values;
 	}
 
-	std::vector<Matrix> Material::GetParamMatrix() const {
+	std::vector<Matrix> Material::GetParamMatrices() const {
 		std::vector<Matrix> values;
 		values.resize(m_matrixParams.size());
 
@@ -247,7 +247,7 @@ namespace EngineCore {
 		return values;
 	}
 
-	std::vector<Texture2DID> Material::GetParamTexture2D() const {
+	std::vector<Texture2DID> Material::GetParamTexture2Ds() const {
 		std::vector<Texture2DID> values;
 		values.resize(m_textureParams.size());
 

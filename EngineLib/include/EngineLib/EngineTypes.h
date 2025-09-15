@@ -1,6 +1,6 @@
 #pragma once
 #include <limits>
-
+#include <string>
 #include <CoreLib/Math.h>
 #include <CoreLib/FormatUtils.h>
 
@@ -83,6 +83,14 @@ namespace EngineCore {
 		int pixelSize = 0;
 		std::vector<TextQuad> textQuads;  // precomputed from string
 	};
+
+	inline std::string RenderCommandTypeToString(RenderCommandType type) {
+		switch (type) {
+		case RenderCommandType::Mesh: return "Mesh";
+		case RenderCommandType::Text: return "Text";
+		default: return "UNKNOWN";
+		}
+	}
 
 }
 

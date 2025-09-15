@@ -1,7 +1,7 @@
 namespace EngineCore {
 	
     template<typename T>
-    T GetParam(const std::string& name) {
+    T Material::GetParam(const std::string& name) {
         static_assert(
             std::is_same<T, bool>::value ||
             std::is_same<T, int>::value ||

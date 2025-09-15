@@ -27,6 +27,7 @@ namespace EngineCore {
 
         void DrawAll();
         void SortDrawCommands(std::shared_ptr<Component::Camera> cameraPtr);
+        void PrintCommands(bool displayOption);
     };
 
 }

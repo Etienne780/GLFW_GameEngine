@@ -37,14 +37,14 @@ namespace EngineCore {
 		ShaderID GetShaderID() const;
 		bool GetIsTransparent() const;
 		
-		std::vector<bool> GetParamBool() const;
-		std::vector<int> GetParamInt() const;
-		std::vector<float> GetParamFloat() const;
-		std::vector<Vector2> GetParamVector2() const;
-		std::vector<Vector3> GetParamVector3() const;
-		std::vector<Vector4> GetParamVector4() const;
-		std::vector<Matrix> GetParamMatrix() const;
-		std::vector<Texture2DID> GetParamTexture2D() const;
+		std::vector<bool> GetParamBools() const;
+		std::vector<int> GetParamInts() const;
+		std::vector<float> GetParamFloats() const;
+		std::vector<Vector2> GetParamVector2s() const;
+		std::vector<Vector3> GetParamVector3s() const;
+		std::vector<Vector4> GetParamVector4s() const;
+		std::vector<Matrix> GetParamMatrices() const;
+		std::vector<Texture2DID> GetParamTexture2Ds() const;
 
 	private:
 		static unsigned int m_maxTextureUnits;

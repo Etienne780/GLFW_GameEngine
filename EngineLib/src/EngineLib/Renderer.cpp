@@ -2,9 +2,11 @@
 #pragma once
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
+#include <CoreLib/Log.h>
 #include <CoreLib/Math/Vector3.h>
 #include <CoreLib/Math/Vector4.h>
 
+#include "EngineLib/Time.h"
 #include "EngineLib/ResourceManager.h"
 #include "EngineLib/RenderLayerManager.h"
 #include "EngineLib/Components/Camera_C.h"
@@ -176,6 +178,21 @@ namespace EngineCore {
                 continue;
             }
 
+            // if new texture override
+            if (currentTextureOverrideID != cmd.textureOverrideID) {
+                currentTextureOverrideID = cmd.textureOverrideID;
+
+                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+                m_instanceMatrices.clear();
+
+                if (currentTextureOverrideID.value != ENGINE_INVALID_ID) {
+                    currentTextureOverride = rm->GetTexture2D(currentTextureOverrideID);
+                }
+                else {
+                    currentTextureOverride = nullptr;
+                }
+            }
+
             // material change
             if (currentMaterialID != cmd.materialID) {
                 flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
@@ -212,21 +229,6 @@ namespace EngineCore {
                 continue;
             }
 
-            // if new texture override
-            if (currentTextureOverrideID != cmd.textureOverrideID) {
-                currentTextureOverrideID = cmd.textureOverrideID;
-
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
-                m_instanceMatrices.clear();
-
-                if (currentTextureOverrideID.value != ENGINE_INVALID_ID) {
-                    currentTextureOverride = rm->GetTexture2D(currentTextureOverrideID);
-                }
-                else {
-                    currentTextureOverride = nullptr;
-                }
-            }
-
             // if mesh color changes
             if (currentMeshColor.x == -1 || currentMeshColor.SquaredMagnitude() != cmd.meshColor.SquaredMagnitude()) {
                 currentMeshColor = cmd.meshColor;
@@ -259,6 +261,7 @@ namespace EngineCore {
         
         flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
         
+        //PrintCommands(true);
         m_commands.clear();
         m_instanceMatrices.clear();
     }
@@ -276,20 +279,20 @@ namespace EngineCore {
                 // Sort after z order
                 if (a.zOrder != b.zOrder)
                     return a.zOrder < b.zOrder;
-                
-                // Texture overrides first ENGINE_INVALID than the texture overrides.
-                if (a.textureOverrideID != b.textureOverrideID) 
-                    return a.textureOverrideID < b.textureOverrideID;
-
-                float aSQM = a.meshColor.SquaredMagnitude();
-                float bSQM = b.meshColor.SquaredMagnitude();
-                if (aSQM != bSQM)
-                    return aSQM > bSQM;
 
                 // Opaque: sort Material/Mesh
                 if (!a.isTransparent && !b.isTransparent) {
                     if (a.materialID != b.materialID) return a.materialID < b.materialID;
                     if (a.meshID != b.meshID) return a.meshID < b.meshID;
+
+                    // Texture overrides first ENGINE_INVALID than the texture overrides.
+                    if (a.textureOverrideID != b.textureOverrideID)
+                        return a.textureOverrideID > b.textureOverrideID;
+
+                    float aSQM = a.meshColor.SquaredMagnitude();
+                    float bSQM = b.meshColor.SquaredMagnitude();
+                    if (aSQM != bSQM)
+                        return aSQM > bSQM;
                     return a.invertMesh < b.invertMesh;
                 }
 
@@ -305,6 +308,45 @@ namespace EngineCore {
                 return a.isTransparent < b.isTransparent; // Opaque first
             }
         );
+    }
+
+    void Renderer::PrintCommands(bool displayOption) {
+        Log::Print("");
+        Log::Info("Frame {} Render-Commands", Time::GetFrameCount());
+
+        int counter = 0;
+        for (auto& cmd : m_commands) {
+            if (displayOption) {
+                Log::Print(Log::levelInfo, "      - Cmd {}: Type: {}, RenLayID: {}, ZOr: {}, MatID: {}, MeshID: {}, FontID: {}, OTex2DID: {}, IsTrans: {}, InvMesh: {}, MeshCol: {}, FontSize: {}",
+                    counter,
+                    RenderCommandTypeToString(cmd.type),
+                    cmd.renderLayerID.value,
+                    cmd.zOrder,
+                    cmd.materialID.value,
+                    cmd.meshID.value,
+                    cmd.fontID.value,
+                    cmd.textureOverrideID.value,
+                    cmd.isTransparent,
+                    cmd.invertMesh,
+                    cmd.meshColor.ToString(),
+                    cmd.pixelSize);
+            }
+            else {
+                Log::Print(Log::levelInfo, "Command {}:", counter);
+                Log::Print(Log::levelInfo, "      - Type: {}", RenderCommandTypeToString(cmd.type));
+                Log::Print(Log::levelInfo, "      - Render-Layer ID: {}", cmd.renderLayerID.value);
+                Log::Print(Log::levelInfo, "      - Z-Order: {}", cmd.zOrder);
+                Log::Print(Log::levelInfo, "      - Material ID: {}", cmd.materialID.value);
+                Log::Print(Log::levelInfo, "      - Mesh ID: {}", cmd.meshID.value);
+                Log::Print(Log::levelInfo, "      - Font ID: {}", cmd.fontID.value);
+                Log::Print(Log::levelInfo, "      - Override texture2D ID: {}", cmd.textureOverrideID.value);
+                Log::Print(Log::levelInfo, "      - Is transparent: {}", cmd.isTransparent);
+                Log::Print(Log::levelInfo, "      - Invert mesh: {}", cmd.invertMesh);
+                Log::Print(Log::levelInfo, "      - Mesh color: {}", cmd.meshColor.ToString());
+                Log::Print(Log::levelInfo, "      - Font pixel size: {}", cmd.pixelSize);
+            }
+            counter++;
+        }
     }
 
 }
