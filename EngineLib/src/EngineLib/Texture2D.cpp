@@ -82,7 +82,8 @@ namespace EngineCore {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_filterMag);
 		// load and generate the texture
 		unsigned char* imageData = stbi_load(path, &m_width, &m_height, &m_nrChannels, 0);
-		
+
+
 		if (imageData) {
 			GLenum dataFormat, internalFormat;
 			if (m_nrChannels == 1) {

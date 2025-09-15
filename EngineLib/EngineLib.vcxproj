@@ -107,6 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\blending_transparent_window.png" />
+    <Image Include="assets\fish.png" />
+    <Image Include="assets\graTest.jpg" />
+    <Image Include="assets\graTest.png" />
     <Image Include="assets\images.jpg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

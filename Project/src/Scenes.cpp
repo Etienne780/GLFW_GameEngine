@@ -71,6 +71,20 @@ namespace Scenes {
 		go->GetTransform()->SetScale(50, 50, 50);
 		sr = go->AddComponent<Component::SpriteRenderer>();
 		sr->SetSprite(id);
+
+		id = rm->AddTexture2DFromFile("assets/graTest.png");
+		go = GameObject::Create("graPNG spirte");
+		go->GetTransform()->SetPosition(90, 0, 200);
+		go->GetTransform()->SetScale(50, 50, 50);
+		sr = go->AddComponent<Component::SpriteRenderer>();
+		sr->SetSprite(id);
+
+		id = rm->AddTexture2DFromFile("assets/graTest.jpg");
+		go = GameObject::Create("graJPG spirte");
+		go->GetTransform()->SetPosition(-30, 0, 200);
+		go->GetTransform()->SetScale(50, 50, 50);
+		sr = go->AddComponent<Component::SpriteRenderer>();
+		sr->SetSprite(id);
 	}
 
 }

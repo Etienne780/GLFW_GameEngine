@@ -132,10 +132,10 @@ namespace EngineCore {
         #pragma region MESH::Plain
         {
             Vertex vertices[] = {
-                { -0.5f, -0.5f,  0, 1.0f, 1.0f }, // 4
-                {  0.5f, -0.5f,  0, 0.0f, 1.0f }, // 5
-                {  0.5f,  0.5f,  0, 0.0f, 0.0f }, // 6
-                { -0.5f,  0.5f,  0, 1.0f, 0.0f }, // 7
+                { -0.5f, -0.5f,  0, 0.0f, 1.0f }, // bottom-left
+                {  0.5f, -0.5f,  0, 1.0f, 1.0f }, // bottom-right
+                {  0.5f,  0.5f,  0, 1.0f, 0.0f }, // top-right
+                { -0.5f,  0.5f,  0, 0.0f, 0.0f }, // top-left
             };
 
             unsigned int indices[] = {

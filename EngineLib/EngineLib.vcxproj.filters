@@ -262,5 +262,14 @@
     <Image Include="assets\images.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\fish.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\graTest.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\graTest.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

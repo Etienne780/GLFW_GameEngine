@@ -43,13 +43,13 @@ namespace EngineCore {
 #endif
 
 		PrintApplicationHeader();
-		stbi_set_flip_vertically_on_load(true);
+		// stbi_set_flip_vertically_on_load(true); //idk dosent work for me 
 		
 		RenderLayerManager::SetupDefaultRenderLayers();
 		m_app->Start();
 		RenderLayerManager::Lock();
 		return ENGINE_SUCCESS;
-}
+	}
 
 	void Engine::EngineLoop() {
 		while (m_isEngineRunning) {
