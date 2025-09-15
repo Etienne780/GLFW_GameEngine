@@ -42,8 +42,10 @@ namespace EngineCore {
 			// disalbes the camera if it is not the main camera
 			if (m_disableIfNotMainCamera) {
 				auto mainCamera = GameObject::GetMainCamera();
-				bool isCamControllerMainCam = (mainCamera->GetGameObject()->GetID() == GetGameObject()->GetID());
-				Disable(!isCamControllerMainCam);
+				if (mainCamera) {
+					bool isCamControllerMainCam = (mainCamera->GetGameObject()->GetID() == GetGameObject()->GetID());
+					Disable(!isCamControllerMainCam);
+				}
 			}
 		}
 

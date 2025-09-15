@@ -278,10 +278,9 @@ namespace EngineCore {
                     return a.zOrder < b.zOrder;
                 
                 // Texture overrides first ENGINE_INVALID than the texture overrides.
-                if (a.textureOverrideID != b.textureOverrideID)
-                    return a.textureOverrideID > b.textureOverrideID;
+                if (a.textureOverrideID != b.textureOverrideID) 
+                    return a.textureOverrideID < b.textureOverrideID;
 
-                // Texture overrides first ENGINE_INVALID than the texture overrides.
                 float aSQM = a.meshColor.SquaredMagnitude();
                 float bSQM = b.meshColor.SquaredMagnitude();
                 if (aSQM != bSQM)

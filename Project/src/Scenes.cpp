@@ -4,10 +4,8 @@
 #include "Scenes.h"
 
 using namespace EngineCore;
-static RenderLayerID top = RenderLayerID(ENGINE_INVALID_ID);
 
 void SetupGame() {
-	top = RenderLayerManager::AddLayer("TOp", 0);
 }
 
 namespace Scenes {
@@ -16,7 +14,7 @@ namespace Scenes {
 
 		auto cameraGO = GameObject::Create("MainCamera");
 		cameraGO->SetPersistent(true);
-		cameraGO->AddComponent<Component::Camera>()->AddCameraLayer(top);
+		cameraGO->AddComponent<Component::Camera>();
 		cameraGO->AddComponent<Component::FreeCameraController>();
 
 		auto fontGO = GameObject::Create("FontTest");
@@ -50,7 +48,6 @@ namespace Scenes {
 		sr->SetSprite(ASSETS::ENGINE::TEXTURE::Cursedmod3());
 
 		go = GameObject::Create(FormatUtils::formatString("Opaque box"));
-		go->SetRenderLayer(top);
 		go->GetTransform()->SetPosition(-30.0f, 0.0f, 90.0f);
 		go->GetTransform()->SetScale(20, 20, 20);
 		mr = go->AddComponent<Component::MeshRenderer>();
@@ -60,7 +57,6 @@ namespace Scenes {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				auto child = GameObject::Create(FormatUtils::formatString("box_{}_{}", i, j));
-				child->SetRenderLayer(top);
 				child->SetParent(containerG0);
 				child->GetTransform()->SetPosition(30.0f + static_cast<float>(j) * 20.0f - 20.0f, static_cast<float>(i) * 20.0f - 20.0f, 90.0f);
 				child->GetTransform()->SetScale(20, 20, 20);
@@ -69,6 +65,12 @@ namespace Scenes {
 			}
 		}
 
+		Texture2DID id = rm->AddTexture2DFromFile("assets/fish.png");
+		go = GameObject::Create("fish spirte");
+		go->GetTransform()->SetPosition(30, 0, 200);
+		go->GetTransform()->SetScale(50, 50, 50);
+		sr = go->AddComponent<Component::SpriteRenderer>();
+		sr->SetSprite(id);
 	}
 
 }

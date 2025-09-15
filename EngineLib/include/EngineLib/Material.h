@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <string>
 
+#include <CoreLib\Log.h>
 #include <CoreLib\Math\Vector2.h>
 #include <CoreLib\Math\Vector3.h>
 #include <CoreLib\Math\Vector4.h>
@@ -21,6 +22,9 @@ namespace EngineCore {
 		Material(ShaderID shaderID);
 
 		template<typename T>
+		T GetParam(const std::string& name);
+
+		template<typename T>
 		void SetParam(const std::string& name, const T& value);
 
 		/**
@@ -33,6 +37,15 @@ namespace EngineCore {
 		ShaderID GetShaderID() const;
 		bool GetIsTransparent() const;
 		
+		std::vector<bool> GetParamBool() const;
+		std::vector<int> GetParamInt() const;
+		std::vector<float> GetParamFloat() const;
+		std::vector<Vector2> GetParamVector2() const;
+		std::vector<Vector3> GetParamVector3() const;
+		std::vector<Vector4> GetParamVector4() const;
+		std::vector<Matrix> GetParamMatrix() const;
+		std::vector<Texture2DID> GetParamTexture2D() const;
+
 	private:
 		static unsigned int m_maxTextureUnits;
 		ShaderID m_shaderID = ShaderID(ENGINE_INVALID_ID);

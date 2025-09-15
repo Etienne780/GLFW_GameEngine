@@ -1,5 +1,4 @@
-#include "CoreLib\FormatUtils.h"
-#include "CoreLib\Log.h"
+#include <CoreLib\FormatUtils.h>
 
 #include "EngineLib\ResourceManager.h"
 #include "EngineLib\Shader.h"
@@ -176,6 +175,86 @@ namespace EngineCore {
 
 	bool Material::GetIsTransparent() const {
 		return m_isTransparent;
+	}
+
+	std::vector<bool> Material::GetParamBool() const {
+		std::vector<bool> values;
+		values.resize(m_boolParams.size());
+
+		for (auto& [name, value] : m_boolParams) {
+			values.push_back(value);
+		}
+		return values;
+	}
+
+	std::vector<int> Material::GetParamInt() const {
+		std::vector<int> values;
+		values.resize(m_intParams.size());
+
+		for (auto& [name, value] : m_intParams) {
+			values.push_back(value);
+		}
+		return values;
+	}
+
+	std::vector<float> Material::GetParamFloat() const {
+		std::vector<float> values;
+		values.resize(m_floatParams.size());
+
+		for (auto& [name, value] : m_floatParams) {
+			values.push_back(value);
+		}
+		return values;
+	}
+
+	std::vector<Vector2> Material::GetParamVector2() const {
+		std::vector<Vector2> values;
+		values.resize(m_vector2Params.size());
+
+		for (auto& [name, value] : m_vector2Params) {
+			values.push_back(value);
+		}
+		return values;
+	}
+
+	std::vector<Vector3> Material::GetParamVector3() const {
+		std::vector<Vector3> values;
+		values.resize(m_vector3Params.size());
+
+		for (auto& [name, value] : m_vector3Params) {
+			values.push_back(value);
+		}
+		return values;
+	}
+
+	std::vector<Vector4> Material::GetParamVector4() const {
+		std::vector<Vector4> values;
+		values.resize(m_vector4Params.size());
+
+		for (auto& [name, value] : m_vector4Params) {
+			values.push_back(value);
+		}
+		return values;
+	}
+
+	std::vector<Matrix> Material::GetParamMatrix() const {
+		std::vector<Matrix> values;
+		values.resize(m_matrixParams.size());
+
+		for (auto& [name, value] : m_matrixParams) {
+			values.push_back(value);
+		}
+		return values;
+	}
+
+	std::vector<Texture2DID> Material::GetParamTexture2D() const {
+		std::vector<Texture2DID> values;
+		values.resize(m_textureParams.size());
+
+		for (auto& [name, value] : m_textureParams) {
+			values.push_back(value);
+		}
+		return values;
 	}
 
 }
