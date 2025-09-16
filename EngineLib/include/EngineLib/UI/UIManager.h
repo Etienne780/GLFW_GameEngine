@@ -26,7 +26,7 @@ namespace EngineCore {
 		template<typename T, typename... Args>
 		T* Add(Args&&... args);
 
-		void Render();
+		void SendDrawCommands();
 		void DeleteAll();
 
 	private:

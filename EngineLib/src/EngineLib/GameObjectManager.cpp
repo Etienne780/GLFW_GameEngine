@@ -33,13 +33,12 @@ namespace EngineCore {
 		}
 	}
 
-	void GameObjectManager::DrawGameObjects() {
-		static Renderer& renderer = Renderer::GetInstance();
-		renderer.ReserveCommands(m_gameObjects.size());
+	void GameObjectManager::SendDrawCommands() {
+		static Renderer* renderer = Renderer::GetInstance();
+		renderer->ReserveCommands(m_gameObjects.size());
 		for (auto& go : m_gameObjects) {
 			go->SubmitDrawCall();
 		}
-		renderer.DrawAll();
 	}
 
 	void GameObjectManager::AddGameObject(std::shared_ptr<GameObject> go) {

@@ -26,7 +26,7 @@ namespace EngineCore {
 			Log::Error("UIManager: End called without Begin!");
 	}
 
-	void UIManager::Render() {
+	void UIManager::SendDrawCommands() {
 		
 	}
 

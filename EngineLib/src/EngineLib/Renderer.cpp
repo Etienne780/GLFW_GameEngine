@@ -19,9 +19,9 @@
 
 namespace EngineCore {
 
-    Renderer& Renderer::GetInstance() {
+    Renderer* Renderer::GetInstance() {
         static Renderer instance;
-        return instance;
+        return &instance;
     }
 
     void Renderer::Submit(const RenderCommand& cmd) {

@@ -7,17 +7,17 @@ class Matrix4x4;
 
 namespace EngineCore {
 
-    class GameObjectManager;
+    class Engine;
     namespace Component {
         class Camera;
     }
 
     class Renderer {
-    friend class GameObjectManager;
+    friend class Engine;
     public:
         Renderer() = default;
 
-        static Renderer& GetInstance();
+        static Renderer* GetInstance();
         void Submit(const RenderCommand& cmd);
         void ReserveCommands(size_t count);
 

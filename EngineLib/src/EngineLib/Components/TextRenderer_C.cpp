@@ -10,7 +10,6 @@
 
 namespace EngineCore::Component {
 
-	Renderer& TextRenderer::m_renderer = Renderer::GetInstance();
 	const std::string compName = "TextRenderer";
 
 	TextRenderer::TextRenderer(GameObjectID gameObjectID) 
@@ -55,7 +54,7 @@ namespace EngineCore::Component {
 		m_cmd.meshColor = m_textColor;
 		m_cmd.isTransparent = true;
 
-		m_renderer.Submit(m_cmd);
+		m_renderer->Submit(m_cmd);
 	}
 
 	TextRenderer* TextRenderer::SetFontID(FontID id) {

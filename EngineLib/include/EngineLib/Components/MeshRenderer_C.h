@@ -2,6 +2,7 @@
 #include <CoreLib/Math/Vector4.h>
 
 #include "../ComponentBase.h"
+#include "../Renderer.h"
 #include "EngineLib/EngineTypes.h"
 
 namespace EngineCore {
@@ -37,7 +38,7 @@ namespace EngineCore {
 			MeshRenderer* SetInvertMesh(bool value);
 
 		private:
-			static Renderer& m_renderer;
+			static inline Renderer* m_renderer = Renderer::GetInstance();
 			std::shared_ptr<GameObject> m_gameObject = nullptr;
 			RenderCommand m_cmd;
 			MeshID m_meshID = MeshID(ENGINE_INVALID_ID);

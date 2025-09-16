@@ -1,8 +1,9 @@
 #ifndef NDEBUG
-#include "EngineLib\Debugger.h"
+#include "EngineLib/Debugger.h"
 #endif
-#include "EngineLib\AssetRepository.h"
-#include "EngineLib\Engine.h"
+#include "EngineLib/Renderer.h"
+#include "EngineLib/AssetRepository.h"
+#include "EngineLib/Engine.h"
 
 namespace EngineCore {
 
@@ -33,6 +34,8 @@ namespace EngineCore {
 		Input::Init(m_window);
 		GameObjectManager::Init();
 		m_gameObjectManager = GameObjectManager::GetInstance();
+		m_uiManager = UIManager::GetInstance();
+
 		Material::m_maxTextureUnits = m_maxTextureUnits;
 
 		LoadBaseAsset();
@@ -97,7 +100,10 @@ namespace EngineCore {
 		m_gameObjectManager->UpdateGameObjects();
 		m_app->Update();
 		if (m_gameObjectManager->m_mainCamera.lock()) {
-			m_gameObjectManager->DrawGameObjects();
+			static Renderer* renderer = Renderer::GetInstance();
+			m_gameObjectManager->SendDrawCommands();
+			m_uiManager->SendDrawCommands();
+			renderer->DrawAll();
 		}
 		else {
 			Log::Warn("Engine: No camera available");

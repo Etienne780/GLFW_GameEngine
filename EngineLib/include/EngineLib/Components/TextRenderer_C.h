@@ -3,6 +3,7 @@
 #include <CoreLib/Math/Vector4.h>
 
 #include "../ComponentBase.h"
+#include "../Renderer.h"
 #include "../EngineTypes.h"
 
 namespace EngineCore {
@@ -39,7 +40,7 @@ namespace EngineCore {
 			bool GetInvertMesh() const;
 
 		private:
-			static Renderer& m_renderer;
+			static inline Renderer* m_renderer = Renderer::GetInstance();
 			std::shared_ptr<GameObject> m_gameObject = nullptr;
 			RenderCommand m_cmd;
 

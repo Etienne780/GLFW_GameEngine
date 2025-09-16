@@ -42,7 +42,7 @@ namespace EngineCore {
 		/**
 		* @brief Draws a Gameobject if it has a component that can be drawn
 		*/
-		void DrawGameObjects();
+		void SendDrawCommands();
 
 		void AddGameObject(std::shared_ptr<GameObject> go);
 		bool DeleteGameObject(std::shared_ptr<GameObject> gameObjectPtr);

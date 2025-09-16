@@ -60,6 +60,7 @@ namespace EngineCore {
 #endif 
 		GLFWwindow* m_window = nullptr;
 		GameObjectManager* m_gameObjectManager = nullptr;
+		UIManager* m_uiManager = nullptr;
 
 		void Update(double currentTimeSec);
 		void LateUpdate();

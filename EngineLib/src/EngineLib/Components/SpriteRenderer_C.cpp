@@ -1,6 +1,5 @@
 #include <CoreLib/Log.h>
 
-#include "EngineLib/Renderer.h"
 #include "EngineLib/GameObject.h"
 #include "EngineLib/Mesh.h"
 #include "EngineLib/AssetRepository.h"
@@ -11,7 +10,6 @@ namespace EngineCore {
 
 	namespace Component {
 
-		Renderer& SpriteRenderer::m_renderer = Renderer::GetInstance();
 		const std::string compName = "SpriteRenderer";
 
 		SpriteRenderer::SpriteRenderer(GameObjectID gameObjectID)
@@ -120,7 +118,7 @@ namespace EngineCore {
 			m_cmd.meshColor = m_meshColor;
 			m_cmd.isTransparent = (m_isTransparent || m_meshColor.w < 1.0);
 
-			m_renderer.Submit(m_cmd);
+			m_renderer->Submit(m_cmd);
 		}
 
 	}
