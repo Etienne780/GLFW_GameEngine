@@ -4,30 +4,39 @@
 
 namespace EngineCore {
 
-	static UIManager* instance;
-
 	void UIManager::Init() {
-		instance = new UIManager();
+		Begin<UI::Element>(); {
+
+		}
+		End();
 	}
 
 	void UIManager::Shutdown() {
-		delete instance;
-		instance = nullptr;
-	}
-
-	UIManager* UIManager::GetInstance() {
-		return instance;
 	}
 
 	void UIManager::End() {
-		if (!m_elementStack.empty())
+		if (!m_elementStack.empty()) {
+			auto* ended = m_elementStack.top();
 			m_elementStack.pop();
-		else
+			Log::Debug("UIManager: Ended element {}", ended->GetID().value);
+		}
+		else {
 			Log::Error("UIManager: End called without Begin!");
+		}
+	}
+
+	void UIManager::SendChildDrawCommands(std::unique_ptr<UI::Element>& element) {
+		for (auto& child : element->GetChildren()) {
+			child->SendDrawCommand();
+			SendChildDrawCommands(child);
+		}
 	}
 
 	void UIManager::SendDrawCommands() {
-		
+		for (auto& element : m_roots) {
+			element->SendDrawCommand();
+			SendChildDrawCommands(element);
+		}
 	}
 
 	void UIManager::DeleteAll() {
@@ -38,8 +47,8 @@ namespace EngineCore {
 		m_roots.clear();
 	}
 
-	void UIManager::FreeIDsInternal(const UIElement* element) {
-		const auto& childs = element->GetChildren();
+	void UIManager::FreeIDsInternal(UI::Element* element) {
+		auto& childs = element->GetChildren();
 		for (const auto& child : childs) {
 			FreeIDsInternal(child.get());
 		}

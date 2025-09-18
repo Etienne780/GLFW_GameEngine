@@ -3,8 +3,9 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <CoreLib/Log.h>
 
-#include "UIElement.h"
+#include "Element.h"
 #include "../IDManager.h"
 
 namespace EngineCore {
@@ -17,27 +18,26 @@ namespace EngineCore {
 		UIManager(const UIManager&) = delete;
 		UIManager& operator=(const UIManager&) = delete;
 
-		static UIManager* GetInstance();
+		template<typename T, typename... Args>
+		static T* Begin(Args&&... args);
+		static void End();
 
 		template<typename T, typename... Args>
-		T* Begin(Args&&... args);
-		void End();
+		static void Add(Args&&... args);
 
-		template<typename T, typename... Args>
-		T* Add(Args&&... args);
-
-		void SendDrawCommands();
-		void DeleteAll();
+		static void SendDrawCommands();
+		static void DeleteAll();
 
 	private:
 		UIManager() = default;
 
-		IDManager m_idManager;
+		static inline IDManager m_idManager;
 
-		std::vector<std::unique_ptr<UIElement>> m_roots;
-		std::stack<UIElement*> m_elementStack;
+		static inline std::vector<std::unique_ptr<UI::Element>> m_roots;
+		static inline std::stack<UI::Element*> m_elementStack;
 
-		void FreeIDsInternal(const UIElement* element);
+		static void SendChildDrawCommands(std::unique_ptr<UI::Element>& element);
+		static void FreeIDsInternal(UI::Element* element);
 	};
 
 }

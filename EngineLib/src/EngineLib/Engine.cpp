@@ -34,7 +34,6 @@ namespace EngineCore {
 		Input::Init(m_window);
 		GameObjectManager::Init();
 		m_gameObjectManager = GameObjectManager::GetInstance();
-		m_uiManager = UIManager::GetInstance();
 
 		Material::m_maxTextureUnits = m_maxTextureUnits;
 
@@ -102,7 +101,7 @@ namespace EngineCore {
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			static Renderer* renderer = Renderer::GetInstance();
 			m_gameObjectManager->SendDrawCommands();
-			m_uiManager->SendDrawCommands();
+			UIManager::SendDrawCommands();
 			renderer->DrawAll();
 		}
 		else {

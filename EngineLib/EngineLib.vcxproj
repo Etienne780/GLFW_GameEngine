@@ -51,9 +51,11 @@
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
     <ClInclude Include="include\EngineLib\UI.h" />
-    <ClInclude Include="include\EngineLib\UI\UIElement.h" />
+    <ClInclude Include="include\EngineLib\UI\Elements\Panel.h" />
+    <ClInclude Include="include\EngineLib\UI\Element.h" />
     <ClInclude Include="include\EngineLib\UI\UIManager.h" />
-    <ClInclude Include="include\EngineLib\UI\UIStyle.h" />
+    <ClInclude Include="include\EngineLib\UI\Style.h" />
+    <ClInclude Include="include\EngineLib\UI\StylingAttribute.h" />
     <ClInclude Include="include\EngineLib\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
@@ -91,9 +93,9 @@
     <ClCompile Include="src\EngineLib\Shader.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />
     <ClCompile Include="src\EngineLib\Time.cpp" />
-    <ClCompile Include="src\EngineLib\UI\UIElement.cpp" />
+    <ClCompile Include="src\EngineLib\UI\Element.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
-    <ClCompile Include="src\EngineLib\UI\UIStyle.cpp" />
+    <ClCompile Include="src\EngineLib\UI\Style.cpp" />
     <ClCompile Include="src\EngineLib\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
