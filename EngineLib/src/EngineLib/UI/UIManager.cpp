@@ -90,7 +90,7 @@ namespace EngineCore {
                     std::visit([&](auto&& v) {
                         using T = std::decay_t<decltype(v)>;
                         if constexpr (std::is_same_v<T, float>) {
-                            valStr = std::to_string(v);
+                            valStr = FormatUtils::trimTrailingZeros(v);
                         }
                         else if constexpr (std::is_same_v<T, std::string>) {
                             valStr = "\"" + v + "\"";
