@@ -5,7 +5,40 @@
 
 using namespace EngineCore;
 
+void SetupUI() {
+	using namespace EngineCore::UI;
+	using UI = UIManager;
+	
+	auto defaultStyle = Style::Create();
+	defaultStyle->Set(Attribute::borderRadius, StyleValue(10, Unit::Px));
+	defaultStyle->Set(Attribute::width, StyleValue(500, Unit::Px));
+	defaultStyle->Set(Attribute::height, StyleValue(300, Unit::Px));
+
+	auto otherStyle = Style::Create();
+	otherStyle->Set(Attribute::color, StyleValue("#ffffff"));
+	otherStyle->Set(Attribute::width, StyleValue(10, Unit::Px));
+	otherStyle->Set(Attribute::height, StyleValue(10, Unit::Px));
+	otherStyle->Set(Attribute::layoutHor, StyleValue("Center"));
+
+	UI::SetDebug(true);
+	UI::Begin<Panel>(); {
+		
+		UI::Begin<Panel>(defaultStyle); {
+			UI::Add<Panel>(otherStyle);
+			UI::Add<Panel>(otherStyle);
+			UI::Add<Panel>(otherStyle);
+			UI::Add<Panel>(otherStyle);
+		}
+		UI::End();
+
+	}
+	UI::End();
+
+	Log::Print(UI::GetUIHierarchyString());
+}
+
 void SetupGame() {
+	SetupUI();
 }
 
 namespace Scenes {

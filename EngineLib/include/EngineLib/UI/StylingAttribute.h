@@ -1,6 +1,6 @@
 #pragma once
 
-namespace EngineCore::UI::StylingAttribute {
+namespace EngineCore::UI::Attribute {
 	/*
 	* @brief Layouts the elements inside of a container
 	* @param valueHor:, valueVer: start, center, end, stretch
@@ -62,6 +62,16 @@ namespace EngineCore::UI::StylingAttribute {
 	*/
 	constexpr const char* rotation = "rotation";
 	/*
+	* @brief width of this element
+	* @param number
+	*/
+	constexpr const char* width = "width";
+	/*
+	* @brief height of this element
+	* @param number
+	*/
+	constexpr const char* height = "height";
+	/*
 	* @brief margin of this element
 	* @param value all
 	* @param valueTop:, valueRight:, valueBottom:, valueLeft: number
@@ -89,7 +99,7 @@ namespace EngineCore::UI::StylingAttribute {
 	constexpr const char* overflow = "overflow";
 	/*
 	* @brief Sets the color of this element
-	* @param hex
+	* @param color (#ff00ff, #00ff00ff, Vector3, Vector4)
 	*/
 	constexpr const char* color = "color";
 	/*
