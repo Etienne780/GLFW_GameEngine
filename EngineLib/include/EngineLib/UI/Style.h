@@ -1,6 +1,8 @@
 #pragma once
 #include <any>
 #include <unordered_map>
+#include <vector>
+#include <memory>
 #include <string>
 
 #include "StylingAttribute.h"
@@ -12,13 +14,18 @@ namespace EngineCore::UI {
 	public:
 		Style() = default;
 
-		void Extend(const Style& style);
+		void Extend(std::shared_ptr<Style> style);
 		void Set(const char* name, std::any value);
 
 		template<typename T>
 		T Get(const char* name) const {
-			auto it = m_attributes.find(name);
-			if (it != m_attributes.end()) {
+			if (m_newStyleAdded) {
+				m_newStyleAdded = false;
+				GenerateCachedStyle();
+			}
+			const auto& att = m_cachedStyle->GetAll();
+			auto it = att.find(name);
+			if (it != att.end()) {
 				try {
 					return std::any_cast<T>(it->second);
 				}
@@ -29,11 +36,16 @@ namespace EngineCore::UI {
 
 			return ENGINE_STYLING_NOT_FOUND;
 		}
-
-		const std::unordered_map<std::string, std::any>& GetAll() const;
+		
+		const std::unordered_map<const char*, std::any>& GetAll() const;
 	
 	private:
-		std::unordered_map<std::string, std::any> m_attributes;
+		std::unordered_map<const char*, std::any> m_attributes;
+		std::vector<std::shared_ptr<Style>> m_styles;
+		mutable bool m_newStyleAdded = true;
+		mutable std::unique_ptr<Style> m_cachedStyle;
+
+		void GenerateCachedStyle();
 	};
 
 }
@@ -48,3 +60,4 @@ styling attribute:
 - radius = 2
 - custome styling attribute
 */
+ 
