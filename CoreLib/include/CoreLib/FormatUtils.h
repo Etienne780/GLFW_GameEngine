@@ -10,6 +10,22 @@
 
 class FormatUtils {
 public:
+    static std::string trimTrailingZeros(float value) {
+        return trimTrailingZeros(static_cast<double>(value));
+    }
+
+    static std::string trimTrailingZeros(double value) {
+        std::string str = toString(value);
+
+        str.erase(str.find_last_not_of('0') + 1, std::string::npos);
+
+        if (!str.empty() && str.back() == '.') {
+            str.pop_back();
+        }
+
+        return str;
+    }
+
     static std::string toUpperCase(std::string string) {
         std::transform(string.begin(), string.end(), string.begin(),
             [](unsigned char c) { return std::toupper(c); });
