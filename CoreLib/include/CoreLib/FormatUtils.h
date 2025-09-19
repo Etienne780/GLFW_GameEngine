@@ -10,12 +10,11 @@
 
 class FormatUtils {
 public:
-    static std::string trimTrailingZeros(float value) {
-        return trimTrailingZeros(static_cast<double>(value));
-    }
 
-    static std::string trimTrailingZeros(double value) {
-        std::string str = toString(value);
+    template<typename T>
+    static std::string trimTrailingZeros(T value) {
+        static_assert(std::is_arithmetic<T>::value, "trimTrailingZeros requires arithmetic types");
+        std::string str = std::to_string(value);
 
         str.erase(str.find_last_not_of('0') + 1, std::string::npos);
 
@@ -64,7 +63,7 @@ public:
             return (value) ? "true" : "false";
         }
         else if constexpr (std::is_arithmetic_v<T>) {
-            return std::to_string(value);
+            return trimTrailingZeros(value);
         }
         else if constexpr (std::is_same_v<T, const char*>) {
             return std::string(value);
