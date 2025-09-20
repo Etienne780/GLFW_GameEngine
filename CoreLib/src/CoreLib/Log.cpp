@@ -119,7 +119,7 @@ void Log::SaveLogs(const std::string& path) {
         seperater = "";
     }
 
-    std::string fullPath = basePath + seperater + TimeUtils::GetCurrentDateString() + "_" + TimeUtils::GetCurrentTimeString() + ".log";
+    std::string fullPath = basePath + seperater + TimeUtils::GetCurrentDateString() + seperater + TimeUtils::GetCurrentTimeString() + ".log";
 
     if (!m_asyncLogger) {
         m_asyncLogger = std::make_unique<AsyncLogger>(fullPath);
