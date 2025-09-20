@@ -15,6 +15,8 @@ public:
     static std::string trimTrailingZeros(T value) {
         static_assert(std::is_arithmetic<T>::value, "trimTrailingZeros requires arithmetic types");
         std::string str = std::to_string(value);
+        if (str.find('.') == std::string::npos)
+            return str;
 
         str.erase(str.find_last_not_of('0') + 1, std::string::npos);
 
