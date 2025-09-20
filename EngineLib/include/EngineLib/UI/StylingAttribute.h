@@ -112,4 +112,5 @@ namespace EngineCore::UI::Attribute {
 	* @param number in sekunds
 	*/
 	constexpr const char* duration = "duration";
+
 }

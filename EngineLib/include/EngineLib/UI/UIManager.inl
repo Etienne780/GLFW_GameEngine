@@ -6,7 +6,7 @@ namespace EngineCore {
 
     template<typename T, typename... Args>
     static T* UIManager::Begin(Args&&... args) {
-        static_assert(std::is_base_of<UI::Element, T>::value, "T must derive from EngineCore::UI::Element");
+        static_assert(std::is_base_of<UI::Panel, T>::value, "T must derive from EngineCore::UI::Element");
 
         UIElementID id = UIElementID(m_idManager.GetNewUniqueIdentifier());
         if (id.value == ENGINE_INVALID_ID) {
@@ -32,7 +32,7 @@ namespace EngineCore {
 
     template<typename T, typename... Args>
     void UIManager::Add(Args&&... args) {
-        static_assert(std::is_base_of<UI::Element, T>::value, "T must derive from EngineCore::UI::Element");
+        static_assert(std::is_base_of<UI::Panel, T>::value, "T must derive from EngineCore::UI::Element");
         if (m_elementStack.empty()) {
             Log::Error("UIManager: Add called without Begin element!");
             return;

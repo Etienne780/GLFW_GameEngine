@@ -98,6 +98,7 @@ namespace EngineCore {
 
 		m_gameObjectManager->UpdateGameObjects();
 		m_app->Update();
+		UIManager::Update();
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			static Renderer* renderer = Renderer::GetInstance();
 			m_gameObjectManager->SendDrawCommands();

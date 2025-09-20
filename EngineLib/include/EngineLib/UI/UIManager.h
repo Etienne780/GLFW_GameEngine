@@ -37,14 +37,17 @@ namespace EngineCore {
 		static inline bool m_isDebug = false;
 		static inline IDManager m_idManager;
 
-		static inline std::vector<std::unique_ptr<UI::Element>> m_roots;
-		static inline std::stack<UI::Element*> m_elementStack;
+		static inline std::vector<std::unique_ptr<UI::Panel>> m_roots;
+		static inline std::stack<UI::Panel*> m_elementStack;
 
-		void FreeIDsInternal(const UI::Element* element);
+		// Updates the scale and states of the UI::Element
+		static void Update();
+		static void UpdateChild(std::unique_ptr<UI::Panel>& element);
+		// Sends the Draw Commands of the UI::Elements
 		static void SendDrawCommands();
-		static void SendChildDrawCommands(std::unique_ptr<UI::Element>& element);
-		static void FreeIDsInternal(UI::Element* element);
-		static void BuildHierarchyString(const UI::Element* elementPtr, std::string& outStr, int level);
+		static void SendChildDrawCommands(std::unique_ptr<UI::Panel>& element);
+		static void FreeIDsInternal(UI::Panel* element);
+		static void BuildHierarchyString(const UI::Panel* elementPtr, std::string& outStr, int level);
 	};
 
 }

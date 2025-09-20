@@ -105,7 +105,7 @@
     <ClInclude Include="include\EngineLib\UI\UIManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EngineLib\UI\Elements\Element.h">
+    <ClInclude Include="include\EngineLib\UI\Elements\Panel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EngineLib\IDManager.h">
@@ -124,9 +124,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EngineLib\UI\StylingAttribute.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EngineLib\UI\Elements\Panel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EngineLib\UI\UIElements.h">
@@ -221,7 +218,7 @@
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EngineLib\UI\Elements\Element.cpp">
+    <ClCompile Include="src\EngineLib\UI\Elements\Panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EngineLib\IDManager.cpp">
@@ -246,9 +243,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EngineLib\Components\SpriteRenderer_C.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EngineLib\UI\Elements\Panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

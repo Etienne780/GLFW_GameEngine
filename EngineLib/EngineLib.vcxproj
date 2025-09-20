@@ -52,7 +52,6 @@
     <ClInclude Include="include\EngineLib\Time.h" />
     <ClInclude Include="include\EngineLib\UI.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Panel.h" />
-    <ClInclude Include="include\EngineLib\UI\Elements\Element.h" />
     <ClInclude Include="include\EngineLib\UI\UIManager.h" />
     <ClInclude Include="include\EngineLib\UI\Style.h" />
     <ClInclude Include="include\EngineLib\UI\StylingAttribute.h" />
@@ -94,7 +93,6 @@
     <ClCompile Include="src\EngineLib\Shader.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />
     <ClCompile Include="src\EngineLib\Time.cpp" />
-    <ClCompile Include="src\EngineLib\UI\Elements\Element.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Panel.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
     <ClCompile Include="src\EngineLib\UI\Style.cpp" />
