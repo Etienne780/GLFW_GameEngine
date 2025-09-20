@@ -99,7 +99,7 @@ namespace EngineCore::UI::Attribute {
 	constexpr const char* overflow = "overflow";
 	/*
 	* @brief Sets the color of this element
-	* @param color (#ff00ff, #00ff00ff, Vector3, Vector4)
+	* @param color (#ff00ff, #00ff00ff)
 	*/
 	constexpr const char* color = "color";
 	/*

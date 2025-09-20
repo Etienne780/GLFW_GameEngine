@@ -97,7 +97,7 @@ namespace EngineCore {
         std::shared_ptr<UI::Style> style = elementPtr->GetStyle();
         if (style) {
             try {
-                const auto& attributes = style->GetAll();
+                const auto& attributes = style->GetAllState(UI::State::Normal);
                 for (const auto& [name, styleVal] : attributes) {
                     std::string valStr;
 

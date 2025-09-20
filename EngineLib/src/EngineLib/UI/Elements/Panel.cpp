@@ -38,4 +38,8 @@ namespace EngineCore::UI {
 		return m_children;
 	}
 
+	void Panel::SetState(State state) {
+		m_state = state;
+	}
+
 }

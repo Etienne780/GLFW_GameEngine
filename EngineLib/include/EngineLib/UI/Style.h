@@ -5,6 +5,7 @@
 #include <string>
 #include <optional>
 #include <variant>
+#include <CoreLib/Log.h>
 #include <CoreLib/Math/Vector3.h>
 #include <CoreLib/Math/Vector4.h>
 
@@ -12,6 +13,14 @@
 #include "../EngineTypes.h"
 
 namespace EngineCore::UI {
+
+    enum class State {
+        Normal,
+        Hovered,
+        Pressed,
+        Focused,
+        Disabled
+    };
     
     enum class Unit {
         Px,
@@ -28,6 +37,17 @@ namespace EngineCore::UI {
         StyleValue(const std::string& s) : value(s) {}
         StyleValue(const Vector3& v) : value(v) {}
         StyleValue(const Vector4& v) : value(v) {}
+
+        template<typename T>
+        std::optional<T> GetValue() const {
+            if (std::holds_alternative<T>(value)) {
+                return std::get<T>(value);
+            }
+            else {
+                Log::Error("StyleValue: Could not get value wrong type T!");
+                return std::nullopt;
+            }
+        }
     };
 
 	class Style {
@@ -39,27 +59,16 @@ namespace EngineCore::UI {
 
 		void Extend(std::shared_ptr<Style> style);
 		void Set(const char* name, const StyleValue& value);
+        void Set(State state, const char* name, const StyleValue& value);
 
-        template<typename T>
-        std::optional<T> Get(const std::string& name) const {
-            if (m_newStyleAdded) {
-                m_newStyleAdded = false;
-                GenerateCachedStyle();
-            }
-            const auto& att = m_cachedStyle->m_attributes;
-            auto it = att.find(name);
-            if (it != att.end()) {
-                if (std::holds_alternative<T>(it->second.value)) {
-                    return std::get<T>(it->second.value);
-                }
-            }
-            return std::nullopt;
-        }
+        StyleValue Get(const char* name) const;
+        StyleValue Get(State state, const char* name) const;
 		
-		const std::unordered_map<std::string, StyleValue>& GetAll() const;
+		const std::unordered_map<State, std::unordered_map<std::string, StyleValue>>& GetAll() const;
+        const std::unordered_map<std::string, StyleValue>& GetAllState(State state) const;
 	
 	private:
-        std::unordered_map<std::string, StyleValue> m_attributes;
+        std::unordered_map<State, std::unordered_map<std::string, StyleValue>> m_attributes;
 		std::vector<std::shared_ptr<Style>> m_styles;
 		mutable bool m_newStyleAdded = true;
 		mutable std::unique_ptr<Style> m_cachedStyle;
