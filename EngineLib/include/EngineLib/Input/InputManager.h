@@ -56,6 +56,12 @@ namespace EngineCore {
 		*/
 		static bool GetScrollDir(int& dir);
 
+		// True only on the frame when the action is first pressed
+		static bool ActionJustPressed(const InputAction& action);
+
+		// True only on the frame when the action is first released
+		static bool ActionJustReleased(const InputAction& action);
+
 		// True only on the frame when the key is first pressed
 		static bool KeyJustPressed(KeyCode key);
 
@@ -67,6 +73,9 @@ namespace EngineCore {
 
 		// True only on the frame when the mouse button is released
 		static bool MouseJustReleased(MouseButton mb);
+
+		// True while the action is held down
+		static bool ActionPressed(const InputAction& action);
 
 		// True while the key is held down
 		static bool KeyPressed(KeyCode key);

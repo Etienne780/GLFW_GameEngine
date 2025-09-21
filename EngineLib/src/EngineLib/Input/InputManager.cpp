@@ -89,6 +89,20 @@ namespace EngineCore {
 		return (dir != 0);
 	}
 
+	bool Input::ActionJustPressed(const InputAction& action) {
+		return std::any_of(action.GetKeyActions().begin(), action.GetKeyActions().end(),
+				[](KeyCode key) { return KeyJustPressed(key); }) ||
+			std::any_of(action.GetMouseActions().begin(), action.GetMouseActions().end(),
+				[](MouseButton mb) { return MouseJustPressed(mb); });
+	}
+
+	bool Input::ActionJustReleased(const InputAction& action) {
+		return std::any_of(action.GetKeyActions().begin(), action.GetKeyActions().end(),
+				[](KeyCode key) { return KeyJustReleased(key); }) ||
+			std::any_of(action.GetMouseActions().begin(), action.GetMouseActions().end(),
+				[](MouseButton mb) { return MouseJustReleased(mb); });
+	}
+
 	bool Input::KeyJustPressed(KeyCode key) {
 		auto it = m_keyStates.find(KeyCodeToInt(key));
 		return it != m_keyStates.end() && it->second.justPressed();
@@ -107,6 +121,13 @@ namespace EngineCore {
 	bool Input::MouseJustReleased(MouseButton mb) {
 		auto it = m_mouseButtonStates.find(MouseButtonToInt(mb));
 		return it != m_mouseButtonStates.end() && it->second.justReleased();
+	}
+
+	bool Input::ActionPressed(const InputAction& action) {
+		return std::any_of(action.GetKeyActions().begin(), action.GetKeyActions().end(),
+				[](KeyCode key) { return KeyPressed(key); }) ||
+			std::any_of(action.GetMouseActions().begin(), action.GetMouseActions().end(),
+				[](MouseButton mb) { return MousePressed(mb); });
 	}
 
 	bool Input::KeyPressed(KeyCode key) {

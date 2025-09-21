@@ -3,32 +3,12 @@
 namespace EngineCore {
 	
 	InputAction* InputAction::AddKeyAction(KeyCode key) {
-		bool found = false;
-		for (auto& k : m_keyActions) {
-			if (k == key) {
-				found = true;
-				break;
-			}
-		}
-
-		if (!found)
-			m_keyActions.push_back(key);
-
+		AddUnique<KeyCode>(m_keyActions, key);
 		return this;
 	}
-	
+
 	InputAction* InputAction::AddMouseAction(MouseButton mouseButton) {
-		bool found = false;
-		for (auto& mb : m_mouseActions) {
-			if (mb == mouseButton) {
-				found = true;
-				break;
-			}
-		}
-
-		if (!found)
-			m_mouseActions.push_back(mouseButton);
-
+		AddUnique<MouseButton>(m_mouseActions, mouseButton);
 		return this;
 	}
 
@@ -42,6 +22,14 @@ namespace EngineCore {
 		for (auto& mb : mouseButtons)
 			AddMouseAction(mb);
 		return this;
+	}
+
+	const std::vector<KeyCode>& InputAction::GetKeyActions() const {
+		return m_keyActions;
+	}
+
+	const std::vector<MouseButton>& InputAction::GetMouseActions() const {
+		return m_mouseActions;
 	}
 
 	InputAction* InputAction::SetKeyAction(const std::vector<KeyCode>& keys) {
