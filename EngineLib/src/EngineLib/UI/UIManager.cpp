@@ -2,6 +2,7 @@
 #include <CoreLib/FormatUtils.h>
 #include <CoreLib/Log.h>
 
+#include "EngineLib/UI/UITypes.h"
 #include "EngineLib/UI/UIManager.h"
 
 namespace EngineCore {
@@ -44,11 +45,31 @@ namespace EngineCore {
 		return hierarchyString;
 	}
 
+    bool UIManager::GetUIScaling() {
+        return m_scaleUIScreenSize;
+    }
+
+    Vector2 UIManager::GetReferenceScreenSize() {
+        return m_refScreenSize;
+    }
+
 	void UIManager::SetDebug(bool value) {
 		m_isDebug = value;
 	}
 
-    void UIManager::Update() {
+    void UIManager::SetUIScaling(bool value) {
+        m_scaleUIScreenSize = value;
+    }
+
+    void UIManager::SetReferenceScreenSize(float x, float y) {
+        m_refScreenSize.Set(x, y);
+    }
+
+    void UIManager::SetReferenceScreenSize(const Vector2& size) {
+        m_refScreenSize.Set(size.x, size.y);
+    }
+
+    void UIManager::Update(int width, int height) {
         for (auto& element : m_roots) {
             element->Update();
             UpdateChild(element);
@@ -61,6 +82,32 @@ namespace EngineCore {
             UpdateChild(child);
         }
     }
+
+    void UIManager::UpdatePanelState(UI::ElementBase* element, const Vector2& mousePos, bool mouseDown, bool mouseReleased) {
+        using namespace UI;
+        if (element->IsMouseOver(mousePos)) {
+            if (mouseDown) {
+                element->SetState(State::Pressed);
+            }
+            else if (mouseReleased) {
+                if (element->GetState() == State::Pressed && element->onClick) {
+                    element->onClick();
+                }
+                element->SetState(State::Hovered);
+            }
+            else {
+                element->SetState(State::Hovered);
+            }
+        }
+        else {
+            element->SetState(State::Normal);
+        }
+
+        for (auto& child : element->GetChildren()) {
+            UpdatePanelState(child.get(), mousePos, mouseDown, mouseReleased);
+        }
+    }
+
 
 	void UIManager::SendDrawCommands() {
 		for (auto& element : m_roots) {

@@ -1,13 +1,9 @@
 #include "EngineLib/UI/Elements/Panel.h"
 
 namespace EngineCore::UI {
-	
-	void Panel::Update() {
-		
-	}
 
-	void Panel::SendDrawCommand() {
-		
-	}
+    Panel::Panel(UIElementID id, std::shared_ptr<Style> style) 
+        : Element<Panel>("Panel", id, style) {
+    }
 
 }

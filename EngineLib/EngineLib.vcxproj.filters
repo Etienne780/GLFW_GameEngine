@@ -251,6 +251,9 @@
     <ClCompile Include="src\EngineLib\UI\Elements\Panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\EngineLib\UI\UITypes.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl">

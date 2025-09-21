@@ -1,3 +1,4 @@
+#include "EngineLib/UI/UIManager.h"
 #include "EngineLib/UI/Elements/Element.h"
 
 namespace EngineCore::UI {
@@ -18,6 +19,30 @@ namespace EngineCore::UI {
         return m_elementStyle; 
     }
 
+    Vector2 ElementBase::GetScreenPosition() const {
+        Vector2 pos = m_localPosition;
+        if (m_parentElement) {
+            pos += m_parentElement->GetScreenPosition();
+        }
+        return pos;
+    }
+
+    Vector2 ElementBase::GetLocalPosition() const {
+        return m_localPosition;
+    }
+    
+    Vector2 ElementBase::GetScreenSize() const {
+        Vector2 size = m_localSize;
+        if (UIManager::GetUIScaling()) {
+            
+        }
+        return size;
+    }
+
+    Vector2 ElementBase::GetLocalSize() const {
+        return m_localSize;
+    }
+
     State ElementBase::GetState() const { 
         return m_state; 
     }
@@ -30,8 +55,40 @@ namespace EngineCore::UI {
         return m_children; 
     }
 
+    void ElementBase::SendDrawCommand() {
+    
+    }
+
+    ElementBase* ElementBase::GetParent() const {
+        return m_parentElement;
+    }
+
+    void ElementBase::SetParent(ElementBase* elementPtr) {
+        m_parentElement = elementPtr;
+    }
+
 	void ElementBase::SetState(State state) {
-		m_state = state;
+        if (m_state == state)
+            return;
+        m_state = state;
+
+        switch (m_state) {
+        case State::Hovered: 
+            if (onHover) onHover();
+            break;
+        case State::Pressed:
+            if (onPress) onPress();
+            break;
+        case State::Normal:
+            break;
+        default:
+            break;
+        }
 	}
+
+    bool ElementBase::IsMouseOver(const Vector2& mousePos) {
+        return (mousePos.x > m_localPosition.x && m_localPosition.x + m_localSize.x > mousePos.x && 
+                mousePos.y > m_localPosition.y && m_localPosition.y + m_localSize.y > mousePos.y);
+    }
 
 }

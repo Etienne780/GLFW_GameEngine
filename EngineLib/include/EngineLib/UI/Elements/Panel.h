@@ -6,13 +6,9 @@ namespace EngineCore::UI {
     class Panel : public Element<Panel> {
     public:
         using Element::Element;
-
-        void TestPanelMethod() {};
+        Panel(UIElementID id, std::shared_ptr<Style> style = std::make_shared<Style>());
 
     protected:
-
-        void Update() override;
-        void SendDrawCommand() override;
     };
 
 }

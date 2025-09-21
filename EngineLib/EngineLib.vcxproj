@@ -62,6 +62,7 @@
   <ItemGroup>
     <ClCompile Include="include\EngineLib\Components\SpriteRenderer_C.h" />
     <ClCompile Include="include\EngineLib\Components\TextRenderer_C.h" />
+    <ClCompile Include="include\EngineLib\UI\UITypes.h" />
     <ClCompile Include="src\EngineLib\Components\SpriteRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\TextRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\FontAsset.cpp" />

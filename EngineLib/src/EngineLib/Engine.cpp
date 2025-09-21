@@ -93,12 +93,13 @@ namespace EngineCore {
 						 1.0f);
 			glClear(((m_app->m_appOpenGLDepthTesting) ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_COLOR_BUFFER_BIT));
 		}
-		Component::Camera::SetWindowDimensions(m_app->m_appApplicationWindowWidth, m_app->m_appApplicationWindowHeight);
+		int screenWidth = m_app->m_appApplicationWindowWidth, screenHeight = m_app->m_appApplicationWindowHeight;
+		Component::Camera::SetWindowDimensions(screenWidth, screenHeight);
 		m_app->m_appApplicationFramesPerSecond = m_framesPerSecond;
 
 		m_gameObjectManager->UpdateGameObjects();
 		m_app->Update();
-		UIManager::Update();
+		UIManager::Update(screenWidth, screenHeight);
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			static Renderer* renderer = Renderer::GetInstance();
 			m_gameObjectManager->SendDrawCommands();
