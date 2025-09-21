@@ -49,6 +49,7 @@ namespace EngineCore {
 		// stbi_set_flip_vertically_on_load(true); //idk dosent work for me 
 		
 		RenderLayerManager::SetupDefaultRenderLayers();
+		InputLayerManager::SetupDefaultInputLayers();
 		m_app->Start();
 		RenderLayerManager::Lock();
 		return ENGINE_SUCCESS;

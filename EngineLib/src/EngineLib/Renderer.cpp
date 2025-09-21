@@ -71,7 +71,7 @@ namespace EngineCore {
         bool currentInvertMesh = m_commands[0].invertMesh;
         FontID currentFontID(ENGINE_INVALID_ID);
         int currentFontPixelSize = -1;
-        int currentRenderLayerPriority = RenderLayerManager::GetRenderLayerPriority(m_commands[0].renderLayerID);
+        int currentRenderLayerPriority = RenderLayerManager::GetLayerPriority(m_commands[0].renderLayerID);
         int currentZOrder = m_commands[0].zOrder;
         Vector4 currentMeshColor(-1,-1, -1, -1);
 
@@ -99,7 +99,7 @@ namespace EngineCore {
             if (!isInLayer)
                 continue;
 
-            int renderLayerPrio = RenderLayerManager::GetRenderLayerPriority(cmd.renderLayerID);
+            int renderLayerPrio = RenderLayerManager::GetLayerPriority(cmd.renderLayerID);
             // clear depth buffer if render prio changed
             if (currentRenderLayerPriority != renderLayerPrio) {
                 currentRenderLayerPriority = renderLayerPrio;
@@ -271,8 +271,8 @@ namespace EngineCore {
         std::sort(m_commands.begin(), m_commands.end(),
             [&](const auto& a, const auto& b) {
                 // Layer Priority
-                int prioA = RenderLayerManager::GetRenderLayerPriority(a.renderLayerID);
-                int prioB = RenderLayerManager::GetRenderLayerPriority(b.renderLayerID);
+                int prioA = RenderLayerManager::GetLayerPriority(a.renderLayerID);
+                int prioB = RenderLayerManager::GetLayerPriority(b.renderLayerID);
                 if (prioA != prioB)
                     return prioA < prioB;
 

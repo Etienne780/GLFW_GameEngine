@@ -43,6 +43,7 @@ namespace EngineCore {
 	struct MaterialTag {};
 	struct GameObjectTag {};
 	struct RenderLayerTag {};
+	struct InputLayerTag {};
 	struct FontTag {};
 	struct UIElementTag {};
 
@@ -54,6 +55,7 @@ namespace EngineCore {
 
 	using GameObjectID = EngineID<GameObjectTag>;
 	using RenderLayerID = EngineID<RenderLayerTag>;
+	using InputLayerID = EngineID<InputLayerTag>;
 	using UIElementID = EngineID<UIElementTag>;
 
 	enum class RenderCommandType {

@@ -19,7 +19,6 @@ Project::Project()
 	// Log::SaveLogs("Logs/");
 }
 
-InputAction exampleAction;
 void Project::Start() {
 	App_OpenGL_Set_DepthTesting(true);
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
@@ -29,8 +28,6 @@ void Project::Start() {
 
 	SetupGame();
 	Scenes::LoadTest();
-
-	exampleAction.SetKeyAction({KeyCode::D, KeyCode::F, KeyCode::G});
 }
 
 void Project::Update() {

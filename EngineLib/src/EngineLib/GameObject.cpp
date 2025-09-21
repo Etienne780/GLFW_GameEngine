@@ -230,15 +230,15 @@ namespace EngineCore {
 	}
 
 	GameObject* GameObject::SetRenderLayer(const std::string& renderLayerName) {
-		return SetRenderLayer(RenderLayerManager::GetRenderLayerID(renderLayerName));
+		return SetRenderLayer(RenderLayerManager::GetLayerID(renderLayerName));
 	}
 
 	GameObject* GameObject::SetRenderLayerInChildren(const std::string& renderLayerName) {
-		return SetRenderLayerInChildren(RenderLayerManager::GetRenderLayerID(renderLayerName));
+		return SetRenderLayerInChildren(RenderLayerManager::GetLayerID(renderLayerName));
 	}
 
 	GameObject* GameObject::SetRenderLayerAll(const std::string& renderLayerName) {
-		return SetRenderLayerAll(RenderLayerManager::GetRenderLayerID(renderLayerName));
+		return SetRenderLayerAll(RenderLayerManager::GetLayerID(renderLayerName));
 	}
 
 	GameObject* GameObject::SetRenderLayer(RenderLayerID renderLayerID) {

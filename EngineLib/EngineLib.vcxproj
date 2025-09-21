@@ -41,6 +41,7 @@
     <ClInclude Include="include\EngineLib\IDManager.h" />
     <ClInclude Include="include\EngineLib\Input.h" />
     <ClInclude Include="include\EngineLib\Input\InputAction.h" />
+    <ClInclude Include="include\EngineLib\Input\InputLayerManager.h" />
     <ClInclude Include="include\EngineLib\Input\InputManager.h" />
     <ClInclude Include="include\EngineLib\Material.h" />
     <ClInclude Include="include\EngineLib\Mesh.h" />
@@ -76,6 +77,8 @@
     <ClCompile Include="src\EngineLib\FontManager.cpp" />
     <ClCompile Include="src\EngineLib\IDManager.cpp" />
     <ClCompile Include="src\EngineLib\Input\InputAction.cpp" />
+    <ClCompile Include="src\EngineLib\Input\InputLayerManager.cpp" />
+    <ClCompile Include="src\EngineLib\Input\InputTypes.cpp" />
     <ClCompile Include="src\EngineLib\Material.cpp" />
     <ClCompile Include="src\EngineLib\Mesh.cpp" />
     <ClCompile Include="src\EngineLib\Components\MeshRenderer_C.cpp" />

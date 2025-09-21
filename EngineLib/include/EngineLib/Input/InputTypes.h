@@ -3,6 +3,20 @@
 
 namespace EngineCore {
 
+	class KeyState {
+	public:
+		bool isPressed = false;     // true, if key pressed
+		bool isRepeating = false;   // true, if GLFW_REPEAT triggered
+		bool wasPressed = false;    // true, only in the frame that the key was pressed
+		bool wasReleased = false;   // true, only in the frame that the key was released
+
+		void update();              // should only be called once per frame
+		void setState(int state);   // Gets called by the GLFW-Callback
+
+		bool justPressed() const;   // true, if key pressed in this frame
+		bool justReleased() const;  // true, if key released in this frame
+	};
+
 	enum class KeyCode {
 		A = GLFW_KEY_A,
 		B = GLFW_KEY_B,

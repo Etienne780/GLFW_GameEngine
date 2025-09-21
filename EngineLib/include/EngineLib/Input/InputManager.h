@@ -13,20 +13,6 @@ namespace EngineCore {
 	enum class KeyCode;
 	enum class MouseButton;
 
-	class KeyState {
-	public:
-		bool isPressed = false;     // true, if key pressed
-		bool isRepeating = false;   // true, if GLFW_REPEAT triggered
-		bool wasPressed = false;    // true, only in the frame that the key was pressed
-		bool wasReleased = false;   // true, only in the frame that the key was released
-
-		void update();              // should only be called once per frame
-		void setState(int state);   // Gets called by the GLFW-Callback
-
-		bool justPressed() const;   // true, if key pressed in this frame
-		bool justReleased() const;  // true, if key released in this frame
-	};
-
 	class Input {
 	friend class Engine;
 	public:
@@ -55,6 +41,21 @@ namespace EngineCore {
 		* @return True if scroll input occurred, false otherwise.
 		*/
 		static bool GetScrollDir(int& dir);
+
+		/**
+		* @brief Returns the vertical scroll direction for this frame.
+		* @param layerID 
+		* @return Positive for scrolling up, negative for scrolling down, 0 if no scroll.
+		*/
+		static int GetScrollDir(InputLayerID layerID);
+
+		/**
+		* @brief Stores the scroll direction into the provided reference if available.
+		* @param dir Reference to receive the scroll direction.
+		* @param layerID 
+		* @return True if scroll input occurred, false otherwise.
+		*/
+		static bool GetScrollDir(int& dir, InputLayerID layerID);
 
 		// True only on the frame when the action is first pressed
 		static bool ActionJustPressed(const InputAction& action);
@@ -137,6 +138,12 @@ namespace EngineCore {
 		// Returns the current mouse position in screen coordinates
 		static Vector2 GetMousePosition();
 
+		/*
+		* @brief Sets the current active input layer
+		* @param layerID is the current layer that gets set active
+		*/
+		static void SetInputLayer(InputLayerID layerID);
+
 	private:
 		Input();
 		static void Init(GLFWwindow* window);
@@ -148,9 +155,9 @@ namespace EngineCore {
 		static inline Vector2 m_lastFrameMousePosition;
 		static inline Vector2 m_mouseDelta;
 		static inline int m_scrollDir = 0;
+		static inline InputLayerID m_currentInputLayerID = InputLayerID(ENGINE_INVALID_ID);
 
 		// GLFW callbacks
-
 		static void GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void GLFWMouseCallBack(GLFWwindow* window, double xpos, double ypos);
 		static void GLFWScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
@@ -159,6 +166,8 @@ namespace EngineCore {
 		static bool getAnyKeyState(const std::unordered_map<int, KeyState>& map, bool keyPressed, bool justPressed);
 		static std::vector<KeyCode> getKeyStates(bool keyPressed, bool justPressed);
 		static std::vector<MouseButton> getMouseStates(bool mbPressed, bool justPressed);
+
+		static bool CheckLayer(InputLayerID layerID);
 	};
 
 }

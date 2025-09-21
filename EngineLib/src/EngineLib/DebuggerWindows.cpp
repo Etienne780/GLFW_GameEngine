@@ -127,7 +127,7 @@ namespace EngineCore {
 
                 for (size_t i = 0; i < layerNames.size() && i < layerIndices.size(); i++) {
                     rID = layerIndices[i];
-                    ImGui::BulletText("%s (%u Priority: %u)", layerNames[i].c_str(), rID.value, RenderLayerManager::GetRenderLayerPriority(rID));
+                    ImGui::BulletText("%s (%u Priority: %u)", layerNames[i].c_str(), rID.value, RenderLayerManager::GetLayerPriority(rID));
                 }
             }
         }
@@ -311,7 +311,7 @@ namespace EngineCore {
                 ImGui::SameLine();
                 ImGui::Text("GameObject: %s(%u)", selectedGO->GetName().c_str(), selectedGO->GetID());
                 ImGui::Text("Persistent: %s", selectedGO->IsPersistent() ? "true" : "false");
-                ImGui::Text(FormatUtils::formatString("Render-Layer: {}({})", RenderLayerManager::GetRenderLayerName(selectedGO->GetRenderLayer()), selectedGO->GetRenderLayer().value).c_str());
+                ImGui::Text(FormatUtils::formatString("Render-Layer: {}({})", RenderLayerManager::GetLayerName(selectedGO->GetRenderLayer()), selectedGO->GetRenderLayer().value).c_str());
 
                 ImGui::Separator();
 

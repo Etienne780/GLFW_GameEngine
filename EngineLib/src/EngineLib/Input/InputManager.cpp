@@ -88,7 +88,26 @@ namespace EngineCore {
 		return (dir != 0);
 	}
 
+	int Input::GetScrollDir(InputLayerID layerID) {
+		if (CheckLayer(layerID)) {
+			return 0; // Ignore action, not in active layer
+		}
+		return m_scrollDir;
+	}
+
+	bool Input::GetScrollDir(int& dir, InputLayerID layerID) {
+		if (CheckLayer(layerID)) {
+			return false; // Ignore action, not in active layer
+		}
+		dir = m_scrollDir;
+		return (dir != 0);
+	}
+
 	bool Input::ActionJustPressed(const InputAction& action) {
+		if (CheckLayer(action.GetInputLayer())) {
+			return false; // Ignore action, not in active layer
+		}
+
 		return std::any_of(action.GetKeyActions().begin(), action.GetKeyActions().end(),
 				[](KeyCode key) { return KeyJustPressed(key); }) ||
 			std::any_of(action.GetMouseActions().begin(), action.GetMouseActions().end(),
@@ -96,6 +115,10 @@ namespace EngineCore {
 	}
 
 	bool Input::ActionJustReleased(const InputAction& action) {
+		if (CheckLayer(action.GetInputLayer())) {
+			return false; // Ignore action, not in active layer
+		}
+
 		return std::any_of(action.GetKeyActions().begin(), action.GetKeyActions().end(),
 				[](KeyCode key) { return KeyJustReleased(key); }) ||
 			std::any_of(action.GetMouseActions().begin(), action.GetMouseActions().end(),
@@ -123,6 +146,10 @@ namespace EngineCore {
 	}
 
 	bool Input::ActionPressed(const InputAction& action) {
+		if (CheckLayer(action.GetInputLayer())) {
+			return false; // Ignore action, not in active layer
+		}
+
 		return std::any_of(action.GetKeyActions().begin(), action.GetKeyActions().end(),
 				[](KeyCode key) { return KeyPressed(key); }) ||
 			std::any_of(action.GetMouseActions().begin(), action.GetMouseActions().end(),
@@ -212,6 +239,10 @@ namespace EngineCore {
 		return m_mousePosition;
 	}
 
+	void Input::SetInputLayer(InputLayerID layerID) {
+		m_currentInputLayerID = layerID;
+	}
+
 	bool Input::getAnyKeyState(const std::unordered_map<int, KeyState>& map, bool pressed, bool justCheck) {
 		for (const auto& [_, state] : map) {
 			if (justCheck) {
@@ -272,44 +303,9 @@ namespace EngineCore {
 		return mbs;
 	}
 
-	void KeyState::update() {
-		wasPressed = false;
-		wasReleased = false;
-	}
-
-	void KeyState::setState(int state) {
-		switch (state) {
-		case GLFW_PRESS:
-			if (!isPressed) {
-				wasPressed = true;
-			}
-			isPressed = true;
-			isRepeating = false;
-			wasReleased = false;
-			break;
-
-		case GLFW_REPEAT:
-			isPressed = true;
-			isRepeating = true;
-			break;
-
-		case GLFW_RELEASE:
-			if (isPressed) {
-				wasReleased = true;
-			}
-			isPressed = false;
-			isRepeating = false;
-			wasPressed = false;
-			break;
-		}
-	}
-
-	bool KeyState::justPressed() const {
-		return wasPressed;
-	}
-
-	bool KeyState::justReleased() const {
-		return wasReleased;
+	bool Input::CheckLayer(InputLayerID layerID) {
+		return (layerID.value != ENGINE_INVALID_ID && 
+				layerID != m_currentInputLayerID);
 	}
 
 }

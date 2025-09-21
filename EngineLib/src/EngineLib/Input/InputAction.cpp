@@ -24,6 +24,10 @@ namespace EngineCore {
 		return this;
 	}
 
+	InputLayerID InputAction::GetInputLayer() const {
+		return m_layerID;
+	}
+
 	const std::vector<KeyCode>& InputAction::GetKeyActions() const {
 		return m_keyActions;
 	}
@@ -39,6 +43,11 @@ namespace EngineCore {
 
 	InputAction* InputAction::SetMouseAction(const std::vector<MouseButton>& mouseButtons) {
 		m_mouseActions = mouseButtons;
+		return this;
+	}
+
+	InputAction* InputAction::SetInputLayer(InputLayerID layer) {
+		m_layerID = layer;
 		return this;
 	}
 

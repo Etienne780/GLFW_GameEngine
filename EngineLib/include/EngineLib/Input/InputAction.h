@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "InputTypes.h"
+#include "InputLayerManager.h"
 
 namespace EngineCore {
 
@@ -50,6 +51,9 @@ namespace EngineCore {
 		*/
 		InputAction* AddMouseAction(const std::vector<MouseButton>& mouseButtons);
 
+
+		InputLayerID GetInputLayer() const;
+
 		/**
 		* @brief Get all keyboard keys that can trigger this action.
 		* @return A const reference to the vector of KeyCodes
@@ -76,9 +80,12 @@ namespace EngineCore {
 		*/
 		InputAction* SetMouseAction(const std::vector<MouseButton>& mouseButtons);
 
+		InputAction* SetInputLayer(InputLayerID layer);
+
 	private:
 		std::vector<KeyCode> m_keyActions;
 		std::vector<MouseButton> m_mouseActions;
+		InputLayerID m_layerID = InputLayerID(ENGINE_INVALID_ID);
 
 		/**
 		* @brief Helper function that adds an element to a vector only if it is not already present.
