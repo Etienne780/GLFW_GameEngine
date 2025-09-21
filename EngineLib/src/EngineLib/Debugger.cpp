@@ -75,7 +75,7 @@ namespace EngineCore {
 		m_debugCameraGO = GameObject::Create("Debug-Camera");
 		m_debugCameraGO->SetPersistent(true);
 		auto cam = m_debugCameraGO->AddComponent<Component::Camera>();
-		cam->AddCameraLayer(RenderLayerManager::GetRenderLayerID("Debug"));
+		cam->AddCameraLayer(RenderLayerManager::GetLayerID("Debug"));
 		m_debugCameraGO->AddComponent<Component::FreeCameraController>()->m_isZoomDisabled = true;
 		m_debugCameraGO->Disable(true);
 	}
@@ -134,9 +134,9 @@ namespace EngineCore {
 
 	void Debugger::HandleCursorLock() {
 		static bool toggleCursorLock = false;
-		m_cursorLock = !Input::LockedKeyPressed(KeyCode::LEFT_ALT);
+		m_cursorLock = !Input::KeyPressed(KeyCode::LEFT_ALT);
 
-		if (Input::LockedKeyJustPressed(KeyCode::F1)) {
+		if (Input::KeyJustPressed(KeyCode::F1)) {
 			toggleCursorLock = !toggleCursorLock;
 			if (!toggleCursorLock) m_cursorLock = true;
 		}

@@ -19,7 +19,7 @@ namespace EngineCore {
 		return rID;
 	}
 
-	std::string RenderLayerManager::GetRenderLayerName(RenderLayerID layerID) {
+	std::string RenderLayerManager::GetLayerName(RenderLayerID layerID) {
 		for (const auto& [name, rID] : m_nameToID) {
 			if (rID == layerID)
 				return name;
@@ -29,7 +29,7 @@ namespace EngineCore {
 		return "UNKNOWN";
 	}
 
-	RenderLayerID RenderLayerManager::GetRenderLayerID(const std::string& layerName) {
+	RenderLayerID RenderLayerManager::GetLayerID(const std::string& layerName) {
 		std::string lowerName = FormatUtils::toLowerCase(layerName);
 
 		auto it = m_nameToID.find(lowerName);
@@ -41,13 +41,13 @@ namespace EngineCore {
 		return RenderLayerID(ENGINE_INVALID_ID);
 	}
 
-	int RenderLayerManager::GetRenderLayerPriority(RenderLayerID layerID) {
+	int RenderLayerManager::GetLayerPriority(RenderLayerID layerID) {
 		auto it = m_idToPriority.find(layerID);
 		if (it != m_idToPriority.end()) {
 			return it->second;
 		}
 
-		Log::Warn("RenderLayerManager: Render layer Priority with name {} and ID {}, not found!", layerID.value, GetRenderLayerName(layerID));
+		Log::Warn("RenderLayerManager: Render layer Priority with name {} and ID {}, not found!", layerID.value, GetLayerName(layerID));
 		return 0;
 	}
 

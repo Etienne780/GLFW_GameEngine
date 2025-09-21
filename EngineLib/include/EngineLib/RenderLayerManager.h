@@ -8,6 +8,8 @@
 
 namespace EngineCore {
 
+	class Engine;
+
 	/*
 	* @brief A RenderLayer defines a logical rendering layer in the engine.
 	*
@@ -38,21 +40,21 @@ namespace EngineCore {
 		* @param layerID The ID of the layer.
 		* @return The name of the render layer, or "UNKNOWN" if not found.
 		*/
-		static std::string GetRenderLayerName(RenderLayerID layerID);
+		static std::string GetLayerName(RenderLayerID layerID);
 
 		/*
 		* @brief Retrieves the ID of a render layer given its name.
 		* @param layerName The name of the layer.
 		* @return The ID of the render layer.
 		*/
-		static RenderLayerID GetRenderLayerID(const std::string& layerName);
+		static RenderLayerID GetLayerID(const std::string& layerName);
 
 		/*
 		* @brief Retrieves the Priority of a render layer given its ID.
 		* @param layerID The ID of the layer.
 		* @return The Priority of the render layer, or 0 if not found.
 		*/
-		static int GetRenderLayerPriority(RenderLayerID layerID);
+		static int GetLayerPriority(RenderLayerID layerID);
 
 		/*
 		* @brief Returns a vector containing all layer names.

@@ -21,7 +21,7 @@
     <ClInclude Include="include\EngineLib\Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EngineLib\Input.h">
+    <ClInclude Include="include\EngineLib\Input\InputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EngineLib\Time.h">
@@ -132,6 +132,15 @@
     <ClInclude Include="include\EngineLib\UI\Elements\Panel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EngineLib\Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EngineLib\Input\InputAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EngineLib\Input\InputLayerManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EngineLib\Application.cpp">
@@ -140,7 +149,7 @@
     <ClCompile Include="src\EngineLib\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EngineLib\Input.cpp">
+    <ClCompile Include="src\EngineLib\Input\InputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EngineLib\Time.cpp">
@@ -252,6 +261,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\EngineLib\UI\UITypes.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\EngineLib\Input\InputTypes.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\Input\InputAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\Input\InputLayerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\Input\InputTypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

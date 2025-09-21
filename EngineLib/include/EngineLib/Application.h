@@ -6,6 +6,7 @@
 #include <String>
 
 #include <CoreLib\Math\Vector3.h>
+#include "Input.h"
 
 class Vector2;
 
@@ -107,12 +108,12 @@ public:
 	bool App_Debug_Get_IsDebugCameraActive() const;
 	
 	/**
-	 * @brief Enables or disables Debug mode.
-	 * In Debug mode, you can press F1 or hold Left Alt to toggle mouse locking.
-	 * Whether mouse locking is currently disabled can be queried via the
-	 * App_Debug_GetIsCursorLockDisabled function.
-	 */
-	void App_Debug_Set_Active(bool value);
+	* @brief Sets the key to open debug menu (default F12).
+	* In Debug mode, you can press F1 or hold Left Alt to toggle mouse locking.
+	* Whether mouse locking is currently disabled can be queried via the
+	* App_Debug_GetIsCursorLockDisabled function.
+	*/
+	void App_Debug_Set_DebugKey(EngineCore::KeyCode key);
 
 private:
 	static Application* s_instance;
@@ -144,6 +145,7 @@ private:
 	bool m_appDebugActive = false;
 	bool m_appDebugIsCursorLockDisabled = false;
 	bool m_appDebugIsDebugCameraActive = false;
+	EngineCore::KeyCode m_appDebugKey = EngineCore::KeyCode::F12;
 
 	GLFWwindow* m_window = nullptr;
 };

@@ -1,0 +1,173 @@
+﻿#pragma once
+#include <GLFW/glfw3.h>
+#include <unordered_map>
+#include <CoreLib\Math\Vector2.h>
+
+#include "InputTypes.h"
+#include "InputAction.h"
+
+class Vector2;
+
+namespace EngineCore {
+
+	enum class KeyCode;
+	enum class MouseButton;
+
+	class Input {
+	friend class Engine;
+	public:
+		// Conversion between integer key codes (GLFW) and internal KeyCode enum
+
+		static KeyCode IntToKeyCode(int key);
+		static int KeyCodeToInt(KeyCode key);
+		static MouseButton IntToMouseButton(int mb);
+		static int MouseButtonToInt(MouseButton mb);
+
+		/**
+		* @brief Returns the mouse movement delta since the last frame.
+		* The Y axis is inverted for convenience (typical screen coordinates).
+		*/
+		static Vector2 GetMousePositionDelta();
+
+		/**
+		* @brief Returns the vertical scroll direction for this frame.
+		* @return Positive for scrolling up, negative for scrolling down, 0 if no scroll.
+		*/
+		static int GetScrollDir();
+
+		/**
+		* @brief Stores the scroll direction into the provided reference if available.
+		* @param dir Reference to receive the scroll direction.
+		* @return True if scroll input occurred, false otherwise.
+		*/
+		static bool GetScrollDir(int& dir);
+
+		/**
+		* @brief Returns the vertical scroll direction for this frame.
+		* @param layerID 
+		* @return Positive for scrolling up, negative for scrolling down, 0 if no scroll.
+		*/
+		static int GetScrollDir(InputLayerID layerID);
+
+		/**
+		* @brief Stores the scroll direction into the provided reference if available.
+		* @param dir Reference to receive the scroll direction.
+		* @param layerID 
+		* @return True if scroll input occurred, false otherwise.
+		*/
+		static bool GetScrollDir(int& dir, InputLayerID layerID);
+
+		// True only on the frame when the action is first pressed
+		static bool ActionJustPressed(const InputAction& action);
+
+		// True only on the frame when the action is first released
+		static bool ActionJustReleased(const InputAction& action);
+
+		// True only on the frame when the key is first pressed
+		static bool KeyJustPressed(KeyCode key);
+
+		// True only on the frame when the key is released
+		static bool KeyJustReleased(KeyCode key);
+
+		// True only on the frame when the mouse button is first pressed
+		static bool MouseJustPressed(MouseButton mb);
+
+		// True only on the frame when the mouse button is released
+		static bool MouseJustReleased(MouseButton mb);
+
+		// True while the action is held down
+		static bool ActionPressed(const InputAction& action);
+
+		// True while the key is held down
+		static bool KeyPressed(KeyCode key);
+
+		// True while the mouse button is held down
+		static bool MousePressed(MouseButton mb);
+
+		// True while the key is repeating (OS repeat events)
+		static bool KeyRepeating(KeyCode key);
+
+		// True if any key was pressed this frame
+		static bool AnyKeyJustPressed();
+
+		// True if any key was released this frame
+		static bool AnyKeyJustReleased();
+
+		// True if any mouse button was pressed this frame
+		static bool AnyMouseJustPressed();
+
+		// True if any mouse button was released this frame
+		static bool AnyMouseJustReleased();
+
+		// True if any key is currently held down
+		static bool AnyKeyPressed();
+
+		// True if no keys are currently held down
+		static bool AnyKeyReleased();
+
+		// True if any mouse button is currently held down
+		static bool AnyMousePressed();
+
+		// True if no mouse buttons are currently held down
+		static bool AnyMouseReleased();
+
+		// Returns all keys pressed on this frame
+		static std::vector<KeyCode> KeysJustPressed();
+
+		// Returns all keys released on this frame
+		static std::vector<KeyCode> KeysJustReleased();
+
+		// Returns all mouse buttons pressed on this frame
+		static std::vector<MouseButton> MouseButtonsJustPressed();
+
+		// Returns all mouse buttons released on this frame
+		static std::vector<MouseButton> MouseButtonsJustReleased();
+
+		// Returns all keys currently held down
+		static std::vector<KeyCode> KeysPressed();
+
+		// Returns all keys currently not pressed
+		static std::vector<KeyCode> KeysReleased();
+
+		// Returns all mouse buttons currently held down
+		static std::vector<MouseButton> MouseButtonsPressed();
+
+		// Returns all mouse buttons currently not pressed
+		static std::vector<MouseButton> MouseButtonsReleased();
+
+		// Returns the current mouse position in screen coordinates
+		static Vector2 GetMousePosition();
+
+		/*
+		* @brief Sets the current active input layer
+		* @param layerID is the current layer that gets set active
+		*/
+		static void SetInputLayer(InputLayerID layerID);
+
+	private:
+		Input();
+		static void Init(GLFWwindow* window);
+		static void LateUpdate();
+
+		static inline std::unordered_map<int, KeyState> m_keyStates;
+		static inline std::unordered_map<int, KeyState> m_mouseButtonStates;
+		static inline Vector2 m_mousePosition;
+		static inline Vector2 m_lastFrameMousePosition;
+		static inline Vector2 m_mouseDelta;
+		static inline int m_scrollDir = 0;
+		static inline InputLayerID m_currentInputLayerID = InputLayerID(ENGINE_INVALID_ID);
+
+		// GLFW callbacks
+		static void GLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void GLFWMouseCallBack(GLFWwindow* window, double xpos, double ypos);
+		static void GLFWScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+		static void GLFWMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+
+		static bool getAnyKeyState(const std::unordered_map<int, KeyState>& map, bool keyPressed, bool justPressed);
+		static std::vector<KeyCode> getKeyStates(bool keyPressed, bool justPressed);
+		static std::vector<MouseButton> getMouseStates(bool mbPressed, bool justPressed);
+
+		static bool CheckLayer(InputLayerID layerID);
+	};
+
+}

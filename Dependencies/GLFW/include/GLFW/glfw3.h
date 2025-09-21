@@ -5285,8 +5285,8 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
 /*! @brief Sets the mouse button callback.
  *
  *  This function sets the mouse button callback of the specified window, which
- *  is called when a mouse button is pressed or released.
- *
+ *  is called when a mouse button is pressed or released. 
+ * 
  *  When a window loses input focus, it will generate synthetic mouse button
  *  release events for all pressed mouse buttons.  You can tell these events
  *  from user-generated events by the fact that the synthetic ones are generated

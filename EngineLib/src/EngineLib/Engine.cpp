@@ -48,6 +48,7 @@ namespace EngineCore {
 		// stbi_set_flip_vertically_on_load(true); //idk dosent work for me 
 		
 		RenderLayerManager::SetupDefaultRenderLayers();
+		InputLayerManager::SetupDefaultInputLayers();
 		m_app->Start();
 		RenderLayerManager::Lock();
 		return ENGINE_SUCCESS;
@@ -115,6 +116,9 @@ namespace EngineCore {
 
 	void Engine::LateUpdate() {
 #ifndef NDEBUG
+		if (Input::KeyJustPressed(m_app->m_appDebugKey))
+			m_app->m_appDebugActive = !m_app->m_appDebugActive;
+
 		if (m_app->m_appDebugActive) {
 			if (!m_isDebuggerStart) {
 				m_debugger->Start();
@@ -130,7 +134,6 @@ namespace EngineCore {
 				m_isDebuggerStart = false;
 			}
 		}
-		Input::SetLockDebug(!m_debugger->GetCursorLock());
 #endif 
 
 		Input::LateUpdate();

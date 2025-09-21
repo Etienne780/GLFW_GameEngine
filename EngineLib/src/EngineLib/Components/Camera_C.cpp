@@ -17,7 +17,7 @@ namespace EngineCore {
 		Camera::Camera(GameObjectID gameObjectID) :
 			ComponentBase(compName, gameObjectID) {
 			m_gameObject = GetGameObject();
-			m_renderLayers.push_back(RenderLayerManager::GetRenderLayerID("Default"));
+			m_renderLayers.push_back(RenderLayerManager::GetLayerID("Default"));
 		}
 
 		void Camera::OnInspectorGUIImpl(IUIRenderer& ui) {
