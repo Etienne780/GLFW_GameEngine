@@ -25,6 +25,7 @@ void Project::Start() {
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	App_OpenGL_Set_FaceCulling(true);
+	App_Debug_Set_DebugKey(KeyCode::H);
 
 	SetupGame();
 	Scenes::LoadTest();
@@ -39,11 +40,6 @@ void Project::Update() {
 	if (Input::KeyJustPressed(KeyCode::L)) {
 		App_Application_Set_Window_Floating(!App_Application_Get_Window_Floating());
 	}
-
-	if (Input::KeyJustPressed(KeyCode::H)) {
-		App_Debug_Set_Active(!App_Debug_Get_Active());
-	}
-
 }
 
 void Project::Shutdown() {

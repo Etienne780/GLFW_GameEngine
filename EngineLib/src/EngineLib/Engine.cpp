@@ -114,6 +114,9 @@ namespace EngineCore {
 
 	void Engine::LateUpdate() {
 #ifndef NDEBUG
+		if (Input::KeyJustPressed(m_app->m_appDebugKey))
+			m_app->m_appDebugActive = !m_app->m_appDebugActive;
+
 		if (m_app->m_appDebugActive) {
 			if (!m_isDebuggerStart) {
 				m_debugger->Start();
