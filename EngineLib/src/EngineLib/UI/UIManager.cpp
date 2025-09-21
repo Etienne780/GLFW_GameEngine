@@ -2,6 +2,7 @@
 #include <CoreLib/FormatUtils.h>
 #include <CoreLib/Log.h>
 
+#include "EngineLib/Input.h"
 #include "EngineLib/UI/UITypes.h"
 #include "EngineLib/UI/UIManager.h"
 
@@ -46,11 +47,15 @@ namespace EngineCore {
 	}
 
     bool UIManager::GetUIScaling() {
-        return m_scaleUIScreenSize;
+        return m_enableUIScaling;
     }
 
     Vector2 UIManager::GetReferenceScreenSize() {
-        return m_refScreenSize;
+        return m_referenceScreenSize;
+    }
+
+    float UIManager::GetUIScaleFactor() {
+        return m_uiScaleFactor;
     }
 
 	void UIManager::SetDebug(bool value) {
@@ -58,19 +63,27 @@ namespace EngineCore {
 	}
 
     void UIManager::SetUIScaling(bool value) {
-        m_scaleUIScreenSize = value;
+        m_enableUIScaling = value;
+        // resets scale factor to default value
+        if (!value)
+            m_uiScaleFactor = 1;
     }
 
     void UIManager::SetReferenceScreenSize(float x, float y) {
-        m_refScreenSize.Set(x, y);
+        m_referenceScreenSize.Set(x, y);
     }
 
     void UIManager::SetReferenceScreenSize(const Vector2& size) {
-        m_refScreenSize.Set(size.x, size.y);
+        m_referenceScreenSize.Set(size.x, size.y);
     }
 
     void UIManager::Update(int width, int height) {
+        if(m_enableUIScaling)
+            m_uiScaleFactor = CalculateUIScaleFactor(width, height);
+
         for (auto& element : m_roots) {
+            // needs mouse down and up
+            UpdateElementState(element.get(), Input::GetMousePosition(), false, false);
             element->Update();
             UpdateChild(element);
         }
@@ -83,7 +96,7 @@ namespace EngineCore {
         }
     }
 
-    void UIManager::UpdatePanelState(UI::ElementBase* element, const Vector2& mousePos, bool mouseDown, bool mouseReleased) {
+    void UIManager::UpdateElementState(UI::ElementBase* element, const Vector2& mousePos, bool mouseDown, bool mouseReleased) {
         using namespace UI;
         if (element->IsMouseOver(mousePos)) {
             if (mouseDown) {
@@ -104,7 +117,7 @@ namespace EngineCore {
         }
 
         for (auto& child : element->GetChildren()) {
-            UpdatePanelState(child.get(), mousePos, mouseDown, mouseReleased);
+            UpdateElementState(child.get(), mousePos, mouseDown, mouseReleased);
         }
     }
 
@@ -121,6 +134,19 @@ namespace EngineCore {
             child->SendDrawCommand();
             SendChildDrawCommands(child);
         }
+    }
+
+    float UIManager::CalculateUIScaleFactor(int width, int height) {
+        Vector2 scaleDiff = Vector2{ static_cast<float>(width), static_cast<float>(height) } / m_referenceScreenSize;
+
+        // Option A: Average of both axes (uniform scaling)
+        return (scaleDiff.x + scaleDiff.y) * 0.5f;
+
+        // Option B: Take the smaller factor to ensure the UI always fits inside the window
+        // return std::min(scaleDiff.x, scaleDiff.y);
+
+        // Option C: Take the larger factor to ensure the UI always fills the window
+        // return std::max(scaleDiff.x, scaleDiff.y);
     }
 
 	void UIManager::FreeIDsInternal(UI::ElementBase* element) {

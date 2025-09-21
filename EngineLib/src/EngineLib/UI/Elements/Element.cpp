@@ -21,6 +21,10 @@ namespace EngineCore::UI {
 
     Vector2 ElementBase::GetScreenPosition() const {
         Vector2 pos = m_localPosition;
+        if (UIManager::GetUIScaling()) {
+            pos *= UIManager::GetUIScaleFactor();
+        }
+
         if (m_parentElement) {
             pos += m_parentElement->GetScreenPosition();
         }
@@ -34,7 +38,7 @@ namespace EngineCore::UI {
     Vector2 ElementBase::GetScreenSize() const {
         Vector2 size = m_localSize;
         if (UIManager::GetUIScaling()) {
-            
+            size *= UIManager::GetUIScaleFactor();
         }
         return size;
     }
@@ -87,8 +91,10 @@ namespace EngineCore::UI {
 	}
 
     bool ElementBase::IsMouseOver(const Vector2& mousePos) {
-        return (mousePos.x > m_localPosition.x && m_localPosition.x + m_localSize.x > mousePos.x && 
-                mousePos.y > m_localPosition.y && m_localPosition.y + m_localSize.y > mousePos.y);
+        Vector2 pos = GetScreenPosition();
+        Vector2 size = GetScreenSize();
+        return (mousePos.x > pos.x && pos.x + size.x > mousePos.x &&
+                mousePos.y > pos.y && pos.y + size.y > mousePos.y);
     }
 
 }

@@ -32,6 +32,7 @@ namespace EngineCore {
 		static std::string GetUIHierarchyString();
 		static bool GetUIScaling();
 		static Vector2 GetReferenceScreenSize();
+		static float GetUIScaleFactor();
 
 		static void SetDebug(bool value);
 		/*
@@ -61,18 +62,21 @@ namespace EngineCore {
 		static inline std::vector<std::unique_ptr<UI::ElementBase>> m_roots;
 		static inline std::stack<UI::ElementBase*> m_elementStack;
 
-		// if true scales the UI based on to the reference screen size
-		static inline bool m_scaleUIScreenSize = true;
-		// reference screen size to scale the UI
-		static inline Vector2 m_refScreenSize{ 1920, 1080 };
+		// If true, the UI is scaled relative to the reference screen size
+		static inline bool m_enableUIScaling = true;
+		// The reference screen size used as baseline for scaling
+		static inline Vector2 m_referenceScreenSize{ 1920, 1080 };
+		// The current scale factor applied to the UI
+		static inline float m_uiScaleFactor = 1.0f;
 
 		// Updates the scale and states of the UI::Element
 		static void Update(int width, int height);
 		static void UpdateChild(std::unique_ptr<UI::ElementBase>& element);
-		static void UpdatePanelState(UI::ElementBase* element, const Vector2& mousePos, bool mouseDown, bool mouseReleased);
+		static void UpdateElementState(UI::ElementBase* element, const Vector2& mousePos, bool mouseDown, bool mouseReleased);
 		// Sends the Draw Commands of the UI::Elements
 		static void SendDrawCommands();
 		static void SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element);
+		static float CalculateUIScaleFactor(int width, int height);
 		static void FreeIDsInternal(UI::ElementBase* element);
 		static void BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level);
 	};
