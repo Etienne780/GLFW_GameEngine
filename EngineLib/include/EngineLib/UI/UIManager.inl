@@ -6,7 +6,7 @@ namespace EngineCore {
 
     template<typename T, typename... Args>
     static T* UIManager::Begin(Args&&... args) {
-        static_assert(std::is_base_of<UI::Panel, T>::value, "T must derive from EngineCore::UI::Element");
+        static_assert(std::is_base_of<UI::ElementBase, T>::value, "T must derive from EngineCore::UI::Element");
 
         UIElementID id = UIElementID(m_idManager.GetNewUniqueIdentifier());
         if (id.value == ENGINE_INVALID_ID) {
@@ -31,22 +31,24 @@ namespace EngineCore {
     }
 
     template<typename T, typename... Args>
-    void UIManager::Add(Args&&... args) {
-        static_assert(std::is_base_of<UI::Panel, T>::value, "T must derive from EngineCore::UI::Element");
+    T* UIManager::Add(Args&&... args) {
+        static_assert(std::is_base_of<UI::ElementBase, T>::value, "T must derive from EngineCore::UI::Element");
         if (m_elementStack.empty()) {
             Log::Error("UIManager: Add called without Begin element!");
-            return;
+            return nullptr;
         }
 
         UIElementID id = UIElementID(m_idManager.GetNewUniqueIdentifier());
         if (id.value == ENGINE_INVALID_ID) {
             Log::Error("UIManager: Could not begin UI, no free Element id found!");
-            return;
+            return nullptr;
         }
 
         auto ptr = m_elementStack.top()->AddChild<T>(id, std::forward<Args>(args)...);
         if (m_isDebug)
             Log::Debug("UIManager: Added element {}({})", ptr->GetName(), id.value);
+
+        return  static_cast<T*>(ptr);
     }
 
 }

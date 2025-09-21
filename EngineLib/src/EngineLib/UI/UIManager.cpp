@@ -55,7 +55,7 @@ namespace EngineCore {
         }
     }
 
-    void UIManager::UpdateChild(std::unique_ptr<UI::Panel>& element) {
+    void UIManager::UpdateChild(std::unique_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
             child->Update();
             UpdateChild(child);
@@ -69,14 +69,14 @@ namespace EngineCore {
 		}
 	}
 
-    void UIManager::SendChildDrawCommands(std::unique_ptr<UI::Panel>& element) {
+    void UIManager::SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
             child->SendDrawCommand();
             SendChildDrawCommands(child);
         }
     }
 
-	void UIManager::FreeIDsInternal(UI::Panel* element) {
+	void UIManager::FreeIDsInternal(UI::ElementBase* element) {
 		auto& childs = element->GetChildren();
 		for (const auto& child : childs) {
 			FreeIDsInternal(child.get());
@@ -84,7 +84,7 @@ namespace EngineCore {
 		m_idManager.FreeUniqueIdentifier(element->GetID().value);
 	}
 
-    void UIManager::BuildHierarchyString(const UI::Panel* elementPtr, std::string& outStr, int level) {
+    void UIManager::BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level) {
         std::string indent(level * 2, ' ');
 
         unsigned int id = elementPtr->GetID().value;

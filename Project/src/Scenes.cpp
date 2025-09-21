@@ -24,7 +24,7 @@ void SetupUI() {
 	UI::Begin<Panel>(); {
 		
 		UI::Begin<Panel>(defaultStyle); {
-			UI::Add<Panel>(otherStyle);
+			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
 			UI::Add<Panel>(otherStyle);
 			UI::Add<Panel>(otherStyle);
 			UI::Add<Panel>(otherStyle);
