@@ -129,7 +129,6 @@ namespace EngineCore {
 				m_isDebuggerStart = false;
 			}
 		}
-		Input::SetLockDebug(!m_debugger->GetCursorLock());
 #endif 
 
 		Input::LateUpdate();

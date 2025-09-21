@@ -40,6 +40,8 @@
     <ClInclude Include="include\EngineLib\IconsFontAwesome5Pro.h" />
     <ClInclude Include="include\EngineLib\IDManager.h" />
     <ClInclude Include="include\EngineLib\Input.h" />
+    <ClInclude Include="include\EngineLib\Input\InputAction.h" />
+    <ClInclude Include="include\EngineLib\Input\InputManager.h" />
     <ClInclude Include="include\EngineLib\Material.h" />
     <ClInclude Include="include\EngineLib\Mesh.h" />
     <ClInclude Include="include\EngineLib\Nurom_Bold_ttf.h" />
@@ -59,6 +61,7 @@
   <ItemGroup>
     <ClCompile Include="include\EngineLib\Components\SpriteRenderer_C.h" />
     <ClCompile Include="include\EngineLib\Components\TextRenderer_C.h" />
+    <ClCompile Include="include\EngineLib\Input\InputTypes.h" />
     <ClCompile Include="src\EngineLib\Components\SpriteRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\TextRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\FontAsset.cpp" />
@@ -72,6 +75,7 @@
     <ClCompile Include="src\EngineLib\DebuggerWindows.cpp" />
     <ClCompile Include="src\EngineLib\FontManager.cpp" />
     <ClCompile Include="src\EngineLib\IDManager.cpp" />
+    <ClCompile Include="src\EngineLib\Input\InputAction.cpp" />
     <ClCompile Include="src\EngineLib\Material.cpp" />
     <ClCompile Include="src\EngineLib\Mesh.cpp" />
     <ClCompile Include="src\EngineLib\Components\MeshRenderer_C.cpp" />
@@ -83,7 +87,7 @@
     <ClCompile Include="src\EngineLib\Engine.cpp" />
     <ClCompile Include="src\EngineLib\GameObject.cpp" />
     <ClCompile Include="src\EngineLib\glad.c" />
-    <ClCompile Include="src\EngineLib\Input.cpp" />
+    <ClCompile Include="src\EngineLib\Input\InputManager.cpp" />
     <ClCompile Include="src\EngineLib\Profiler.cpp" />
     <ClCompile Include="src\EngineLib\Renderer.cpp" />
     <ClCompile Include="src\EngineLib\RenderLayerManager.cpp" />
