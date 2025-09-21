@@ -1,5 +1,4 @@
-﻿#include <CoreLib\Math\Vector2.h>
-#include <CoreLib\Log.h>
+﻿#include <CoreLib\Log.h>
 
 #include "EngineLib\Input.h"
 

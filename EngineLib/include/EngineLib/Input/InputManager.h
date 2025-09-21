@@ -1,7 +1,7 @@
 ﻿#pragma once
-
 #include <GLFW/glfw3.h>
 #include <unordered_map>
+#include <CoreLib\Math\Vector2.h>
 
 #include "InputTypes.h"
 #include "InputAction.h"
