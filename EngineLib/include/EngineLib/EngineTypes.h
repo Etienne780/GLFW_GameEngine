@@ -17,9 +17,6 @@ namespace EngineCore {
 	inline constexpr int ENGINE_SUCCESS = 0;
 	inline constexpr int ENGINE_FAILURE = 1;
 
-	inline constexpr int ENGINE_STYLING_BAD_TYPE = 2;
-	inline constexpr int ENGINE_STYLING_NOT_FOUND = 3;
-
 	template<typename Tag>
 	struct EngineID {
 		unsigned int value{};

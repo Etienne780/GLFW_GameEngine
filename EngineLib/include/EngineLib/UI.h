@@ -1,5 +1,5 @@
 #pragma once
 
-#include "UI/UIStyle.h"
-#include "UI/UIElement.h"
+#include "UI/Style.h"
+#include "UI/UIElements.h"
 #include "UI/UIManager.h"

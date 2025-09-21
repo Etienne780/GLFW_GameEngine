@@ -5,29 +5,38 @@
 namespace EngineCore {
 
     template<typename T, typename... Args>
-    T* UIManager::Begin(Args&&... args) {
+    static T* UIManager::Begin(Args&&... args) {
+        static_assert(std::is_base_of<UI::ElementBase, T>::value, "T must derive from EngineCore::UI::Element");
+
         UIElementID id = UIElementID(m_idManager.GetNewUniqueIdentifier());
         if (id.value == ENGINE_INVALID_ID) {
             Log::Error("UIManager: Could not begin ui, no free Element id found!");
-            return;
+            return nullptr;
         }
-
-        auto element = std::make_unique<T>(id, std::forward<Args>(args)...);
-        T* rawPtr = element.get();
 
         if (m_elementStack.empty()) {
-            m_roots.push_back(std::move(element));
+            // Add root element
+            auto& element = m_roots.emplace_back(std::make_unique<T>(id, std::forward<Args>(args)...));
+            m_elementStack.push(element.get());
+            if (m_isDebug)
+                Log::Debug("UIManager: Started element {}({})", element->GetName(), id.value);
+            return static_cast<T*>(element.get());
         }
         else {
-            m_elementStack.top()->AddChild(std::move(element));
+            // Add child element
+            auto* parent = m_elementStack.top();
+            auto* elementPtr = parent->AddChild<T>(id, std::forward<Args>(args)...);
+            elementPtr->SetParent(parent);
+            m_elementStack.push(elementPtr);
+            if (m_isDebug)
+                Log::Debug("UIManager: Started element {}({})", elementPtr->GetName(), id.value);
+            return  static_cast<T*>(elementPtr);
         }
-
-        m_elementStack.push(rawPtr);
-        return rawPtr;
     }
 
     template<typename T, typename... Args>
     T* UIManager::Add(Args&&... args) {
+        static_assert(std::is_base_of<UI::ElementBase, T>::value, "T must derive from EngineCore::UI::Element");
         if (m_elementStack.empty()) {
             Log::Error("UIManager: Add called without Begin element!");
             return nullptr;
@@ -35,16 +44,15 @@ namespace EngineCore {
 
         UIElementID id = UIElementID(m_idManager.GetNewUniqueIdentifier());
         if (id.value == ENGINE_INVALID_ID) {
-            Log::Error("UIManager: Could not begin ui, no free Element id found!");
-            return;
+            Log::Error("UIManager: Could not begin UI, no free Element id found!");
+            return nullptr;
         }
 
-        auto element = std::make_unique<T>(id, std::forward<Args>(args)...);
-        T* rawPtr = element.get();
+        auto ptr = m_elementStack.top()->AddChild<T>(id, std::forward<Args>(args)...);
+        if (m_isDebug)
+            Log::Debug("UIManager: Added element {}({})", ptr->GetName(), id.value);
 
-        m_elementStack.top()->AddChild(std::move(element));
-        return rawPtr;
+        return  static_cast<T*>(ptr);
     }
-
 
 }
