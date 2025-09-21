@@ -9,12 +9,12 @@ void SetupUI() {
 	using namespace EngineCore::UI;
 	using UI = UIManager;
 	
-	auto defaultStyle = Style::Create();
+	auto defaultStyle = Style::Create("DefaultStyle");
 	defaultStyle->Set(Attribute::borderRadius, StyleValue(10, Unit::Px));
 	defaultStyle->Set(Attribute::width, StyleValue(500, Unit::Px));
 	defaultStyle->Set(Attribute::height, StyleValue(300, Unit::Px));
 
-	auto otherStyle = Style::Create();
+	auto otherStyle = Style::Create("OtherStyle");
 	otherStyle->Set(Attribute::color, StyleValue("#ffffff"));
 	otherStyle->Set(Attribute::width, StyleValue(10, Unit::Px));
 	otherStyle->Set(Attribute::height, StyleValue(10, Unit::Px));

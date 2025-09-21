@@ -2,12 +2,16 @@
 
 namespace EngineCore::UI {
 
-	std::shared_ptr<Style> Style::Create() {
-		return std::make_shared<Style>();
+	Style::Style(const std::string& name)
+		:m_name(name){
 	}
 
-	std::shared_ptr<Style> Style::Create(std::shared_ptr<Style> style) {
-		auto s = std::make_shared<Style>();
+	std::shared_ptr<Style> Style::Create(const std::string& name) {
+		return std::make_shared<Style>(name);
+	}
+
+	std::shared_ptr<Style> Style::Create(const std::string& name, std::shared_ptr<Style> style) {
+		auto s = std::make_shared<Style>(name);
 		s->Extend(style);
 		return s;
 	}
@@ -62,6 +66,10 @@ namespace EngineCore::UI {
 
 		Log::Warn("Style: Could not get attribute '{}'!", name);
 		return StyleValue{};
+	}
+
+	std::string Style::GetName() const {
+		return m_name;
 	}
 
 	const std::unordered_map<State, std::unordered_map<std::string, StyleValue>>& Style::GetAll() const {
