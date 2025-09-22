@@ -1,7 +1,7 @@
 namespace EngineCore {
-	
+
     template<typename T>
-    T Material::GetParam(const std::string& name) {
+    T ShaderBindObject::GetParam(const std::string& name) {
         static_assert(
             std::is_same<T, bool>::value ||
             std::is_same<T, int>::value ||
@@ -38,14 +38,14 @@ namespace EngineCore {
         else if constexpr (std::is_same<T, Texture2DID>::value) {
             return m_textureParams[name];
         }
-        
-        Log::Warn("Material: Param {} not found!", name);
+
+        Log::Warn("ShaderBindObject: Param {} not found!", name);
         static T dummy;
         return dummy;
     }
 
-	template<typename T>
-	void Material::SetParam(const std::string & name, const T & value) {
+    template<typename T>
+    void ShaderBindObject::SetParam(const std::string& name, const T& value) {
         static_assert(
             std::is_same<T, bool>::value ||
             std::is_same<T, int>::value ||

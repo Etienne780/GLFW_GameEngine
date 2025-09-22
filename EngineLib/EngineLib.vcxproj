@@ -51,6 +51,7 @@
     <ClInclude Include="include\EngineLib\ResourceManager.h" />
     <ClInclude Include="include\EngineLib\Script.h" />
     <ClInclude Include="include\EngineLib\Shader.h" />
+    <ClInclude Include="include\EngineLib\ShaderBindObject.h" />
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
     <ClInclude Include="include\EngineLib\UI.h" />
@@ -100,6 +101,7 @@
     <ClCompile Include="src\EngineLib\RenderLayerManager.cpp" />
     <ClCompile Include="src\EngineLib\ResourceManager.cpp" />
     <ClCompile Include="src\EngineLib\Shader.cpp" />
+    <ClCompile Include="src\EngineLib\ShaderBindObject.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />
     <ClCompile Include="src\EngineLib\Time.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Element.cpp" />
@@ -110,7 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl" />
-    <None Include="include\EngineLib\Material.inl" />
+    <None Include="include\EngineLib\ShaderBindObject.inl" />
     <None Include="include\EngineLib\UI\UIManager.inl" />
   </ItemGroup>
   <ItemGroup>

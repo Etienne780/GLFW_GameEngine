@@ -4,6 +4,7 @@
 #include <CoreLib/Math.h>
 #include <CoreLib/FormatUtils.h>
 
+#include "ShaderBindObject.h"
 #include "Vertex.h"
 
 namespace EngineCore {
@@ -70,7 +71,8 @@ namespace EngineCore {
 
 		MaterialID materialID = MaterialID(ENGINE_INVALID_ID);
 		MeshID meshID = MeshID(ENGINE_INVALID_ID);
-		Texture2DID textureOverrideID = Texture2DID(ENGINE_INVALID_ID);
+		// Texture2DID textureOverrideID = Texture2DID(ENGINE_INVALID_ID);
+		ShaderBindObject* shaderBindOverride = nullptr;
 		RenderLayerID renderLayerID = RenderLayerID(ENGINE_INVALID_ID);
 		int zOrder = 0;
 		const Matrix4x4* modelMatrix = nullptr;
