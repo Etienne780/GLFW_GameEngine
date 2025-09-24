@@ -2,6 +2,7 @@
 #include <CoreLib/FormatUtils.h>
 #include <CoreLib/Log.h>
 
+#include "EngineLib/Renderer.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/UI/UITypes.h"
 #include "EngineLib/UI/UIManager.h"
@@ -10,6 +11,7 @@ namespace EngineCore {
 
 
 	void UIManager::Init() {
+        m_renderer = Renderer::GetInstance();
 	}
 
 	void UIManager::Shutdown() {
@@ -28,6 +30,7 @@ namespace EngineCore {
 	}
 
 	void UIManager::DeleteAll() {
+        m_elementCount = 0;
 		for (const auto& element : m_roots) {
 			FreeIDsInternal(element.get());
 		}
@@ -56,6 +59,10 @@ namespace EngineCore {
 
     float UIManager::GetUIScaleFactor() {
         return m_uiScaleFactor;
+    }
+
+    void UIManager::SetUIRenderLayer(RenderLayerID layerID) {
+        m_renderLayerID = layerID;
     }
 
 	void UIManager::SetDebug(bool value) {
@@ -123,15 +130,21 @@ namespace EngineCore {
 
 
 	void UIManager::SendDrawCommands() {
+        if (m_renderLayerID.value == ENGINE_INVALID_ID) {
+            Log::Warn("UIManager: UI Render layer is not set! Use UIManager::SetUIRenderLayer to set the render layer for the UI");
+            return;
+        }
+
+        m_renderer->ReserveCommands(m_elementCount);
 		for (auto& element : m_roots) {
-			element->SendDrawCommand();
+			element->SendDrawCommand(m_renderer, m_renderLayerID);
 			SendChildDrawCommands(element);
 		}
 	}
 
     void UIManager::SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
-            child->SendDrawCommand();
+            child->SendDrawCommand(m_renderer, m_renderLayerID);
             SendChildDrawCommands(child);
         }
     }

@@ -4,11 +4,14 @@
 #include "Scenes.h"
 
 using namespace EngineCore;
+RenderLayerID uiLayer{ ENGINE_INVALID_ID };
 
 void SetupUI() {
 	using namespace EngineCore::UI;
 	using UI = UIManager;
-	
+	uiLayer = RenderLayerManager::AddLayer("UILayer", 10);
+	UI::SetUIRenderLayer(uiLayer);
+
 	auto defaultStyle = Style::Create("DefaultStyle");
 	defaultStyle->Set(Attribute::borderRadius, StyleValue(10, Unit::Px));
 	defaultStyle->Set(Attribute::width, StyleValue(500, Unit::Px));

@@ -5,6 +5,7 @@ namespace EngineCore::UI {
 
 	ElementBase::ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style)
 		: m_elementName(std::move(name)), m_id(id), m_elementStyle(std::move(style)) {
+        m_cmd.isUI = true;
 	}
 
     const std::string& ElementBase::GetName() const {
@@ -59,8 +60,13 @@ namespace EngineCore::UI {
         return m_children; 
     }
 
-    void ElementBase::SendDrawCommand() {
-    
+    void ElementBase::Update() {
+        UpdateImpl();
+    }
+
+    void ElementBase::SendDrawCommand(Renderer* renderer, RenderLayerID renderLayerID) {
+        m_cmd.renderLayerID = renderLayerID;
+        SendDrawCommandImpl(renderer);
     }
 
     ElementBase* ElementBase::GetParent() const {

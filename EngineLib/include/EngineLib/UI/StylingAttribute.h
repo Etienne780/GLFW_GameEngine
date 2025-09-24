@@ -42,6 +42,16 @@ namespace EngineCore::UI::Attribute {
 	*/
 	constexpr const char* layoutWrap = "layoutWrap";
 	/*
+	* @brief Visibility of the element and its childs, still effects layouting
+	* @param visible, hidden
+	*/
+	constexpr const char* visibility = "visibility";
+	/*
+	* @brief display mode of the element and its childs, if none has no effect in layouting
+	* @param display, none
+	*/
+	constexpr const char* display = "display";
+	/*
 	* @brief offset the position of this element, should not be used to often
 	* @param valueX:, valueY: number
 	*/

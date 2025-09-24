@@ -5,6 +5,7 @@
 #include <functional>
 #include <CoreLib/Math/Vector2.h>
 
+#include "../../Renderer.h"
 #include "../../EngineTypes.h"
 #include "../Style.h"
 
@@ -53,6 +54,7 @@ namespace EngineCore::UI {
         ElementBase* m_parentElement = nullptr;
         std::vector<std::unique_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
+        RenderCommand m_cmd;
 
         Callback onClick;
         Callback onHover;
@@ -63,8 +65,11 @@ namespace EngineCore::UI {
         // size is in pixels (could get scaled by UIManager, so the value is not absolute)
         Vector2 m_localSize;
 
-        virtual void Update() {};
-        virtual void SendDrawCommand();
+        void Update();
+        virtual void UpdateImpl() {};
+        void SendDrawCommand(Renderer* renderer, RenderLayerID renderLayerID);
+        virtual void SendDrawCommandImpl(Renderer* renderer) {};
+
         ElementBase* GetParent() const;
         void SetParent(ElementBase* elementPtr);
         void SetState(State state);

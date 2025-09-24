@@ -67,6 +67,7 @@ namespace EngineCore {
 
 	struct RenderCommand {
 		RenderCommandType type = RenderCommandType::Mesh;
+		bool isUI = false;
 		bool invertMesh = false;
 
 		MaterialID materialID = MaterialID(ENGINE_INVALID_ID);

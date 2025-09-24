@@ -1,4 +1,5 @@
 #pragma once
+#include "EngineLib/EngineTypes.h"
 #include "EngineLib/UI/Elements/Element.h"
 
 namespace EngineCore::UI {
@@ -9,6 +10,7 @@ namespace EngineCore::UI {
         Panel(UIElementID id, std::shared_ptr<Style> style = std::make_shared<Style>());
 
     protected:
+        void SendDrawCommandImpl(Renderer* renderer) override;
     };
 
 }

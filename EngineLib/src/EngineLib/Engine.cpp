@@ -103,8 +103,8 @@ namespace EngineCore {
 		UIManager::Update(screenWidth, screenHeight);
 		if (m_gameObjectManager->m_mainCamera.lock()) {
 			static Renderer* renderer = Renderer::GetInstance();
-			m_gameObjectManager->SendDrawCommands();
 			UIManager::SendDrawCommands();
+			m_gameObjectManager->SendDrawCommands();
 			renderer->DrawAll();
 		}
 		else {

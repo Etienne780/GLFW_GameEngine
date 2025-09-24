@@ -14,6 +14,7 @@ namespace EngineCore {
             return nullptr;
         }
 
+        m_elementCount++;
         if (m_elementStack.empty()) {
             // Add root element
             auto& element = m_roots.emplace_back(std::make_unique<T>(id, std::forward<Args>(args)...));
@@ -42,6 +43,7 @@ namespace EngineCore {
             return nullptr;
         }
 
+        m_elementCount++;
         UIElementID id = UIElementID(m_idManager.GetNewUniqueIdentifier());
         if (id.value == ENGINE_INVALID_ID) {
             Log::Error("UIManager: Could not begin UI, no free Element id found!");

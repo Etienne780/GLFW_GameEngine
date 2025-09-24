@@ -8,10 +8,12 @@
 
 #include "UIElements.h"
 #include "../IDManager.h"
+#include "../EngineTypes.h"
 
 namespace EngineCore {
 
 	class Engine;
+	class Renderer;
 	class UIManager {
 	friend class Engine;
 	public:
@@ -33,6 +35,8 @@ namespace EngineCore {
 		static bool GetUIScaling();
 		static Vector2 GetReferenceScreenSize();
 		static float GetUIScaleFactor();
+
+		static void SetUIRenderLayer(RenderLayerID layerID);
 
 		static void SetDebug(bool value);
 		/*
@@ -58,6 +62,9 @@ namespace EngineCore {
 		UIManager() = default;
 		static inline bool m_isDebug = false;
 		static inline IDManager m_idManager;
+		static inline Renderer* m_renderer = nullptr;
+		static inline size_t m_elementCount = 0;
+		static inline RenderLayerID m_renderLayerID{ ENGINE_INVALID_ID };
 
 		static inline std::vector<std::unique_ptr<UI::ElementBase>> m_roots;
 		static inline std::stack<UI::ElementBase*> m_elementStack;

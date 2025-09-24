@@ -263,6 +263,10 @@ namespace EngineCore {
         Vector3 camPos = cameraPtr->GetGameObject()->GetTransform()->GetWorldPosition();
         std::sort(m_commands.begin(), m_commands.end(),
             [&](const auto& a, const auto& b) {
+                // UI should always come last
+                if (a.isUI != b.isUI)
+                    return !a.isUI;
+
                 // Layer Priority
                 int prioA = RenderLayerManager::GetLayerPriority(a.renderLayerID);
                 int prioB = RenderLayerManager::GetLayerPriority(b.renderLayerID);
@@ -306,21 +310,30 @@ namespace EngineCore {
         Log::Print("");
         Log::Info("Frame {} Render-Commands", Time::GetFrameCount());
 
+        bool printUIHeader = false;
         bool printOpaqueHeader = false;
         bool printTransHeader = false;
         int counter = 0;
         for (auto& cmd : m_commands) {
             // prints header
+            if (cmd.isUI) {
+                if (!printUIHeader) {
+                    printUIHeader = true;
+                    printOpaqueHeader = false;
+                    printTransHeader = false;
+                    Log::Print("UI:");
+                }
+            }
             if (!cmd.isTransparent) {
                 if (!printOpaqueHeader) {
-                    Log::Print("Opaque:");
                     printOpaqueHeader = true;
+                    Log::Print("  Opaque:");
                 }
             }
             else {
                 if (!printTransHeader) {
-                    Log::Print("Transparent:");
                     printTransHeader = true;
+                    Log::Print("  Transparent:");
                 }
             }
 
