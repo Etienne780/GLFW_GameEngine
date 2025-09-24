@@ -4,11 +4,11 @@
 #include <CoreLib/Math.h>
 #include <CoreLib/FormatUtils.h>
 
-#include "ShaderBindObject.h"
 #include "Vertex.h"
 
 namespace EngineCore {
 
+	class ShaderBindObject;
 	class Texture2D;
 	class Mesh;
 	class Shader;

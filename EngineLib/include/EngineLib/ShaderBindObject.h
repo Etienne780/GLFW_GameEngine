@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <string>
 
+#include <CoreLib/Log.h>
 #include <CoreLib\Math\Vector2.h>
 #include <CoreLib\Math\Vector3.h>
 #include <CoreLib\Math\Vector4.h>
@@ -9,9 +10,9 @@
 
 #include "EngineTypes.h"
 
-
 namespace EngineCore {
 
+	class Shader;
 	class ShaderBindObject {
 	friend class Engine;
 	public:

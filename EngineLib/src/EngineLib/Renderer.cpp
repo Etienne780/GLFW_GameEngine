@@ -15,6 +15,7 @@
 #include "EngineLib/Mesh.h"
 #include "EngineLib/Material.h"
 #include "EngineLib/Shader.h"
+#include "EngineLib/ShaderBindObject.h"
 #include "EngineLib/Renderer.h"
 
 namespace EngineCore {
@@ -64,8 +65,7 @@ namespace EngineCore {
         ShaderID currentShaderID(ENGINE_INVALID_ID);
         Material* currentMaterial = nullptr;
         MaterialID currentMaterialID(ENGINE_INVALID_ID);
-        Texture2D* currentTextureOverride = nullptr;
-        Texture2DID currentTextureOverrideID(ENGINE_INVALID_ID);
+        ShaderBindObject* currentOverrideShaderBindObj = nullptr;
         Mesh* currentMesh = nullptr;
         MeshID currentMeshID(ENGINE_INVALID_ID);
         bool currentInvertMesh = m_commands[0].invertMesh;
@@ -79,11 +79,11 @@ namespace EngineCore {
         
         SortDrawCommands(camptr);
 
-        auto flushBatch = [&](Mesh* mesh, Shader* shader, Texture2D* textureOverride, bool invert, const std::vector<Matrix4x4>& matrices) {
+        auto flushBatch = [&](Mesh* mesh, Shader* shader, ShaderBindObject* shaderBindObjOverride, bool invert, const std::vector<Matrix4x4>& matrices) {
             if (mesh && shader && !matrices.empty()) {
                 // shader->Bind(); probably fine
-                if (textureOverride)
-                    textureOverride->Bind();
+                if (shaderBindObjOverride)
+                    shaderBindObjOverride->Bind(shader);
                 glFrontFace(invert ? GL_CW : GL_CCW);
                 mesh->DrawInstanced((int)matrices.size(), matrices);
             }
@@ -105,7 +105,7 @@ namespace EngineCore {
                 currentRenderLayerPriority = renderLayerPrio;
                 currentZOrder = cmd.zOrder;
                 //draw the rest
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+                flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
 
                 glClear(GL_DEPTH_BUFFER_BIT);
@@ -113,14 +113,14 @@ namespace EngineCore {
             else if (currentZOrder != cmd.zOrder) {
                 currentZOrder = cmd.zOrder;
                 //draw the rest
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+                flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
 
                 glClear(GL_DEPTH_BUFFER_BIT);
             }
 
             if (cmd.type == RenderCommandType::Text) {
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+                flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
 
                 // new font or new pixel size
@@ -178,24 +178,9 @@ namespace EngineCore {
                 continue;
             }
 
-            // if new texture override
-            if (currentTextureOverrideID != cmd.textureOverrideID) {
-                currentTextureOverrideID = cmd.textureOverrideID;
-
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
-                m_instanceMatrices.clear();
-
-                if (currentTextureOverrideID.value != ENGINE_INVALID_ID) {
-                    currentTextureOverride = rm->GetTexture2D(currentTextureOverrideID);
-                }
-                else {
-                    currentTextureOverride = nullptr;
-                }
-            }
-
             // material change
             if (currentMaterialID != cmd.materialID) {
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+                flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
         
                 if (cmd.materialID.value == ENGINE_INVALID_ID) continue;
@@ -223,6 +208,14 @@ namespace EngineCore {
                 }
             }
 
+            // shader bind obj override
+            if (currentOverrideShaderBindObj != cmd.shaderBindOverride) {
+                flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
+                m_instanceMatrices.clear();
+
+                currentOverrideShaderBindObj = cmd.shaderBindOverride;
+            }
+
             if (currentMaterialID.value == ENGINE_INVALID_ID ||
                 currentShaderID.value == ENGINE_INVALID_ID ||
                 currentShader == nullptr) {
@@ -233,7 +226,7 @@ namespace EngineCore {
             if (currentMeshColor.x == -1 || currentMeshColor.SquaredMagnitude() != cmd.meshColor.SquaredMagnitude()) {
                 currentMeshColor = cmd.meshColor;
 
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+                flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
                 currentShader->SetVector4("umeshColor", currentMeshColor);
             }
@@ -241,7 +234,7 @@ namespace EngineCore {
             if (currentMeshID != cmd.meshID || 
                 currentInvertMesh != cmd.invertMesh) {
 
-                flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+                flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
         
                 currentMeshID = cmd.meshID;
@@ -259,9 +252,9 @@ namespace EngineCore {
             }
         }
         
-        flushBatch(currentMesh, currentShader, currentTextureOverride, currentInvertMesh, m_instanceMatrices);
+        flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
         
-        //PrintCommands(true);
+        PrintCommands(true);
         m_commands.clear();
         m_instanceMatrices.clear();
     }
@@ -285,9 +278,8 @@ namespace EngineCore {
                     if (a.materialID != b.materialID) return a.materialID < b.materialID;
                     if (a.meshID != b.meshID) return a.meshID < b.meshID;
 
-                    // Texture overrides first ENGINE_INVALID than the texture overrides.
-                    if (a.textureOverrideID != b.textureOverrideID)
-                        return a.textureOverrideID > b.textureOverrideID;
+                    if (a.shaderBindOverride != b.shaderBindOverride)
+                        return a.shaderBindOverride == nullptr;
 
                     float aSQM = a.meshColor.SquaredMagnitude();
                     float bSQM = b.meshColor.SquaredMagnitude();
@@ -314,18 +306,34 @@ namespace EngineCore {
         Log::Print("");
         Log::Info("Frame {} Render-Commands", Time::GetFrameCount());
 
+        bool printOpaqueHeader = false;
+        bool printTransHeader = false;
         int counter = 0;
         for (auto& cmd : m_commands) {
+            // prints header
+            if (!cmd.isTransparent) {
+                if (!printOpaqueHeader) {
+                    Log::Print("Opaque:");
+                    printOpaqueHeader = true;
+                }
+            }
+            else {
+                if (!printTransHeader) {
+                    Log::Print("Transparent:");
+                    printTransHeader = true;
+                }
+            }
+
             if (displayOption) {
-                Log::Print(Log::levelInfo, "      - Cmd {}: Type: {}, RenLayID: {}, ZOr: {}, MatID: {}, MeshID: {}, FontID: {}, OTex2DID: {}, IsTrans: {}, InvMesh: {}, MeshCol: {}, FontSize: {}",
+                Log::Print(Log::levelInfo, "      - Cmd {}: Type: {}, RenLayID: {}, ZOr: {}, MatID: {}, MeshID: {}, FontID: {}, OSBindObj: {}, IsTrans: {}, InvMesh: {}, MeshCol: {}, FontSize: {}",
                     counter,
                     RenderCommandTypeToString(cmd.type),
                     cmd.renderLayerID.value,
                     cmd.zOrder,
-                    cmd.materialID.value,
-                    cmd.meshID.value,
-                    cmd.fontID.value,
-                    cmd.textureOverrideID.value,
+                    (cmd.materialID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.materialID.value) : "-",
+                    (cmd.meshID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.meshID.value) : "-",
+                    (cmd.fontID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.fontID.value) : "-",
+                    (cmd.shaderBindOverride != nullptr),
                     cmd.isTransparent,
                     cmd.invertMesh,
                     cmd.meshColor.ToString(),
@@ -336,10 +344,10 @@ namespace EngineCore {
                 Log::Print(Log::levelInfo, "      - Type: {}", RenderCommandTypeToString(cmd.type));
                 Log::Print(Log::levelInfo, "      - Render-Layer ID: {}", cmd.renderLayerID.value);
                 Log::Print(Log::levelInfo, "      - Z-Order: {}", cmd.zOrder);
-                Log::Print(Log::levelInfo, "      - Material ID: {}", cmd.materialID.value);
-                Log::Print(Log::levelInfo, "      - Mesh ID: {}", cmd.meshID.value);
-                Log::Print(Log::levelInfo, "      - Font ID: {}", cmd.fontID.value);
-                Log::Print(Log::levelInfo, "      - Override texture2D ID: {}", cmd.textureOverrideID.value);
+                Log::Print(Log::levelInfo, "      - Material ID: {}", (cmd.materialID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.materialID.value) : "-");
+                Log::Print(Log::levelInfo, "      - Mesh ID: {}", (cmd.meshID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.meshID.value) : "-");
+                Log::Print(Log::levelInfo, "      - Font ID: {}", (cmd.fontID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.fontID.value) : "-");
+                Log::Print(Log::levelInfo, "      - Override ShaderBindObj ID: {}", (cmd.shaderBindOverride != nullptr));
                 Log::Print(Log::levelInfo, "      - Is transparent: {}", cmd.isTransparent);
                 Log::Print(Log::levelInfo, "      - Invert mesh: {}", cmd.invertMesh);
                 Log::Print(Log::levelInfo, "      - Mesh color: {}", cmd.meshColor.ToString());

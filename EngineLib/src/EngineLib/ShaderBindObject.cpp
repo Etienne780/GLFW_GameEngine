@@ -1,8 +1,7 @@
-#include <CoreLib\FormatUtils.h>
-#include <CoreLib\Log.h>
+#include <CoreLib/FormatUtils.h>
 
-#include "EngineLib\ResourceManager.h"
-#include "EngineLib\Shader.h"
+#include "EngineLib/ResourceManager.h"
+#include "EngineLib/Shader.h"
 #include "EngineLib/ShaderBindObject.h"
 
 namespace EngineCore {
