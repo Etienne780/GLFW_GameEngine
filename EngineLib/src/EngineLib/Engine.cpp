@@ -35,7 +35,7 @@ namespace EngineCore {
 		GameObjectManager::Init();
 		m_gameObjectManager = GameObjectManager::GetInstance();
 
-		Material::m_maxTextureUnits = m_maxTextureUnits;
+		ShaderBindObject::m_maxTextureUnits = m_maxTextureUnits;
 
 		LoadBaseAsset();
 

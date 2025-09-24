@@ -61,7 +61,7 @@ namespace EngineCore {
 			auto* texture = rm->GetTexture2D(id);
 			if (texture) {
 				m_isTransparent = (texture->GetNrChannels() > 3);
-				m_textureID = id;
+				m_shaderBindObject.SetParam("texture", id);
 			}
 			else {
 				Log::Error("SpriteRenderer: Cant set sprite, spirte is nullptr!");
@@ -111,7 +111,7 @@ namespace EngineCore {
 			m_cmd.invertMesh = m_invertMesh;
 			m_cmd.materialID = ASSETS::ENGINE::MATERIAL::Default();
 			m_cmd.meshID = ASSETS::ENGINE::MESH::Plain();
-			m_cmd.textureOverrideID = m_textureID;
+			m_cmd.shaderBindOverride = &m_shaderBindObject;
 			m_cmd.renderLayerID = m_gameObject->GetRenderLayer();
 			m_cmd.zOrder = m_zOrder;
 			m_cmd.modelMatrix = m_gameObject->GetTransform()->GetWorldModelMatrixPtr();

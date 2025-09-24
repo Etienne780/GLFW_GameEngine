@@ -3,6 +3,7 @@
 
 #include "../ComponentBase.h"
 #include "../Renderer.h"
+#include "../ShaderBindObject.h"
 #include "EngineLib/EngineTypes.h"
 
 namespace EngineCore {
@@ -52,6 +53,7 @@ namespace EngineCore {
 			static inline Renderer* m_renderer = Renderer::GetInstance();
 			std::shared_ptr<GameObject> m_gameObject = nullptr;
 			RenderCommand m_cmd;
+			ShaderBindObject m_shaderBindObject;
 			Texture2DID m_textureID = Texture2DID(ENGINE_INVALID_ID);
 			int m_zOrder = 0;
 

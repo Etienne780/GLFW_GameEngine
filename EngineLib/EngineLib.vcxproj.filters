@@ -141,6 +141,9 @@
     <ClInclude Include="include\EngineLib\Input\InputLayerManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EngineLib\ShaderBindObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EngineLib\Application.cpp">
@@ -275,15 +278,18 @@
     <ClCompile Include="src\EngineLib\Input\InputTypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\EngineLib\ShaderBindObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="include\EngineLib\Material.inl">
+    <None Include="include\EngineLib\UI\UIManager.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="include\EngineLib\UI\UIManager.inl">
+    <None Include="include\EngineLib\ShaderBindObject.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
