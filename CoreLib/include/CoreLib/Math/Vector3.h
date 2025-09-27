@@ -198,6 +198,6 @@ Vector3 operator/(float scalar, const Vector3& other);
 #pragma endregion
 
 template<>
-static std::string FormatUtils::toString<Vector3>(Vector3 value) {
+static inline std::string FormatUtils::toString<Vector3>(Vector3 value) {
     return value.ToString();
 }

@@ -17,8 +17,6 @@ Project::Project()
 	App_OpenGL_Set_Version(3, 3);
 
 	// Log::SaveLogs("Logs/");
-
-	Log::Print(Vector2(10, 10));
 }
 
 void Project::Start() {

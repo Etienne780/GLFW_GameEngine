@@ -215,6 +215,6 @@ namespace GLTransform4x4 {
 }
 
 template<>
-static std::string FormatUtils::toString<Matrix4x4>(Matrix4x4 value) {
+static inline std::string FormatUtils::toString<Matrix4x4>(Matrix4x4 value) {
     return value.ToString();
 }

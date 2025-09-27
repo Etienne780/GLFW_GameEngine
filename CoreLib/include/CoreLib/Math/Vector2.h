@@ -195,6 +195,6 @@ Vector2 operator/(float scalar, const Vector2& other);
 #pragma endregion
 
 template<>
-static std::string FormatUtils::toString<Vector2>(Vector2 value) {
+static inline std::string FormatUtils::toString<Vector2>(Vector2 value) {
     return value.ToString();
 }

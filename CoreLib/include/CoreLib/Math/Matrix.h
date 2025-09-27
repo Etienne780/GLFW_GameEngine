@@ -224,6 +224,6 @@ Matrix operator/(float scalar, const Matrix& matrix);
 #pragma endregion
 
 template<>
-static std::string FormatUtils::toString<Matrix>(Matrix value) {
+static inline std::string FormatUtils::toString<Matrix>(Matrix value) {
     return value.ToString();
 }
