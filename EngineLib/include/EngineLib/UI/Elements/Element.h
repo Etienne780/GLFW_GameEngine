@@ -67,7 +67,7 @@ namespace EngineCore::UI {
         Vector4 m_backgroundColor{ 1, 1, 1, 1 };
         Vector4 m_borderColor{ 0.75f, 0.75f, 0.75f, 1 };
         Vector4 m_borderRadius{ 25, 5, 100, 50 };
-        float m_borderWidth = 0;
+        float m_borderWidth = 50;
 
         void Update();
         virtual void UpdateImpl() {};
