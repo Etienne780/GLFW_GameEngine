@@ -280,16 +280,15 @@ namespace EngineCore {
                 
                 void main() {
                     vec2 coord = vTexCoord * uSize;
+                    vec4 color = uBackgroundColor;
                 
-                    // Distances to each corner center (for circle masks)
+                    // Determine distance to each corner center
                     vec2 tl = vec2(uBorderRadius.x, uSize.y - uBorderRadius.x);
                     vec2 tr = vec2(uSize.x - uBorderRadius.y, uSize.y - uBorderRadius.y);
                     vec2 br = vec2(uSize.x - uBorderRadius.z, uBorderRadius.z);
                     vec2 bl = vec2(uBorderRadius.w, uBorderRadius.w);
                 
-                    float alpha = 0.5;
-                
-                    // Check corners
+                    // Corners: discard pixels outside radius
                     if(coord.x < tl.x && coord.y > tl.y) {
                         if(length(coord - tl) > uBorderRadius.x) discard;
                     } else if(coord.x > tr.x && coord.y > tr.y) {
@@ -300,26 +299,38 @@ namespace EngineCore {
                         if(length(coord - bl) > uBorderRadius.w) discard;
                     }
                 
-                    // Outline
-                    float borderAlpha = 0.0;
-                    if(coord.x < uBorderRadius.x && coord.y > uSize.y - uBorderRadius.x)
-                        borderAlpha = smoothstep(uBorderRadius.x - uBorderWidth, uBorderRadius.x, length(coord - tl));
-                    else if(coord.x > uSize.x - uBorderRadius.y && coord.y > uSize.y - uBorderRadius.y)
-                        borderAlpha = smoothstep(uBorderRadius.y - uBorderWidth, uBorderRadius.y, length(coord - tr));
-                    else if(coord.x > uSize.x - uBorderRadius.z && coord.y < uBorderRadius.z)
-                        borderAlpha = smoothstep(uBorderRadius.z - uBorderWidth, uBorderRadius.z, length(coord - br));
-                    else if(coord.x < uBorderRadius.w && coord.y < uBorderRadius.w)
-                        borderAlpha = smoothstep(uBorderRadius.w - uBorderWidth, uBorderRadius.w, length(coord - bl));
-                    else {
-                        // Edges (non-corner)
-                        if(coord.x < uBorderWidth || coord.x > uSize.x - uBorderWidth || 
-                           coord.y < uBorderWidth || coord.y > uSize.y - uBorderWidth) {
-                            borderAlpha = 1.0;
-                        }
+                    // Border check: hard edges
+                    bool inBorder = false;
+                
+                    // Top border
+                    if(coord.y >= uSize.y - uBorderWidth) inBorder = true;
+                    // Bottom border
+                    if(coord.y <= uBorderWidth) inBorder = true;
+                    // Left border
+                    if(coord.x <= uBorderWidth) inBorder = true;
+                    // Right border
+                    if(coord.x >= uSize.x - uBorderWidth) inBorder = true;
+                
+                    // Corners overwrite border check to match radius
+                    if(coord.x < tl.x && coord.y > tl.y) {
+                        float dist = length(coord - tl);
+                        inBorder = (dist >= uBorderRadius.x - uBorderWidth && dist <= uBorderRadius.x);
+                    } else if(coord.x > tr.x && coord.y > tr.y) {
+                        float dist = length(coord - tr);
+                        inBorder = (dist >= uBorderRadius.y - uBorderWidth && dist <= uBorderRadius.y);
+                    } else if(coord.x > br.x && coord.y < br.y) {
+                        float dist = length(coord - br);
+                        inBorder = (dist >= uBorderRadius.z - uBorderWidth && dist <= uBorderRadius.z);
+                    } else if(coord.x < bl.x && coord.y < bl.y) {
+                        float dist = length(coord - bl);
+                        inBorder = (dist >= uBorderRadius.w - uBorderWidth && dist <= uBorderRadius.w);
                     }
                 
-                    FragColor = mix(uBackgroundColor, uBorderColor, borderAlpha);
+                    if(inBorder) color = uBorderColor;
+                
+                    FragColor = color;
                 }
+
             )";
             g_engineShaderDefaultUIID = rm->AddShaderFromMemory(vert, frag);
         }
