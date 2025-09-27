@@ -12,6 +12,7 @@ EngineCore::Texture2DID g_engineTextureMissingID = EngineCore::Texture2DID(Engin
 EngineCore::Texture2DID g_engineTextureCursedmod3ID = EngineCore::Texture2DID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MeshID g_engineMeshCubeID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MeshID g_engineMeshPlainID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::MeshID g_engineMeshUIPlainID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::ShaderID g_engineShaderDefaultID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::ShaderID g_engineShaderDefaultTextID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::ShaderID g_engineShaderDefaultUIID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
@@ -28,6 +29,7 @@ namespace EngineCore::ASSETS::ENGINE::TEXTURE {
 namespace EngineCore::ASSETS::ENGINE::MESH {
 	MeshID Cube() { return g_engineMeshCubeID; }
     MeshID Plain() { return g_engineMeshPlainID; }
+    MeshID UIPlain() { return g_engineMeshUIPlainID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::SHADER {
@@ -151,6 +153,27 @@ namespace EngineCore {
         }
         #pragma endregion
 
+        #pragma region MESH::UIPlain
+        {
+            Vertex vertices[] = {
+                { 0.0f, 1.0f,  0, 0.0f, 1.0f }, // bottom-left
+                { 1.0f, 1.0f,  0, 1.0f, 1.0f }, // bottom-right
+                { 1.0f, 0.0f,  0, 1.0f, 0.0f }, // top-right
+                { 0.0f, 0.0f,  0, 0.0f, 0.0f }, // top-left
+            };
+
+            unsigned int indices[] = {
+                // Back (Z-)
+                0, 2, 1, 0, 3, 2,
+            };
+
+            size_t verticesSize = sizeof(vertices) / sizeof(vertices[0]);
+            size_t indicesSize = sizeof(indices) / sizeof(indices[0]);
+
+            g_engineMeshUIPlainID = rm->AddMeshFromMemory(vertices, verticesSize, indices, indicesSize);
+        }
+        #pragma endregion
+
         #pragma region SHADER::Default
         {
             std::string vert = R"(
@@ -233,23 +256,69 @@ namespace EngineCore {
                 #version 330 core
                 layout(location = 0) in vec3 aPos;
                 layout(location = 1) in vec2 aTexCoord;
-                layout(location = 2) in vec3 aNormal;
                 layout(location = 3) in mat4 instanceModel;
+                
+                out vec2 vTexCoord;
                 
                 uniform mat4 projection;
                 
                 void main() {
                     gl_Position = projection * instanceModel * vec4(aPos, 1.0);
+                    vTexCoord = aTexCoord;
                 }
             )";
             std::string frag = R"(
                 #version 330 core
+                in vec2 vTexCoord;
                 out vec4 FragColor;
-                uniform vec4 umeshColor;
-
-                void main()
-                {
-                	FragColor = umeshColor;
+                
+                uniform vec4 uBackgroundColor;
+                uniform vec4 uBorderColor;
+                uniform vec4 uBorderRadius;   // top-left, top-right, bottom-right, bottom-left
+                uniform float uBorderWidth;
+                uniform vec2 uSize;           // width, height in pixels
+                
+                void main() {
+                    vec2 coord = vTexCoord * uSize;
+                
+                    // Distances to each corner center (for circle masks)
+                    vec2 tl = vec2(uBorderRadius.x, uSize.y - uBorderRadius.x);
+                    vec2 tr = vec2(uSize.x - uBorderRadius.y, uSize.y - uBorderRadius.y);
+                    vec2 br = vec2(uSize.x - uBorderRadius.z, uBorderRadius.z);
+                    vec2 bl = vec2(uBorderRadius.w, uBorderRadius.w);
+                
+                    float alpha = 0.5;
+                
+                    // Check corners
+                    if(coord.x < tl.x && coord.y > tl.y) {
+                        if(length(coord - tl) > uBorderRadius.x) discard;
+                    } else if(coord.x > tr.x && coord.y > tr.y) {
+                        if(length(coord - tr) > uBorderRadius.y) discard;
+                    } else if(coord.x > br.x && coord.y < br.y) {
+                        if(length(coord - br) > uBorderRadius.z) discard;
+                    } else if(coord.x < bl.x && coord.y < bl.y) {
+                        if(length(coord - bl) > uBorderRadius.w) discard;
+                    }
+                
+                    // Outline
+                    float borderAlpha = 0.0;
+                    if(coord.x < uBorderRadius.x && coord.y > uSize.y - uBorderRadius.x)
+                        borderAlpha = smoothstep(uBorderRadius.x - uBorderWidth, uBorderRadius.x, length(coord - tl));
+                    else if(coord.x > uSize.x - uBorderRadius.y && coord.y > uSize.y - uBorderRadius.y)
+                        borderAlpha = smoothstep(uBorderRadius.y - uBorderWidth, uBorderRadius.y, length(coord - tr));
+                    else if(coord.x > uSize.x - uBorderRadius.z && coord.y < uBorderRadius.z)
+                        borderAlpha = smoothstep(uBorderRadius.z - uBorderWidth, uBorderRadius.z, length(coord - br));
+                    else if(coord.x < uBorderRadius.w && coord.y < uBorderRadius.w)
+                        borderAlpha = smoothstep(uBorderRadius.w - uBorderWidth, uBorderRadius.w, length(coord - bl));
+                    else {
+                        // Edges (non-corner)
+                        if(coord.x < uBorderWidth || coord.x > uSize.x - uBorderWidth || 
+                           coord.y < uBorderWidth || coord.y > uSize.y - uBorderWidth) {
+                            borderAlpha = 1.0;
+                        }
+                    }
+                
+                    FragColor = mix(uBackgroundColor, uBorderColor, borderAlpha);
                 }
             )";
             g_engineShaderDefaultUIID = rm->AddShaderFromMemory(vert, frag);

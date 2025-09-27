@@ -1,13 +1,35 @@
+#include <CoreLib/ConversionUtils.h>
+
+#include "EngineLib/ResourceManager.h"
 #include "EngineLib/UI/UIManager.h"
-#include "CoreLib/ConversionUtils.h"
 #include "EngineLib/UI/Elements/Element.h"
 
 namespace EngineCore::UI {
 
-	ElementBase::ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style)
+	ElementBase::ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style, MaterialID matID)
 		: m_elementName(std::move(name)), m_id(id), m_elementStyle(std::move(style)) {
         m_cmd.isUI = true;
+        m_cmd.type = RenderCommandType::Mesh;
+        m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
+        m_cmd.materialID = matID;
+
+        auto* rm = ResourceManager::GetInstance();
+        auto* mat = rm->GetMaterial(matID);
+
+        mat->SetParam("uBackgroundColor", m_backgroundColor);
+        mat->SetParam("uBorderColor", m_borderColor);
+        mat->SetParam("uBorderRadius", m_borderRadius);
+        mat->SetParam("uBorderWidth", m_borderWidth);
+        mat->SetParam("uSize", GetLocalSize());
 	}
+
+    ElementBase::ElementBase(std::string name, UIElementID id, MaterialID matID, std::shared_ptr<Style> style) 
+        : m_elementName(std::move(name)), m_id(id), m_elementStyle(std::move(style)) {
+        m_cmd.isUI = true;
+        m_cmd.type = RenderCommandType::Mesh;
+        m_cmd.meshID = ASSETS::ENGINE::MESH::Plain();
+        m_cmd.materialID = matID;
+    }
 
     const std::string& ElementBase::GetName() const {
         return m_elementName; 
@@ -69,6 +91,7 @@ namespace EngineCore::UI {
         MarkDirty();
 
         m_cmd.renderLayerID = renderLayerID;
+        m_cmd.modelMatrix = GetWorldModelMatrixPtr();
         SendDrawCommandImpl(renderer);
     }
 
@@ -87,10 +110,10 @@ namespace EngineCore::UI {
 
         switch (m_state) {
         case State::Hovered: 
-            if (onHover) onHover();
+            if (m_onHover) m_onHover();
             break;
         case State::Pressed:
-            if (onPress) onPress();
+            if (m_onPress) m_onPress();
             break;
         case State::Normal:
             break;
@@ -190,6 +213,12 @@ namespace EngineCore::UI {
         for (auto& child : m_children) {
             child->MarkDirty();
         }
+    }
+
+    void ElementBase::SetStyleProperties() {
+
+
+        SetStylePropertiesImpl();
     }
 
 }

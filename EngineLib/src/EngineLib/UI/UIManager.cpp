@@ -117,8 +117,8 @@ namespace EngineCore {
                 element->SetState(State::Pressed);
             }
             else if (mouseReleased) {
-                if (element->GetState() == State::Pressed && element->onClick) {
-                    element->onClick();
+                if (element->GetState() == State::Pressed && element->m_onClick) {
+                    element->m_onClick();
                 }
                 element->SetState(State::Hovered);
             }

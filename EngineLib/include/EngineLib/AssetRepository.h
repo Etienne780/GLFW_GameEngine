@@ -14,6 +14,7 @@ namespace EngineCore {
 			namespace MESH {
 				MeshID Cube();
 				MeshID Plain();
+				MeshID UIPlain();
 			}
 
 			namespace SHADER {

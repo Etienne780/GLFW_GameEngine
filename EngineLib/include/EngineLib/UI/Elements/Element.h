@@ -4,9 +4,11 @@
 #include <string>
 #include <functional>
 #include <CoreLib/Math/Vector2.h>
+#include <CoreLib/Math/Vector4.h>
 
-#include "../../Renderer.h"
-#include "../../EngineTypes.h"
+#include "EngineLib/AssetRepository.h"
+#include "EngineLib/Renderer.h"
+#include "EngineLib/EngineTypes.h"
 #include "../Style.h"
 
 namespace EngineCore {
@@ -20,7 +22,8 @@ namespace EngineCore::UI {
     public:
         using Callback = std::function<void()>;
 
-        ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style = std::make_shared<Style>());
+        ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style = std::make_shared<Style>(), MaterialID matID = ASSETS::ENGINE::MATERIAL::DefaultUI());
+        ElementBase(std::string name, UIElementID id, MaterialID matID = ASSETS::ENGINE::MATERIAL::DefaultUI(), std::shared_ptr<Style> style = std::make_shared<Style>());
         virtual ~ElementBase() = default;
 
         template<typename T, typename... Args>
@@ -55,15 +58,28 @@ namespace EngineCore::UI {
         std::vector<std::unique_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
         RenderCommand m_cmd;
+        MaterialID m_materialID{ ENGINE_INVALID_ID };
+        
+        Callback m_onClick;
+        Callback m_onHover;
+        Callback m_onPress;
 
-        Callback onClick;
-        Callback onHover;
-        Callback onPress;
+        Vector4 m_backgroundColor{ 1, 1, 1, 1 };
+        Vector4 m_borderColor{ 0.75f, 0.75f, 0.75f, 1 };
+        Vector4 m_borderRadius{ 25, 5, 100, 50 };
+        float m_borderWidth = 0;
 
         void Update();
         virtual void UpdateImpl() {};
         void SendDrawCommand(Renderer* renderer, RenderLayerID renderLayerID);
+        /*
+        * @brief renderLayerID, modelMatrix, isUI, type, meshID is already set
+        */
         virtual void SendDrawCommandImpl(Renderer* renderer) {};
+        /*
+        * @brief gets called wenn the style or state changes 
+        */
+        virtual void SetStylePropertiesImpl() {};
 
         ElementBase* GetParent() const;
         void SetParent(ElementBase* elementPtr);
@@ -101,7 +117,7 @@ namespace EngineCore::UI {
         // Local rotation
         Vector3 m_localRotation;
         // size is in pixels (could get scaled by UIManager, so the value is not absolute)
-        Vector2 m_localScale{ 500, 500 };
+        Vector2 m_localScale{ 800, 500 };
 
         // Local model matrix
         Matrix4x4 m_localMatrix;
@@ -113,6 +129,8 @@ namespace EngineCore::UI {
         * @brief Marks this and children dirty
         */
         void MarkDirty();
+
+        void SetStyleProperties();
     };
 
     template <typename Derived>
@@ -121,17 +139,17 @@ namespace EngineCore::UI {
         using ElementBase::ElementBase;
 
         Derived* SetOnClick(Callback cb) {
-            onClick = std::move(cb);
+            m_onClick = std::move(cb);
             return static_cast<Derived*>(this);
         }
 
         Derived* SetOnHover(Callback cb) {
-            onHover = std::move(cb);
+            m_onHover = std::move(cb);
             return static_cast<Derived*>(this);
         }
 
         Derived* SetOnPress(Callback cb) {
-            onPress = std::move(cb);
+            m_onPress = std::move(cb);
             return static_cast<Derived*>(this);
         }
     };
