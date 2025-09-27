@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include <cmath>
+#include "../FormatUtils.h"
 
 class Vector2;
 class Vector3;
@@ -211,4 +212,9 @@ namespace GLTransform4x4 {
     void MakeRotateXYZ(Matrix4x4& out, const Vector3& radians);
 
     Vector3 MatrixToEuler(const Matrix4x4& m);
+}
+
+template<>
+static std::string FormatUtils::toString<Matrix4x4>(Matrix4x4 value) {
+    return value.ToString();
 }

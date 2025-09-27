@@ -1,5 +1,6 @@
 #pragma once
 #include <stdexcept>
+#include "../FormatUtils.h"
 
 class Matrix;
 class Vector2;
@@ -195,3 +196,8 @@ Vector3 operator*(float scalar, const Vector3& other);
 Vector3 operator/(float scalar, const Vector3& other);
 
 #pragma endregion
+
+template<>
+static std::string FormatUtils::toString<Vector3>(Vector3 value) {
+    return value.ToString();
+}
