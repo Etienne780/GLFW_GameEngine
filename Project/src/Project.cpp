@@ -1,5 +1,6 @@
 ﻿#include "Scenes.h"
 #include "Project.h"
+#include "CoreLib/FormatUtils.h"
 
 using namespace EngineCore;
 
@@ -12,11 +13,12 @@ Project::Project()
 	App_Application_Set_Window_Decoration(true);
 	App_Application_Set_Window_Floating(false);
 	App_Application_Set_Window_Cursor_LockHidden(true);
-	App_Application_Set_Header(true);
 
 	App_OpenGL_Set_Version(3, 3);
 
 	// Log::SaveLogs("Logs/");
+
+	Log::Print(Vector2(10, 10));
 }
 
 void Project::Start() {

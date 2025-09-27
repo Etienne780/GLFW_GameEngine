@@ -1,4 +1,5 @@
 #include "EngineLib/UI/UIManager.h"
+#include "CoreLib/ConversionUtils.h"
 #include "EngineLib/UI/Elements/Element.h"
 
 namespace EngineCore::UI {
@@ -37,7 +38,7 @@ namespace EngineCore::UI {
     }
     
     Vector2 ElementBase::GetScreenSize() const {
-        Vector2 size = m_localSize;
+        Vector2 size = m_localScale;
         if (UIManager::GetUIScaling()) {
             size *= UIManager::GetUIScaleFactor();
         }
@@ -45,7 +46,7 @@ namespace EngineCore::UI {
     }
 
     Vector2 ElementBase::GetLocalSize() const {
-        return m_localSize;
+        return m_localScale;
     }
 
     State ElementBase::GetState() const { 
@@ -65,6 +66,8 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SendDrawCommand(Renderer* renderer, RenderLayerID renderLayerID) {
+        MarkDirty();
+
         m_cmd.renderLayerID = renderLayerID;
         SendDrawCommandImpl(renderer);
     }
@@ -96,11 +99,97 @@ namespace EngineCore::UI {
         }
 	}
 
+    void ElementBase::SetLocalPosition(const Vector2& position) {
+        m_localPosition = position;
+        MarkDirty();
+    }
+
+    void ElementBase::SetLocalPosition(float x, float y) {
+        m_localPosition.Set(x, y);
+        MarkDirty();
+    }
+
+    void ElementBase::SetLocalRotation(const Vector3& rotation) {
+        m_localRotation = rotation;
+        MarkDirty();
+    }
+
+    void ElementBase::SetLocalRotation(float x, float y, float z) {
+        m_localRotation.Set(x, y, z);
+        MarkDirty();
+    }
+
+    void ElementBase::SetLocalScale(const Vector2& scale) {
+        m_localScale = scale;
+        MarkDirty();
+    }
+
+    void ElementBase::SetLocalScale(float x, float y) {
+        m_localScale.Set(x, y);
+        MarkDirty();
+    }
+
     bool ElementBase::IsMouseOver(const Vector2& mousePos) {
         Vector2 pos = GetScreenPosition();
         Vector2 size = GetScreenSize();
         return (mousePos.x > pos.x && pos.x + size.x > mousePos.x &&
                 mousePos.y > pos.y && pos.y + size.y > mousePos.y);
+    }
+
+    Matrix4x4* ElementBase::GetWorldModelMatrixPtr() {
+        if (m_worldMatrixDirty) {
+            CalculateWorldModelMat();
+            m_worldMatrixDirty = false;
+        }
+
+        return &m_worldMatrix;
+    }
+
+    const Matrix4x4& ElementBase::GetWorldModelMatrix() {
+        if (m_worldMatrixDirty) {
+            CalculateWorldModelMat();
+            m_worldMatrixDirty = false;
+        }
+
+        return m_worldMatrix;
+    }
+
+    void ElementBase::CalculateLocalModelMat() {
+        using namespace GLTransform4x4;
+
+        Vector3 radians = {
+            ConversionUtils::ToRadians(m_localRotation.x),
+            ConversionUtils::ToRadians(m_localRotation.y),
+            ConversionUtils::ToRadians(m_localRotation.z)
+        };
+
+        m_localMatrix = Scale(m_localScale.x, m_localScale.y, 1.0f);
+        MakeRotateXYZ(m_localMatrix, radians);
+        MakeTranslate(m_localMatrix, m_localPosition.x, m_localPosition.y, 0.0f);
+    }
+
+    void ElementBase::CalculateWorldModelMat() {
+        using namespace GLTransform4x4;
+
+        if (m_localMatrixDirty) {
+            CalculateLocalModelMat();
+            m_localMatrixDirty = false;
+        }
+
+        if (m_parentElement) {
+            m_worldMatrix = m_parentElement->GetWorldModelMatrix() * m_localMatrix;
+        }
+        else {
+            m_worldMatrix = m_localMatrix;
+        }
+    }
+
+    void ElementBase::MarkDirty() {
+        m_localMatrixDirty = true;
+        m_worldMatrixDirty = true;
+        for (auto& child : m_children) {
+            child->MarkDirty();
+        }
     }
 
 }

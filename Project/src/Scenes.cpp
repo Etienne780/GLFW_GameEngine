@@ -23,21 +23,20 @@ void SetupUI() {
 	otherStyle->Set(Attribute::height, StyleValue(10, Unit::Px));
 	otherStyle->Set(Attribute::layoutHor, StyleValue("Center"));
 
-	UI::SetDebug(true);
+	// UI::SetDebug(true);
 	UI::Begin<Panel>(); {
 		
-		UI::Begin<Panel>(defaultStyle); {
-			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
-			UI::Add<Panel>(otherStyle);
-			UI::Add<Panel>(otherStyle);
-			UI::Add<Panel>(otherStyle);
-		}
-		UI::End();
+		// UI::Begin<Panel>(defaultStyle); {
+		// 	UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
+		// 	UI::Add<Panel>(otherStyle);
+		// 	UI::Add<Panel>(otherStyle);
+		// 	UI::Add<Panel>(otherStyle);
+		// }
+		// UI::End();
 
 	}
 	UI::End();
-
-	Log::Print(UI::GetUIHierarchyString());
+	// Log::Print(UI::GetUIHierarchyString());
 }
 
 void SetupGame() {
@@ -50,7 +49,7 @@ namespace Scenes {
 
 		auto cameraGO = GameObject::Create("MainCamera");
 		cameraGO->SetPersistent(true);
-		cameraGO->AddComponent<Component::Camera>();
+		cameraGO->AddComponent<Component::Camera>()->AddCameraLayer(uiLayer);
 		cameraGO->AddComponent<Component::FreeCameraController>();
 
 		auto fontGO = GameObject::Create("FontTest");

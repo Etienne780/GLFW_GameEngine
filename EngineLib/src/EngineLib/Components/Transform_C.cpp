@@ -55,8 +55,7 @@ namespace EngineCore {
 			}
 
 			if (auto parent = m_gameObject->GetParent()) {
-				Matrix4x4 parentMatrix = parent->GetTransform()->GetWorldModelMatrix();
-				m_worldMatrix = parentMatrix * m_localMatrix;
+				m_worldMatrix = parent->GetTransform()->GetWorldModelMatrix() * m_localMatrix;
 			}
 			else {
 				m_worldMatrix = m_localMatrix;

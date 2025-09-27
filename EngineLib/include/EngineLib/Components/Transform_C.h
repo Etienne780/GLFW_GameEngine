@@ -38,7 +38,6 @@ namespace EngineCore {
 			* @brief Gets the Model-Matrix local to the parent GameObject if it has one
 			*/
 			Matrix4x4 GetLocalModelMatrix();
-
 			/**
 			* @brief Gets the world Position (local to world origin).
 			*/
@@ -55,7 +54,6 @@ namespace EngineCore {
 			* @brief Gets the world Model-Matrix (local to world origin).
 			*/
 			Matrix4x4* GetWorldModelMatrixPtr();
-
 			/**
 			* @brief Gets the world Model-Matrix (local to world origin).
 			*/

@@ -22,7 +22,7 @@ namespace EngineCore {
         void ReserveCommands(size_t count);
 
     private:
-        std::vector<RenderCommand> m_commands;
+        std::vector<RenderCommand> m_commands;// can be optimced with a ptr
         std::vector<Matrix4x4> m_instanceMatrices;
 
         void DrawAll();

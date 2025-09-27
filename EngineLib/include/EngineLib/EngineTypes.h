@@ -64,17 +64,42 @@ namespace EngineCore {
 	struct TextQuad {
 		TextVertex vertices[4];
 	};
-
+	
+	/*
+	* @brief A render command that describes how a mesh or text element should be drawn.
+	*
+	* @note The only parameter that is always required is `renderLayerID`.
+	*       If it is left as ENGINE_INVALID_ID, the command will be ignored.
+	*       All other parameters are required only depending on the type (Mesh or Text).
+	*
+	* Forced parameters:
+	*
+	* Mesh rendering:
+	*   - renderLayerID   (must be valid, otherwise the command is ignored)
+	*   - materialID      (material to render with)
+	*   - meshID          (the mesh geometry to draw)
+	*   - modelMatrix     (the world transform of the mesh)
+	*   - isTransparent   (optional, only if transparency material is transparent)
+	*
+	* Text rendering:
+	*   - type            must be set to RenderCommandType::Text
+	*   - renderLayerID   (must be valid, otherwise the command is ignored)
+	*   - materialID      usually set to ASSETS::ENGINE::MATERIAL::DefaultText()
+	*   - modelMatrix     transform for text positioning and scaling
+	*   - fontID          the font to use for rendering
+	*   - pixelSize       font size in pixels
+	*   - textQuads       precomputed quads representing the text geometry
+	*   - isTransparent   set automatically by the renderer
+	*/
 	struct RenderCommand {
 		RenderCommandType type = RenderCommandType::Mesh;
+		RenderLayerID renderLayerID = RenderLayerID(ENGINE_INVALID_ID);
 		bool isUI = false;
 		bool invertMesh = false;
 
 		MaterialID materialID = MaterialID(ENGINE_INVALID_ID);
 		MeshID meshID = MeshID(ENGINE_INVALID_ID);
-		// Texture2DID textureOverrideID = Texture2DID(ENGINE_INVALID_ID);
 		ShaderBindObject* shaderBindOverride = nullptr;
-		RenderLayerID renderLayerID = RenderLayerID(ENGINE_INVALID_ID);
 		int zOrder = 0;
 		const Matrix4x4* modelMatrix = nullptr;
 		Vector4 meshColor = { 1, 1, 1, 1 };
@@ -83,7 +108,9 @@ namespace EngineCore {
 		// For text
 		FontID fontID = FontID(ENGINE_INVALID_ID);
 		int pixelSize = 0;
-		std::vector<TextQuad> textQuads;  // precomputed from string
+		std::vector<TextQuad> textQuads;
+
+		RenderCommand() = default;
 	};
 
 	inline std::string RenderCommandTypeToString(RenderCommandType type) {

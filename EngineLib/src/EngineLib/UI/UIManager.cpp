@@ -88,6 +88,13 @@ namespace EngineCore {
         if(m_enableUIScaling)
             m_uiScaleFactor = CalculateUIScaleFactor(width, height);
 
+        // update orthograpic matrix
+        if (m_oldScreenWidth != width || m_oldScreenHeight != height) {
+            m_oldScreenWidth = width;
+            m_oldScreenHeight = height;
+            CalculateOrthograpicMatrix(width, height);
+        }
+
         for (auto& element : m_roots) {
             // needs mouse down and up
             UpdateElementState(element.get(), Input::GetMousePosition(), false, false);
@@ -162,6 +169,15 @@ namespace EngineCore {
         // return std::max(scaleDiff.x, scaleDiff.y);
     }
 
+    void UIManager::CalculateOrthograpicMatrix(int width, int height) {
+        float halfW = static_cast<float>(width);
+        float halfH = static_cast<float>(height);
+        m_orthoMat = GLTransform4x4::Orthographic(
+            -halfW, halfW,
+            -halfH, halfH,
+            -1000.0f, 1000.0f);
+    }
+
 	void UIManager::FreeIDsInternal(UI::ElementBase* element) {
 		auto& childs = element->GetChildren();
 		for (const auto& child : childs) {
@@ -234,6 +250,10 @@ namespace EngineCore {
         // End Tag
         outStr.append(indent);
         outStr.append("</" + elementPtr->GetName() + ">\n");
+    }
+
+    Matrix4x4* UIManager::GetOrthograpicMatrixPtr() {
+        return &m_orthoMat;
     }
 
 }

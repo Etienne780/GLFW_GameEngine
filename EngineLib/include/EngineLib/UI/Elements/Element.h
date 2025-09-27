@@ -60,11 +60,6 @@ namespace EngineCore::UI {
         Callback onHover;
         Callback onPress;
 
-        // position 0,0 is top left of screen or parent element
-        Vector2 m_localPosition;
-        // size is in pixels (could get scaled by UIManager, so the value is not absolute)
-        Vector2 m_localSize;
-
         void Update();
         virtual void UpdateImpl() {};
         void SendDrawCommand(Renderer* renderer, RenderLayerID renderLayerID);
@@ -73,12 +68,51 @@ namespace EngineCore::UI {
         ElementBase* GetParent() const;
         void SetParent(ElementBase* elementPtr);
         void SetState(State state);
+
+        void SetLocalPosition(const Vector2& position);
+        void SetLocalPosition(float x, float y);
+        void SetLocalRotation(const Vector3& rotation);
+        void SetLocalRotation(float x, float y, float z);
+        void SetLocalScale(const Vector2& scale);
+        void SetLocalScale(float x, float y);
+
         /*
         * @brief Checks whether a given point lies within the bounding box of this element.
         * @param mousePos The point (e.g. mouse position) to test, in the same coordinate space as the element.
         * @return True if the point is inside the bounding box, false otherwise.
         */
         bool IsMouseOver(const Vector2& mousePos);
+
+        /**
+        * @brief Gets the world Model-Matrix (local to world origin).
+        */
+        Matrix4x4* GetWorldModelMatrixPtr();
+        /**
+        * @brief Gets the world Model-Matrix (local to world origin).
+        */
+        const Matrix4x4& GetWorldModelMatrix();
+
+    private:
+        // if the transform has changed
+        bool m_localMatrixDirty = true;
+        bool m_worldMatrixDirty = true;
+        // position 0,0 is top left of screen or parent element
+        Vector2 m_localPosition{ 0, 0 };
+        // Local rotation
+        Vector3 m_localRotation;
+        // size is in pixels (could get scaled by UIManager, so the value is not absolute)
+        Vector2 m_localScale{ 500, 500 };
+
+        // Local model matrix
+        Matrix4x4 m_localMatrix;
+        Matrix4x4 m_worldMatrix;
+
+        void CalculateLocalModelMat();
+        void CalculateWorldModelMat();
+        /**
+        * @brief Marks this and children dirty
+        */
+        void MarkDirty();
     };
 
     template <typename Derived>

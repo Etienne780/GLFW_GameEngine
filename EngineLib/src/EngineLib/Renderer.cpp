@@ -12,6 +12,7 @@
 #include "EngineLib/Components/Camera_C.h"
 #include "EngineLib/FontManager.h"
 #include "EngineLib/GameObject.h"
+#include "EngineLib/UI/UIManager.h"
 #include "EngineLib/Mesh.h"
 #include "EngineLib/Material.h"
 #include "EngineLib/Shader.h"
@@ -57,8 +58,9 @@ namespace EngineCore {
             Log::Warn("Renderer: Cant render, main Camera GameObject is disabled!");
             return;
         }
-        Matrix4x4 cameraProjectionMat = camptr->GetProjectionMatrix();
-        Matrix4x4 cameraViewMat = camptr->GetViewMatrix();
+        Matrix4x4 cameraProjectionMat = camptr->GetProjectionMatrix();// could be a ptr
+        Matrix4x4 cameraViewMat = camptr->GetViewMatrix();// could be a ptr
+        Matrix4x4* uiProjectionMat = UIManager::GetOrthograpicMatrixPtr();
         const std::vector<RenderLayerID>& renderLayers = camptr->GetRenderLayers();
 
         Shader* currentShader = nullptr;
@@ -74,6 +76,7 @@ namespace EngineCore {
         int currentRenderLayerPriority = RenderLayerManager::GetLayerPriority(m_commands[0].renderLayerID);
         int currentZOrder = m_commands[0].zOrder;
         Vector4 currentMeshColor(-1,-1, -1, -1);
+        bool isUI = false;
 
         ResourceManager* rm = ResourceManager::GetInstance();
         
@@ -142,15 +145,22 @@ namespace EngineCore {
                 }
 
                 ShaderID newShaderID = currentMaterial->GetShaderID();
-                if (currentShaderID != newShaderID) {
+                if (currentShaderID != newShaderID || isUI != cmd.isUI) {
                     currentShaderID = newShaderID;
+                    isUI = cmd.isUI;
                     currentShader = currentMaterial->BindToShader();
                     if (!currentShader) {
                         currentShaderID.value = ENGINE_INVALID_ID;
                         continue;
                     }
-                    currentShader->SetMatrix4("projection", cameraProjectionMat.ToOpenGLData());
-                    currentShader->SetMatrix4("view", cameraViewMat.ToOpenGLData());
+
+                    if (!cmd.isUI) {
+                        currentShader->SetMatrix4("projection", cameraProjectionMat.ToOpenGLData());
+                        currentShader->SetMatrix4("view", cameraViewMat.ToOpenGLData());
+                    }
+                    else {
+                        currentShader->SetMatrix4("projection", uiProjectionMat->ToOpenGLData());
+                    }
                 }
                 else {
                     currentMaterial->ApplyParamsOnly(currentShader);
@@ -179,7 +189,7 @@ namespace EngineCore {
             }
 
             // material change
-            if (currentMaterialID != cmd.materialID) {
+            if (currentMaterialID != cmd.materialID || isUI != cmd.isUI) {
                 flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
         
@@ -193,15 +203,24 @@ namespace EngineCore {
                 }
         
                 ShaderID newShaderID = currentMaterial->GetShaderID();
-                if (currentShaderID != newShaderID) {
+                if (currentShaderID != newShaderID || isUI != cmd.isUI) {
                     currentShaderID = newShaderID;
+                    isUI = cmd.isUI;
                     currentShader = currentMaterial->BindToShader();
                     if (!currentShader) {
                         currentShaderID.value = ENGINE_INVALID_ID;
                         continue;
                     }
-                    currentShader->SetMatrix4("projection", cameraProjectionMat.ToOpenGLData());
-                    currentShader->SetMatrix4("view", cameraViewMat.ToOpenGLData());
+
+                    if (!cmd.isUI) {
+                        currentShader->SetMatrix4("projection", cameraProjectionMat.ToOpenGLData());
+                        currentShader->SetMatrix4("view", cameraViewMat.ToOpenGLData());
+                    }
+                    else {
+                        currentShader->SetMatrix4("projection", uiProjectionMat->ToOpenGLData());
+                    }
+                    // Set mesh color to -1 so that it gets init correct if a shader changes
+                    currentMeshColor.Set(-1, -1, -1, -1);
                 }
                 else {
                     currentMaterial->ApplyParamsOnly(currentShader);
@@ -254,7 +273,7 @@ namespace EngineCore {
         
         flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
         
-        PrintCommands(true);
+        // PrintCommands(true);
         m_commands.clear();
         m_instanceMatrices.clear();
     }
@@ -262,7 +281,12 @@ namespace EngineCore {
     void Renderer::SortDrawCommands(std::shared_ptr<Component::Camera> cameraPtr) {
         Vector3 camPos = cameraPtr->GetGameObject()->GetTransform()->GetWorldPosition();
         std::sort(m_commands.begin(), m_commands.end(),
-            [&](const auto& a, const auto& b) {
+            [&](auto& a, auto& b) {
+                if (a.type == RenderCommandType::Text)
+                    a.isTransparent = true;
+                if (b.type == RenderCommandType::Text)
+                    b.isTransparent = true;
+
                 // UI should always come last
                 if (a.isUI != b.isUI)
                     return !a.isUI;
@@ -353,18 +377,18 @@ namespace EngineCore {
                     cmd.pixelSize);
             }
             else {
-                Log::Print(Log::levelInfo, "Command {}:", counter);
-                Log::Print(Log::levelInfo, "      - Type: {}", RenderCommandTypeToString(cmd.type));
-                Log::Print(Log::levelInfo, "      - Render-Layer ID: {}", cmd.renderLayerID.value);
-                Log::Print(Log::levelInfo, "      - Z-Order: {}", cmd.zOrder);
-                Log::Print(Log::levelInfo, "      - Material ID: {}", (cmd.materialID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.materialID.value) : "-");
-                Log::Print(Log::levelInfo, "      - Mesh ID: {}", (cmd.meshID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.meshID.value) : "-");
-                Log::Print(Log::levelInfo, "      - Font ID: {}", (cmd.fontID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.fontID.value) : "-");
-                Log::Print(Log::levelInfo, "      - Override ShaderBindObj ID: {}", (cmd.shaderBindOverride != nullptr));
-                Log::Print(Log::levelInfo, "      - Is transparent: {}", cmd.isTransparent);
-                Log::Print(Log::levelInfo, "      - Invert mesh: {}", cmd.invertMesh);
-                Log::Print(Log::levelInfo, "      - Mesh color: {}", cmd.meshColor.ToString());
-                Log::Print(Log::levelInfo, "      - Font pixel size: {}", cmd.pixelSize);
+                Log::Print(Log::levelInfo, "    Command {}:", counter);
+                Log::Print(Log::levelInfo, "          - Type: {}", RenderCommandTypeToString(cmd.type));
+                Log::Print(Log::levelInfo, "          - Render-Layer ID: {}", cmd.renderLayerID.value);
+                Log::Print(Log::levelInfo, "          - Z-Order: {}", cmd.zOrder);
+                Log::Print(Log::levelInfo, "          - Material ID: {}", (cmd.materialID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.materialID.value) : "-");
+                Log::Print(Log::levelInfo, "          - Mesh ID: {}", (cmd.meshID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.meshID.value) : "-");
+                Log::Print(Log::levelInfo, "          - Font ID: {}", (cmd.fontID.value != ENGINE_INVALID_ID) ? std::to_string(cmd.fontID.value) : "-");
+                Log::Print(Log::levelInfo, "          - Override ShaderBindObj ID: {}", (cmd.shaderBindOverride != nullptr));
+                Log::Print(Log::levelInfo, "          - Is transparent: {}", cmd.isTransparent);
+                Log::Print(Log::levelInfo, "          - Invert mesh: {}", cmd.invertMesh);
+                Log::Print(Log::levelInfo, "          - Mesh color: {}", cmd.meshColor.ToString());
+                Log::Print(Log::levelInfo, "          - Font pixel size: {}", cmd.pixelSize);
             }
             counter++;
         }

@@ -14,8 +14,10 @@ EngineCore::MeshID g_engineMeshCubeID = EngineCore::MeshID(EngineCore::ENGINE_IN
 EngineCore::MeshID g_engineMeshPlainID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::ShaderID g_engineShaderDefaultID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::ShaderID g_engineShaderDefaultTextID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::ShaderID g_engineShaderDefaultUIID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MaterialID g_engineMaterialDefaultID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MaterialID g_engineMaterialDefaultTextID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::MaterialID g_engineMaterialDefaultUIID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::FontID g_engineFontDefaultID = EngineCore::FontID(EngineCore::ENGINE_INVALID_ID);
 
 namespace EngineCore::ASSETS::ENGINE::TEXTURE {
@@ -31,14 +33,13 @@ namespace EngineCore::ASSETS::ENGINE::MESH {
 namespace EngineCore::ASSETS::ENGINE::SHADER {
     ShaderID Default() { return g_engineShaderDefaultID; }
     ShaderID DefaultText() { return g_engineShaderDefaultTextID; }
+    ShaderID DefaultUI() { return g_engineShaderDefaultUIID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
     MaterialID Default() { return g_engineMaterialDefaultID; }
-}
-
-namespace EngineCore::ASSETS::ENGINE::MATERIAL {
     MaterialID DefaultText() { return g_engineMaterialDefaultTextID; }
+    MaterialID DefaultUI() { return g_engineMaterialDefaultUIID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::FONT {
@@ -156,7 +157,7 @@ namespace EngineCore {
                 #version 330 core
                 layout(location = 0) in vec3 aPos;
                 layout(location = 1) in vec2 aTexCoord;
-                layout(location = 2) in vec2 aNormal;
+                layout(location = 2) in vec3 aNormal;
                 layout(location = 3) in mat4 instanceModel;
                 
                 out vec2 TexCoord;
@@ -226,6 +227,35 @@ namespace EngineCore {
         }
         #pragma endregion
 
+        #pragma region SHADER::DefaultUI
+        {
+            std::string vert = R"(
+                #version 330 core
+                layout(location = 0) in vec3 aPos;
+                layout(location = 1) in vec2 aTexCoord;
+                layout(location = 2) in vec3 aNormal;
+                layout(location = 3) in mat4 instanceModel;
+                
+                uniform mat4 projection;
+                
+                void main() {
+                    gl_Position = projection * instanceModel * vec4(aPos, 1.0);
+                }
+            )";
+            std::string frag = R"(
+                #version 330 core
+                out vec4 FragColor;
+                uniform vec4 umeshColor;
+
+                void main()
+                {
+                	FragColor = umeshColor;
+                }
+            )";
+            g_engineShaderDefaultUIID = rm->AddShaderFromMemory(vert, frag);
+        }
+        #pragma endregion
+
         #pragma region MATERIAL::Default
         {
             g_engineMaterialDefaultID = rm->AddMaterial(g_engineShaderDefaultID);
@@ -237,7 +267,12 @@ namespace EngineCore {
         #pragma region MATERIAL::DefaultText
         {
             g_engineMaterialDefaultTextID = rm->AddMaterial(g_engineShaderDefaultTextID);
-            Material* mat = rm->GetMaterial(g_engineMaterialDefaultTextID);
+        }
+        #pragma endregion
+
+        #pragma region MATERIAL::DefaultUI
+        {
+            g_engineMaterialDefaultUIID = rm->AddMaterial(g_engineShaderDefaultUIID);
         }
         #pragma endregion
 

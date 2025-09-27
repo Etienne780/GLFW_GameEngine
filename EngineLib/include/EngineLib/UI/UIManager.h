@@ -5,6 +5,7 @@
 #include <string>
 #include <CoreLib/Log.h>
 #include <CoreLib/Math/Vector2.h>
+#include <CoreLib/Math/Matrix4x4.h>
 
 #include "UIElements.h"
 #include "../IDManager.h"
@@ -16,6 +17,7 @@ namespace EngineCore {
 	class Renderer;
 	class UIManager {
 	friend class Engine;
+	friend class Renderer;
 	public:
 		static void Init();
 		static void Shutdown();
@@ -76,6 +78,9 @@ namespace EngineCore {
 		// The current scale factor applied to the UI
 		static inline float m_uiScaleFactor = 1.0f;
 
+		static inline int m_oldScreenWidth = 0, m_oldScreenHeight = 0;
+		static inline Matrix4x4 m_orthoMat;
+
 		// Updates the scale and states of the UI::Element
 		static void Update(int width, int height);
 		static void UpdateChild(std::unique_ptr<UI::ElementBase>& element);
@@ -84,8 +89,11 @@ namespace EngineCore {
 		static void SendDrawCommands();
 		static void SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element);
 		static float CalculateUIScaleFactor(int width, int height);
+		static void CalculateOrthograpicMatrix(int width, int height);
 		static void FreeIDsInternal(UI::ElementBase* element);
 		static void BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level);
+
+		static Matrix4x4* GetOrthograpicMatrixPtr();
 	};
 
 }
