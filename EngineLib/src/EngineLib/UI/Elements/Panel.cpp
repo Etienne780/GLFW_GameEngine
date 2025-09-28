@@ -6,7 +6,8 @@ namespace EngineCore::UI {
         : Element<Panel>("Panel", id, style) {
     }
 
-    void Panel::SendDrawCommandImpl(Renderer* renderer) {
+    void Panel::SendDrawCommand(Renderer* renderer) {
+        auto d = this;
         renderer->Submit(m_cmd);
     }
 

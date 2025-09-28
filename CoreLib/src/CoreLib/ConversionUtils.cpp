@@ -1,20 +1,17 @@
-﻿#include "CoreLib\ConversionUtils.h"
+﻿#include <charconv>
 
+#include "CoreLib\ConversionUtils.h"
 #include "CoreLib\Math.h"
 
 int ConversionUtils::HexToIntegral(const std::string& hex) {
-    int result = 0;
-    std::stringstream ss;
+    size_t start = 0;
+    if (hex.rfind("0x", 0) == 0 || hex.rfind("0X", 0) == 0) start = 2;
+    else if (hex.rfind("#", 0) == 0) start = 1;
 
-    if (hex.rfind("0x", 0) == 0 || hex.rfind("0X", 0) == 0)
-        ss << std::hex << hex.substr(2);
-    else if (hex.rfind("#", 0) == 0)
-        ss << std::hex << hex.substr(1);
-    else
-        ss << std::hex << hex;
-
-    ss >> result;
-    return result;
+    int value = 0;
+    auto [ptr, ec] = std::from_chars(hex.data() + start, hex.data() + hex.size(), value, 16);
+    if (ec != std::errc()) return -1;
+    return value;
 }
 
 float ConversionUtils::ToDegrees(float radians) {

@@ -7,6 +7,7 @@
 #include <CoreLib/Math/Vector2.h>
 #include <CoreLib/Math/Matrix4x4.h>
 
+#include "AttributeNames.h"
 #include "UIElements.h"
 #include "../IDManager.h"
 #include "../EngineTypes.h"
@@ -25,9 +26,18 @@ namespace EngineCore {
 		UIManager(const UIManager&) = delete;
 		UIManager& operator=(const UIManager&) = delete;
 
+		/*
+		* @brief begin needs to always end with an end
+		*/
 		template<typename T, typename... Args>
 		static T* Begin(Args&&... args);
+		/*
+		* @brief Begin musst be called before End
+		*/
 		static void End();
+		/*
+		* @brief Musst be between Begin and End
+		*/
 		template<typename T, typename... Args>
 		static T* Add(Args&&... args);
 

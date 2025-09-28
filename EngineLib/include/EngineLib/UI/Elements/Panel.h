@@ -10,7 +10,7 @@ namespace EngineCore::UI {
         Panel(UIElementID id, std::shared_ptr<Style> style = std::make_shared<Style>());
 
     protected:
-        void SendDrawCommandImpl(Renderer* renderer) override;
+        void SendDrawCommand(Renderer* renderer) override;
     };
 
 }

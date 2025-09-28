@@ -4,7 +4,7 @@
 #include "Scenes.h"
 
 using namespace EngineCore;
-RenderLayerID uiLayer{ ENGINE_INVALID_ID };
+RenderLayerID uiLayer(ENGINE_INVALID_ID);
 
 void SetupUI() {
 	using namespace EngineCore::UI;
@@ -12,23 +12,26 @@ void SetupUI() {
 	uiLayer = RenderLayerManager::AddLayer("UILayer", 10);
 	UI::SetUIRenderLayer(uiLayer);
 
+	const auto& d = StyleAttribute::GetAllAttributes();
+
 	auto defaultStyle = Style::Create("DefaultStyle");
-	defaultStyle->Set(Attribute::borderRadius, StyleValue(10, Unit::Px));
-	defaultStyle->Set(Attribute::width, StyleValue(500, Unit::Px));
-	defaultStyle->Set(Attribute::height, StyleValue(300, Unit::Px));
+	defaultStyle->Set(Attribute::borderRadius, "10px");
+	defaultStyle->Set(Attribute::width, "500px");
+	defaultStyle->Set(Attribute::height, "300px");
+	defaultStyle->Set(Attribute::backgroundColor, "#ff 00 ff");
 
 	auto otherStyle = Style::Create("OtherStyle");
-	otherStyle->Set(Attribute::color, StyleValue("#ffffff"));
-	otherStyle->Set(Attribute::width, StyleValue(10, Unit::Px));
-	otherStyle->Set(Attribute::height, StyleValue(10, Unit::Px));
-	otherStyle->Set(Attribute::layoutHor, StyleValue("Center"));
+	otherStyle->Set(Attribute::backgroundColor,"#ffffff");
+	otherStyle->Set(Attribute::width, "10px");
+	otherStyle->Set(Attribute::height, "10px");
+	otherStyle->Set(Attribute::layoutHor, "Center");
 
-	// UI::SetDebug(true);
-	UI::Begin<Panel>(); {
+	UI::SetDebug(true);
+	Panel* ptr = UI::Begin<Panel>(defaultStyle); {
 		
 		// UI::Begin<Panel>(defaultStyle); {
 		// 	UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
-		// 	UI::Add<Panel>(otherStyle);
+		//  UI::Add<Panel>(otherStyle);
 		// 	UI::Add<Panel>(otherStyle);
 		// 	UI::Add<Panel>(otherStyle);
 		// }
@@ -36,7 +39,9 @@ void SetupUI() {
 
 	}
 	UI::End();
-	// Log::Print(UI::GetUIHierarchyString());
+	Log::Print(UI::GetUIHierarchyString());
+
+	Log::Info("{}", ptr->GetName());
 }
 
 void SetupGame() {

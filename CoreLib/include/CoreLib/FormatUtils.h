@@ -3,13 +3,42 @@
 #include <string>
 #include <vector>
 #include <type_traits>
-#include <algorithm> // for std::transform
-#include <cctype>    // for std::tolower
+#include <algorithm>
+#include <cctype>
+#include <optional>
+#include <cstdlib>
 
 #include <cmath>
 
 class FormatUtils {
 public:
+
+    template<typename T>
+    static std::optional<T> stringToNumber(const std::string& str) {
+        static_assert(std::is_arithmetic<T>::value, "stringToNumber requires arithmetic types");
+
+        try {
+            if constexpr (std::is_integral<T>::value) {
+                return static_cast<T>(std::stoll(str));
+            }
+            else if constexpr (std::is_floating_point<T>::value) {
+                return static_cast<T>(std::stold(str));
+            }
+        }
+        catch (const std::exception&) {
+            return std::nullopt;
+        }
+    }
+
+    static std::string removeSpaces(std::string str) {
+        str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+        return str;
+    }
+
+    static std::string replaceChar(std::string str, char cToReplace, char c) {
+        std::replace(str.begin(), str.end(), cToReplace, c);
+        return str;
+    }
 
     template<typename T>
     static std::string trimTrailingZeros(T value) {

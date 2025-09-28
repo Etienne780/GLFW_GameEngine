@@ -17,24 +17,24 @@ namespace EngineCore::UI {
 	}
 
 	void Style::Extend(std::shared_ptr<Style> style) {
-		m_styles.emplace_back(style);
+		m_extendedStyles.emplace_back(style);
 		m_newStyleAdded = true;
 	}
 
-	void Style::Set(const char* name, const StyleValue& value) {
+	void Style::Set(const char* name, std::string value) {
 		Set(State::Normal, name, value);
 	}
 
-	void Style::Set(State state, const char* name, const StyleValue& value) {
+	void Style::Set(State state, const char* name, std::string value) {
 		m_attributes[state][name] = value;
 		m_newStyleAdded = true;
 	}
 
-	StyleValue Style::Get(const char* name) const {
+	std::string Style::Get(const char* name) const {
 		return Get(State::Normal, name);
 	}
 
-	StyleValue Style::Get(State state, const char* name) const {
+	std::string Style::Get(State state, const char* name) const {
 		if (m_newStyleAdded) {
 			m_newStyleAdded = false;
 			GenerateCachedStyle();
@@ -64,15 +64,15 @@ namespace EngineCore::UI {
 			}
 		}
 
-		Log::Warn("Style: Could not get attribute '{}'!", name);
-		return StyleValue{};
+		Log::Warn("Style: Could not get attribute '{}' on style '{}'!", name, m_name);
+		return "-";
 	}
 
-	std::string Style::GetName() const {
+	const std::string& Style::GetName() const {
 		return m_name;
 	}
 
-	const std::unordered_map<State, std::unordered_map<std::string, StyleValue>>& Style::GetAll() const {
+	const std::unordered_map<State, std::unordered_map<std::string, std::string>>& Style::GetAll() const {
 		if (m_newStyleAdded) {
 			m_newStyleAdded = false;
 			GenerateCachedStyle();
@@ -80,7 +80,7 @@ namespace EngineCore::UI {
 		return m_cachedStyle->m_attributes;
 	}
 
-	const std::unordered_map<std::string, StyleValue>& Style::GetAllState(State state) const {
+	const std::unordered_map<std::string, std::string>& Style::GetAllState(State state) const {
 		if (m_newStyleAdded) {
 			m_newStyleAdded = false;
 			GenerateCachedStyle();
@@ -91,7 +91,7 @@ namespace EngineCore::UI {
 	void Style::GenerateCachedStyle() const {
 		m_cachedStyle = std::make_unique<Style>();
 		// applys all the extended styls in the right order
-		for (auto& style : m_styles) {
+		for (auto& style : m_extendedStyles) {
 			const auto& att = style->GetAll();
 			for (auto& [state, attMap] : att) {
 				for (auto& [name, value] : attMap) {

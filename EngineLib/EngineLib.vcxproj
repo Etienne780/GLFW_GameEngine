@@ -55,11 +55,19 @@
     <ClInclude Include="include\EngineLib\Texture2D.h" />
     <ClInclude Include="include\EngineLib\Time.h" />
     <ClInclude Include="include\EngineLib\UI.h" />
+    <ClInclude Include="include\EngineLib\UI\AttributeNames.h" />
+    <ClInclude Include="include\EngineLib\UI\AttributeHelper.h" />
+    <ClInclude Include="include\EngineLib\UI\Attribute\DisplayAttributes.h" />
+    <ClInclude Include="include\EngineLib\UI\Attribute\LayoutAttributes.h" />
+    <ClInclude Include="include\EngineLib\UI\Attribute\StyleAttributes.h" />
+    <ClInclude Include="include\EngineLib\UI\Attribute\TextAttributes.h" />
+    <ClInclude Include="include\EngineLib\UI\Attribute\AttributeNames.h" />
+    <ClInclude Include="include\EngineLib\UI\Attribute\_Attributes.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Element.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Panel.h" />
     <ClInclude Include="include\EngineLib\UI\UIManager.h" />
     <ClInclude Include="include\EngineLib\UI\Style.h" />
-    <ClInclude Include="include\EngineLib\UI\StylingAttribute.h" />
+    <ClInclude Include="include\EngineLib\UI\StyleAttribute.h" />
     <ClInclude Include="include\EngineLib\Vertex.h" />
     <ClInclude Include="include\EngineLib\UI\UIElements.h" />
   </ItemGroup>
@@ -104,8 +112,14 @@
     <ClCompile Include="src\EngineLib\ShaderBindObject.cpp" />
     <ClCompile Include="src\EngineLib\Texture2D.cpp" />
     <ClCompile Include="src\EngineLib\Time.cpp" />
+    <ClCompile Include="src\EngineLib\UI\AttributesHelper.cpp" />
+    <ClCompile Include="src\EngineLib\UI\Attribute\DisplayAttributes.cpp" />
+    <ClCompile Include="src\EngineLib\UI\Attribute\LayoutAttributes.cpp" />
+    <ClCompile Include="src\EngineLib\UI\Attribute\StyleAttributes.cpp" />
+    <ClCompile Include="src\EngineLib\UI\Attribute\TextAttributes.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Element.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Panel.cpp" />
+    <ClCompile Include="src\EngineLib\UI\StyleAttribute.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
     <ClCompile Include="src\EngineLib\UI\Style.cpp" />
     <ClCompile Include="src\EngineLib\Vertex.cpp" />

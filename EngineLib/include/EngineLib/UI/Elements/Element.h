@@ -13,6 +13,7 @@
 
 namespace EngineCore {
     class UIManager;
+    class Material;
 }
 
 namespace EngineCore::UI {
@@ -44,6 +45,11 @@ namespace EngineCore::UI {
         Vector2 GetScreenSize() const;
         Vector2 GetLocalSize() const;
 
+        float GetParentWidth() const;
+        float GetParentHeight() const;
+        float GetViewportWidth() const;
+        float GetViewportHeight() const;
+
         State GetState() const;
 
         std::vector<std::unique_ptr<ElementBase>>& GetChildren();
@@ -52,13 +58,14 @@ namespace EngineCore::UI {
     protected:
         std::string m_elementName;
         UIElementID m_id;
-        std::shared_ptr<Style> m_elementStyle;
+        //Style m_elementStyle; needs to be later used for clean transition between styles
         std::shared_ptr<Style> m_style = nullptr;
         ElementBase* m_parentElement = nullptr;
         std::vector<std::unique_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
         RenderCommand m_cmd;
         MaterialID m_materialID{ ENGINE_INVALID_ID };
+        Material* m_matrialPtr = nullptr;
         
         Callback m_onClick;
         Callback m_onHover;
@@ -66,20 +73,22 @@ namespace EngineCore::UI {
 
         Vector4 m_backgroundColor{ 1, 1, 1, 1 };
         Vector4 m_borderColor{ 0.75f, 0.75f, 0.75f, 1 };
-        Vector4 m_borderRadius{ 25, 5, 100, 50 };
+        Vector4 m_borderRadius{ 25, 5, 100, 50 };// top-left, top-right, bottom-right, bottom-left
         float m_borderWidth = 50;
+        float m_duration = 0.0f;
 
-        void Update();
-        virtual void UpdateImpl() {};
-        void SendDrawCommand(Renderer* renderer, RenderLayerID renderLayerID);
+        /*
+        * @brief is called every frame
+        */
+        virtual void Update() {};
         /*
         * @brief renderLayerID, modelMatrix, isUI, type, meshID is already set
         */
-        virtual void SendDrawCommandImpl(Renderer* renderer) {};
+        virtual void SendDrawCommand(Renderer* renderer) {};
         /*
-        * @brief gets called wenn the style or state changes 
+        * @brief this function is called only once for ever class. it inits all the Attributes this element can have and what they do
         */
-        virtual void SetStylePropertiesImpl() {};
+        void RegisterAttributes() {};
 
         ElementBase* GetParent() const;
         void SetParent(ElementBase* elementPtr);
@@ -91,6 +100,20 @@ namespace EngineCore::UI {
         void SetLocalRotation(float x, float y, float z);
         void SetLocalScale(const Vector2& scale);
         void SetLocalScale(float x, float y);
+        void SetLocalScaleX(float x);
+        void SetLocalScaleY(float y);
+
+        void setBackgroundColor(const Vector4& color);
+        void setBorderColor(const Vector4& color);
+        void setBorderRadius(const Vector4& radius);
+        void setBorderWidth(float width);
+        void setDuration(float duration);
+
+        const Vector4& getBackgroundColor() const;
+        const Vector4& getBorderColor() const;
+        const Vector4& getBorderRadius() const;
+        float getBorderWidth() const;
+        float getDuration() const;
 
         /*
         * @brief Checks whether a given point lies within the bounding box of this element.
@@ -107,8 +130,21 @@ namespace EngineCore::UI {
         * @brief Gets the world Model-Matrix (local to world origin).
         */
         const Matrix4x4& GetWorldModelMatrix();
+        /*
+        * @brief
+        * Example:
+        * RegisterAttribute(att::borderRadius, [](ElementBase* el, const StyleValue& val) {
+        *    val.TryGetValue<Vector4>(el->m_borderRadius, att::borderRadius);
+        * });
+        */
+        void RegisterAttribute(const std::string& name, std::function<void(ElementBase*, const StyleValue&)> func);
 
     private:
+        static inline bool m_attributesRegistered = false;
+        /*
+        * @brief name and behaviour. contains all attributes and there reaction
+        */
+        static inline std::unordered_map<std::string, std::function<void(ElementBase*, const StyleValue&)>> m_registeredAttributes;
         // if the transform has changed
         bool m_localMatrixDirty = true;
         bool m_worldMatrixDirty = true;
@@ -130,7 +166,10 @@ namespace EngineCore::UI {
         */
         void MarkDirty();
 
-        void SetStyleProperties();
+        void UpdateImpl();
+        void SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID);
+        void RegisterAttributesImpl();
+        void SetStyleAttributes();
     };
 
     template <typename Derived>

@@ -6,7 +6,7 @@
 #include <CoreLib/Log.h>
 
 #include "UITypes.h"
-#include "StylingAttribute.h"
+#include "StyleAttribute.h"
 #include "../EngineTypes.h"
 
 namespace EngineCore::UI {
@@ -20,20 +20,20 @@ namespace EngineCore::UI {
         static std::shared_ptr<Style> Create(const std::string& name, std::shared_ptr<Style> style);
 
 		void Extend(std::shared_ptr<Style> style);
-		void Set(const char* name, const StyleValue& value);
-        void Set(State state, const char* name, const StyleValue& value);
+		void Set(const char* name, std::string value);
+		void Set(State state, const char* name, std::string value);
 
-        StyleValue Get(const char* name) const;
-        StyleValue Get(State state, const char* name) const;
+        std::string Get(const char* name) const;
+		std::string Get(State state, const char* name) const;
 		
-        std::string GetName() const;
-		const std::unordered_map<State, std::unordered_map<std::string, StyleValue>>& GetAll() const;
-        const std::unordered_map<std::string, StyleValue>& GetAllState(State state) const;
+        const std::string& GetName() const;
+		const std::unordered_map<State, std::unordered_map<std::string, std::string>>& GetAll() const;
+        const std::unordered_map<std::string, std::string>& GetAllState(State state) const;
 	    
 	private:
         std::string m_name = "UNKNOWN";
-        std::unordered_map<State, std::unordered_map<std::string, StyleValue>> m_attributes;
-		std::vector<std::shared_ptr<Style>> m_styles;
+        std::unordered_map<State, std::unordered_map<std::string, std::string>> m_attributes;// state, attName, attValue
+		std::vector<std::shared_ptr<Style>> m_extendedStyles;
 		mutable bool m_newStyleAdded = true;
 		mutable std::unique_ptr<Style> m_cachedStyle;
 

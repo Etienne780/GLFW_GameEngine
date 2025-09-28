@@ -1,34 +1,44 @@
 #include <CoreLib/ConversionUtils.h>
+#include <CoreLib/FormatUtils.h>
 
 #include "EngineLib/ResourceManager.h"
 #include "EngineLib/UI/UIManager.h"
+#include "EngineLib/UI/StyleAttribute.h"
+#include "EngineLib/UI/AttributeNames.h"
 #include "EngineLib/UI/Elements/Element.h"
 
 namespace EngineCore::UI {
 
 	ElementBase::ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style, MaterialID matID)
-		: m_elementName(std::move(name)), m_id(id), m_elementStyle(std::move(style)) {
+		: m_elementName(std::move(name)), m_id(id), m_style(std::move(style)) {
         m_cmd.isUI = true;
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
         m_cmd.materialID = matID;
 
         auto* rm = ResourceManager::GetInstance();
-        auto* mat = rm->GetMaterial(matID);
+        m_matrialPtr = rm->GetMaterial(matID);
+        if (!m_matrialPtr)
+            Log::Error("ElementBase: material invalid, id '{}'", matID.value);
 
-        mat->SetParam("uBackgroundColor", m_backgroundColor);
-        mat->SetParam("uBorderColor", m_borderColor);
-        mat->SetParam("uBorderRadius", m_borderRadius);
-        mat->SetParam("uBorderWidth", m_borderWidth);
-        mat->SetParam("uSize", GetLocalSize());
+        RegisterAttributesImpl();
+        SetStyleAttributes();
 	}
 
     ElementBase::ElementBase(std::string name, UIElementID id, MaterialID matID, std::shared_ptr<Style> style) 
-        : m_elementName(std::move(name)), m_id(id), m_elementStyle(std::move(style)) {
+        : m_elementName(std::move(name)), m_id(id), m_style(std::move(style)) {
         m_cmd.isUI = true;
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::Plain();
         m_cmd.materialID = matID;
+
+        auto* rm = ResourceManager::GetInstance();
+        m_matrialPtr = rm->GetMaterial(matID);
+        if (!m_matrialPtr)
+            Log::Error("ElementBase: material invalid, id '{}'", matID.value);
+
+        RegisterAttributesImpl();
+        SetStyleAttributes();
     }
 
     const std::string& ElementBase::GetName() const {
@@ -40,7 +50,7 @@ namespace EngineCore::UI {
     }
 
     std::shared_ptr<Style> ElementBase::GetStyle() const {
-        return m_elementStyle; 
+        return m_style; 
     }
 
     Vector2 ElementBase::GetScreenPosition() const {
@@ -71,6 +81,32 @@ namespace EngineCore::UI {
         return m_localScale;
     }
 
+    float ElementBase::GetParentWidth() const {
+        if (m_parentElement) {
+            return m_parentElement->GetLocalSize().x;
+        }
+        else {
+            return UIManager::GetReferenceScreenSize().x;
+        }
+    }
+
+    float ElementBase::GetParentHeight() const {
+        if (m_parentElement) {
+            return m_parentElement->GetLocalSize().y;
+        }
+        else {
+            return UIManager::GetReferenceScreenSize().y;
+        }
+    }
+
+    float ElementBase::GetViewportWidth() const {
+        return UIManager::GetReferenceScreenSize().x;
+    }
+
+    float ElementBase::GetViewportHeight() const {
+        return UIManager::GetReferenceScreenSize().y;
+    }
+
     State ElementBase::GetState() const { 
         return m_state; 
     }
@@ -81,18 +117,6 @@ namespace EngineCore::UI {
 
     const std::vector<std::unique_ptr<ElementBase>>& ElementBase::GetChildren() const { 
         return m_children; 
-    }
-
-    void ElementBase::Update() {
-        UpdateImpl();
-    }
-
-    void ElementBase::SendDrawCommand(Renderer* renderer, RenderLayerID renderLayerID) {
-        MarkDirty();
-
-        m_cmd.renderLayerID = renderLayerID;
-        m_cmd.modelMatrix = GetWorldModelMatrixPtr();
-        SendDrawCommandImpl(renderer);
     }
 
     ElementBase* ElementBase::GetParent() const {
@@ -120,6 +144,8 @@ namespace EngineCore::UI {
         default:
             break;
         }
+
+        SetStyleAttributes();
 	}
 
     void ElementBase::SetLocalPosition(const Vector2& position) {
@@ -144,12 +170,72 @@ namespace EngineCore::UI {
 
     void ElementBase::SetLocalScale(const Vector2& scale) {
         m_localScale = scale;
+        m_matrialPtr->SetParam("uSize", m_localScale);
         MarkDirty();
     }
 
     void ElementBase::SetLocalScale(float x, float y) {
         m_localScale.Set(x, y);
+        m_matrialPtr->SetParam("uSize", m_localScale);
         MarkDirty();
+    }
+
+    void ElementBase::SetLocalScaleX(float x) {
+        m_localScale.x = x;
+        m_matrialPtr->SetParam("uSize", m_localScale);
+        MarkDirty();
+    }
+
+    void ElementBase::SetLocalScaleY(float y) {
+        m_localScale.y = y;
+        m_matrialPtr->SetParam("uSize", m_localScale);
+        MarkDirty();
+    }
+
+    void ElementBase::setBackgroundColor(const Vector4& color) {
+        m_backgroundColor = color;
+        m_matrialPtr->SetParam("uBackgroundColor", m_backgroundColor);
+    }
+
+    void ElementBase::setBorderColor(const Vector4& color) {
+        m_borderColor = color;
+        m_matrialPtr->SetParam("uBorderColor", m_borderColor);
+    }
+
+    void ElementBase::setBorderRadius(const Vector4& radius) {
+        m_borderRadius = radius;
+        m_matrialPtr->SetParam("uBorderRadius", m_borderRadius);
+    }
+
+    void ElementBase::setBorderWidth(float width) {
+        if (width < 0.0f) width = 0.0f;
+        m_borderWidth = width;
+        m_matrialPtr->SetParam("uBorderWidth", m_borderWidth);
+    }
+
+    void ElementBase::setDuration(float duration) {
+        if (duration < 0.0f) duration = 0.0f;
+        m_duration = duration;
+    }
+
+    const Vector4& ElementBase::getBackgroundColor() const {
+        return m_backgroundColor;
+    }
+
+    const Vector4& ElementBase::getBorderColor() const {
+        return m_borderColor;
+    }
+
+    const Vector4& ElementBase::getBorderRadius() const {
+        return m_borderRadius;
+    }
+
+    float ElementBase::getBorderWidth() const {
+        return m_borderWidth;
+    }
+
+    float ElementBase::getDuration() const {
+        return m_duration;
     }
 
     bool ElementBase::IsMouseOver(const Vector2& mousePos) {
@@ -175,6 +261,10 @@ namespace EngineCore::UI {
         }
 
         return m_worldMatrix;
+    }
+
+    void ElementBase::RegisterAttribute(const std::string& name, std::function<void(ElementBase*, const StyleValue&)> func) {
+        m_registeredAttributes[FormatUtils::toLowerCase(name)] = func;
     }
 
     void ElementBase::CalculateLocalModelMat() {
@@ -215,10 +305,75 @@ namespace EngineCore::UI {
         }
     }
 
-    void ElementBase::SetStyleProperties() {
+    void ElementBase::UpdateImpl() {
+        Update();
+    }
 
+    void ElementBase::SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID) {
+        MarkDirty();
 
-        SetStylePropertiesImpl();
+        m_cmd.renderLayerID = renderLayerID;
+        m_cmd.modelMatrix = GetWorldModelMatrixPtr();
+        SendDrawCommand(renderer);
+    }
+
+    void ElementBase::RegisterAttributesImpl() {
+        if (m_attributesRegistered)
+            return;
+        m_attributesRegistered = true;
+        {
+            namespace att = Attribute;
+            RegisterAttribute(att::width, [](ElementBase* el, const StyleValue& val) {
+                if (float f; val.TryGetValue<float>(f, att::width)) {
+                    el->SetLocalScaleX(f);
+                }
+            });
+
+            namespace att = Attribute;
+            RegisterAttribute(att::height, [](ElementBase* el, const StyleValue& val) {
+                if (float f; val.TryGetValue<float>(f, att::height)) {
+                    el->SetLocalScaleY(f);
+                }
+            });
+
+            RegisterAttribute(att::backgroundColor, [](ElementBase* el, const StyleValue& val) {
+                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::backgroundColor)) {
+                    el->setBackgroundColor(vec);
+                }
+            });
+
+            RegisterAttribute(att::borderColor, [](ElementBase* el, const StyleValue& val) {
+                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderColor)) {
+                    el->setBorderColor(vec);
+                }
+            });
+
+            RegisterAttribute(att::borderRadius, [](ElementBase* el, const StyleValue& val) {
+                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderRadius)) {
+                    el->setBorderRadius(vec);
+                }
+            });
+
+            RegisterAttribute(att::borderWidth, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::borderWidth)) {
+                    el->setBorderWidth(f);
+                }
+            });
+        }
+       
+        RegisterAttributes();
+    }
+
+    void ElementBase::SetStyleAttributes() {
+        auto attribute = m_style->GetAllState(m_state);
+
+        for (auto& [name, valueStr] : attribute) {
+            const StyleValue& value = StyleAttribute::GetAttributeValue(name, *this, valueStr);
+            auto it = m_registeredAttributes.find(FormatUtils::toLowerCase(name));
+            if (it != m_registeredAttributes.end()) {
+                it->second(this, value);
+            }
+        }
     }
 
 }

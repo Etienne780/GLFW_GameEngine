@@ -5,28 +5,28 @@
 #include <sstream>
 
 /**
- * @brief Provides utility functions for common data format conversions.
- */
+* @brief Provides utility functions for common data format conversions.
+*/
 class ConversionUtils {
 public:
     /**
-     * @brief Converts a hexadecimal string to an integer.
-     *
-     * Supports optional "0x" or "0X" prefix.
-     *
-     * @param hex The hex string to convert.
-     * @return The corresponding integer value.
-     */
+    * @brief Converts a hexadecimal string to an integer.
+    *
+    * Supports optional "0x" or "0X" prefix.
+    *
+    * @param hex The hex string to convert.
+    * @return The corresponding integer value or -1 if failed.
+    */
     static int HexToIntegral(const std::string& hex);
 
     /**
-     * @brief Converts an integral value to a hexadecimal string.
-     *
-     * @tparam T An integral type (e.g., int, uint32_t).
-     * @param num The value to convert.
-     * @param withPrefix If true, includes the "0x" prefix.
-     * @return A string representing the value in hexadecimal format.
-     */
+    * @brief Converts an integral value to a hexadecimal string.
+    *
+    * @tparam T An integral type (e.g., int, uint32_t).
+    * @param num The value to convert.
+    * @param withPrefix If true, includes the "0x" prefix.
+    * @return A string representing the value in hexadecimal format.
+    */
     template<typename T>
     static std::string IntegralToHex(T num, bool withPrefix) {
         static_assert(std::is_integral<T>::value, "IntegralToHex requires integral types");

@@ -5,6 +5,7 @@
 #include "EngineLib/Renderer.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/UI/UITypes.h"
+#include "EngineLib/UI/Attribute/_Attributes.h"
 #include "EngineLib/UI/UIManager.h"
 
 namespace EngineCore {
@@ -12,6 +13,7 @@ namespace EngineCore {
 
 	void UIManager::Init() {
         m_renderer = Renderer::GetInstance();
+        UI::Init::InitAttributes();
 	}
 
 	void UIManager::Shutdown() {
@@ -144,14 +146,14 @@ namespace EngineCore {
 
         m_renderer->ReserveCommands(m_elementCount);
 		for (auto& element : m_roots) {
-			element->SendDrawCommand(m_renderer, m_renderLayerID);
+			element->SendDrawCommandImpl(m_renderer, m_renderLayerID);
 			SendChildDrawCommands(element);
 		}
 	}
 
     void UIManager::SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
-            child->SendDrawCommand(m_renderer, m_renderLayerID);
+            child->SendDrawCommandImpl(m_renderer, m_renderLayerID);
             SendChildDrawCommands(child);
         }
     }
@@ -201,34 +203,7 @@ namespace EngineCore {
             try {
                 const auto& attributes = style->GetAllState(UI::State::Normal);
                 for (const auto& [name, styleVal] : attributes) {
-                    std::string valStr;
-
-                    std::visit([&](auto&& v) {
-                        using T = std::decay_t<decltype(v)>;
-                        if constexpr (std::is_same_v<T, float>) {
-                            valStr = FormatUtils::toString(v);
-                        }
-                        else if constexpr (std::is_same_v<T, std::string>) {
-                            valStr = "\"" + v + "\"";
-                        }
-                        else if constexpr (std::is_same_v<T, Vector3>) {
-                            valStr = v.ToString();
-                        }
-                        else if constexpr (std::is_same_v<T, Vector4>) {
-                            valStr = v.ToString();
-                        }
-                        else {
-                            valStr = "\"<unsupported>\"";
-                        }
-                    }, styleVal.value);
-
-                    switch (styleVal.unit) {
-                    case UI::Unit::Px: valStr += "px"; break;
-                    case UI::Unit::Percent: valStr += "%"; break;
-                    case UI::Unit::None: break;
-                    }
-
-                    styleStr += " " + name + "=" + valStr;
+                    styleStr += " " + name + "=\"" + styleVal + "\"";
                 }
             }
             catch (const std::exception& e) {
@@ -238,7 +213,7 @@ namespace EngineCore {
 
         // Start Tag
         outStr.append(indent);
-        outStr.append("<" + elementPtr->GetName() + " id=" + idStr + styleStr + ((hasChildren) ? ">\n" : " />\n"));
+        outStr.append("<" + elementPtr->GetName() + " id=\"" + idStr + "\"" + styleStr + ((hasChildren) ? ">\n" : " />\n"));
 
         if (!hasChildren) return;
 
