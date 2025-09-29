@@ -273,7 +273,7 @@ namespace EngineCore {
         
         flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
         
-        PrintCommands(true);
+        // PrintCommands(true);
         m_commands.clear();
         m_instanceMatrices.clear();
     }

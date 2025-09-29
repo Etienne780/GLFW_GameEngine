@@ -16,6 +16,8 @@ Project::Project()
 
 	App_OpenGL_Set_Version(3, 3);
 
+	App_Application_Set_Window_Width(800);
+	App_Application_Set_Window_Height(600);
 	// Log::SaveLogs("Logs/");
 }
 

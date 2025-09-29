@@ -120,7 +120,7 @@ namespace EngineCore::UI {
         * @param mousePos The point (e.g. mouse position) to test, in the same coordinate space as the element.
         * @return True if the point is inside the bounding box, false otherwise.
         */
-        bool IsMouseOver(const Vector2& mousePos);
+        bool IsMouseOver(const Vector2& mousePos) const;
 
         /**
         * @brief Gets the world Model-Matrix (local to world origin).
@@ -162,10 +162,10 @@ namespace EngineCore::UI {
         void CalculateLocalModelMat();
         void CalculateWorldModelMat();
         /**
-        * @brief Marks this and children dirty
+        * @brief Marks this and children dirty for matrix calculations
         */
         void MarkDirty();
-
+        void WindowResize(int width, int height);
         void UpdateImpl();
         void SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID);
         void RegisterAttributesImpl();

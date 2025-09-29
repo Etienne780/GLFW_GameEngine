@@ -164,7 +164,7 @@ namespace EngineCore {
 
             unsigned int indices[] = {
                 // Back (Z-)
-                0, 2, 1, 0, 3, 2,
+                0, 1, 2, 0, 2, 3,
             };
 
             size_t verticesSize = sizeof(vertices) / sizeof(vertices[0]);

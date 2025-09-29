@@ -59,6 +59,10 @@ namespace EngineCore {
         return m_referenceScreenSize;
     }
 
+    Vector2 UIManager::GetWindowSize() {
+        return m_windowSize;
+    }
+
     float UIManager::GetUIScaleFactor() {
         return m_uiScaleFactor;
     }
@@ -86,28 +90,42 @@ namespace EngineCore {
         m_referenceScreenSize.Set(size.x, size.y);
     }
 
+    void UIManager::WindowResize(int width, int height) {
+        m_windowSize.Set(static_cast<float>(width), static_cast<float>(height));
+        CalculateOrthograpicMatrix(width, height);
+
+        for (auto& el : m_roots) {
+            el->WindowResize(width, height);
+            WindowResizeChild(width, height, el);
+        }
+    }
+
+    void UIManager::WindowResizeChild(int width, int height, std::unique_ptr<UI::ElementBase>& element) {
+        for (auto& child : element->GetChildren()) {
+            child->WindowResize(width, height);
+            WindowResizeChild(width, height, child);
+        }
+    }
+
     void UIManager::Update(int width, int height) {
+        if (m_windowSize.x != width || m_windowSize.y != height)
+            WindowResize(width, height);
+
         if(m_enableUIScaling)
             m_uiScaleFactor = CalculateUIScaleFactor(width, height);
 
-        // update orthograpic matrix
-        if (m_oldScreenWidth != width || m_oldScreenHeight != height) {
-            m_oldScreenWidth = width;
-            m_oldScreenHeight = height;
-            CalculateOrthograpicMatrix(width, height);
-        }
 
-        for (auto& element : m_roots) {
+        for (auto& el : m_roots) {
             // needs mouse down and up
-            UpdateElementState(element.get(), Input::GetMousePosition(), false, false);
-            element->Update();
-            UpdateChild(element);
+            UpdateElementState(el.get(), Input::GetMousePosition(), false, false);
+            el->UpdateImpl();
+            UpdateChild(el);
         }
     }
 
     void UIManager::UpdateChild(std::unique_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
-            child->Update();
+            child->UpdateImpl();
             UpdateChild(child);
         }
     }
@@ -172,11 +190,16 @@ namespace EngineCore {
     }
 
     void UIManager::CalculateOrthograpicMatrix(int width, int height) {
-        float halfW = static_cast<float>(width);
-        float halfH = static_cast<float>(height);
+        // float halfW = static_cast<float>(width);
+        // float halfH = static_cast<float>(height);
+        // m_orthoMat = GLTransform4x4::Orthographic(
+        //     -halfW, halfW,
+        //     -halfH, halfH,
+        //     -1000.0f, 1000.0f);
+
         m_orthoMat = GLTransform4x4::Orthographic(
-            -halfW, halfW,
-            -halfH, halfH,
+            0.0f, static_cast<float>(width),
+            static_cast<float>(height), 0.0f,
             -1000.0f, 1000.0f);
     }
 

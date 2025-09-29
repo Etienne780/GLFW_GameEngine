@@ -46,6 +46,7 @@ namespace EngineCore {
 		static std::string GetUIHierarchyString();
 		static bool GetUIScaling();
 		static Vector2 GetReferenceScreenSize();
+		static Vector2 GetWindowSize();
 		static float GetUIScaleFactor();
 
 		static void SetUIRenderLayer(RenderLayerID layerID);
@@ -82,15 +83,17 @@ namespace EngineCore {
 		static inline std::stack<UI::ElementBase*> m_elementStack;
 
 		// If true, the UI is scaled relative to the reference screen size
-		static inline bool m_enableUIScaling = true;
+		static inline bool m_enableUIScaling = false;
 		// The reference screen size used as baseline for scaling
 		static inline Vector2 m_referenceScreenSize{ 1920, 1080 };
+		static inline Vector2 m_windowSize{ 0, 0 };
 		// The current scale factor applied to the UI
 		static inline float m_uiScaleFactor = 1.0f;
 
-		static inline int m_oldScreenWidth = 0, m_oldScreenHeight = 0;
 		static inline Matrix4x4 m_orthoMat;
 
+		static void WindowResize(int width, int height);
+		static void WindowResizeChild(int width, int height, std::unique_ptr<UI::ElementBase>& element);
 		// Updates the scale and states of the UI::Element
 		static void Update(int width, int height);
 		static void UpdateChild(std::unique_ptr<UI::ElementBase>& element);

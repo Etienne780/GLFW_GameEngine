@@ -16,9 +16,13 @@ void SetupUI() {
 
 	auto defaultStyle = Style::Create("DefaultStyle");
 	defaultStyle->Set(Attribute::borderRadius, "10px");
-	defaultStyle->Set(Attribute::width, "500px");
-	defaultStyle->Set(Attribute::height, "300px");
-	defaultStyle->Set(Attribute::backgroundColor, "#ff 00 ff");
+	defaultStyle->Set(Attribute::borderWidth, "10px");
+	defaultStyle->Set(Attribute::borderColor, "#00ff00");
+	defaultStyle->Set(Attribute::width, "50%w");
+	defaultStyle->Set(Attribute::height, "50%h");
+	defaultStyle->Set(Attribute::backgroundColor, "#ff00ff");
+	defaultStyle->Set(State::Hovered, Attribute::backgroundColor, "#880088");
+	defaultStyle->Set(State::Hovered, Attribute::borderRadius, "100px");
 
 	auto otherStyle = Style::Create("OtherStyle");
 	otherStyle->Set(Attribute::backgroundColor,"#ffffff");
@@ -27,7 +31,7 @@ void SetupUI() {
 	otherStyle->Set(Attribute::layoutHor, "Center");
 
 	UI::SetDebug(true);
-	Panel* ptr = UI::Begin<Panel>(defaultStyle); {
+	UI::Begin<Panel>(defaultStyle); {
 		
 		// UI::Begin<Panel>(defaultStyle); {
 		// 	UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
@@ -40,8 +44,6 @@ void SetupUI() {
 	}
 	UI::End();
 	Log::Print(UI::GetUIHierarchyString());
-
-	Log::Info("{}", ptr->GetName());
 }
 
 void SetupGame() {

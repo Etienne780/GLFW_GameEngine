@@ -55,10 +55,6 @@ namespace EngineCore::UI {
 
     Vector2 ElementBase::GetScreenPosition() const {
         Vector2 pos = m_localPosition;
-        if (UIManager::GetUIScaling()) {
-            pos *= UIManager::GetUIScaleFactor();
-        }
-
         if (m_parentElement) {
             pos += m_parentElement->GetScreenPosition();
         }
@@ -86,7 +82,7 @@ namespace EngineCore::UI {
             return m_parentElement->GetLocalSize().x;
         }
         else {
-            return UIManager::GetReferenceScreenSize().x;
+            return UIManager::GetWindowSize().x;
         }
     }
 
@@ -95,16 +91,16 @@ namespace EngineCore::UI {
             return m_parentElement->GetLocalSize().y;
         }
         else {
-            return UIManager::GetReferenceScreenSize().y;
+            return UIManager::GetWindowSize().y;
         }
     }
 
     float ElementBase::GetViewportWidth() const {
-        return UIManager::GetReferenceScreenSize().x;
+        return UIManager::GetWindowSize().x;
     }
 
     float ElementBase::GetViewportHeight() const {
-        return UIManager::GetReferenceScreenSize().y;
+        return UIManager::GetWindowSize().y;
     }
 
     State ElementBase::GetState() const { 
@@ -148,13 +144,12 @@ namespace EngineCore::UI {
         SetStyleAttributes();
 	}
 
-    void ElementBase::SetLocalPosition(const Vector2& position) {
-        m_localPosition = position;
-        MarkDirty();
+    void ElementBase::SetLocalPosition(const Vector2& pos) {
+        SetLocalPosition(pos.x, pos.y);
     }
 
     void ElementBase::SetLocalPosition(float x, float y) {
-        m_localPosition.Set(x, y);
+        m_localPosition.Set(x,y);
         MarkDirty();
     }
 
@@ -169,9 +164,7 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetLocalScale(const Vector2& scale) {
-        m_localScale = scale;
-        m_matrialPtr->SetParam("uSize", m_localScale);
-        MarkDirty();
+        SetLocalScale(scale.x, scale.y);
     }
 
     void ElementBase::SetLocalScale(float x, float y) {
@@ -238,7 +231,7 @@ namespace EngineCore::UI {
         return m_duration;
     }
 
-    bool ElementBase::IsMouseOver(const Vector2& mousePos) {
+    bool ElementBase::IsMouseOver(const Vector2& mousePos) const {
         Vector2 pos = GetScreenPosition();
         Vector2 size = GetScreenSize();
         return (mousePos.x > pos.x && pos.x + size.x > mousePos.x &&
@@ -305,12 +298,23 @@ namespace EngineCore::UI {
         }
     }
 
+    void ElementBase::WindowResize(int width, int height) {
+        // update position to new window position
+        SetStyleAttributes();
+    }
+
+    // #include <cmath>
+    // float counter = 0;
     void ElementBase::UpdateImpl() {
+        // SetLocalPosition(sin(counter/2) * 100, cos(counter/2) * 100);
+        // counter += 0.5;
         Update();
     }
 
     void ElementBase::SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID) {
-        MarkDirty();
+        // MarkDirty();
+        // Log::Info("local Pos: {}; screen pos: {}; size: {}", GetLocalPosition(), GetScreenPosition(), GetLocalSize());
+        // Log::Print(*GetWorldModelMatrixPtr());
 
         m_cmd.renderLayerID = renderLayerID;
         m_cmd.modelMatrix = GetWorldModelMatrixPtr();
@@ -365,7 +369,7 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetStyleAttributes() {
-        auto attribute = m_style->GetAllState(m_state);
+        const auto& attribute = m_style->GetAllState(m_state);
 
         for (auto& [name, valueStr] : attribute) {
             const StyleValue& value = StyleAttribute::GetAttributeValue(name, *this, valueStr);

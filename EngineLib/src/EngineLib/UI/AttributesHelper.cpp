@@ -67,6 +67,7 @@ namespace EngineCore::UI {
 			}
 			return true;
 		}
+		Log::Warn("StyleAttribute: Invalid unit input: '{}'", input);
 		return false;
 	}
 
