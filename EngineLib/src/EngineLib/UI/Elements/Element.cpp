@@ -1,7 +1,7 @@
 #include <CoreLib/ConversionUtils.h>
 #include <CoreLib/FormatUtils.h>
 
-#include "EngineLib/ResourceManager.h"
+
 #include "EngineLib/UI/UIManager.h"
 #include "EngineLib/UI/StyleAttribute.h"
 #include "EngineLib/UI/AttributeNames.h"
@@ -10,16 +10,11 @@
 namespace EngineCore::UI {
 
 	ElementBase::ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style, MaterialID matID)
-		: m_elementName(std::move(name)), m_id(id), m_style(std::move(style)) {
+		: m_elementName(std::move(name)), m_id(id), m_style(std::move(style)){
         m_cmd.isUI = true;
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
         m_cmd.materialID = matID;
-
-        auto* rm = ResourceManager::GetInstance();
-        m_matrialPtr = rm->GetMaterial(matID);
-        if (!m_matrialPtr)
-            Log::Error("ElementBase: material invalid, id '{}'", matID.value);
 
         RegisterAttributesImpl();
         SetStyleAttributes();
@@ -31,11 +26,6 @@ namespace EngineCore::UI {
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::Plain();
         m_cmd.materialID = matID;
-
-        auto* rm = ResourceManager::GetInstance();
-        m_matrialPtr = rm->GetMaterial(matID);
-        if (!m_matrialPtr)
-            Log::Error("ElementBase: material invalid, id '{}'", matID.value);
 
         RegisterAttributesImpl();
         SetStyleAttributes();
@@ -169,41 +159,41 @@ namespace EngineCore::UI {
 
     void ElementBase::SetLocalScale(float x, float y) {
         m_localScale.Set(x, y);
-        m_matrialPtr->SetParam("uSize", m_localScale);
+        m_sbo.SetParam("uSize", m_localScale);
         MarkDirty();
     }
 
     void ElementBase::SetLocalScaleX(float x) {
         m_localScale.x = x;
-        m_matrialPtr->SetParam("uSize", m_localScale);
+        m_sbo.SetParam("uSize", m_localScale);
         MarkDirty();
     }
 
     void ElementBase::SetLocalScaleY(float y) {
         m_localScale.y = y;
-        m_matrialPtr->SetParam("uSize", m_localScale);
+        m_sbo.SetParam("uSize", m_localScale);
         MarkDirty();
     }
 
     void ElementBase::setBackgroundColor(const Vector4& color) {
         m_backgroundColor = color;
-        m_matrialPtr->SetParam("uBackgroundColor", m_backgroundColor);
+        m_sbo.SetParam("uBackgroundColor", m_backgroundColor);
     }
 
     void ElementBase::setBorderColor(const Vector4& color) {
         m_borderColor = color;
-        m_matrialPtr->SetParam("uBorderColor", m_borderColor);
+        m_sbo.SetParam("uBorderColor", m_borderColor);
     }
 
     void ElementBase::setBorderRadius(const Vector4& radius) {
         m_borderRadius = radius;
-        m_matrialPtr->SetParam("uBorderRadius", m_borderRadius);
+        m_sbo.SetParam("uBorderRadius", m_borderRadius);
     }
 
     void ElementBase::setBorderWidth(float width) {
         if (width < 0.0f) width = 0.0f;
         m_borderWidth = width;
-        m_matrialPtr->SetParam("uBorderWidth", m_borderWidth);
+        m_sbo.SetParam("uBorderWidth", m_borderWidth);
     }
 
     void ElementBase::setDuration(float duration) {
@@ -318,6 +308,7 @@ namespace EngineCore::UI {
 
         m_cmd.renderLayerID = renderLayerID;
         m_cmd.modelMatrix = GetWorldModelMatrixPtr();
+        m_cmd.shaderBindOverride = &m_sbo;
         SendDrawCommand(renderer);
     }
 

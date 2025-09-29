@@ -7,6 +7,7 @@
 #include <CoreLib/Math/Vector4.h>
 
 #include "EngineLib/AssetRepository.h"
+#include "EngineLib/ShaderBindObject.h"
 #include "EngineLib/Renderer.h"
 #include "EngineLib/EngineTypes.h"
 #include "../Style.h"
@@ -65,17 +66,11 @@ namespace EngineCore::UI {
         State m_state = State::Normal;
         RenderCommand m_cmd;
         MaterialID m_materialID{ ENGINE_INVALID_ID };
-        Material* m_matrialPtr = nullptr;
+        ShaderBindObject m_sbo;
         
         Callback m_onClick;
         Callback m_onHover;
         Callback m_onPress;
-
-        Vector4 m_backgroundColor{ 1, 1, 1, 1 };
-        Vector4 m_borderColor{ 0.75f, 0.75f, 0.75f, 1 };
-        Vector4 m_borderRadius{ 25, 5, 100, 50 };// top-left, top-right, bottom-right, bottom-left
-        float m_borderWidth = 50;
-        float m_duration = 0.0f;
 
         /*
         * @brief is called every frame
@@ -158,6 +153,13 @@ namespace EngineCore::UI {
         // Local model matrix
         Matrix4x4 m_localMatrix;
         Matrix4x4 m_worldMatrix;
+
+        // styling props
+        Vector4 m_backgroundColor{ 1, 1, 1, 1 };
+        Vector4 m_borderColor{ 0.75f, 0.75f, 0.75f, 1 };
+        Vector4 m_borderRadius{ 25, 5, 100, 50 };// top-left, top-right, bottom-right, bottom-left
+        float m_borderWidth = 50;
+        float m_duration = 0.0f;
 
         void CalculateLocalModelMat();
         void CalculateWorldModelMat();
