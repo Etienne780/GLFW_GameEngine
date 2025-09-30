@@ -317,7 +317,7 @@ namespace EngineCore {
                 }
 
                 // Transparent: sort Distance
-                if (a.isTransparent && b.isTransparent) {
+                if (a.isTransparent && b.isTransparent && !a.isUI && !b.isUI) {
                     Vector3 posA = a.modelMatrix ? a.modelMatrix->GetTranslation() : Vector3::zero;
                     Vector3 posB = b.modelMatrix ? b.modelMatrix->GetTranslation() : Vector3::zero;
                     float distA = Vector3::SquaredDistance(camPos, posA);
