@@ -59,7 +59,10 @@ namespace EngineCore::UI {
     protected:
         std::string m_elementName;
         UIElementID m_id;
-        //Style m_elementStyle; needs to be later used for clean transition between styles
+        // Style m_elementStyle; needs to be later used for clean transition between styles
+        // more thoughts about how the styles are manged on the element
+        // element should probably have a default style that can be modived with a function that can be overriden
+        // idk how to make transtions 
         std::shared_ptr<Style> m_style = nullptr;
         ElementBase* m_parentElementPtr = nullptr;
         std::vector<std::unique_ptr<ElementBase>> m_children;
@@ -202,9 +205,9 @@ namespace EngineCore::UI {
 
 /*
 Element:
-- Panel
+- Panel 
 - Image
-- (svg) maybe
+- (svg) maybe (probably not)
 - Text
 - Button
 - Checkmark
