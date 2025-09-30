@@ -14,7 +14,6 @@ void SetupUI() {
 
 	auto defaultStyle = Style::Create("DefaultStyle");
 	// defaultStyle->Set(Attribute::borderRadius, "25px");
-	defaultStyle->Set(Attribute::borderWidth, "10px");
 	defaultStyle->Set(Attribute::borderColor, "#00ff00");
 	defaultStyle->Set(Attribute::width, "50%w");
 	defaultStyle->Set(Attribute::height, "50%h");

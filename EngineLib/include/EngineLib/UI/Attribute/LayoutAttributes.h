@@ -21,5 +21,11 @@ namespace {
     extern const StyleAttribute LayoutHor;
     extern const StyleAttribute LayoutVer;
 
-    // not finished.
+    extern const StyleAttribute LayoutContent;
+    extern const StyleAttribute LayoutContentHor;
+    extern const StyleAttribute LayoutContentVer;
+
+    extern const StyleAttribute LayoutDirection;
+    extern const StyleAttribute LayoutWrap;
+
 }

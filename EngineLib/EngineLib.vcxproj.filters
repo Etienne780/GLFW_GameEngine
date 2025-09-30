@@ -156,9 +156,6 @@
     <ClInclude Include="include\EngineLib\UI\Attribute\StyleAttributes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EngineLib\UI\Attribute\TextAttributes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\EngineLib\UI\Attribute\DisplayAttributes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -318,9 +315,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EngineLib\UI\Attribute\StyleAttributes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EngineLib\UI\Attribute\TextAttributes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

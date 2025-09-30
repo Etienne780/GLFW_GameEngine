@@ -9,53 +9,71 @@
 
 namespace {
 
-    const StyleAttribute Layout(
+    #pragma region Layout
+
+    const StyleAttribute Layout = AttributeHelper::MakeMultiStringAttribute(
         Attribute::layout,
         "Layouts the elements inside of a container",
-        std::vector<std::string>{"start", "center", "end", "stretch"},
-        [](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
-            auto values = AttributeHelper::GetValues(val);
-            bool errorType = false;
-
-            if (values.size() == 1) {
-                std::string s = FormatUtils::toLowerCase(values[0]);
-                if (AttributeHelper::ListContains(styleAtt->GetInputs(), s))
-                    return StyleValue(s);
-                errorType = true;
-            }
-            else if (values.size() == 2) {
-                std::string s1 = FormatUtils::toLowerCase(values[0]);
-                std::string s2 = FormatUtils::toLowerCase(values[1]);
-                const auto& list = styleAtt->GetInputs();
-
-                if (AttributeHelper::ListContains(list, s1) &&
-                    AttributeHelper::ListContains(list, s2)) {
-                    return StyleValue({ StyleValue(s1), StyleValue(s2) });
-                }
-                errorType = true;
-            }
-
-            if (errorType)
-                Log::Warn("StyleAttribute: layout could not calculate value in style '{}', spelling mistake, input:'{}'!", element.GetStyle()->GetName(), val);
-            else
-                Log::Warn("StyleAttribute: layout could not calculate value in style '{}', invalid argument count, input:'{}'!", element.GetStyle()->GetName(), val);
-
-            return StyleValue("center");
-        }
+        { 1, 2 },
+        { "start", "center", "end", "stretch" },
+        { "start", "start" }
     );
 
     const StyleAttribute LayoutHor = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutHor,
         "Horizontal layout of elements inside a container",
         { "start", "center", "end", "stretch" },
-        "center"
+        "start"
     );
 
     const StyleAttribute LayoutVer = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutVer,
         "Vertical layout of elements inside a container",
         { "start", "center", "end", "stretch" },
-        "center"
+        "start"
+    );
+
+    #pragma endregion
+
+    #pragma region LayoutContent
+
+    const StyleAttribute LayoutContent = AttributeHelper::MakeMultiStringAttribute(
+        Attribute::layoutContent,
+        "Layouts the whole content inside of a container",
+        { 1, 2 },
+        { "start", "center", "end", "space-evenly", "space-around" },
+        { "start", "start" }
+    );
+
+
+    const StyleAttribute LayoutContentHor = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutContentHor,
+        "Horizontal Layouting of the whole content inside of a container",
+        { "start", "center", "end", "space-evenly", "space-around"},
+        "start"
+    );
+
+    const StyleAttribute LayoutContentVer = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutContentVer,
+        "Vertical Layouting of the whole content inside of a container",
+        { "start", "center", "end", "space-evenly", "space-around"},
+        "start"
+    );
+
+    #pragma endregion
+
+    const StyleAttribute LayoutDirection = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutDirection,
+        "Direction in which the elements will arranged",
+        { "row", "column", "row-start", "row-end", "column-start", "column-end"},
+        "row-start"
+    );
+
+    const StyleAttribute LayoutWrap = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutWrap,
+        "Defines how child elements are arranged when they exceed the available space.",
+        { "none", "wrap" },
+        "wrap"
     );
 
 }
@@ -66,6 +84,13 @@ namespace EngineCore::UI::Init {
         StyleAttribute::RegisterAttribute(Layout);
         StyleAttribute::RegisterAttribute(LayoutHor);
         StyleAttribute::RegisterAttribute(LayoutVer);
+
+        StyleAttribute::RegisterAttribute(LayoutContent);
+        StyleAttribute::RegisterAttribute(LayoutContentHor);
+        StyleAttribute::RegisterAttribute(LayoutContentVer);
+
+        StyleAttribute::RegisterAttribute(LayoutDirection);
+        StyleAttribute::RegisterAttribute(LayoutWrap);
         return true;
     }
 

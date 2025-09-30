@@ -60,7 +60,6 @@
     <ClInclude Include="include\EngineLib\UI\Attribute\DisplayAttributes.h" />
     <ClInclude Include="include\EngineLib\UI\Attribute\LayoutAttributes.h" />
     <ClInclude Include="include\EngineLib\UI\Attribute\StyleAttributes.h" />
-    <ClInclude Include="include\EngineLib\UI\Attribute\TextAttributes.h" />
     <ClInclude Include="include\EngineLib\UI\Attribute\AttributeNames.h" />
     <ClInclude Include="include\EngineLib\UI\Attribute\_Attributes.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Element.h" />
@@ -116,7 +115,6 @@
     <ClCompile Include="src\EngineLib\UI\Attribute\DisplayAttributes.cpp" />
     <ClCompile Include="src\EngineLib\UI\Attribute\LayoutAttributes.cpp" />
     <ClCompile Include="src\EngineLib\UI\Attribute\StyleAttributes.cpp" />
-    <ClCompile Include="src\EngineLib\UI\Attribute\TextAttributes.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Element.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Panel.cpp" />
     <ClCompile Include="src\EngineLib\UI\StyleAttribute.cpp" />

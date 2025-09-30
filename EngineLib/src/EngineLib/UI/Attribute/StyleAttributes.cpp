@@ -9,22 +9,91 @@
 #include "EngineLib/UI/Attribute/StyleAttributes.h"
 
 namespace {
+    typedef AttributeHelper AHel;
 
     const StyleAttribute Width = AttributeHelper::MakeSimpleNumberAttribute(
         Attribute::width,
         "width of this element",
-        0);
+        0, AHel::NumberType::SIZE);
 
     const StyleAttribute Height = AttributeHelper::MakeSimpleNumberAttribute(
         Attribute::height,
         "height of this element",
-        0);
+        0, AHel::NumberType::SIZE);
+
+    #pragma region Margin
+
+    const StyleAttribute Margin = AttributeHelper::MakeMultiNumberAttribute(
+        Attribute::margin,
+        "margin of this element, order: top, right, bottom, left",
+        4, 
+        { 0, 0, 0, 0 },
+        AHel::NumberType::SIZE);
     
+    const StyleAttribute MarginTop = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::marginTop,
+        "top margin of this element",
+        0, AHel::NumberType::SIZE);
+
+    const StyleAttribute MarginBottom = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::marginBottom,
+        "bottom margin of this element",
+        0, AHel::NumberType::SIZE);
+
+    const StyleAttribute MarginLeft = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::marginLeft,
+        "left margin of this element",
+        0, AHel::NumberType::SIZE);
+
+    const StyleAttribute MarginRight = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::marginRight,
+        "right margin of this element",
+        0, AHel::NumberType::SIZE);
+
+    #pragma endregion
+
+    #pragma region Padding
+
+    const StyleAttribute Padding = AttributeHelper::MakeMultiNumberAttribute(
+        Attribute::margin,
+        "padding of this element, order: top, right, bottom, left",
+        4,
+        { 0, 0, 0, 0 },
+        AHel::NumberType::SIZE);
+
+    const StyleAttribute PaddingTop = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::paddingTop,
+        "top padding of this element",
+        0, AHel::NumberType::SIZE);
+
+    const StyleAttribute PaddingBottom = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::paddingBottom,
+        "bottom padding of this element",
+        0, AHel::NumberType::SIZE);
+
+    const StyleAttribute PaddingLeft = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::paddingLeft,
+        "left padding of this element",
+        0, AHel::NumberType::SIZE);
+
+    const StyleAttribute PaddingRight = AttributeHelper::MakeSimpleNumberAttribute(
+        Attribute::paddingRight,
+        "right padding of this element",
+        0, AHel::NumberType::SIZE);
+
+    #pragma endregion
+
     const StyleAttribute BackgroundColor = AttributeHelper::MakeSimpleColorAttribute(
         Attribute::backgroundColor,
         "Sets the background color of this element",
         { "#ff", "#ff00ff", "#00ff00ff" },
         Vector4(1,1,1,1));
+
+    const StyleAttribute TextColor = AttributeHelper::MakeSimpleColorAttribute(
+        Attribute::textColor,
+        "Sets the text color of this element",
+        { "#ff", "#ff00ff", "#00ff00ff" },
+        Vector4(1, 1, 1, 1));
 
     const StyleAttribute BorderColor = AttributeHelper::MakeSimpleColorAttribute(
         Attribute::borderColor,
@@ -35,50 +104,20 @@ namespace {
     const StyleAttribute BorderWidth = AttributeHelper::MakeSimpleNumberAttribute(
         Attribute::borderWidth,
         "Sets the border width of this element",
-        0);
+        0, AHel::NumberType::SIZE);
 
-    const StyleAttribute BorderRadius(
+    const StyleAttribute BorderRadius = AttributeHelper::MakeMultiNumberAttribute(
         Attribute::borderRadius,
         "Sets the border radius of this element (top-left, top-right, bottom-right, bottom-left)",
-        std::vector<std::string>{ "number" },
-        [](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
-            typedef AttributeHelper AHel;
-            bool errorType = false;
-            auto values = AHel::GetValues(val);
-            if (values.size() == 1) {
-                errorType = true;
-                float v;
-                if (AHel::TryGetNumber(element, values[0], v))
-                    return Vector4(v, v, v, v);
-            }
-            else if (values.size() == 2) {
-                errorType = true;
-                float v1, v2;
-                if (AHel::TryGetNumber(element, values[0], v1) &&
-                    AHel::TryGetNumber(element, values[1], v2))
-                    return Vector4(v1, v1, v2, v2);
-            }
-            else if (values.size() == 4) {
-                errorType = true;
-                float v1, v2, v3, v4;
-                if (AHel::TryGetNumber(element, values[0], v1) &&
-                    AHel::TryGetNumber(element, values[1], v2) &&
-                    AHel::TryGetNumber(element, values[2], v3) &&
-                    AHel::TryGetNumber(element, values[3], v4))
-                    return Vector4(v1, v2, v3, v4);
-            }
-            if(errorType)
-                Log::Warn("StyleAttribute: border radius could not calculate value in style '{}', invalid number, input:'{}'!", element.GetStyle()->GetName(), val);
-            else
-                Log::Warn("StyleAttribute: border radius could not calculate value in style '{}', invalid argument count, input:'{}'!", element.GetStyle()->GetName(), val);
-            return StyleValue(Vector4(0, 0, 0, 0));
-        }
+        4,
+        { 0, 0, 0, 0 },
+        AHel::NumberType::SIZE
     );
 
     const StyleAttribute Duration = AttributeHelper::MakeSimpleNumberAttribute(
         Attribute::duration,
         "Sets the transition duration time between styles",
-        0);
+        0, AHel::NumberType::TIME);
 
 }
 
@@ -87,6 +126,19 @@ namespace EngineCore::UI::Init {
     const bool regStyleAtt() {
         StyleAttribute::RegisterAttribute(Width);
         StyleAttribute::RegisterAttribute(Height);
+
+        StyleAttribute::RegisterAttribute(Margin);
+        StyleAttribute::RegisterAttribute(MarginTop);
+        StyleAttribute::RegisterAttribute(MarginBottom);
+        StyleAttribute::RegisterAttribute(MarginLeft);
+        StyleAttribute::RegisterAttribute(MarginRight);
+
+        StyleAttribute::RegisterAttribute(Padding);
+        StyleAttribute::RegisterAttribute(PaddingTop);
+        StyleAttribute::RegisterAttribute(PaddingBottom);
+        StyleAttribute::RegisterAttribute(PaddingLeft);
+        StyleAttribute::RegisterAttribute(PaddingRight);
+        
         StyleAttribute::RegisterAttribute(BackgroundColor);
         StyleAttribute::RegisterAttribute(BorderColor);
         StyleAttribute::RegisterAttribute(BorderWidth);

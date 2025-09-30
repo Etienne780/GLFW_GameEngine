@@ -25,7 +25,7 @@ namespace  {
     
     const StyleAttribute Overflow = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::overflow,
-        "Sets the overflow of this element",
+        "Controls what happens when the element's content is larger than its available space.",
         { "hidden", "none" },
         "none"
     );

@@ -24,6 +24,21 @@ namespace {
 
 	extern const StyleAttribute Width;
 	extern const StyleAttribute Height;
+
+    // Margin
+    extern const StyleAttribute Margin;
+    extern const StyleAttribute MarginTop;
+    extern const StyleAttribute MarginBottom;
+    extern const StyleAttribute MarginLeft;
+    extern const StyleAttribute MarginRight;
+
+    // Padding
+    extern const StyleAttribute Padding;
+    extern const StyleAttribute PaddingTop;
+    extern const StyleAttribute PaddingBottom;
+    extern const StyleAttribute PaddingLeft;
+    extern const StyleAttribute PaddingRight;
+
     extern const StyleAttribute BackgroundColor;
     extern const StyleAttribute BorderColor;
     extern const StyleAttribute BorderWidth;

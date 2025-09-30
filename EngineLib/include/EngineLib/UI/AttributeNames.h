@@ -42,7 +42,7 @@ namespace Attribute {
 	constexpr const char* layoutDirection = "layoutDirection";
 	/*
 	* @brief sets element wrapping
-	* @param no-wrap, wrap
+	* @param none, wrap
 	*/
 	constexpr const char* layoutWrap = "layoutWrap";
 	/*
@@ -55,6 +55,11 @@ namespace Attribute {
 	* @param display, none
 	*/
 	constexpr const char* display = "display";
+	/*
+	* @brief Sets the overflow of this element
+	* @param hidden, none
+	*/
+	constexpr const char* overflow = "overflow";
 	/*
 	* @brief offset the position of this element, should not be used to often
 	* @param valueX:, valueY: number
@@ -106,11 +111,6 @@ namespace Attribute {
 	constexpr const char* paddingBottom = "paddingBottom";
 	constexpr const char* paddingLeft = "paddingLeft";
 	constexpr const char* paddingRight = "paddingRight";
-	/*
-	* @brief Sets the overflow of this element
-	* @param hidden, none
-	*/
-	constexpr const char* overflow = "overflow";
 	/*
 	* @brief Sets the background color of this element
 	* @param color (#ff00ff, #00ff00ff)
