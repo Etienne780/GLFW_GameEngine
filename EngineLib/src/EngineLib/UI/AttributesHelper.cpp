@@ -67,7 +67,7 @@ namespace EngineCore::UI {
 			}
 			return true;
 		}
-		Log::Warn("StyleAttribute: Invalid unit input: '{}'", input);
+		Log::Warn("StyleAttribute: Invalid unit in style '{}', input:'{}'", element.GetStyle()->GetName(), input);
 		return false;
 	}
 
@@ -83,7 +83,7 @@ namespace EngineCore::UI {
 				if (AttributeHelper::ListContains(styleAtt->GetInputs(), s))
 					return StyleValue(s);
 
-				Log::Warn("StyleAttribute: {} could not calculate value, input:'{}' invalid!", styleAtt->GetName(), val);
+				Log::Warn("StyleAttribute: {} could not calculate value in style '{}', input:'{}' invalid!", styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				return StyleValue(defaultValue);
 			}
 		);
@@ -100,7 +100,7 @@ namespace EngineCore::UI {
 				if (TryGetNumber(element, val, f))
 					return StyleValue(f);
 
-				Log::Warn("StyleAttribute: {} could not calculate value, input:'{}' invalid!", styleAtt->GetName(), val);
+				Log::Warn("StyleAttribute: {} could not calculate value in style '{}', input:'{}' invalid!", styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				return StyleValue(defaultValue);
 			}
 		);
@@ -118,7 +118,7 @@ namespace EngineCore::UI {
 				std::string clearString = FormatUtils::removeSpaces(val);
 				size_t pos = clearString.find('#');
 				if (pos == std::string::npos) {
-					Log::Warn("StyleAttribute: {} could not calculate value '#' is missing, input:'{}' invalid!", styleAtt->GetName(), val);
+					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', '#' is missing, input:'{}' invalid!", element.GetStyle()->GetName(), styleAtt->GetName(), val);
 					return StyleValue(defaultValue);
 				}
 				pos++;
@@ -149,9 +149,9 @@ namespace EngineCore::UI {
 				}
 
 				if(errorType)
-					Log::Warn("StyleAttribute: {}, invalid hex symbols, input:'{}'!", styleAtt->GetName(), val);
+					Log::Warn("StyleAttribute: {}, invalid hex symbols in style '{}', input:'{}'!", styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				else 
-					Log::Warn("StyleAttribute: {}, color has the wrong size, 1,3,4 input:'{}'!", styleAtt->GetName(), val);
+					Log::Warn("StyleAttribute: {}, invalid color format in style '{}', expected hex string with 2, 6 or 8 digits after '#', input:'{}'!", styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				return StyleValue(defaultValue);
 			}
 		);

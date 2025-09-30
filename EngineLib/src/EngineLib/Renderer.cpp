@@ -206,6 +206,9 @@ namespace EngineCore {
                 if (currentShaderID != newShaderID || isUI != cmd.isUI) {
                     currentShaderID = newShaderID;
                     isUI = cmd.isUI;
+                    if (isUI)
+                        isUI = true;
+
                     currentShader = currentMaterial->BindToShader();
                     if (!currentShader) {
                         currentShaderID.value = ENGINE_INVALID_ID;
@@ -273,7 +276,7 @@ namespace EngineCore {
         
         flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
         
-        PrintCommands(true);
+        // PrintCommands(true);
         m_commands.clear();
         m_instanceMatrices.clear();
     }

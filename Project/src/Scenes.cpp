@@ -12,21 +12,19 @@ void SetupUI() {
 	uiLayer = RenderLayerManager::AddLayer("UILayer", 10);
 	UI::SetUIRenderLayer(uiLayer);
 
-	const auto& d = StyleAttribute::GetAllAttributes();
-
 	auto defaultStyle = Style::Create("DefaultStyle");
-	defaultStyle->Set(Attribute::borderRadius, "10px");
+	// defaultStyle->Set(Attribute::borderRadius, "25px");
 	defaultStyle->Set(Attribute::borderWidth, "10px");
 	defaultStyle->Set(Attribute::borderColor, "#00ff00");
 	defaultStyle->Set(Attribute::width, "50%w");
 	defaultStyle->Set(Attribute::height, "50%h");
-	defaultStyle->Set(Attribute::backgroundColor, "#ff00ff");
+	defaultStyle->Set(Attribute::backgroundColor, "#ffffff");
 	defaultStyle->Set(State::Hovered, Attribute::backgroundColor, "#880088");
 	defaultStyle->Set(State::Hovered, Attribute::borderRadius, "100px");
 
 	auto style2 = Style::Create("style2");
-	style2->Set(Attribute::width, "10%w");
-	style2->Set(Attribute::height, "35%h");
+	style2->Set(Attribute::width, "30%w");
+	style2->Set(Attribute::height, "15%h");
 	style2->Set(Attribute::backgroundColor, "#0000ff");
 
 	auto otherStyle = Style::Create("OtherStyle");
@@ -35,7 +33,7 @@ void SetupUI() {
 	otherStyle->Set(Attribute::height, "10px");
 	otherStyle->Set(Attribute::layoutHor, "Center");
 
-	UI::SetDebug(false);
+	// UI::SetDebug(false);
 	UI::Begin<Panel>(defaultStyle); {
 		
 		UI::Begin<Panel>(style2); {
@@ -48,6 +46,7 @@ void SetupUI() {
 
 	}
 	UI::End();
+	Log::Print();
 	Log::Print(UI::GetUIHierarchyString());
 }
 

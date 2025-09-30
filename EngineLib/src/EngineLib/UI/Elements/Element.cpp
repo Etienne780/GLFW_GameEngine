@@ -26,6 +26,13 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::Init() {
+        // inits the start propetys
+        m_sbo.SetParam("uBackgroundColor", m_backgroundColor);
+        m_sbo.SetParam("uBorderColor", m_borderColor);
+        m_sbo.SetParam("uBorderRadius", m_borderRadius);
+        m_sbo.SetParam("uBorderWidth", m_borderWidth);
+        m_sbo.SetParam("uSize", m_localScale);
+
         RegisterAttributesImpl();
         SetStyleAttributes();
     }

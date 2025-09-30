@@ -4,6 +4,7 @@
 #include "EngineLib/UI/AttributeHelper.h"
 #include "EngineLib/UI/StyleAttribute.h"
 #include "EngineLib/UI/AttributeNames.h"
+#include "EngineLib/UI/Elements/Element.h"
 #include "EngineLib/UI/Attribute/LayoutAttributes.h"
 
 namespace {
@@ -35,9 +36,9 @@ namespace {
             }
 
             if (errorType)
-                Log::Warn("StyleAttribute: layout could not calculate value, spelling mistake, input:'{}'!", val);
+                Log::Warn("StyleAttribute: layout could not calculate value in style '{}', spelling mistake, input:'{}'!", element.GetStyle()->GetName(), val);
             else
-                Log::Warn("StyleAttribute: layout could not calculate value, invalid argument count, input:'{}'!", val);
+                Log::Warn("StyleAttribute: layout could not calculate value in style '{}', invalid argument count, input:'{}'!", element.GetStyle()->GetName(), val);
 
             return StyleValue("center");
         }

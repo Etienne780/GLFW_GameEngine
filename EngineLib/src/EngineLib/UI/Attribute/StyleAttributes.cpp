@@ -5,6 +5,7 @@
 #include "EngineLib/UI/AttributeHelper.h"
 #include "EngineLib/UI/StyleAttribute.h"
 #include "EngineLib/UI/AttributeNames.h"
+#include "EngineLib/UI/Elements/Element.h"
 #include "EngineLib/UI/Attribute/StyleAttributes.h"
 
 namespace {
@@ -67,9 +68,9 @@ namespace {
                     return Vector4(v1, v2, v3, v4);
             }
             if(errorType)
-                Log::Warn("StyleAttribute: border radius could not calculate value, invalid number, input:'{}'!", val);
+                Log::Warn("StyleAttribute: border radius could not calculate value in style '{}', invalid number, input:'{}'!", element.GetStyle()->GetName(), val);
             else
-                Log::Warn("StyleAttribute: border radius could not calculate value, invalid argument count, input:'{}'!", val);
+                Log::Warn("StyleAttribute: border radius could not calculate value in style '{}', invalid argument count, input:'{}'!", element.GetStyle()->GetName(), val);
             return StyleValue(Vector4(0, 0, 0, 0));
         }
     );

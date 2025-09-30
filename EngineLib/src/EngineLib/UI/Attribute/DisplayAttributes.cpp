@@ -4,6 +4,7 @@
 #include "EngineLib/UI/AttributeHelper.h"
 #include "EngineLib/UI/StyleAttribute.h"
 #include "EngineLib/UI/AttributeNames.h"
+#include "EngineLib/UI/Elements/Element.h"
 #include "EngineLib/UI/Attribute/DisplayAttributes.h"
 
 namespace  {

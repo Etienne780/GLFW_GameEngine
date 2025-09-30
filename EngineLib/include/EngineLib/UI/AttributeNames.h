@@ -1,8 +1,8 @@
 #pragma once
 
 /*
-	* @brief is a namespace that contains the names of the attributes. is only used the make life easyer when using attributes because those values can be used instead of the realnames
-	*/
+* @brief is a namespace that contains the names of the attributes. is only used the make life easyer when using attributes because those values can be used instead of the realnames
+*/
 namespace Attribute {
 
 	/*
