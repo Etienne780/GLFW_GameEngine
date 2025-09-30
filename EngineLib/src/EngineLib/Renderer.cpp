@@ -273,23 +273,24 @@ namespace EngineCore {
         
         flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
         
-        // PrintCommands(true);
+        PrintCommands(true);
         m_commands.clear();
         m_instanceMatrices.clear();
     }
 
     void Renderer::SortDrawCommands(std::shared_ptr<Component::Camera> cameraPtr) {
         Vector3 camPos = cameraPtr->GetGameObject()->GetTransform()->GetWorldPosition();
-        std::sort(m_commands.begin(), m_commands.end(),
+
+        auto it = std::stable_partition(m_commands.begin(), m_commands.end(),
+            [](const RenderCommand& cmd) { return !cmd.isUI; });
+
+        // Sort only non-UI commands
+        std::sort(m_commands.begin(), it,
             [&](auto& a, auto& b) {
                 if (a.type == RenderCommandType::Text)
                     a.isTransparent = true;
                 if (b.type == RenderCommandType::Text)
                     b.isTransparent = true;
-
-                // UI should always come last
-                if (a.isUI != b.isUI)
-                    return !a.isUI;
 
                 // Layer Priority
                 int prioA = RenderLayerManager::GetLayerPriority(a.renderLayerID);
@@ -317,7 +318,7 @@ namespace EngineCore {
                 }
 
                 // Transparent: sort Distance
-                if (a.isTransparent && b.isTransparent && !a.isUI && !b.isUI) {
+                if (a.isTransparent && b.isTransparent) {
                     Vector3 posA = a.modelMatrix ? a.modelMatrix->GetTranslation() : Vector3::zero;
                     Vector3 posB = b.modelMatrix ? b.modelMatrix->GetTranslation() : Vector3::zero;
                     float distA = Vector3::SquaredDistance(camPos, posA);

@@ -135,6 +135,9 @@ namespace EngineCore::UI {
         void RegisterAttribute(const std::string& name, std::function<void(ElementBase*, const StyleValue&)> func);
 
     private:
+        // Gets called after construction of this element
+        void Init();
+
         static inline bool m_attributesRegistered = false;
         /*
         * @brief name and behaviour. contains all attributes and there reaction

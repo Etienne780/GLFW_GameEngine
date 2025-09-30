@@ -15,9 +15,6 @@ namespace EngineCore::UI {
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
         m_cmd.materialID = matID;
-
-        RegisterAttributesImpl();
-        SetStyleAttributes();
 	}
 
     ElementBase::ElementBase(std::string name, UIElementID id, MaterialID matID, std::shared_ptr<Style> style) 
@@ -26,7 +23,9 @@ namespace EngineCore::UI {
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::Plain();
         m_cmd.materialID = matID;
+    }
 
+    void ElementBase::Init() {
         RegisterAttributesImpl();
         SetStyleAttributes();
     }
@@ -305,6 +304,9 @@ namespace EngineCore::UI {
         m_cmd.renderLayerID = renderLayerID;
         m_cmd.modelMatrix = GetWorldModelMatrixPtr();
         m_cmd.shaderBindOverride = &m_sbo;
+        std::string name = m_style->GetName();
+        if (name == "style2")
+            m_cmd.zOrder = 10;
         SendDrawCommand(renderer);
     }
 
@@ -357,7 +359,6 @@ namespace EngineCore::UI {
 
     void ElementBase::SetStyleAttributes() {
         const auto& attribute = m_style->GetAllState(m_state);
-        std::string s = m_style->GetName();
 
         for (auto& [name, valueStr] : attribute) {
             const StyleValue& value = StyleAttribute::GetAttributeValue(name, *this, valueStr);

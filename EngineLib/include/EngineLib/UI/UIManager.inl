@@ -18,6 +18,7 @@ namespace EngineCore {
         if (m_elementStack.empty()) {
             // Add root element
             auto& element = m_roots.emplace_back(std::make_unique<T>(id, std::forward<Args>(args)...));
+            element->Init();
             m_elementStack.push(element.get());
             if (m_isDebug)
                 Log::Debug("UIManager: Started element {}({})", element->GetName(), id.value);
@@ -28,6 +29,7 @@ namespace EngineCore {
             auto* parent = m_elementStack.top();
             auto* elementPtr = parent->AddChild<T>(id, std::forward<Args>(args)...);
             elementPtr->SetParent(parent);
+            elementPtr->Init();
             m_elementStack.push(elementPtr);
             if (m_isDebug)
                 Log::Debug("UIManager: Started element {}({})", elementPtr->GetName(), id.value);

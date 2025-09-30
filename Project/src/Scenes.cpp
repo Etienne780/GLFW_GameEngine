@@ -24,6 +24,11 @@ void SetupUI() {
 	defaultStyle->Set(State::Hovered, Attribute::backgroundColor, "#880088");
 	defaultStyle->Set(State::Hovered, Attribute::borderRadius, "100px");
 
+	auto style2 = Style::Create("style2");
+	style2->Set(Attribute::width, "10%w");
+	style2->Set(Attribute::height, "35%h");
+	style2->Set(Attribute::backgroundColor, "#0000ff");
+
 	auto otherStyle = Style::Create("OtherStyle");
 	otherStyle->Set(Attribute::backgroundColor,"#ffffff");
 	otherStyle->Set(Attribute::width, "10px");
@@ -33,11 +38,11 @@ void SetupUI() {
 	UI::SetDebug(false);
 	UI::Begin<Panel>(defaultStyle); {
 		
-		UI::Begin<Panel>(defaultStyle); {
-			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
-			UI::Add<Panel>(otherStyle);
-			UI::Add<Panel>(otherStyle);
-			UI::Add<Panel>(otherStyle);
+		UI::Begin<Panel>(style2); {
+		//	UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
+		//	UI::Add<Panel>(otherStyle);
+		//	UI::Add<Panel>(otherStyle);
+		//	UI::Add<Panel>(otherStyle);
 		}
 		UI::End();
 
