@@ -40,6 +40,7 @@ namespace {
     extern const StyleAttribute PaddingRight;
 
     extern const StyleAttribute BackgroundColor;
+    extern const StyleAttribute TextColor;
     extern const StyleAttribute BorderColor;
     extern const StyleAttribute BorderWidth;
     extern const StyleAttribute BorderRadius;

@@ -9,6 +9,62 @@
 
 namespace EngineCore::UI {
 
+    // Returns a style with default values. NEEDS to be extended if new default attributes are added
+    static std::shared_ptr<Style> BaseStyle() {
+        static std::shared_ptr<Style> baseStyle = [] {
+            auto s = std::make_shared<Style>("Base");
+            namespace a = Attribute;
+
+            #pragma region Layout
+
+            s->Set(a::layoutHor, "start");
+            s->Set(a::layoutVer, "start");
+
+            s->Set(a::layoutContentHor, "start");
+            s->Set(a::layoutContentVer, "start");
+
+            s->Set(a::layoutDirection, "row");
+            s->Set(a::layoutWrap, "none");
+
+            #pragma endregion
+
+            #pragma region Display
+
+            s->Set(a::visibility, "visible");
+            s->Set(a::display, "display");
+            s->Set(a::overflow, "none");
+
+            #pragma endregion
+
+            #pragma region Style
+
+            s->Set(a::width, "0px");
+            s->Set(a::height, "0px");
+
+            s->Set(a::marginTop, "0px");
+            s->Set(a::marginBottom, "0px");
+            s->Set(a::marginLeft, "0px");
+            s->Set(a::marginRight, "0px");
+
+            s->Set(a::paddingTop, "0px");
+            s->Set(a::paddingBottom, "0px");
+            s->Set(a::paddingLeft, "0px");
+            s->Set(a::paddingRight, "0px");
+
+            s->Set(a::backgroundColor, "#ff");
+            s->Set(a::textColor, "#ff");
+            s->Set(a::borderColor, "#00");
+            s->Set(a::borderWidth, "0px");
+            s->Set(a::borderRadius, "0px");
+            s->Set(a::duration, "0s");
+
+            #pragma endregion
+            return s;
+        }();
+
+        return baseStyle;
+    }
+
 	ElementBase::ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style, MaterialID matID)
 		: m_elementName(std::move(name)), m_id(id), m_style(std::move(style)){
         m_cmd.isUI = true;

@@ -36,7 +36,8 @@ namespace EngineCore::UI {
 	void StyleAttribute::RegisterAttribute(const StyleAttribute& attribute) {
 #ifndef NDEBUG
 		if (m_registeredStyleAttributes.find(attribute.m_name) != m_registeredStyleAttributes.end()) {
-			Log::Warn("StyleAttribute: Name of Attribute '{}' is not unique, will lead to problems getting Attribute!");
+			Log::Warn("StyleAttribute: Name of Attribute '{}' is not unique, will lead to problems getting Attribute!", 
+				attribute.GetName());
 		}
 #endif
 		m_registeredStyleAttributes[attribute.GetName()] = attribute;

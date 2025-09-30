@@ -286,7 +286,7 @@ namespace EngineCore::UI {
 				auto values = GetValues(val);
 				
 				
-				if (maxInput < values.size()) {
+				if (maxInput >= values.size()) {
 					switch (maxInput)
 					{
 					case 1: {

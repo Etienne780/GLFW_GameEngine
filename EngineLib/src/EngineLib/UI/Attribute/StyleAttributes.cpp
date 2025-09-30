@@ -55,7 +55,7 @@ namespace {
     #pragma region Padding
 
     const StyleAttribute Padding = AttributeHelper::MakeMultiNumberAttribute(
-        Attribute::margin,
+        Attribute::padding,
         "padding of this element, order: top, right, bottom, left",
         4,
         { 0, 0, 0, 0 },
@@ -140,6 +140,7 @@ namespace EngineCore::UI::Init {
         StyleAttribute::RegisterAttribute(PaddingRight);
         
         StyleAttribute::RegisterAttribute(BackgroundColor);
+        StyleAttribute::RegisterAttribute(TextColor);
         StyleAttribute::RegisterAttribute(BorderColor);
         StyleAttribute::RegisterAttribute(BorderWidth);
         StyleAttribute::RegisterAttribute(BorderRadius);

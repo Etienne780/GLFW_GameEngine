@@ -95,11 +95,11 @@ namespace Attribute {
 	* @param value all
 	* @param valueTop:, valueRight:, valueBottom:, valueLeft: number
 	*/
-	constexpr const char* margin = "padding";
-	constexpr const char* marginTop = "paddingTop";
-	constexpr const char* marginBottom = "paddingBottom";
-	constexpr const char* marginLeft = "paddingLeft";
-	constexpr const char* marginRight = "paddingRight";
+	constexpr const char* margin = "margin";
+	constexpr const char* marginTop = "marginTop";
+	constexpr const char* marginBottom = "marginBottom";
+	constexpr const char* marginLeft = "marginLeft";
+	constexpr const char* marginRight = "marginRight";
 
 	/*
 	* @brief padding of this element

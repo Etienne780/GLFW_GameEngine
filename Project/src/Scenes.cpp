@@ -13,13 +13,12 @@ void SetupUI() {
 	UI::SetUIRenderLayer(uiLayer);
 
 	auto defaultStyle = Style::Create("DefaultStyle");
-	// defaultStyle->Set(Attribute::borderRadius, "25px");
 	defaultStyle->Set(Attribute::borderColor, "#00ff00");
 	defaultStyle->Set(Attribute::width, "50%w");
 	defaultStyle->Set(Attribute::height, "50%h");
 	defaultStyle->Set(Attribute::backgroundColor, "#ffffff");
 	defaultStyle->Set(State::Hovered, Attribute::backgroundColor, "#880088");
-	defaultStyle->Set(State::Hovered, Attribute::borderRadius, "100px");
+	defaultStyle->Set(State::Hovered, Attribute::borderRadius, "100px 20px");
 
 	auto style2 = Style::Create("style2");
 	style2->Set(Attribute::width, "30%w");
