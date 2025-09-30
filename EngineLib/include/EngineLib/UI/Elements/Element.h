@@ -61,7 +61,7 @@ namespace EngineCore::UI {
         UIElementID m_id;
         //Style m_elementStyle; needs to be later used for clean transition between styles
         std::shared_ptr<Style> m_style = nullptr;
-        ElementBase* m_parentElement = nullptr;
+        ElementBase* m_parentElementPtr = nullptr;
         std::vector<std::unique_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
         RenderCommand m_cmd;

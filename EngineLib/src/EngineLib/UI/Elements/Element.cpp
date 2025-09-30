@@ -45,8 +45,8 @@ namespace EngineCore::UI {
 
     Vector2 ElementBase::GetScreenPosition() const {
         Vector2 pos = m_localPosition;
-        if (m_parentElement) {
-            pos += m_parentElement->GetScreenPosition();
+        if (m_parentElementPtr) {
+            pos += m_parentElementPtr->GetScreenPosition();
         }
         return pos;
     }
@@ -68,8 +68,8 @@ namespace EngineCore::UI {
     }
 
     float ElementBase::GetParentWidth() const {
-        if (m_parentElement) {
-            return m_parentElement->GetLocalSize().x;
+        if (m_parentElementPtr) {
+            return m_parentElementPtr->GetLocalSize().x;
         }
         else {
             return UIManager::GetWindowSize().x;
@@ -77,8 +77,8 @@ namespace EngineCore::UI {
     }
 
     float ElementBase::GetParentHeight() const {
-        if (m_parentElement) {
-            return m_parentElement->GetLocalSize().y;
+        if (m_parentElementPtr) {
+            return m_parentElementPtr->GetLocalSize().y;
         }
         else {
             return UIManager::GetWindowSize().y;
@@ -106,11 +106,11 @@ namespace EngineCore::UI {
     }
 
     ElementBase* ElementBase::GetParent() const {
-        return m_parentElement;
+        return m_parentElementPtr;
     }
 
     void ElementBase::SetParent(ElementBase* elementPtr) {
-        m_parentElement = elementPtr;
+        m_parentElementPtr = elementPtr;
     }
 
 	void ElementBase::SetState(State state) {
@@ -272,8 +272,8 @@ namespace EngineCore::UI {
             m_localMatrixDirty = false;
         }
 
-        if (m_parentElement) {
-            m_worldMatrix = m_parentElement->GetWorldModelMatrix() * m_localMatrix;
+        if (m_parentElementPtr) {
+            m_worldMatrix = m_parentElementPtr->GetWorldModelMatrix() * m_localMatrix;
         }
         else {
             m_worldMatrix = m_localMatrix;
@@ -293,11 +293,7 @@ namespace EngineCore::UI {
         SetStyleAttributes();
     }
 
-    // #include <cmath>
-    // float counter = 0;
     void ElementBase::UpdateImpl() {
-        // SetLocalPosition(sin(counter/2) * 100, cos(counter/2) * 100);
-        // counter += 0.5;
         Update();
     }
 
@@ -361,6 +357,7 @@ namespace EngineCore::UI {
 
     void ElementBase::SetStyleAttributes() {
         const auto& attribute = m_style->GetAllState(m_state);
+        std::string s = m_style->GetName();
 
         for (auto& [name, valueStr] : attribute) {
             const StyleValue& value = StyleAttribute::GetAttributeValue(name, *this, valueStr);
