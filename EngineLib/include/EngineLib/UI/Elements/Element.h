@@ -64,6 +64,7 @@ namespace EngineCore::UI {
         // element should probably have a default style that can be modived with a function that can be overriden
         // idk how to make transtions 
         std::shared_ptr<Style> m_style = nullptr;
+        std::shared_ptr<Style> m_baseStyle = nullptr;//  element base style
         ElementBase* m_parentElementPtr = nullptr;
         std::vector<std::unique_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
@@ -86,7 +87,11 @@ namespace EngineCore::UI {
         /*
         * @brief this function is called only once for ever class. it inits all the Attributes this element can have and what they do
         */
-        void RegisterAttributes() {};
+        virtual void RegisterAttributes() {};
+        /*
+        * @brief Gets set after the base style attribute, can override or add attributes
+        */
+        virtual void ExtendElementBaseStyle(std::shared_ptr<Style> baseStyle) {};
 
         ElementBase* GetParent() const;
         void SetParent(ElementBase* elementPtr);
@@ -101,17 +106,17 @@ namespace EngineCore::UI {
         void SetLocalScaleX(float x);
         void SetLocalScaleY(float y);
 
-        void setBackgroundColor(const Vector4& color);
-        void setBorderColor(const Vector4& color);
-        void setBorderRadius(const Vector4& radius);
-        void setBorderWidth(float width);
-        void setDuration(float duration);
+        void SetBackgroundColor(const Vector4& color);
+        void SetBorderColor(const Vector4& color);
+        void SetBorderRadius(const Vector4& radius);
+        void SetBorderWidth(float width);
+        void SetDuration(float duration);
 
-        const Vector4& getBackgroundColor() const;
-        const Vector4& getBorderColor() const;
-        const Vector4& getBorderRadius() const;
-        float getBorderWidth() const;
-        float getDuration() const;
+        const Vector4& GetBackgroundColor() const;
+        const Vector4& GetBorderColor() const;
+        const Vector4& GetBorderRadius() const;
+        float GetBorderWidth() const;
+        float GetDuration() const;
 
         /*
         * @brief Checks whether a given point lies within the bounding box of this element.
@@ -178,6 +183,8 @@ namespace EngineCore::UI {
         void SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID);
         void RegisterAttributesImpl();
         void SetStyleAttributes();
+        void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
+        std::shared_ptr<Style> GetElementBaseStyle();
     };
 
     template <typename Derived>

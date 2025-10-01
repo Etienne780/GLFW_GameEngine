@@ -117,7 +117,11 @@ namespace EngineCore {
 
         for (auto& el : m_roots) {
             // needs mouse down and up
-            UpdateElementState(el.get(), Input::GetMousePosition(), false, false);
+            UpdateElementState(el.get(), 
+                Input::GetMousePosition(), 
+                Input::MouseJustPressed(MouseButton::LEFT), 
+                Input::MouseJustReleased(MouseButton::LEFT));
+
             el->UpdateImpl();
             UpdateChild(el);
         }

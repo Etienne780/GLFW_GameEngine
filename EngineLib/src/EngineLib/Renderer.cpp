@@ -122,6 +122,11 @@ namespace EngineCore {
                 glClear(GL_DEPTH_BUFFER_BIT);
             }
 
+            // if UI started rendering no depth testing
+            if (isUI != cmd.isUI) {
+                glDisable(GL_DEPTH_TEST);
+            }
+
             if (cmd.type == RenderCommandType::Text) {
                 flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
                 m_instanceMatrices.clear();
@@ -275,7 +280,9 @@ namespace EngineCore {
         }
         
         flushBatch(currentMesh, currentShader, currentOverrideShaderBindObj, currentInvertMesh, m_instanceMatrices);
-        
+        // turn depth testing on if UI turned of
+        glEnable(GL_DEPTH_TEST);
+
         // PrintCommands(true);
         m_commands.clear();
         m_instanceMatrices.clear();

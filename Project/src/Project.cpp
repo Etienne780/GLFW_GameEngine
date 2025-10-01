@@ -23,7 +23,7 @@ void Project::Start() {
 	App_OpenGL_Set_DepthTesting(true);
 	App_OpenGL_Set_BackgroundColor(0.2f, 0.3f, 0.3f);
 	// App_OpenGL_Set_PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	App_OpenGL_Set_FaceCulling(false);
+	App_OpenGL_Set_FaceCulling(true);
 	App_Debug_Set_DebugKey(KeyCode::H);
 
 	SetupGame();

@@ -52,11 +52,15 @@ namespace EngineCore {
             return nullptr;
         }
 
-        auto ptr = m_elementStack.top()->AddChild<T>(id, std::forward<Args>(args)...);
+        auto parent = m_elementStack.top();
+        auto elementPtr = parent->AddChild<T>(id, std::forward<Args>(args)...);
+        elementPtr->SetParent(parent);
+        elementPtr->Init();
+        elementPtr->Init();
         if (m_isDebug)
-            Log::Debug("UIManager: Added element {}({})", ptr->GetName(), id.value);
+            Log::Debug("UIManager: Added element {}({})", elementPtr->GetName(), id.value);
 
-        return  static_cast<T*>(ptr);
+        return  static_cast<T*>(elementPtr);
     }
 
 }

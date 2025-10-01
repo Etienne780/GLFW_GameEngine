@@ -10,7 +10,7 @@
 namespace EngineCore::UI {
 
     // Returns a style with default values. NEEDS to be extended if new default attributes are added
-    static std::shared_ptr<Style> BaseStyle() {
+    std::shared_ptr<Style> ElementBase::GetElementBaseStyle() {
         static std::shared_ptr<Style> baseStyle = [] {
             auto s = std::make_shared<Style>("Base");
             namespace a = Attribute;
@@ -62,6 +62,7 @@ namespace EngineCore::UI {
             return s;
         }();
 
+        ExtendElementBaseStyle(baseStyle);
         return baseStyle;
     }
 
@@ -71,6 +72,7 @@ namespace EngineCore::UI {
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
         m_cmd.materialID = matID;
+        m_baseStyle = GetElementBaseStyle();
 	}
 
     ElementBase::ElementBase(std::string name, UIElementID id, MaterialID matID, std::shared_ptr<Style> style) 
@@ -79,16 +81,11 @@ namespace EngineCore::UI {
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::Plain();
         m_cmd.materialID = matID;
+        m_baseStyle = GetElementBaseStyle();
     }
 
     void ElementBase::Init() {
         // inits the start propetys
-        m_sbo.SetParam("uBackgroundColor", m_backgroundColor);
-        m_sbo.SetParam("uBorderColor", m_borderColor);
-        m_sbo.SetParam("uBorderRadius", m_borderRadius);
-        m_sbo.SetParam("uBorderWidth", m_borderWidth);
-        m_sbo.SetParam("uSize", m_localScale);
-
         RegisterAttributesImpl();
         SetStyleAttributes();
     }
@@ -237,49 +234,49 @@ namespace EngineCore::UI {
         MarkDirty();
     }
 
-    void ElementBase::setBackgroundColor(const Vector4& color) {
+    void ElementBase::SetBackgroundColor(const Vector4& color) {
         m_backgroundColor = color;
         m_sbo.SetParam("uBackgroundColor", m_backgroundColor);
     }
 
-    void ElementBase::setBorderColor(const Vector4& color) {
+    void ElementBase::SetBorderColor(const Vector4& color) {
         m_borderColor = color;
         m_sbo.SetParam("uBorderColor", m_borderColor);
     }
 
-    void ElementBase::setBorderRadius(const Vector4& radius) {
+    void ElementBase::SetBorderRadius(const Vector4& radius) {
         m_borderRadius = radius;
         m_sbo.SetParam("uBorderRadius", m_borderRadius);
     }
 
-    void ElementBase::setBorderWidth(float width) {
+    void ElementBase::SetBorderWidth(float width) {
         if (width < 0.0f) width = 0.0f;
         m_borderWidth = width;
         m_sbo.SetParam("uBorderWidth", m_borderWidth);
     }
 
-    void ElementBase::setDuration(float duration) {
+    void ElementBase::SetDuration(float duration) {
         if (duration < 0.0f) duration = 0.0f;
         m_duration = duration;
     }
 
-    const Vector4& ElementBase::getBackgroundColor() const {
+    const Vector4& ElementBase::GetBackgroundColor() const {
         return m_backgroundColor;
     }
 
-    const Vector4& ElementBase::getBorderColor() const {
+    const Vector4& ElementBase::GetBorderColor() const {
         return m_borderColor;
     }
 
-    const Vector4& ElementBase::getBorderRadius() const {
+    const Vector4& ElementBase::GetBorderRadius() const {
         return m_borderRadius;
     }
 
-    float ElementBase::getBorderWidth() const {
+    float ElementBase::GetBorderWidth() const {
         return m_borderWidth;
     }
 
-    float ElementBase::getDuration() const {
+    float ElementBase::GetDuration() const {
         return m_duration;
     }
 
@@ -335,7 +332,20 @@ namespace EngineCore::UI {
         }
 
         if (m_parentElementPtr) {
-            m_worldMatrix = m_parentElementPtr->GetWorldModelMatrix() * m_localMatrix;
+            using namespace GLTransform4x4;
+
+            Vector3 radians = {
+                ConversionUtils::ToRadians(m_localRotation.x),
+                ConversionUtils::ToRadians(m_localRotation.y),
+                ConversionUtils::ToRadians(m_localRotation.z)
+            };
+
+            auto vec = m_parentElementPtr->GetLocalSize();
+            m_worldMatrix = Scale(m_localScale.x / vec.x, m_localScale.y / vec.y, 1.0f);
+            MakeRotateXYZ(m_worldMatrix, radians);
+            MakeTranslate(m_worldMatrix, m_localPosition.x, m_localPosition.y, 0.0f);
+
+            m_worldMatrix = m_parentElementPtr->GetWorldModelMatrix() * m_worldMatrix;
         }
         else {
             m_worldMatrix = m_localMatrix;
@@ -360,16 +370,9 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID) {
-        // MarkDirty();
-        // Log::Info("local Pos: {}; screen pos: {}; size: {}", GetLocalPosition(), GetScreenPosition(), GetLocalSize());
-        // Log::Print(*GetWorldModelMatrixPtr());
-
         m_cmd.renderLayerID = renderLayerID;
         m_cmd.modelMatrix = GetWorldModelMatrixPtr();
         m_cmd.shaderBindOverride = &m_sbo;
-        std::string name = m_style->GetName();
-        if (name == "style2")
-            m_cmd.zOrder = 10;
         SendDrawCommand(renderer);
     }
 
@@ -394,25 +397,25 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::backgroundColor, [](ElementBase* el, const StyleValue& val) {
                 if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::backgroundColor)) {
-                    el->setBackgroundColor(vec);
+                    el->SetBackgroundColor(vec);
                 }
             });
 
             RegisterAttribute(att::borderColor, [](ElementBase* el, const StyleValue& val) {
                 if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderColor)) {
-                    el->setBorderColor(vec);
+                    el->SetBorderColor(vec);
                 }
             });
 
             RegisterAttribute(att::borderRadius, [](ElementBase* el, const StyleValue& val) {
                 if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderRadius)) {
-                    el->setBorderRadius(vec);
+                    el->SetBorderRadius(vec);
                 }
             });
 
             RegisterAttribute(att::borderWidth, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::borderWidth)) {
-                    el->setBorderWidth(f);
+                    el->SetBorderWidth(f);
                 }
             });
         }
@@ -421,8 +424,11 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetStyleAttributes() {
-        const auto& attribute = m_style->GetAllState(m_state);
+        SetAttributes(m_baseStyle->GetAllState(m_state));
+        SetAttributes(m_style->GetAllState(m_state));
+    }
 
+    void ElementBase::SetAttributes(const std::unordered_map<std::string, std::string>& attribute) {
         for (auto& [name, valueStr] : attribute) {
             const StyleValue& value = StyleAttribute::GetAttributeValue(name, *this, valueStr);
             auto it = m_registeredAttributes.find(FormatUtils::toLowerCase(name));
