@@ -17,13 +17,10 @@ namespace EngineCore::UI {
 	class StyleAttribute {
 	public:
 		StyleAttribute() = default;
-		StyleAttribute(std::string name, std::string description,
-			std::function<StyleValue(const ElementBase& element, const StyleAttribute*, const std::string&)> p);
-
 		/*
 		* @brief inputs are the possible inputs a Attribute can have, as an example (center, flex,...)
 		*/
-		StyleAttribute(std::string name, std::string description, std::vector<std::string> m_inputs,
+		StyleAttribute(std::string name, std::string description, StyleValue fallbackValue, std::vector<std::string> m_inputs,
 			std::function<StyleValue(const ElementBase& element, const StyleAttribute*, const std::string&)> p);
 
 		StyleValue GetValue(const ElementBase& element, const std::string& value) const {
@@ -37,12 +34,13 @@ namespace EngineCore::UI {
 		const std::string& GetName() const { return m_name; }
 		const std::string& GetDesc() const { return m_description; }
 		const std::vector<std::string>& GetInputs() const { return m_inputs; }
-
+		StyleValue GetFallbackValue() const { return m_fallbackValue; }
 		
 	private:
 		std::string m_name = "UNKNOWN";
 		std::string m_description = "-";
 		std::vector<std::string> m_inputs;
+		StyleValue m_fallbackValue;
 		std::function<StyleValue(const ElementBase& element, const StyleAttribute*, const std::string&)> m_parser = nullptr;
 
 	public:

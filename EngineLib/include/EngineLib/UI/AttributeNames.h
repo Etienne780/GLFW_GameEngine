@@ -61,25 +61,26 @@ namespace Attribute {
 	*/
 	constexpr const char* overflow = "overflow";
 	/*
-	* @brief offset the position of this element, should not be used to often
-	* @param valueX:, valueY: number
+	* @brief rotation (x, y, z) of this element
+	* @param value all
+	* @param valueX:, valueY:, valueZ: number
 	*/
-	// constexpr const char* position = "position";
+	constexpr const char* rotation = "rotation";
 	/*
-	* @brief offset the X-position of this element, should not be used to often
+	* @brief rotation (x) of this element
 	* @param number
 	*/
-	// constexpr const char* positionX = "positionX";
+	constexpr const char* rotationX = "rotationX";
 	/*
-	* @brief offset the Y-position of this element, should not be used to often
+	* @brief rotation (y) of this element
 	* @param number
 	*/
-	// constexpr const char* positionY = "positionY";
+	constexpr const char* rotationY = "rotationY";
 	/*
 	* @brief rotation (z) of this element
 	* @param number
 	*/
-	// constexpr const char* rotation = "rotation";
+	constexpr const char* rotationZ = "rotationZ";
 	/*
 	* @brief width of this element
 	* @param number
@@ -127,10 +128,36 @@ namespace Attribute {
 	*/
 	constexpr const char* borderColor = "borderColor";
 	/*
-	* @brief Sets the border width of this element
+	* @brief Sets the size of the border for this element
+	* @param value all
+	* @param valueTop:, valueRight:, valueBottom:, valueLeft: number
+	*/
+	constexpr const char* borderSize = "borderSize";
+	/*
+	* @brief Sets the width of the border for this element
 	* @param number
 	*/
 	constexpr const char* borderWidth = "borderWidth";
+	/*
+	* @brief Sets the top width of the border for this element
+	* @param number
+	*/
+	constexpr const char* borderTop= "borderTop";
+	/*
+	* @brief Sets the left width of the border for this element
+	* @param number
+	*/
+	constexpr const char* borderLeft = "borderLeft";
+	/*
+	* @brief Sets the bottom width of the border for this element
+	* @param number
+	*/
+	constexpr const char* borderBottom = "borderBottom";
+	/*
+	* @brief Sets the right width of the border for this element
+	* @param number
+	*/
+	constexpr const char* borderRight = "borderRight";
 	/*
 	* @brief Sets the border radius of this element (top-left, top-right, bottom-right, bottom-left)
 	* @param number, numbers
@@ -143,3 +170,16 @@ namespace Attribute {
 	constexpr const char* duration = "duration";
 
 }
+
+
+/*
+
+CSS:
+zOrder
+position relative, absolute
+top
+left
+bottom
+right
+
+*/

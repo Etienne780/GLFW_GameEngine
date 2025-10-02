@@ -30,13 +30,16 @@ void SetupUI() {
 	otherStyle->Set(Attribute::backgroundColor,"#ff0000");
 	otherStyle->Set(Attribute::width, "90%w");
 	otherStyle->Set(Attribute::height, "90%h");
-	otherStyle->Set(Attribute::layoutHor, "Center");
+
+	auto otherStyle2 = Style::Create("OtherStyle2", otherStyle);
+	otherStyle2->Set(Attribute::backgroundColor, "#ffff00");
 
 	// UI::SetDebug(false);
 	UI::Begin<Panel>(defaultStyle); {
 
 		UI::Begin<Panel>(style2); {
 			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
+			UI::Add<Panel>(otherStyle2)->SetOnClick([] { Log::Info("Pressed"); });
 		}
 		UI::End();
 	}

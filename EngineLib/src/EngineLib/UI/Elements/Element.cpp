@@ -102,28 +102,46 @@ namespace EngineCore::UI {
         return m_style; 
     }
 
-    Vector2 ElementBase::GetScreenPosition() const {
-        Vector2 pos = m_localPosition;
+    Vector2 ElementBase::GetScreenPosition() {
+        if (m_positionDirty) {
+            UpdateLayoutPosition();
+            m_positionDirty = false;
+        }
+
+        Vector2 pos = m_innerPosition;
         if (m_parentElementPtr) {
             pos += m_parentElementPtr->GetScreenPosition();
         }
         return pos;
     }
 
-    Vector2 ElementBase::GetLocalPosition() const {
-        return m_localPosition;
+    Vector2 ElementBase::GetLocalPosition() {
+        if (m_positionDirty) {
+            UpdateLayoutPosition();
+            m_positionDirty = false;
+        }
+        return m_innerPosition;
     }
     
-    Vector2 ElementBase::GetScreenSize() const {
-        Vector2 size = m_localScale;
+    Vector2 ElementBase::GetScreenSize() {
+        if (m_sizeDirty) {
+            UpdateLayoutSize();
+            m_sizeDirty = false;
+        }
+
+        Vector2 size = m_innerPosition;
         if (UIManager::GetUIScaling()) {
             size *= UIManager::GetUIScaleFactor();
         }
         return size;
     }
 
-    Vector2 ElementBase::GetLocalSize() const {
-        return m_localScale;
+    Vector2 ElementBase::GetLocalSize() {
+        if (m_sizeDirty) {
+            UpdateLayoutSize();
+            m_sizeDirty = false;
+        }
+        return m_innerPosition;
     }
 
     float ElementBase::GetParentWidth() const {
@@ -193,44 +211,64 @@ namespace EngineCore::UI {
         SetStyleAttributes();
 	}
 
+    void ElementBase::SetLayoutDirection(LayoutDirection d) { 
+        m_layoutDirection = d;
+        MarkDirty();
+    }
+
+    void ElementBase::SetLayoutWrap(LayoutWrap w) { 
+        m_layoutWrap = w;
+        MarkDirty();
+    }
+
+    void ElementBase::SetLayoutContentHor(LayoutAlign a) { 
+        m_layoutContentHor = a; 
+        MarkDirty();
+    }
+
+    void ElementBase::SetLayoutContentVer(LayoutAlign a) { 
+        m_layoutContentVer = a;
+        MarkDirty();
+    }
+
     void ElementBase::SetLocalPosition(const Vector2& pos) {
         SetLocalPosition(pos.x, pos.y);
     }
 
     void ElementBase::SetLocalPosition(float x, float y) {
-        m_localPosition.Set(x,y);
+        m_innerPosition.Set(x,y);
         MarkDirty();
     }
 
     void ElementBase::SetLocalRotation(const Vector3& rotation) {
-        m_localRotation = rotation;
+        m_rotation = rotation;
         MarkDirty();
     }
 
     void ElementBase::SetLocalRotation(float x, float y, float z) {
-        m_localRotation.Set(x, y, z);
+        m_rotation.Set(x, y, z);
         MarkDirty();
     }
 
-    void ElementBase::SetLocalScale(const Vector2& scale) {
-        SetLocalScale(scale.x, scale.y);
+    void ElementBase::SetLocalSize(const Vector2& scale) {
+        SetLocalSize(scale.x, scale.y);
     }
 
-    void ElementBase::SetLocalScale(float x, float y) {
-        m_localScale.Set(x, y);
-        m_sbo.SetParam("uSize", m_localScale);
+    void ElementBase::SetLocalSize(float x, float y) {
+        m_innerSize.Set(x, y);
+        m_sbo.SetParam("uSize", m_innerSize);
         MarkDirty();
     }
 
-    void ElementBase::SetLocalScaleX(float x) {
-        m_localScale.x = x;
-        m_sbo.SetParam("uSize", m_localScale);
+    void ElementBase::SetLocalWidth(float x) {
+        m_innerSize.x = x;
+        m_sbo.SetParam("uSize", m_innerSize);
         MarkDirty();
     }
 
-    void ElementBase::SetLocalScaleY(float y) {
-        m_localScale.y = y;
-        m_sbo.SetParam("uSize", m_localScale);
+    void ElementBase::SetLocalHeight(float y) {
+        m_innerSize.y = y;
+        m_sbo.SetParam("uSize", m_innerSize);
         MarkDirty();
     }
 
@@ -251,13 +289,104 @@ namespace EngineCore::UI {
 
     void ElementBase::SetBorderWidth(float width) {
         if (width < 0.0f) width = 0.0f;
-        m_borderWidth = width;
-        m_sbo.SetParam("uBorderWidth", m_borderWidth);
+        m_borderSize.Set(width, width, width, width);
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+    }
+
+    void ElementBase::SetBorderTop(float top) {
+        if (top < 0.0f) top = 0.0f;
+        m_borderSize.x = top;
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+    }
+
+    void ElementBase::SetBorderLeft(float left) {
+        if (left < 0.0f) left = 0.0f;
+        m_borderSize.y = left;
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+    }
+
+    void ElementBase::SetBorderBottom(float bottom) {
+        if (bottom < 0.0f) bottom = 0.0f;
+        m_borderSize.z = bottom;
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+    }
+
+    void ElementBase::SetBorderRight(float right) {
+        if (right < 0.0f) right = 0.0f;
+        m_borderSize.w = right;
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+    }
+
+    void ElementBase::SetBorderSize(float width, float height) {
+        if (width < 0.0f) width = 0.0f;
+        if (height < 0.0f) height = 0.0f;
+        m_borderSize.Set(height, width, height, width);
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+    }
+
+    void ElementBase::SetBorderSize(const Vector4& vec) {
+        SetBorderSize(vec.x, vec.y, vec.z, vec.w);
+    }
+
+    void ElementBase::SetBorderSize(float top, float right, float bottom, float left) {
+        if (top < 0.0f) top = 0.0f;
+        if (right < 0.0f) right = 0.0f;
+        if (bottom < 0.0f) bottom = 0.0f;
+        if (left < 0.0f) left = 0.0f;
+        m_borderSize.Set(top, right, bottom, left);
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
     }
 
     void ElementBase::SetDuration(float duration) {
         if (duration < 0.0f) duration = 0.0f;
         m_duration = duration;
+    }
+
+    LayoutDirection ElementBase::GetLayoutDirection() const {
+        return m_layoutDirection;
+    }
+
+    LayoutWrap ElementBase::GetLayoutWrap() const {
+        return m_layoutWrap;
+    }
+
+    LayoutAlign ElementBase::GetLayoutContentHor() const {
+        return m_layoutContentHor;
+    }
+
+    LayoutAlign ElementBase::GetLayoutContentVer() const {
+        return m_layoutContentVer;
+    }
+
+    Vector2 ElementBase::GetContentSize() {
+        if (m_sizeDirty) {
+            UpdateLayoutSize();
+        }
+        return m_innerSize;
+    }
+
+    Vector2 ElementBase::GetPaddingSize() {
+        Vector2 content = GetContentSize();
+        return Vector2(
+            content.x + m_padding.x + m_padding.z, // left + right
+            content.y + m_padding.y + m_padding.w  // top + bottom
+        );
+    }
+
+    Vector2 ElementBase::GetBorderSize() {
+        Vector2 padded = GetPaddingSize();
+        return Vector2(
+            padded.x + m_borderSize.x + m_borderSize.z, // left + right
+            padded.y + m_borderSize.y + m_borderSize.w  // top + bottom
+        );
+    }
+
+    Vector2 ElementBase::GetMarginSize() {
+        Vector2 bordered = GetBorderSize();
+        return Vector2(
+            bordered.x + m_margin.x + m_margin.z, // left + right
+            bordered.y + m_margin.y + m_margin.w  // top + bottom
+        );
     }
 
     const Vector4& ElementBase::GetBackgroundColor() const {
@@ -272,15 +401,31 @@ namespace EngineCore::UI {
         return m_borderRadius;
     }
 
-    float ElementBase::GetBorderWidth() const {
-        return m_borderWidth;
+    const Vector4& ElementBase::GetBorderSize() const {
+        return m_borderSize;
+    }
+
+    float ElementBase::GetBorderTop() const {
+        return m_borderSize.x;
+    }
+
+    float ElementBase::GetBorderLeft() const {
+        return m_borderSize.y;
+    }
+
+    float ElementBase::GetBorderBottom() const {
+        return m_borderSize.z;
+    }
+
+    float ElementBase::GetBorderRight() const {
+        return m_borderSize.w;
     }
 
     float ElementBase::GetDuration() const {
         return m_duration;
     }
 
-    bool ElementBase::IsMouseOver(const Vector2& mousePos) const {
+    bool ElementBase::IsMouseOver(const Vector2& mousePos) {
         Vector2 pos = GetScreenPosition();
         Vector2 size = GetScreenSize();
         return (mousePos.x > pos.x && pos.x + size.x > mousePos.x &&
@@ -288,73 +433,121 @@ namespace EngineCore::UI {
     }
 
     Matrix4x4* ElementBase::GetWorldModelMatrixPtr() {
-        if (m_worldMatrixDirty) {
-            CalculateWorldModelMat();
-            m_worldMatrixDirty = false;
+        if (m_worldTransformDirty) {
+            UpdateWorldTransform();
         }
 
-        return &m_worldMatrix;
+        return &m_worldTransform;
     }
 
     const Matrix4x4& ElementBase::GetWorldModelMatrix() {
-        if (m_worldMatrixDirty) {
-            CalculateWorldModelMat();
-            m_worldMatrixDirty = false;
+        if (m_worldTransformDirty) {
+            UpdateWorldTransform();
         }
 
-        return m_worldMatrix;
+        return m_worldTransform;
     }
 
     void ElementBase::RegisterAttribute(const std::string& name, std::function<void(ElementBase*, const StyleValue&)> func) {
         m_registeredAttributes[FormatUtils::toLowerCase(name)] = func;
     }
 
-    void ElementBase::CalculateLocalModelMat() {
-        using namespace GLTransform4x4;
-
-        Vector3 radians = {
-            ConversionUtils::ToRadians(m_localRotation.x),
-            ConversionUtils::ToRadians(m_localRotation.y),
-            ConversionUtils::ToRadians(m_localRotation.z)
-        };
-
-        m_localMatrix = Scale(m_localScale.x, m_localScale.y, 1.0f);
-        MakeRotateXYZ(m_localMatrix, radians);
-        MakeTranslate(m_localMatrix, m_localPosition.x, m_localPosition.y, 0.0f);
+    void ElementBase::UpdateLayoutPosition() {
+        m_positionDirty = false;
     }
 
-    void ElementBase::CalculateWorldModelMat() {
+    void ElementBase::UpdateLayoutSize() {
+        if (m_parentElementPtr) {
+            switch (m_parentElementPtr->GetLayoutDirection()) {
+            case LayoutDirection::RowStart:
+            case LayoutDirection::RowEnd:
+                // In Row-Layout strecken Kinder ggf. in Y-Richtung
+                if (m_innerSize.y <= 0.0f &&
+                    m_parentElementPtr->GetLayoutContentVer() == LayoutAlign::Stretch) {
+                    m_innerSize.y = m_parentElementPtr->GetContentSize().y;
+                }
+                break;
+            case LayoutDirection::ColumnStart:
+            case LayoutDirection::ColumnEnd:
+                // In Column-Layout strecken Kinder ggf. in X-Richtung
+                if (m_innerSize.x <= 0.0f &&
+                    m_parentElementPtr->GetLayoutContentHor() == LayoutAlign::Stretch) {
+                    m_innerSize.x = m_parentElementPtr->GetContentSize().x;
+                }
+                break;
+            }
+        }
+
+        m_sizeDirty = false;
+    }
+
+    void ElementBase::UpdateLocalTransform() {
         using namespace GLTransform4x4;
 
-        if (m_localMatrixDirty) {
-            CalculateLocalModelMat();
-            m_localMatrixDirty = false;
+        if (m_positionDirty) {
+            UpdateLayoutPosition();
+        }
+
+        if (m_sizeDirty) {
+            UpdateLayoutSize();
+        }
+
+        Vector3 radians = {
+            ConversionUtils::ToRadians(m_rotation.x),
+            ConversionUtils::ToRadians(m_rotation.y),
+            ConversionUtils::ToRadians(m_rotation.z)
+        };
+
+        m_localTransform = Scale(m_innerSize.x, m_innerSize.y, 1.0f);
+        MakeRotateXYZ(m_localTransform, radians);
+        MakeTranslate(m_localTransform, m_innerPosition.x, m_innerPosition.y, 0.0f);
+
+        m_localTransformDirty = false;
+    }
+
+    void ElementBase::UpdateWorldTransform() {
+        using namespace GLTransform4x4;
+
+        if (m_positionDirty) {
+            UpdateLayoutPosition();
+        }
+
+        if (m_sizeDirty) {
+            UpdateLayoutSize();
+        }
+
+        if (m_localTransformDirty) {
+            UpdateLocalTransform();
         }
 
         if (m_parentElementPtr) {
             using namespace GLTransform4x4;
 
             Vector3 radians = {
-                ConversionUtils::ToRadians(m_localRotation.x),
-                ConversionUtils::ToRadians(m_localRotation.y),
-                ConversionUtils::ToRadians(m_localRotation.z)
+                ConversionUtils::ToRadians(m_rotation.x),
+                ConversionUtils::ToRadians(m_rotation.y),
+                ConversionUtils::ToRadians(m_rotation.z)
             };
 
             auto vec = m_parentElementPtr->GetLocalSize();
-            m_worldMatrix = Scale(m_localScale.x / vec.x, m_localScale.y / vec.y, 1.0f);
-            MakeRotateXYZ(m_worldMatrix, radians);
-            MakeTranslate(m_worldMatrix, m_localPosition.x, m_localPosition.y, 0.0f);
+            m_worldTransform = Scale(m_innerSize.x / vec.x, m_innerSize.y / vec.y, 1.0f);
+            MakeRotateXYZ(m_worldTransform, radians);
+            MakeTranslate(m_worldTransform, m_innerPosition.x, m_innerPosition.y, 0.0f);
 
-            m_worldMatrix = m_parentElementPtr->GetWorldModelMatrix() * m_worldMatrix;
+            m_worldTransform = m_parentElementPtr->GetWorldModelMatrix() * m_worldTransform;
         }
         else {
-            m_worldMatrix = m_localMatrix;
+            m_worldTransform = m_localTransform;
         }
+
+        m_worldTransformDirty = false;
     }
 
     void ElementBase::MarkDirty() {
-        m_localMatrixDirty = true;
-        m_worldMatrixDirty = true;
+        m_positionDirty = true;
+        m_sizeDirty = true;
+        m_localTransformDirty = true;
+        m_worldTransformDirty = true;
         for (auto& child : m_children) {
             child->MarkDirty();
         }
@@ -382,16 +575,39 @@ namespace EngineCore::UI {
         m_attributesRegistered = true;
         {
             namespace att = Attribute;
-            RegisterAttribute(att::width, [](ElementBase* el, const StyleValue& val) {
-                if (float f; val.TryGetValue<float>(f, att::width)) {
-                    el->SetLocalScaleX(f);
+            RegisterAttribute(att::layoutDirection, [](ElementBase* el, const StyleValue& val) {
+                if (std::string dir; val.TryGetValue<std::string>(dir, att::layoutDirection)) {
+                    el->SetLayoutDirection(ToLayoutDirection(dir));
                 }
             });
 
-            namespace att = Attribute;
+            RegisterAttribute(att::layoutWrap, [](ElementBase* el, const StyleValue& val) {
+                if (std::string wrap; val.TryGetValue<std::string>(wrap, att::layoutWrap)) {
+                    el->SetLayoutWrap(ToLayoutWrap(wrap));
+                }
+            });
+
+            RegisterAttribute(att::layoutContentHor, [](ElementBase* el, const StyleValue& val) {
+                if (std::string align; val.TryGetValue<std::string>(align, att::layoutContentHor)) {
+                    el->SetLayoutContentHor(ToLayoutAlign(align));
+                }
+            });
+
+            RegisterAttribute(att::layoutContentVer, [](ElementBase* el, const StyleValue& val) {
+                if (std::string align; val.TryGetValue<std::string>(align, att::layoutContentVer)) {
+                    el->SetLayoutContentVer(ToLayoutAlign(align));
+                }
+            });
+
+            RegisterAttribute(att::width, [](ElementBase* el, const StyleValue& val) {
+                if (float f; val.TryGetValue<float>(f, att::width)) {
+                    el->SetLocalWidth(f);
+                }
+            });
+
             RegisterAttribute(att::height, [](ElementBase* el, const StyleValue& val) {
                 if (float f; val.TryGetValue<float>(f, att::height)) {
-                    el->SetLocalScaleY(f);
+                    el->SetLocalHeight(f);
                 }
             });
 
@@ -413,9 +629,39 @@ namespace EngineCore::UI {
                 }
             });
 
+            RegisterAttribute(att::borderSize, [](ElementBase* el, const StyleValue& val) {
+                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderSize)) {
+                    el->SetBorderSize(vec);
+                }
+            });
+
             RegisterAttribute(att::borderWidth, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::borderWidth)) {
                     el->SetBorderWidth(f);
+                }
+            });
+
+            RegisterAttribute(att::borderTop, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::borderTop)) {
+                    el->SetBorderTop(f);
+                }
+            });
+
+            RegisterAttribute(att::borderLeft, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::borderLeft)) {
+                    el->SetBorderLeft(f);
+                }
+            });
+
+            RegisterAttribute(att::borderBottom, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::borderBottom)) {
+                    el->SetBorderBottom(f);
+                }
+            });
+
+            RegisterAttribute(att::borderRight, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::borderRight)) {
+                    el->SetBorderRight(f);
                 }
             });
         }

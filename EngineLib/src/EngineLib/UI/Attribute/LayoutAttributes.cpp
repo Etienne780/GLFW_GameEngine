@@ -11,7 +11,7 @@ namespace {
 
     #pragma region Layout
 
-    const StyleAttribute Layout = AttributeHelper::MakeMultiStringAttribute(
+    const StyleAttribute LayoutAtt = AttributeHelper::MakeMultiStringAttribute(
         Attribute::layout,
         "Layouts the elements inside of a container",
         { 1, 2 },
@@ -19,14 +19,14 @@ namespace {
         { "start", "start" }
     );
 
-    const StyleAttribute LayoutHor = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute LayoutHorAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutHor,
         "Horizontal layout of elements inside a container",
         { "start", "center", "end", "stretch" },
         "start"
     );
 
-    const StyleAttribute LayoutVer = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute LayoutVerAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutVer,
         "Vertical layout of elements inside a container",
         { "start", "center", "end", "stretch" },
@@ -37,7 +37,7 @@ namespace {
 
     #pragma region LayoutContent
 
-    const StyleAttribute LayoutContent = AttributeHelper::MakeMultiStringAttribute(
+    const StyleAttribute LayoutContentAtt = AttributeHelper::MakeMultiStringAttribute(
         Attribute::layoutContent,
         "Layouts the whole content inside of a container",
         { 1, 2 },
@@ -46,14 +46,14 @@ namespace {
     );
 
 
-    const StyleAttribute LayoutContentHor = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute LayoutContentHorAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutContentHor,
         "Horizontal Layouting of the whole content inside of a container",
         { "start", "center", "end", "space-evenly", "space-around"},
         "start"
     );
 
-    const StyleAttribute LayoutContentVer = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute LayoutContentVerAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutContentVer,
         "Vertical Layouting of the whole content inside of a container",
         { "start", "center", "end", "space-evenly", "space-around"},
@@ -62,14 +62,14 @@ namespace {
 
     #pragma endregion
 
-    const StyleAttribute LayoutDirection = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute LayoutDirectionAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutDirection,
         "Direction in which the elements will arranged",
         { "row", "column", "row-start", "row-end", "column-start", "column-end"},
         "row-start"
     );
 
-    const StyleAttribute LayoutWrap = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute LayoutWrapAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutWrap,
         "Defines how child elements are arranged when they exceed the available space.",
         { "none", "wrap" },
@@ -81,16 +81,16 @@ namespace {
 namespace EngineCore::UI::Init {
 
     const bool regLayoutAtt() {
-        StyleAttribute::RegisterAttribute(Layout);
-        StyleAttribute::RegisterAttribute(LayoutHor);
-        StyleAttribute::RegisterAttribute(LayoutVer);
+        StyleAttribute::RegisterAttribute(LayoutAtt);
+        StyleAttribute::RegisterAttribute(LayoutHorAtt);
+        StyleAttribute::RegisterAttribute(LayoutVerAtt);
 
-        StyleAttribute::RegisterAttribute(LayoutContent);
-        StyleAttribute::RegisterAttribute(LayoutContentHor);
-        StyleAttribute::RegisterAttribute(LayoutContentVer);
+        StyleAttribute::RegisterAttribute(LayoutContentAtt);
+        StyleAttribute::RegisterAttribute(LayoutContentHorAtt);
+        StyleAttribute::RegisterAttribute(LayoutContentVerAtt);
 
-        StyleAttribute::RegisterAttribute(LayoutDirection);
-        StyleAttribute::RegisterAttribute(LayoutWrap);
+        StyleAttribute::RegisterAttribute(LayoutDirectionAtt);
+        StyleAttribute::RegisterAttribute(LayoutWrapAtt);
         return true;
     }
 

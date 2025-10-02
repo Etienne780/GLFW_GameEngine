@@ -275,7 +275,7 @@ namespace EngineCore {
                 uniform vec4 uBackgroundColor;
                 uniform vec4 uBorderColor;
                 uniform vec4 uBorderRadius;   // top-left, top-right, bottom-right, bottom-left
-                uniform float uBorderWidth;
+                uniform vec4 uBorderWidth;
                 uniform vec2 uSize;           // width, height in pixels
                 
                 void main() {

@@ -27,6 +27,10 @@ namespace EngineCore::UI {
 		Set(State::Normal, name, value);
 	}
 
+	void Style::Set(std::string name, std::string value) {
+		Set(State::Normal, name.c_str(), value);
+	}
+
 	void Style::Set(State state, const char* name, std::string value) {
 		m_attributes[state][name] = value;
 		m_newStyleAdded = true;
@@ -93,7 +97,7 @@ namespace EngineCore::UI {
 	void Style::GenerateCachedStyle() const {
 		m_cachedStyle = std::make_unique<Style>();
 		// applys all the extended styls in the right order
-		for (auto& style : m_extendedStyles) {
+		for (const auto& style : m_extendedStyles) {
 			const auto& att = style->GetAll();
 			for (auto& [state, attMap] : att) {
 				for (auto& [name, value] : attMap) {

@@ -22,8 +22,16 @@ namespace {
 
 	using namespace EngineCore::UI;
 
+    // ----------- tranformations ------------
+    // size
 	extern const StyleAttribute Width;
 	extern const StyleAttribute Height;
+
+    // rotation
+    extern const StyleAttribute Rotation;
+    extern const StyleAttribute RotationX;
+    extern const StyleAttribute RotationY;
+    extern const StyleAttribute RotationZ;
 
     // Margin
     extern const StyleAttribute Margin;
@@ -39,10 +47,19 @@ namespace {
     extern const StyleAttribute PaddingLeft;
     extern const StyleAttribute PaddingRight;
 
+
     extern const StyleAttribute BackgroundColor;
     extern const StyleAttribute TextColor;
     extern const StyleAttribute BorderColor;
+
+    //Border size
+    extern const StyleAttribute BorderSize;
     extern const StyleAttribute BorderWidth;
+    extern const StyleAttribute BorderTop;
+    extern const StyleAttribute BorderLeft;
+    extern const StyleAttribute BorderBottom;
+    extern const StyleAttribute BorderRight;
+
     extern const StyleAttribute BorderRadius;
     extern const StyleAttribute Duration;
 

@@ -20,12 +20,16 @@ namespace EngineCore {
 namespace EngineCore::UI {
 
     class ElementBase {
-    friend class UIManager;
+        friend class UIManager;
     public:
         using Callback = std::function<void()>;
 
-        ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style = std::make_shared<Style>(), MaterialID matID = ASSETS::ENGINE::MATERIAL::DefaultUI());
-        ElementBase(std::string name, UIElementID id, MaterialID matID = ASSETS::ENGINE::MATERIAL::DefaultUI(), std::shared_ptr<Style> style = std::make_shared<Style>());
+        ElementBase(std::string name, UIElementID id,
+            std::shared_ptr<Style> style = std::make_shared<Style>(),
+            MaterialID matID = ASSETS::ENGINE::MATERIAL::DefaultUI());
+        ElementBase(std::string name, UIElementID id,
+            MaterialID matID = ASSETS::ENGINE::MATERIAL::DefaultUI(),
+            std::shared_ptr<Style> style = std::make_shared<Style>());
         virtual ~ElementBase() = default;
 
         template<typename T, typename... Args>
@@ -41,10 +45,10 @@ namespace EngineCore::UI {
         const std::string& GetName() const;
         UIElementID GetID() const;
         std::shared_ptr<Style> GetStyle() const;
-        Vector2 GetScreenPosition() const;
-        Vector2 GetLocalPosition() const;
-        Vector2 GetScreenSize() const;
-        Vector2 GetLocalSize() const;
+        Vector2 GetScreenPosition();
+        Vector2 GetLocalPosition();
+        Vector2 GetScreenSize();
+        Vector2 GetLocalSize();
 
         float GetParentWidth() const;
         float GetParentHeight() const;
@@ -60,36 +64,34 @@ namespace EngineCore::UI {
         std::string m_elementName;
         UIElementID m_id;
         // Style m_elementStyle; needs to be later used for clean transition between styles
-        // more thoughts about how the styles are manged on the element
-        // element should probably have a default style that can be modived with a function that can be overriden
-        // idk how to make transtions 
+        // element should probably have a default style that can be modified with a function that can be overridden
         std::shared_ptr<Style> m_style = nullptr;
-        std::shared_ptr<Style> m_baseStyle = nullptr;//  element base style
+        std::shared_ptr<Style> m_baseStyle = nullptr; // element base style
         ElementBase* m_parentElementPtr = nullptr;
         std::vector<std::unique_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
         RenderCommand m_cmd;
         MaterialID m_materialID{ ENGINE_INVALID_ID };
         ShaderBindObject m_sbo;
-        
+
         Callback m_onClick;
         Callback m_onHover;
         Callback m_onPress;
 
         /*
-        * @brief is called every frame
+        * @brief Called every frame.
         */
         virtual void Update() {};
         /*
-        * @brief renderLayerID, modelMatrix, isUI, type, meshID is already set
+        * @brief Called to prepare rendering. renderLayerID, modelMatrix, isUI, type, meshID are already set.
         */
         virtual void SendDrawCommand(Renderer* renderer) {};
         /*
-        * @brief this function is called only once for ever class. it inits all the Attributes this element can have and what they do
+        * @brief This function is called only once for every class. It registers all attributes this element can have and what they do.
         */
         virtual void RegisterAttributes() {};
         /*
-        * @brief Gets set after the base style attribute, can override or add attributes
+        * @brief Called after base style attributes are set. Can override or add attributes.
         */
         virtual void ExtendElementBaseStyle(std::shared_ptr<Style> baseStyle) {};
 
@@ -97,25 +99,55 @@ namespace EngineCore::UI {
         void SetParent(ElementBase* elementPtr);
         void SetState(State state);
 
+        void SetLayoutDirection(LayoutDirection d);
+        void SetLayoutWrap(LayoutWrap w);
+        void SetLayoutContentHor(LayoutAlign a);
+        void SetLayoutContentVer(LayoutAlign a);
+
         void SetLocalPosition(const Vector2& position);
         void SetLocalPosition(float x, float y);
         void SetLocalRotation(const Vector3& rotation);
         void SetLocalRotation(float x, float y, float z);
-        void SetLocalScale(const Vector2& scale);
-        void SetLocalScale(float x, float y);
-        void SetLocalScaleX(float x);
-        void SetLocalScaleY(float y);
+        void SetLocalSize(const Vector2& size);
+        void SetLocalSize(float width, float height);
+        void SetLocalWidth(float width);
+        void SetLocalHeight(float height);
 
         void SetBackgroundColor(const Vector4& color);
         void SetBorderColor(const Vector4& color);
         void SetBorderRadius(const Vector4& radius);
         void SetBorderWidth(float width);
+        void SetBorderTop(float top);
+        void SetBorderLeft(float left);
+        void SetBorderBottom(float bottom);
+        void SetBorderRight(float right);
+        void SetBorderSize(float width, float height);
+        void SetBorderSize(const Vector4& vec);
+        void SetBorderSize(float top, float right, float bottom, float left);
         void SetDuration(float duration);
+
+        LayoutDirection GetLayoutDirection() const;
+        LayoutWrap GetLayoutWrap() const;
+        LayoutAlign GetLayoutContentHor() const;
+        LayoutAlign GetLayoutContentVer() const;
+
+        // only inner size
+        Vector2 GetContentSize();   
+        // content + padding
+        Vector2 GetPaddingSize();   
+        // content + padding + border
+        Vector2 GetBorderSize();    
+        // content + padding + border + margin
+        Vector2 GetMarginSize();    
 
         const Vector4& GetBackgroundColor() const;
         const Vector4& GetBorderColor() const;
         const Vector4& GetBorderRadius() const;
-        float GetBorderWidth() const;
+        const Vector4& GetBorderSize() const;
+        float GetBorderTop() const;
+        float GetBorderLeft() const;
+        float GetBorderBottom() const;
+        float GetBorderRight() const;
         float GetDuration() const;
 
         /*
@@ -123,7 +155,7 @@ namespace EngineCore::UI {
         * @param mousePos The point (e.g. mouse position) to test, in the same coordinate space as the element.
         * @return True if the point is inside the bounding box, false otherwise.
         */
-        bool IsMouseOver(const Vector2& mousePos) const;
+        bool IsMouseOver(const Vector2& mousePos);
 
         /**
         * @brief Gets the world Model-Matrix (local to world origin).
@@ -133,8 +165,9 @@ namespace EngineCore::UI {
         * @brief Gets the world Model-Matrix (local to world origin).
         */
         const Matrix4x4& GetWorldModelMatrix();
+
         /*
-        * @brief
+        * @brief Registers an attribute and its behavior.
         * Example:
         * RegisterAttribute(att::borderRadius, [](ElementBase* el, const StyleValue& val) {
         *    val.TryGetValue<Vector4>(el->m_borderRadius, att::borderRadius);
@@ -148,36 +181,70 @@ namespace EngineCore::UI {
 
         static inline bool m_attributesRegistered = false;
         /*
-        * @brief name and behaviour. contains all attributes and there reaction
+        * @brief Map of attribute names to behavior callbacks.
         */
         static inline std::unordered_map<std::string, std::function<void(ElementBase*, const StyleValue&)>> m_registeredAttributes;
-        // if the transform has changed
-        bool m_localMatrixDirty = true;
-        bool m_worldMatrixDirty = true;
-        // position 0,0 is top left of screen or parent element
-        Vector2 m_localPosition{ 0, 0 };
-        // Local rotation
-        Vector3 m_localRotation;
-        // size is in pixels (could get scaled by UIManager, so the value is not absolute)
-        Vector2 m_localScale{ 800, 500 };
 
-        // Local model matrix
-        Matrix4x4 m_localMatrix;
-        Matrix4x4 m_worldMatrix;
+        // layout dirty flags
+        bool m_positionDirty = true;
+        bool m_sizeDirty = true;
+        // transform dirty flags
+        bool m_localTransformDirty = true;
+        bool m_worldTransformDirty = true;
+
+        // position (0,0) is top left of screen or parent element
+        Vector2 m_innerPosition{ 0, 0 };
+        // Local rotation
+        Vector3 m_rotation;
+        // Size in pixels (content box, without padding/border/margin).
+        Vector2 m_innerSize{ 800, 500 };
+        Vector2 m_minSize{ 0, 0 };
+        Vector2 m_maxSize{ FLT_MAX, FLT_MAX };
+
+        // Local and world transforms
+        Matrix4x4 m_localTransform;
+        Matrix4x4 m_worldTransform;
 
         // styling props
+        LayoutDirection m_layoutDirection = LayoutDirection::RowStart;
+        LayoutWrap m_layoutWrap = LayoutWrap::Wrap;
+        LayoutAlign m_layoutContentHor = LayoutAlign::Start;
+        LayoutAlign m_layoutContentVer = LayoutAlign::Start;
+
+        Vector4 m_padding{ 0, 0, 0, 0 }; // top, right, bottom, left
+        Vector4 m_margin{ 0, 0, 0, 0 };  // top, right, bottom, left
+
         Vector4 m_backgroundColor{ 1, 1, 1, 1 };
         Vector4 m_borderColor{ 0.75f, 0.75f, 0.75f, 1 };
-        Vector4 m_borderRadius{ 25, 5, 100, 50 };// top-left, top-right, bottom-right, bottom-left
-        float m_borderWidth = 50;
+        Vector4 m_borderRadius{ 25, 5, 100, 50 }; // top-left, top-right, bottom-right, bottom-left
+        Vector4 m_borderSize{ 0, 0, 0, 0 };
         float m_duration = 0.0f;
 
-        void CalculateLocalModelMat();
-        void CalculateWorldModelMat();
         /**
-        * @brief Marks this and children dirty for matrix calculations
+        * @brief Calculates the layout-relative position (taking into account margin and alignment).
+        */
+        void UpdateLayoutPosition();
+
+        /**
+        * @brief Calculates the layout-relative size (taking into account padding and borders).
+        */
+        void UpdateLayoutSize();
+
+        /**
+        * @brief Updates the local transform matrix from position, rotation, and size.
+        */
+        void UpdateLocalTransform();
+
+        /**
+        * @brief Updates the world transform matrix including parent transforms.
+        */
+        void UpdateWorldTransform();
+
+        /**
+        * @brief Marks this element and its children dirty for matrix/layout recalculation.
         */
         void MarkDirty();
+
         void WindowResize(int width, int height);
         void UpdateImpl();
         void SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID);

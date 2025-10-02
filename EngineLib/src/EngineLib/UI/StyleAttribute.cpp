@@ -6,12 +6,8 @@
 
 namespace EngineCore::UI {
 
-	StyleAttribute::StyleAttribute(std::string name, std::string desc, std::function<StyleValue(const ElementBase& element, const StyleAttribute*, const std::string&)> p)
-		: m_name(std::move(name)), m_description(std::move(desc)), m_parser(std::move(p)) {
-	}
-
-	StyleAttribute::StyleAttribute(std::string name, std::string desc, std::vector<std::string> inputs, std::function<StyleValue(const ElementBase& element, const StyleAttribute*, const std::string&)> p)
-		: m_name(std::move(name)), m_description(std::move(desc)), m_inputs(std::move(inputs)), m_parser(std::move(p)) {
+	StyleAttribute::StyleAttribute(std::string name, std::string desc, StyleValue fallbackValue, std::vector<std::string> inputs, std::function<StyleValue(const ElementBase& element, const StyleAttribute*, const std::string&)> p)
+		: m_name(std::move(name)), m_description(std::move(desc)), m_fallbackValue(fallbackValue), m_inputs(std::move(inputs)), m_parser(std::move(p)) {
 	}
 
 	StyleValue StyleAttribute::GetAttributeValue(const std::string& name, const ElementBase& element, const std::string& valueStr) {

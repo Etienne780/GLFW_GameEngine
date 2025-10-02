@@ -106,15 +106,15 @@ namespace EngineCore::UI {
 		std::vector<std::string> inputs,
 		const std::string& defaultValue)
 	{
-		return StyleAttribute(name, description, inputs,
-			[defaultValue](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+		return StyleAttribute(name, description, StyleValue(defaultValue), inputs,
+			[](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				std::string s = FormatUtils::toLowerCase(val);
 				if (AttributeHelper::ListContains(styleAtt->GetInputs(), s))
 					return StyleValue(s);
 
 				Log::Warn("StyleAttribute: {} could not calculate value in style '{}', input:'{}' invalid!", 
 					styleAtt->GetName(), element.GetStyle()->GetName(), val);
-				return StyleValue(defaultValue);
+				return styleAtt->GetFallbackValue();
 			}
 		);
 	}
@@ -125,8 +125,8 @@ namespace EngineCore::UI {
 		float defaultValue,
 		NumberType type)
 	{
-		return StyleAttribute(name, description, { "nummber" },
-			[defaultValue, type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+		return StyleAttribute(name, description, StyleValue(defaultValue), { "nummber" },
+			[type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				float f = 0;
 				bool errorType = false;
 				std::string unit;
@@ -141,7 +141,7 @@ namespace EngineCore::UI {
 				else
 					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', input:'{}' invalid!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
-				return StyleValue(defaultValue);
+				return styleAtt->GetFallbackValue();
 			}
 		);
 	}
@@ -152,15 +152,15 @@ namespace EngineCore::UI {
 		std::vector<std::string> inputs,
 		Vector4 defaultValue) 
 	{
-		return StyleAttribute(name, description,
-			[defaultValue](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+		return StyleAttribute(name, description, StyleValue(defaultValue), inputs,
+			[](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				bool errorType = false;
 				std::string clearString = FormatUtils::removeSpaces(val);
 				size_t pos = clearString.find('#');
 				if (pos == std::string::npos) {
 					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', '#' is missing, input:'{}' invalid!", 
 						element.GetStyle()->GetName(), styleAtt->GetName(), val);
-					return StyleValue(defaultValue);
+					return styleAtt->GetFallbackValue();
 				}
 				pos++;
 				size_t colorLen = clearString.size() - pos;
@@ -195,7 +195,7 @@ namespace EngineCore::UI {
 				else 
 					Log::Warn("StyleAttribute: {}, invalid color format in style '{}', expected hex string with 2, 6 or 8 digits after '#', input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
-				return StyleValue(defaultValue);
+				return styleAtt->GetFallbackValue();
 			}
 		);
 	}
@@ -216,9 +216,16 @@ namespace EngineCore::UI {
 			Log::Warn("AttributeHelper: Attribute '{}' defaultValues count ({}) does not match allowed numberOfInputs ({})",
 				name, defaultValues.size(), numberOfInputs.size());
 #endif 
+		// fallback to defaults
+		std::vector<StyleValue> dV;
+		dV.reserve(defaultValues.size());
+		for (auto& s : defaultValues) {
+			std::string lowerS = FormatUtils::toLowerCase(s);
+			dV.emplace_back(lowerS);
+		}
 
-		return StyleAttribute(name, description,
-			[numberOfInputs, defaultValues](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+		return StyleAttribute(name, description, StyleValue(dV), inputs,
+			[numberOfInputs](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				auto values = AttributeHelper::GetValues(val);
 				bool errorType = false;
 
@@ -250,15 +257,7 @@ namespace EngineCore::UI {
 					Log::Warn("StyleAttribute: '{}' could not calculate value in style '{}', invalid argument count, input '{}'",
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 
-				// fallback to defaults
-				std::vector<StyleValue> dV;
-				dV.reserve(defaultValues.size());
-				for (auto& s : defaultValues) {
-					std::string lowerS = FormatUtils::toLowerCase(s);
-					dV.emplace_back(lowerS);
-				}
-
-				return StyleValue(dV);
+				return styleAtt->GetFallbackValue();
 			}
 		);
 	}
@@ -279,8 +278,58 @@ namespace EngineCore::UI {
 			Log::Warn("AttributeHelper: Attribute '{}' defaultValues({}) count does not match allowed numberOfInputs({})",
 				name, defaultValue.size(), maxInput);
 #endif 
+		StyleValue fallback;
+		// cal default value
+		switch (maxInput)
+		{
+		case 1:
+			fallback = StyleValue((defaultValue.empty()) ? 0.0f : defaultValue[0]);
+		case 2: {
+			Vector2 vec;
+			if (defaultValue.size() == 1) {
+				vec.Set(defaultValue[0], defaultValue[0]);
+			}
+			else if (defaultValue.size() == 2) {
+				vec.Set(defaultValue[0], defaultValue[1]);
+			}
+			fallback = StyleValue(vec);
+		}
+		case 3: {
+			Vector3 vec;
+			if (defaultValue.size() == 1) {
+				vec.Set(defaultValue[0], defaultValue[0], defaultValue[0]);
+			}
+			else if (defaultValue.size() == 2) {
+				vec.Set(defaultValue[0], defaultValue[1], defaultValue[1]);
+			}
+			else if (defaultValue.size() == 3) {
+				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2]);
+			}
+			fallback = StyleValue(vec);
+		}
+		case 4: {
+			Vector4 vec;
+			if (defaultValue.size() == 1) {
+				vec.Set(defaultValue[0], defaultValue[0], defaultValue[0], defaultValue[0]);
+			}
+			else if (defaultValue.size() == 2) {
+				vec.Set(defaultValue[0], defaultValue[0], defaultValue[1], defaultValue[1]);
+			}
+			else if (defaultValue.size() == 3) {
+				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[2]);
+			}
+			else if (defaultValue.size() == 4) {
+				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[3]);
+			}
+			fallback = StyleValue(vec);
+		}
+		default:
+			Log::Error("AttributeHelper: Attribute '{}' has the invalid maxInput({}), maxInput needs to be 1, 2, 3 or 4!",
+				name, maxInput);
+			fallback = StyleValue(0.0f);
+		}
 
-		return StyleAttribute(name, description, { "nummber" },
+		return StyleAttribute(name, description, fallback, { "nummber" },
 			[maxInput, defaultValue, type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				short errorType = 0;
 				auto values = GetValues(val);
@@ -441,55 +490,7 @@ namespace EngineCore::UI {
 					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', invalid argument count max arguments '{}', input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), maxInput, val);
 
-				// cal default value
-				switch (maxInput)
-				{
-				case 1:
-					return StyleValue((defaultValue.empty()) ? 0.0f : defaultValue[0]);
-				case 2: {
-					Vector2 vec;
-					if (defaultValue.size() == 1) {
-						vec.Set(defaultValue[0], defaultValue[0]);
-					}
-					else if (defaultValue.size() == 2) {
-						vec.Set(defaultValue[0], defaultValue[1]);
-					}
-					return StyleValue(vec);
-				}
-				case 3: {
-					Vector3 vec;
-					if (defaultValue.size() == 1) {
-						vec.Set(defaultValue[0], defaultValue[0], defaultValue[0]);
-					}
-					else if (defaultValue.size() == 2) {
-						vec.Set(defaultValue[0], defaultValue[1], defaultValue[1]);
-					}
-					else if (defaultValue.size() == 3) {
-						vec.Set(defaultValue[0], defaultValue[1], defaultValue[2]);
-					}
-					return StyleValue(vec);
-				}
-				case 4: {
-					Vector4 vec;
-					if (defaultValue.size() == 1) {
-						vec.Set(defaultValue[0], defaultValue[0], defaultValue[0], defaultValue[0]);
-					}
-					else if (defaultValue.size() == 2) {
-						vec.Set(defaultValue[0], defaultValue[0], defaultValue[1], defaultValue[1]);
-					}
-					else if (defaultValue.size() == 3) {
-						vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[2]);
-					}
-					else if (defaultValue.size() == 4) {
-						vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[3]);
-					}
-					return StyleValue(vec);
-				}
-				default:
-					Log::Error("AttributeHelper: Attribute '{}' has the invalid maxInput({}), maxInput needs to be 1, 2, 3 or 4!",
-						styleAtt->GetName(), maxInput);
-					return StyleValue(0.0f);
-				}
+				return styleAtt->GetFallbackValue();
 			}
 		);
 	}

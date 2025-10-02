@@ -17,15 +17,15 @@ namespace {
 
     using namespace EngineCore::UI;
 
-    extern const StyleAttribute Layout;
-    extern const StyleAttribute LayoutHor;
-    extern const StyleAttribute LayoutVer;
+    extern const StyleAttribute LayoutAtt;
+    extern const StyleAttribute LayoutHorAtt;
+    extern const StyleAttribute LayoutVerAtt;
 
-    extern const StyleAttribute LayoutContent;
-    extern const StyleAttribute LayoutContentHor;
-    extern const StyleAttribute LayoutContentVer;
+    extern const StyleAttribute LayoutContentAtt;
+    extern const StyleAttribute LayoutContentHorAtt;
+    extern const StyleAttribute LayoutContentVerAtt;
 
-    extern const StyleAttribute LayoutDirection;
-    extern const StyleAttribute LayoutWrap;
+    extern const StyleAttribute LayoutDirectionAtt;
+    extern const StyleAttribute LayoutWrapAtt;
 
 }

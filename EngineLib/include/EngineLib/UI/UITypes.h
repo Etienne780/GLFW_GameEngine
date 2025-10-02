@@ -17,13 +17,64 @@ namespace EngineCore::UI {
         Disabled
     };
 
+    enum class LayoutDirection {
+        Row,
+        Column,
+        RowStart,
+        RowEnd,
+        ColumnStart,
+        ColumnEnd
+    };
+
+    enum class LayoutWrap {
+        None,
+        Wrap
+    };
+
+    enum class LayoutAlign {
+        Start,
+        Center,
+        End,
+        Stretch,
+        SpaceEvenly,
+        SpaceAround
+    };
+
+    LayoutDirection ToLayoutDirection(const std::string& val) {
+        if (val == "row") return LayoutDirection::Row;
+        if (val == "column") return LayoutDirection::Column;
+        if (val == "row-start") return LayoutDirection::RowStart;
+        if (val == "row-end") return LayoutDirection::RowEnd;
+        if (val == "column-start") return LayoutDirection::ColumnStart;
+        if (val == "column-end") return LayoutDirection::ColumnEnd;
+        return LayoutDirection::RowStart;
+    }
+
+    LayoutWrap ToLayoutWrap(const std::string& val) {
+        if (val == "wrap") return LayoutWrap::Wrap;
+        return LayoutWrap::None;
+    }
+
+    LayoutAlign ToLayoutAlign(const std::string& val) {
+        if (val == "center") return LayoutAlign::Center;
+        if (val == "end") return LayoutAlign::End;
+        if (val == "stretch") return LayoutAlign::Stretch;
+        if (val == "space-evenly") return LayoutAlign::SpaceEvenly;
+        if (val == "space-around") return LayoutAlign::SpaceAround;
+        return LayoutAlign::Start;
+    }
+
+
     struct StyleValue {
-        using ValueVariant = std::variant<float, Vector2, Vector3, Vector4, std::string, std::vector<StyleValue>>;
-        enum class Type { Float, Vector2, Vector3, Vector4, String, Multi } type = Type::Float;
+        using ValueVariant = std::variant<int, float, Vector2, Vector3, Vector4, std::string, std::vector<StyleValue>>;
+        enum class Type { Int, Float, Vector2, Vector3, Vector4, String, Multi } type = Type::Float;
         ValueVariant value;
 
         // Default constructor: initializes with float 0.0f
-        StyleValue() : type(Type::Float), value(0.0f) {}
+        StyleValue() : type(Type::Int), value(0) {}
+
+        //Int constructor
+        StyleValue(int v) : type(Type::Int), value(v) {}
 
         // Float constructor
         StyleValue(float v) : type(Type::Float), value(v) {}
@@ -51,7 +102,7 @@ namespace EngineCore::UI {
             }
 
             Log::Warn("StyleValue: Could not get value of Attribute '{}', expected type '{}', got '{}'",
-                attributeName, typeid(T).name(), static_cast<int>(type));
+                attributeName, typeid(T).name(), type);
             return false;
         }
     };
@@ -63,6 +114,7 @@ static inline std::string FormatUtils::toString<EngineCore::UI::StyleValue::Type
     using namespace EngineCore::UI;
     typedef StyleValue::Type T;
     switch (value) {
+    case T::Int: return "int";
     case T::Float: return "float";
     case T::Vector2: return "Vector2";
     case T::Vector3: return "Vector3";

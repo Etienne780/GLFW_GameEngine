@@ -46,6 +46,13 @@ namespace EngineCore::UI {
 		void Set(const char* name, std::string value);
 
 		/**
+		* @brief Sets an attribute for the normal state of the style
+		* @param name The name of the attribute
+		* @param value The value to set for the attribute
+		*/
+		void Set(std::string name, std::string value);
+
+		/**
 		* @brief Sets an attribute for a specific state of the style
 		* @param state The state for which the attribute should be set
 		* @param name The name of the attribute
