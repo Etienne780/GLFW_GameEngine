@@ -20,10 +20,6 @@ namespace EngineCore::UI {
     enum class LayoutDirection {
         Row,
         Column,
-        RowStart,
-        RowEnd,
-        ColumnStart,
-        ColumnEnd
     };
 
     enum class LayoutWrap {
@@ -40,22 +36,18 @@ namespace EngineCore::UI {
         SpaceAround
     };
 
-    LayoutDirection ToLayoutDirection(const std::string& val) {
+    inline LayoutDirection ToLayoutDirection(const std::string& val) {
         if (val == "row") return LayoutDirection::Row;
         if (val == "column") return LayoutDirection::Column;
-        if (val == "row-start") return LayoutDirection::RowStart;
-        if (val == "row-end") return LayoutDirection::RowEnd;
-        if (val == "column-start") return LayoutDirection::ColumnStart;
-        if (val == "column-end") return LayoutDirection::ColumnEnd;
-        return LayoutDirection::RowStart;
+        return LayoutDirection::Row;
     }
 
-    LayoutWrap ToLayoutWrap(const std::string& val) {
+    inline LayoutWrap ToLayoutWrap(const std::string& val) {
         if (val == "wrap") return LayoutWrap::Wrap;
         return LayoutWrap::None;
     }
 
-    LayoutAlign ToLayoutAlign(const std::string& val) {
+    inline LayoutAlign ToLayoutAlign(const std::string& val) {
         if (val == "center") return LayoutAlign::Center;
         if (val == "end") return LayoutAlign::End;
         if (val == "stretch") return LayoutAlign::Stretch;

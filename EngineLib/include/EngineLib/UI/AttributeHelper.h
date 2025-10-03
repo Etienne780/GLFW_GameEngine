@@ -217,7 +217,7 @@ namespace EngineCore::UI {
 		* s = seconds
 		*/
 
-		static inline const std::vector<std::string> m_sizeUnits = { "px", "%w", "%h", "vw", "vh" };
+		static inline const std::vector<std::string> m_sizeUnits = { "px", "%w", "%h", "%aw", "%ah", "vw", "vh"};
 		static inline const std::vector<std::string> m_timeUnits = { "s", "ms" };
 	};
 

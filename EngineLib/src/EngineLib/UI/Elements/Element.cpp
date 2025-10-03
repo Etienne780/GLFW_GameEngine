@@ -17,12 +17,10 @@ namespace EngineCore::UI {
 
             #pragma region Layout
 
-            s->Set(a::layoutHor, "start");
-            s->Set(a::layoutVer, "start");
+            s->Set(a::layoutMajor, "start");
+            s->Set(a::layoutMinor, "start");
 
-            s->Set(a::layoutContentHor, "start");
-            s->Set(a::layoutContentVer, "start");
-
+            s->Set(a::layoutItem, "start");
             s->Set(a::layoutDirection, "row");
             s->Set(a::layoutWrap, "none");
 
@@ -75,15 +73,6 @@ namespace EngineCore::UI {
         m_baseStyle = GetElementBaseStyle();
 	}
 
-    ElementBase::ElementBase(std::string name, UIElementID id, MaterialID matID, std::shared_ptr<Style> style) 
-        : m_elementName(std::move(name)), m_id(id), m_style(std::move(style)) {
-        m_cmd.isUI = true;
-        m_cmd.type = RenderCommandType::Mesh;
-        m_cmd.meshID = ASSETS::ENGINE::MESH::Plain();
-        m_cmd.materialID = matID;
-        m_baseStyle = GetElementBaseStyle();
-    }
-
     void ElementBase::Init() {
         // inits the start propetys
         RegisterAttributesImpl();
@@ -102,15 +91,14 @@ namespace EngineCore::UI {
         return m_style; 
     }
 
-    Vector2 ElementBase::GetScreenPosition() {
+    Vector2 ElementBase::GetWorldPosition() {
         if (m_positionDirty) {
             UpdateLayoutPosition();
-            m_positionDirty = false;
         }
 
         Vector2 pos = m_innerPosition;
         if (m_parentElementPtr) {
-            pos += m_parentElementPtr->GetScreenPosition();
+            pos += m_parentElementPtr->GetWorldPosition();
         }
         return pos;
     }
@@ -118,7 +106,6 @@ namespace EngineCore::UI {
     Vector2 ElementBase::GetLocalPosition() {
         if (m_positionDirty) {
             UpdateLayoutPosition();
-            m_positionDirty = false;
         }
         return m_innerPosition;
     }
@@ -141,7 +128,7 @@ namespace EngineCore::UI {
             UpdateLayoutSize();
             m_sizeDirty = false;
         }
-        return m_innerPosition;
+        return m_innerSize;
     }
 
     float ElementBase::GetParentWidth() const {
@@ -174,20 +161,35 @@ namespace EngineCore::UI {
         return m_state; 
     }
 
+
+    size_t ElementBase::GetChildCount() const {
+        return m_children.size();
+    }
+
+    ElementBase* ElementBase::GetChild(size_t index) {
+        if (index >= m_children.size()) {
+            Log::Error("ElementBase: Child index '{}' was out of bounds for list({})", 
+                index, m_children.size());
+            static ElementBase* dummy = new ElementBase("dummy", UIElementID(ENGINE_INVALID_ID));
+            return dummy;
+        }
+        return m_children[index].get();
+    }
+
     std::vector<std::unique_ptr<ElementBase>>& ElementBase::GetChildren() { 
         return m_children; 
     }
 
-    const std::vector<std::unique_ptr<ElementBase>>& ElementBase::GetChildren() const { 
-        return m_children; 
+    const std::vector<std::unique_ptr<ElementBase>>& ElementBase::GetChildren() const {
+        return m_children;
     }
 
     ElementBase* ElementBase::GetParent() const {
         return m_parentElementPtr;
     }
 
-    void ElementBase::SetParent(ElementBase* elementPtr) {
-        m_parentElementPtr = elementPtr;
+    size_t ElementBase::GetListPosition() const {
+        return m_listPosition;
     }
 
 	void ElementBase::SetState(State state) {
@@ -213,22 +215,27 @@ namespace EngineCore::UI {
 
     void ElementBase::SetLayoutDirection(LayoutDirection d) { 
         m_layoutDirection = d;
-        MarkDirty();
+        MarkDirtyParent();
     }
 
     void ElementBase::SetLayoutWrap(LayoutWrap w) { 
         m_layoutWrap = w;
-        MarkDirty();
+        MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutContentHor(LayoutAlign a) { 
-        m_layoutContentHor = a; 
-        MarkDirty();
+    void ElementBase::SetLayoutMajor(LayoutAlign a) { 
+        m_layoutMajor = a; 
+        MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutContentVer(LayoutAlign a) { 
-        m_layoutContentVer = a;
-        MarkDirty();
+    void ElementBase::SetLayoutMinor(LayoutAlign a) { 
+        m_layoutMinor = a;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetLayoutItem(LayoutAlign a) {
+        m_layoutItem = a;
+        MarkDirtyParent();
     }
 
     void ElementBase::SetLocalPosition(const Vector2& pos) {
@@ -237,17 +244,17 @@ namespace EngineCore::UI {
 
     void ElementBase::SetLocalPosition(float x, float y) {
         m_innerPosition.Set(x,y);
-        MarkDirty();
+        MarkDirtyParent();
     }
 
     void ElementBase::SetLocalRotation(const Vector3& rotation) {
         m_rotation = rotation;
-        MarkDirty();
+        MarkDirtyParent();
     }
 
     void ElementBase::SetLocalRotation(float x, float y, float z) {
         m_rotation.Set(x, y, z);
-        MarkDirty();
+        MarkDirtyParent();
     }
 
     void ElementBase::SetLocalSize(const Vector2& scale) {
@@ -257,19 +264,19 @@ namespace EngineCore::UI {
     void ElementBase::SetLocalSize(float x, float y) {
         m_innerSize.Set(x, y);
         m_sbo.SetParam("uSize", m_innerSize);
-        MarkDirty();
+        MarkDirtyParent();
     }
 
     void ElementBase::SetLocalWidth(float x) {
         m_innerSize.x = x;
         m_sbo.SetParam("uSize", m_innerSize);
-        MarkDirty();
+        MarkDirtyParent();
     }
 
     void ElementBase::SetLocalHeight(float y) {
         m_innerSize.y = y;
         m_sbo.SetParam("uSize", m_innerSize);
-        MarkDirty();
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBackgroundColor(const Vector4& color) {
@@ -350,43 +357,55 @@ namespace EngineCore::UI {
         return m_layoutWrap;
     }
 
-    LayoutAlign ElementBase::GetLayoutContentHor() const {
-        return m_layoutContentHor;
+    LayoutAlign ElementBase::GetLayoutMajor() const {
+        return m_layoutMajor;
     }
 
-    LayoutAlign ElementBase::GetLayoutContentVer() const {
-        return m_layoutContentVer;
+    LayoutAlign ElementBase::GetLayoutMinor() const {
+        return m_layoutMinor;
     }
 
-    Vector2 ElementBase::GetContentSize() {
+    LayoutAlign ElementBase::GetLayoutItem() const {
+        return m_layoutItem;
+    }
+
+    Vector2 ElementBase::GetAviableSize() {
+        return m_aviableSize;
+    }
+
+    Vector2 ElementBase::GetSize() {
         if (m_sizeDirty) {
             UpdateLayoutSize();
         }
         return m_innerSize;
     }
 
-    Vector2 ElementBase::GetPaddingSize() {
-        Vector2 content = GetContentSize();
+    Vector2 ElementBase::GetContentSize() {
+        Vector2 size = GetSize();
         return Vector2(
-            content.x + m_padding.x + m_padding.z, // left + right
-            content.y + m_padding.y + m_padding.w  // top + bottom
+            size.x - m_borderSize.y - m_borderSize.w,
+            size.y - m_borderSize.x - m_borderSize.z
         );
     }
 
     Vector2 ElementBase::GetBorderSize() {
-        Vector2 padded = GetPaddingSize();
+        Vector2 size = GetSize();
         return Vector2(
-            padded.x + m_borderSize.x + m_borderSize.z, // left + right
-            padded.y + m_borderSize.y + m_borderSize.w  // top + bottom
+            size.x + m_borderSize.y + m_borderSize.w, // left + right
+            size.y + m_borderSize.x + m_borderSize.z  // top + bottom
         );
     }
 
     Vector2 ElementBase::GetMarginSize() {
         Vector2 bordered = GetBorderSize();
         return Vector2(
-            bordered.x + m_margin.x + m_margin.z, // left + right
-            bordered.y + m_margin.y + m_margin.w  // top + bottom
+            bordered.x + m_margin.y + m_margin.w, // left + right
+            bordered.y + m_margin.x + m_margin.z  // top + bottom
         );
+    }
+
+    Vector3 ElementBase::GetWorldRotation() {
+        return m_rotation;
     }
 
     const Vector4& ElementBase::GetBackgroundColor() const {
@@ -426,7 +445,7 @@ namespace EngineCore::UI {
     }
 
     bool ElementBase::IsMouseOver(const Vector2& mousePos) {
-        Vector2 pos = GetScreenPosition();
+        Vector2 pos = GetWorldPosition();
         Vector2 size = GetScreenSize();
         return (mousePos.x > pos.x && pos.x + size.x > mousePos.x &&
                 mousePos.y > pos.y && pos.y + size.y > mousePos.y);
@@ -453,56 +472,138 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::UpdateLayoutPosition() {
+        if (m_parentElementPtr) {
+            bool wrap = (m_parentElementPtr->GetLayoutWrap() == LayoutWrap::Wrap);
+            LayoutAlign alignMajor = m_parentElementPtr->GetLayoutMajor();
+            LayoutAlign alignMinor = m_parentElementPtr->GetLayoutMinor();
+            auto& siblings = m_parentElementPtr->GetChildren();
+
+            float xPosition = 0.0f;
+            float yPosition = 0.0f;
+
+            switch (m_parentElementPtr->GetLayoutDirection()) {
+            case LayoutDirection::Row: {
+                // ---------- horizontal position ----------
+                // if layouting start and not first element
+                if (alignMajor == LayoutAlign::Start &&
+                    m_listPosition > 0) {
+                    auto preElement = m_parentElementPtr->GetChild(m_listPosition - 1);
+                    xPosition = preElement->GetLocalPosition().x + preElement->GetMarginSize().x;
+                }
+
+                // -------- vertical position ----------
+                if (alignMinor == LayoutAlign::Center && !wrap) {
+                    float parentHeight = m_parentElementPtr->GetContentSize().y;
+                    yPosition = parentHeight / 2 - GetMarginSize().y / 2;
+                }
+
+                if (alignMinor == LayoutAlign::End && !wrap) {
+                    float parentHeight = m_parentElementPtr->GetContentSize().y;
+                    yPosition = parentHeight - GetMarginSize().y;
+                }
+
+                break;
+            }
+            case LayoutDirection::Column: {
+                break;
+            }
+            }
+
+            m_innerPosition.Set(xPosition, yPosition);
+        }
+
         m_positionDirty = false;
     }
 
     void ElementBase::UpdateLayoutSize() {
+        // stop stretch calculations if wrap is turned on
+
         if (m_parentElementPtr) {
+            bool wrap = (m_parentElementPtr->GetLayoutWrap() == LayoutWrap::Wrap);
+
             switch (m_parentElementPtr->GetLayoutDirection()) {
-            case LayoutDirection::RowStart:
-            case LayoutDirection::RowEnd:
-                // In Row-Layout strecken Kinder ggf. in Y-Richtung
-                if (m_innerSize.y <= 0.0f &&
-                    m_parentElementPtr->GetLayoutContentVer() == LayoutAlign::Stretch) {
-                    m_innerSize.y = m_parentElementPtr->GetContentSize().y;
+            case LayoutDirection::Row:
+                // ---------- horizontal position ----------
+                // stretch
+                if (m_aviableSize.x < 0.0f && m_innerSize.x <= 0.0f &&
+                    m_parentElementPtr->GetLayoutMajor() == LayoutAlign::Stretch) {
+                    float totalChildWidth = ComputeSiblingsTotalMarginSize().x;
+                    float parentWidth = m_parentElementPtr->GetContentSize().x;
+                    // Calculates the amount of children that will be stretched
+                    size_t cStretchCount = 0;
+                    for (const auto& c : m_parentElementPtr->GetChildren()) {
+                        if (c->GetSize().x <= 0.0f)
+                            cStretchCount++;
+                    }
+                    m_innerSize.x = ((parentWidth - totalChildWidth) / cStretchCount) - m_margin.y - m_margin.w;
+                }
+                else if (m_aviableSize.x >= 0.0f && !wrap) {
+                    float totalChildWidth = ComputeSiblingsTotalMarginSize().x;
+                    float parentWidth = m_parentElementPtr->GetContentSize().x;
+
+                    size_t cStretchCount = 0;
+                    for (const auto& c : m_parentElementPtr->GetChildren()) {
+                        if (c->GetAviableSize().x >= 0.0f)
+                            cStretchCount++;
+                    }
+                    m_innerSize.x = ((parentWidth - totalChildWidth) / cStretchCount) - m_margin.y - m_margin.w;
+                }
+                
+                // -------- vertical position ----------
+                // stretch
+                if (m_aviableSize.y < 0.0f && m_innerSize.y <= 0.0f &&
+                    m_parentElementPtr->GetLayoutMinor() == LayoutAlign::Stretch) {
+                    float pSize = m_parentElementPtr->GetContentSize().y;
+                    // totalSize - topMargin - bottomMargin
+                    m_innerSize.y = pSize - m_margin.x - m_margin.z;
+                }
+                else if (m_aviableSize.y >= 0.0f && !wrap) {
+                    float pSize = m_parentElementPtr->GetContentSize().y;
+                    m_innerSize.y = pSize - m_margin.x - m_margin.z;
                 }
                 break;
-            case LayoutDirection::ColumnStart:
-            case LayoutDirection::ColumnEnd:
-                // In Column-Layout strecken Kinder ggf. in X-Richtung
-                if (m_innerSize.x <= 0.0f &&
-                    m_parentElementPtr->GetLayoutContentHor() == LayoutAlign::Stretch) {
-                    m_innerSize.x = m_parentElementPtr->GetContentSize().x;
+            case LayoutDirection::Column:
+                // ---------- horizontal position ----------
+                if (m_aviableSize.y < 0.0f && m_innerSize.y <= 0.0f &&
+                    m_parentElementPtr->GetLayoutMajor() == LayoutAlign::Stretch) {
+                    float totalChildHeight = ComputeSiblingsTotalMarginSize().y;
+                    float parentHeight = m_parentElementPtr->GetContentSize().y;
+                    // Calculates the amount of children that will be stretched
+                    size_t cStretchCount = 0;
+                    for (const auto& c : m_parentElementPtr->GetChildren()) {
+                        if (c->GetSize().y <= 0.0f)
+                            cStretchCount++;
+                    }
+                    m_innerSize.y = ((parentHeight - totalChildHeight) / cStretchCount) - m_margin.x - m_margin.z;
+                }
+                else if (m_aviableSize.y >= 0.0f && !wrap) {
+                    float totalChildHeight = ComputeSiblingsTotalMarginSize().y;
+                    float parentHeight = m_parentElementPtr->GetContentSize().y;
+
+                    size_t cStretchCount = 0;
+                    for (const auto& c : m_parentElementPtr->GetChildren()) {
+                        if (c->GetAviableSize().y >= 0.0f)
+                            cStretchCount++;
+                    }
+                    m_innerSize.y = ((parentHeight - totalChildHeight) / cStretchCount) - m_margin.x - m_margin.z;
+                }
+
+                // -------- vertical position ----------
+                if (m_aviableSize.x < 0.0f && m_innerSize.x <= 0.0f &&
+                    m_parentElementPtr->GetLayoutMinor() == LayoutAlign::Stretch) {
+                    float pSize = m_parentElementPtr->GetContentSize().x;
+                    // (size - parentPadding) - leftMargin - rightMargin
+                    m_innerSize.x = pSize - m_margin.y - m_margin.w;
+                }
+                else if (m_aviableSize.x >= 0.0f && !wrap) {
+                    float pSize = m_parentElementPtr->GetContentSize().x;
+                    m_innerSize.x = pSize - m_margin.y - m_margin.w;
                 }
                 break;
             }
         }
 
         m_sizeDirty = false;
-    }
-
-    void ElementBase::UpdateLocalTransform() {
-        using namespace GLTransform4x4;
-
-        if (m_positionDirty) {
-            UpdateLayoutPosition();
-        }
-
-        if (m_sizeDirty) {
-            UpdateLayoutSize();
-        }
-
-        Vector3 radians = {
-            ConversionUtils::ToRadians(m_rotation.x),
-            ConversionUtils::ToRadians(m_rotation.y),
-            ConversionUtils::ToRadians(m_rotation.z)
-        };
-
-        m_localTransform = Scale(m_innerSize.x, m_innerSize.y, 1.0f);
-        MakeRotateXYZ(m_localTransform, radians);
-        MakeTranslate(m_localTransform, m_innerPosition.x, m_innerPosition.y, 0.0f);
-
-        m_localTransformDirty = false;
     }
 
     void ElementBase::UpdateWorldTransform() {
@@ -516,37 +617,39 @@ namespace EngineCore::UI {
             UpdateLayoutSize();
         }
 
-        if (m_localTransformDirty) {
-            UpdateLocalTransform();
-        }
-
+        Vector2 parentPosition;
+        Vector3 parentRotation;
         if (m_parentElementPtr) {
-            using namespace GLTransform4x4;
-
-            Vector3 radians = {
-                ConversionUtils::ToRadians(m_rotation.x),
-                ConversionUtils::ToRadians(m_rotation.y),
-                ConversionUtils::ToRadians(m_rotation.z)
-            };
-
-            auto vec = m_parentElementPtr->GetLocalSize();
-            m_worldTransform = Scale(m_innerSize.x / vec.x, m_innerSize.y / vec.y, 1.0f);
-            MakeRotateXYZ(m_worldTransform, radians);
-            MakeTranslate(m_worldTransform, m_innerPosition.x, m_innerPosition.y, 0.0f);
-
-            m_worldTransform = m_parentElementPtr->GetWorldModelMatrix() * m_worldTransform;
+            parentPosition = m_parentElementPtr->GetWorldPosition();
+            parentRotation = m_parentElementPtr->GetWorldRotation();
         }
-        else {
-            m_worldTransform = m_localTransform;
-        }
+
+        Vector3 radians = {
+            ConversionUtils::ToRadians(m_rotation.x + parentRotation.x),
+            ConversionUtils::ToRadians(m_rotation.y + parentRotation.y),
+            ConversionUtils::ToRadians(m_rotation.z + parentRotation.z)
+        };
+
+        m_worldTransform = Scale(m_innerSize.x, m_innerSize.y, 1.0f);
+        MakeRotateXYZ(m_worldTransform, radians);
+        MakeTranslate(m_worldTransform, 
+            m_innerPosition.x + parentPosition.x + m_margin.y, 
+            m_innerPosition.y + parentPosition.y + m_margin.x, 0.0f);
 
         m_worldTransformDirty = false;
     }
 
-    void ElementBase::MarkDirty() {
+    void ElementBase::MarkDirtyParent() const {
+        //Marke the parent as dirty so it updates alle the child elements
+        // z.b. if width of this el changed. than the positions needs to recalculatet
+        if (m_parentElementPtr) {
+            m_parentElementPtr->MarkDirty();
+        }
+    }
+
+    void ElementBase::MarkDirty() const {
         m_positionDirty = true;
         m_sizeDirty = true;
-        m_localTransformDirty = true;
         m_worldTransformDirty = true;
         for (auto& child : m_children) {
             child->MarkDirty();
@@ -587,15 +690,43 @@ namespace EngineCore::UI {
                 }
             });
 
-            RegisterAttribute(att::layoutContentHor, [](ElementBase* el, const StyleValue& val) {
-                if (std::string align; val.TryGetValue<std::string>(align, att::layoutContentHor)) {
-                    el->SetLayoutContentHor(ToLayoutAlign(align));
+
+            RegisterAttribute(att::layoutItem, [](ElementBase* el, const StyleValue& val) {
+                if (std::string align; val.TryGetValue<std::string>(align, att::layoutItem)) {
+                    el->SetLayoutMinor(ToLayoutAlign(align));
                 }
             });
 
-            RegisterAttribute(att::layoutContentVer, [](ElementBase* el, const StyleValue& val) {
-                if (std::string align; val.TryGetValue<std::string>(align, att::layoutContentVer)) {
-                    el->SetLayoutContentVer(ToLayoutAlign(align));
+            RegisterAttribute(att::layout, [](ElementBase* el, const StyleValue& val) {
+                if (std::vector<StyleValue> atts; val.TryGetValue<std::vector<StyleValue>>(atts, att::layout)) {  
+                    if (atts.size() == 1) {
+                        if (std::string str; atts[0].TryGetValue(str, att::layout)) {
+                            auto align = ToLayoutAlign(str);
+                            el->SetLayoutMajor(align);
+                            el->SetLayoutMinor(align);
+                        }
+                    }
+                    else if(atts.size() == 2) {
+                        if (std::string str1, str2; 
+                            atts[0].TryGetValue(str1, att::layout) && 
+                            atts[1].TryGetValue(str2, att::layout)) {
+                            el->SetLayoutMajor(ToLayoutAlign(str1));
+                            el->SetLayoutMinor(ToLayoutAlign(str2));
+                        }
+                    }
+
+                }
+            });
+
+            RegisterAttribute(att::layoutMajor, [](ElementBase* el, const StyleValue& val) {
+                if (std::string align; val.TryGetValue<std::string>(align, att::layoutMajor)) {
+                    el->SetLayoutMajor(ToLayoutAlign(align));
+                }
+            });
+
+            RegisterAttribute(att::layoutMinor, [](ElementBase* el, const StyleValue& val) {
+                if (std::string align; val.TryGetValue<std::string>(align, att::layoutMinor)) {
+                    el->SetLayoutMinor(ToLayoutAlign(align));
                 }
             });
 
@@ -669,6 +800,12 @@ namespace EngineCore::UI {
         RegisterAttributes();
     }
 
+
+    void ElementBase::SetParent(ElementBase* elementPtr, size_t indexPos) {
+        m_parentElementPtr = elementPtr;
+        m_listPosition = indexPos - 1;
+    }
+
     void ElementBase::SetStyleAttributes() {
         SetAttributes(m_baseStyle->GetAllState(m_state));
         SetAttributes(m_style->GetAllState(m_state));
@@ -682,6 +819,31 @@ namespace EngineCore::UI {
                 it->second(this, value);
             }
         }
+    }
+
+    Vector2 ElementBase::ComputeSiblingsTotalMarginSize() const {
+        if (!m_parentElementPtr) return Vector2();
+
+        auto& siblings = m_parentElementPtr->GetChildren();
+
+        Vector2 totalSize;
+        for (auto& child : siblings) {
+            // ignors this element 
+            if (child->GetID() != this->m_id) {
+                totalSize += child->GetMarginSize();
+            }
+        }
+        return totalSize;
+    }
+
+    void ElementBase::SetAviableWidth(float width) const {
+        m_aviableSize.x = width;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetAviableHeight(float height) const {
+        m_aviableSize.y = height;
+        MarkDirtyParent();
     }
 
 }

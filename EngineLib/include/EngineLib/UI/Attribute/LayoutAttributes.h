@@ -18,13 +18,10 @@ namespace {
     using namespace EngineCore::UI;
 
     extern const StyleAttribute LayoutAtt;
-    extern const StyleAttribute LayoutHorAtt;
-    extern const StyleAttribute LayoutVerAtt;
+    extern const StyleAttribute LayoutMajorAtt;
+    extern const StyleAttribute LayoutMinorAtt;
 
-    extern const StyleAttribute LayoutContentAtt;
-    extern const StyleAttribute LayoutContentHorAtt;
-    extern const StyleAttribute LayoutContentVerAtt;
-
+    extern const StyleAttribute LayoutItemAtt;
     extern const StyleAttribute LayoutDirectionAtt;
     extern const StyleAttribute LayoutWrapAtt;
 

@@ -6,35 +6,25 @@
 namespace Attribute {
 
 	/*
-	* @brief Layouts the elements inside of a container
-	* @param valueHor:, valueVer: start, center, end, stretch
+	* @brief Layouts the elements inside of a container (major, minor)
+	* @param valueHor:, valueVer: start, center, end, stretch, space-evenly, space-around
 	*/
 	constexpr const char* layout = "layout";
 	/*
-	* @brief Horizontal Layouting of elements inside of a container
+	* @brief Major Layouting of elements inside of a container
+	* @param start, center, end, stretch, space-evenly, space-around
+	*/
+	constexpr const char* layoutMajor = "layoutMajor";
+	/*
+	* @brief Minor layout of elements inside a container
+	* @param start, center, end, stretch, space-evenly, space-around
+	*/
+	constexpr const char* layoutMinor = "layoutMinor";
+	/*
+	* @brief Minor layout aligment with other elements
 	* @param start, center, end, stretch
 	*/
-	constexpr const char* layoutHor = "layoutHor";
-	/*
-	* @brief Vertical Layouting of elements inside of a container
-	* @param start, center, end, stretch
-	*/
-	constexpr const char* layoutVer = "layoutVer";
-	/*
-	* @brief Layouts the whole content inside of a container
-	* @param valueHor:, valueVer: start, center, end, space-evenly, space-around
-	*/
-	constexpr const char* layoutContent = "layoutContent";
-	/*
-	* @brief Horizontal Layouting of the whole content inside of a container
-	* @param start, center, end, space-evenly, space-around
-	*/
-	constexpr const char* layoutContentHor = "layoutContentHor";
-	/*
-	* @brief Vertical Layouting of the whole content inside of a container
-	* @param start, center, end, space-evenly, space-around
-	*/
-	constexpr const char* layoutContentVer = "layoutContentVer";
+	constexpr const char* layoutItem = "layoutItem";
 	/*
 	* @brief Direction in which the elements will arranged
 	* @param row, column, row-start, row-end, column-start, column-end

@@ -221,7 +221,7 @@ namespace EngineCore {
         unsigned int id = elementPtr->GetID().value;
         std::string idStr = (id == ENGINE_INVALID_ID) ? "INVALID_ID" : std::to_string(id);
 
-        bool hasChildren = !elementPtr->GetChildren().empty();
+        bool hasChildren = (elementPtr->GetChildCount() > 0);
 
         // Collect style attributes
         std::string styleStr;

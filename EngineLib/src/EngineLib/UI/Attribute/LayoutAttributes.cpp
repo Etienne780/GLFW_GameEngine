@@ -9,64 +9,48 @@
 
 namespace {
 
+    static std::vector<std::string> layoutAttInputs = {
+        "start", "center", "end", "stretch", "space-evenly", "space-around"
+    };
+
     #pragma region Layout
 
     const StyleAttribute LayoutAtt = AttributeHelper::MakeMultiStringAttribute(
         Attribute::layout,
-        "Layouts the elements inside of a container",
+        "Layouts the elements inside of a container (major, minor)",
         { 1, 2 },
-        { "start", "center", "end", "stretch" },
-        { "start", "start" }
+        layoutAttInputs,
+        { layoutAttInputs[0], layoutAttInputs[0] }
     );
 
-    const StyleAttribute LayoutHorAtt = AttributeHelper::MakeSimpleStringAttribute(
-        Attribute::layoutHor,
-        "Horizontal layout of elements inside a container",
-        { "start", "center", "end", "stretch" },
-        "start"
+    const StyleAttribute LayoutMajorAtt = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutMajor,
+        "Major layout of elements inside a container",
+        layoutAttInputs,
+        layoutAttInputs[0]
     );
 
-    const StyleAttribute LayoutVerAtt = AttributeHelper::MakeSimpleStringAttribute(
-        Attribute::layoutVer,
-        "Vertical layout of elements inside a container",
-        { "start", "center", "end", "stretch" },
-        "start"
+    const StyleAttribute LayoutMinorAtt = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutMinor,
+        "Minor layout of elements inside a container",
+        layoutAttInputs,
+        layoutAttInputs[0]
     );
 
     #pragma endregion
 
-    #pragma region LayoutContent
-
-    const StyleAttribute LayoutContentAtt = AttributeHelper::MakeMultiStringAttribute(
-        Attribute::layoutContent,
-        "Layouts the whole content inside of a container",
-        { 1, 2 },
-        { "start", "center", "end", "space-evenly", "space-around" },
-        { "start", "start" }
+    const StyleAttribute LayoutItemAtt = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutItem,
+        "Minor layout aligment with other elements",
+        { "start", "center", "end", "stretch" },
+        { "start" }
     );
-
-
-    const StyleAttribute LayoutContentHorAtt = AttributeHelper::MakeSimpleStringAttribute(
-        Attribute::layoutContentHor,
-        "Horizontal Layouting of the whole content inside of a container",
-        { "start", "center", "end", "space-evenly", "space-around"},
-        "start"
-    );
-
-    const StyleAttribute LayoutContentVerAtt = AttributeHelper::MakeSimpleStringAttribute(
-        Attribute::layoutContentVer,
-        "Vertical Layouting of the whole content inside of a container",
-        { "start", "center", "end", "space-evenly", "space-around"},
-        "start"
-    );
-
-    #pragma endregion
 
     const StyleAttribute LayoutDirectionAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutDirection,
         "Direction in which the elements will arranged",
-        { "row", "column", "row-start", "row-end", "column-start", "column-end"},
-        "row-start"
+        { "row", "column"},
+        "row"
     );
 
     const StyleAttribute LayoutWrapAtt = AttributeHelper::MakeSimpleStringAttribute(
@@ -82,13 +66,10 @@ namespace EngineCore::UI::Init {
 
     const bool regLayoutAtt() {
         StyleAttribute::RegisterAttribute(LayoutAtt);
-        StyleAttribute::RegisterAttribute(LayoutHorAtt);
-        StyleAttribute::RegisterAttribute(LayoutVerAtt);
+        StyleAttribute::RegisterAttribute(LayoutMajorAtt);
+        StyleAttribute::RegisterAttribute(LayoutMinorAtt);
 
-        StyleAttribute::RegisterAttribute(LayoutContentAtt);
-        StyleAttribute::RegisterAttribute(LayoutContentHorAtt);
-        StyleAttribute::RegisterAttribute(LayoutContentVerAtt);
-
+        StyleAttribute::RegisterAttribute(LayoutItemAtt);
         StyleAttribute::RegisterAttribute(LayoutDirectionAtt);
         StyleAttribute::RegisterAttribute(LayoutWrapAtt);
         return true;

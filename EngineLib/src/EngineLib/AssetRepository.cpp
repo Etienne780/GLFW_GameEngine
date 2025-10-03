@@ -275,20 +275,20 @@ namespace EngineCore {
                 uniform vec4 uBackgroundColor;
                 uniform vec4 uBorderColor;
                 uniform vec4 uBorderRadius;   // top-left, top-right, bottom-right, bottom-left
-                uniform vec4 uBorderWidth;
+                uniform vec4 uBorderWidth;    // top, right, bottom, left
                 uniform vec2 uSize;           // width, height in pixels
                 
                 void main() {
                     vec2 coord = vTexCoord * uSize;
                     vec4 color = uBackgroundColor;
                 
-                    // Determine distance to each corner center
+                    // Corner centers
                     vec2 tl = vec2(uBorderRadius.x, uSize.y - uBorderRadius.x);
                     vec2 tr = vec2(uSize.x - uBorderRadius.y, uSize.y - uBorderRadius.y);
                     vec2 br = vec2(uSize.x - uBorderRadius.z, uBorderRadius.z);
                     vec2 bl = vec2(uBorderRadius.w, uBorderRadius.w);
                 
-                    // Corners: discard pixels outside radius
+                    // Clip corners outside radius
                     if(coord.x < tl.x && coord.y > tl.y) {
                         if(length(coord - tl) > uBorderRadius.x) discard;
                     } else if(coord.x > tr.x && coord.y > tr.y) {
@@ -299,38 +299,38 @@ namespace EngineCore {
                         if(length(coord - bl) > uBorderRadius.w) discard;
                     }
                 
-                    // Border check: hard edges
                     bool inBorder = false;
                 
-                    // Top border
-                    if(coord.y >= uSize.y - uBorderWidth) inBorder = true;
-                    // Bottom border
-                    if(coord.y <= uBorderWidth) inBorder = true;
-                    // Left border
-                    if(coord.x <= uBorderWidth) inBorder = true;
-                    // Right border
-                    if(coord.x >= uSize.x - uBorderWidth) inBorder = true;
+                    // Top border (only if > 0)
+                    if(uBorderWidth.x > 0.0 && coord.y >= uSize.y - uBorderWidth.x) inBorder = true;
+                    // Right border (only if > 0)
+                    if(uBorderWidth.y > 0.0 && coord.x >= uSize.x - uBorderWidth.y) inBorder = true;
+                    // Bottom border (only if > 0)
+                    if(uBorderWidth.z > 0.0 && coord.y <= uBorderWidth.z) inBorder = true;
+                    // Left border (only if > 0)
+                    if(uBorderWidth.w > 0.0 && coord.x <= uBorderWidth.w) inBorder = true;
                 
-                    // Corners overwrite border check to match radius
-                    if(coord.x < tl.x && coord.y > tl.y) {
+                    // Corner handling with border radius and per-corner width
+                    if(coord.x < tl.x && coord.y > tl.y && uBorderWidth.x > 0.0 && uBorderWidth.w > 0.0) {
                         float dist = length(coord - tl);
-                        inBorder = (dist >= uBorderRadius.x - uBorderWidth && dist <= uBorderRadius.x);
-                    } else if(coord.x > tr.x && coord.y > tr.y) {
+                        inBorder = (dist >= uBorderRadius.x - max(uBorderWidth.x, uBorderWidth.w) && dist <= uBorderRadius.x);
+                    } else if(coord.x > tr.x && coord.y > tr.y && uBorderWidth.x > 0.0 && uBorderWidth.y > 0.0) {
                         float dist = length(coord - tr);
-                        inBorder = (dist >= uBorderRadius.y - uBorderWidth && dist <= uBorderRadius.y);
-                    } else if(coord.x > br.x && coord.y < br.y) {
+                        inBorder = (dist >= uBorderRadius.y - max(uBorderWidth.x, uBorderWidth.y) && dist <= uBorderRadius.y);
+                    } else if(coord.x > br.x && coord.y < br.y && uBorderWidth.z > 0.0 && uBorderWidth.y > 0.0) {
                         float dist = length(coord - br);
-                        inBorder = (dist >= uBorderRadius.z - uBorderWidth && dist <= uBorderRadius.z);
-                    } else if(coord.x < bl.x && coord.y < bl.y) {
+                        inBorder = (dist >= uBorderRadius.z - max(uBorderWidth.z, uBorderWidth.y) && dist <= uBorderRadius.z);
+                    } else if(coord.x < bl.x && coord.y < bl.y && uBorderWidth.z > 0.0 && uBorderWidth.w > 0.0) {
                         float dist = length(coord - bl);
-                        inBorder = (dist >= uBorderRadius.w - uBorderWidth && dist <= uBorderRadius.w);
+                        inBorder = (dist >= uBorderRadius.w - max(uBorderWidth.z, uBorderWidth.w) && dist <= uBorderRadius.w);
                     }
                 
-                    if(inBorder) color = uBorderColor;
+                    if(inBorder) {
+                        color = uBorderColor;
+                    }
                 
                     FragColor = color;
                 }
-
             )";
             g_engineShaderDefaultUIID = rm->AddShaderFromMemory(vert, frag);
         }

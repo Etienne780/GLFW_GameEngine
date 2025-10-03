@@ -87,6 +87,14 @@ namespace EngineCore::UI {
 			else if (outUnit == "%h") {
 				outValue = element.GetParentHeight() * outValue / 100.0f;
 			}
+			else if (outUnit == "%aw") {
+				element.SetAviableWidth(outValue);
+				outValue = 0.0f;
+			}
+			else if (outUnit == "%ah") {
+				element.SetAviableHeight(outValue);
+				outValue = 0.0f;
+			}
 			else if (outUnit == "vh") {
 				outValue = element.GetViewportHeight() * outValue / 100.0f;
 			}
@@ -95,7 +103,7 @@ namespace EngineCore::UI {
 			}
 			return true;
 		}
-		Log::Warn("StyleAttribute: Invalid unit in style '{}', input:'{}'", 
+		Log::Warn("AttributeHelper: Invalid unit in style '{}', input:'{}'", 
 			element.GetStyle()->GetName(), input);
 		return false;
 	}
@@ -136,10 +144,10 @@ namespace EngineCore::UI {
 						return StyleValue(f);
 				}
 				if(errorType)
-					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', '{}' is not a valid unit, input:'{}' invalid!", 
+					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', '{}' is not a valid unit, input:'{}' invalid!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), unit, val);
 				else
-					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', input:'{}' invalid!", 
+					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', input:'{}' invalid!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				return styleAtt->GetFallbackValue();
 			}
@@ -158,7 +166,7 @@ namespace EngineCore::UI {
 				std::string clearString = FormatUtils::removeSpaces(val);
 				size_t pos = clearString.find('#');
 				if (pos == std::string::npos) {
-					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', '#' is missing, input:'{}' invalid!", 
+					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', '#' is missing, input:'{}' invalid!", 
 						element.GetStyle()->GetName(), styleAtt->GetName(), val);
 					return styleAtt->GetFallbackValue();
 				}
@@ -190,10 +198,10 @@ namespace EngineCore::UI {
 				}
 
 				if(errorType)
-					Log::Warn("StyleAttribute: {}, invalid hex symbols in style '{}', input:'{}'!", 
+					Log::Warn("AttributeHelper: {}, invalid hex symbols in style '{}', input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				else 
-					Log::Warn("StyleAttribute: {}, invalid color format in style '{}', expected hex string with 2, 6 or 8 digits after '#', input:'{}'!", 
+					Log::Warn("AttributeHelper: {}, invalid color format in style '{}', expected hex string with 2, 6 or 8 digits after '#', input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				return styleAtt->GetFallbackValue();
 			}
@@ -251,10 +259,10 @@ namespace EngineCore::UI {
 				}
 
 				if (errorType)
-					Log::Warn("StyleAttribute: '{}' could not calculate value in style '{}', invalid token in input '{}'",
+					Log::Warn("AttributeHelper: '{}' could not calculate value in style '{}', invalid token in input '{}'",
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				else
-					Log::Warn("StyleAttribute: '{}' could not calculate value in style '{}', invalid argument count, input '{}'",
+					Log::Warn("AttributeHelper: '{}' could not calculate value in style '{}', invalid argument count, input '{}'",
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 
 				return styleAtt->GetFallbackValue();
@@ -284,6 +292,7 @@ namespace EngineCore::UI {
 		{
 		case 1:
 			fallback = StyleValue((defaultValue.empty()) ? 0.0f : defaultValue[0]);
+			break;
 		case 2: {
 			Vector2 vec;
 			if (defaultValue.size() == 1) {
@@ -293,6 +302,7 @@ namespace EngineCore::UI {
 				vec.Set(defaultValue[0], defaultValue[1]);
 			}
 			fallback = StyleValue(vec);
+			break;
 		}
 		case 3: {
 			Vector3 vec;
@@ -306,6 +316,7 @@ namespace EngineCore::UI {
 				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2]);
 			}
 			fallback = StyleValue(vec);
+			break;
 		}
 		case 4: {
 			Vector4 vec;
@@ -322,11 +333,13 @@ namespace EngineCore::UI {
 				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[3]);
 			}
 			fallback = StyleValue(vec);
+			break;
 		}
 		default:
 			Log::Error("AttributeHelper: Attribute '{}' has the invalid maxInput({}), maxInput needs to be 1, 2, 3 or 4!",
 				name, maxInput);
 			fallback = StyleValue(0.0f);
+			break;
 		}
 
 		return StyleAttribute(name, description, fallback, { "nummber" },
@@ -481,13 +494,13 @@ namespace EngineCore::UI {
 				}
 
 				if (errorType == 2)
-					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', invalid unit, input:'{}'!", 
+					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', invalid unit, input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				else if (errorType == 1)
-					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', invalid number, input:'{}'!", 
+					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', invalid number, input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 				else
-					Log::Warn("StyleAttribute: {} could not calculate value in style '{}', invalid argument count max arguments '{}', input:'{}'!", 
+					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', invalid argument count max arguments '{}', input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), maxInput, val);
 
 				return styleAtt->GetFallbackValue();

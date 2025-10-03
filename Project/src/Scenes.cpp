@@ -16,7 +16,7 @@ void SetupUI() {
 	defaultStyle->Set(Attribute::borderColor, "#00ff00");
 	defaultStyle->Set(Attribute::width, "50%w");
 	defaultStyle->Set(Attribute::height, "50%h");
-	defaultStyle->Set(Attribute::backgroundColor, "#ffffff");
+	defaultStyle->Set(Attribute::backgroundColor, "#00ffff");
 	defaultStyle->Set(State::Hovered, Attribute::backgroundColor, "#880088");
 	defaultStyle->Set(State::Hovered, Attribute::borderRadius, "50px");
 	defaultStyle->Set(State::Pressed, Attribute::backgroundColor, "#0000ff");
@@ -31,15 +31,23 @@ void SetupUI() {
 	otherStyle->Set(Attribute::width, "90%w");
 	otherStyle->Set(Attribute::height, "90%h");
 
-	auto otherStyle2 = Style::Create("OtherStyle2", otherStyle);
+	auto otherStyle2 = Style::Create("OtherStyle2");
 	otherStyle2->Set(Attribute::backgroundColor, "#ffff00");
+	otherStyle2->Set(Attribute::width, "100%aw");
+	otherStyle2->Set(Attribute::height, "100%ah");
 
 	// UI::SetDebug(false);
 	UI::Begin<Panel>(defaultStyle); {
 
 		UI::Begin<Panel>(style2); {
 			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
-			UI::Add<Panel>(otherStyle2)->SetOnClick([] { Log::Info("Pressed"); });
+		}
+		UI::End();
+
+		UI::Add<Panel>(otherStyle2);
+
+		UI::Begin<Panel>(style2); {
+			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
 		}
 		UI::End();
 	}
