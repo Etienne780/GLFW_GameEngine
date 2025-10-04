@@ -1,4 +1,5 @@
 #pragma once
+#include <CoreLib/Math/Vector2.h>
 
 namespace EngineCore::UI {
     class ElementBase;
@@ -8,8 +9,8 @@ namespace EngineCore::UI {
         ILayoutCalculator() = default;
         virtual ~ILayoutCalculator() = default;
 
-        virtual void CalculatePosition(ElementBase* element) = 0;
-        virtual void CalculateSize(ElementBase* element) = 0;
+        virtual Vector2 CalculatePosition(ElementBase* element) = 0;
+        virtual Vector2 CalculateSize(ElementBase* element) = 0;
     };
 
 }

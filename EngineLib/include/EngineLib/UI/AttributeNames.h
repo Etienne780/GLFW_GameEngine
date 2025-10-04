@@ -17,7 +17,7 @@ namespace Attribute {
 	constexpr const char* layoutMajor = "layoutMajor";
 	/*
 	* @brief Minor layout of elements inside a container
-	* @param start, center, end, stretch, space-evenly, space-around
+	* @param start, center, end, stretch
 	*/
 	constexpr const char* layoutMinor = "layoutMinor";
 	/*
@@ -27,7 +27,7 @@ namespace Attribute {
 	constexpr const char* layoutItem = "layoutItem";
 	/*
 	* @brief Direction in which the elements will arranged
-	* @param row, column, row-start, row-end, column-start, column-end
+	* @param row, column
 	*/
 	constexpr const char* layoutDirection = "layoutDirection";
 	/*

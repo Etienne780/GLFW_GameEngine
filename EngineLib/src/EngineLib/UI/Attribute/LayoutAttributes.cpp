@@ -40,7 +40,7 @@ namespace {
     const StyleAttribute LayoutMinorAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutMinor,
         "Minor layout of elements inside a container",
-        layoutAttInputs,
+        { "start", "center", "end", "stretch" },
         layoutAttInputs[0]
     );
 
@@ -56,7 +56,7 @@ namespace {
     const StyleAttribute LayoutDirectionAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutDirection,
         "Direction in which the elements will arranged",
-        { "row", "column"},
+        { "row", "column" },
         "row"
     );
 

@@ -21,11 +21,8 @@ namespace EngineCore {
 
 namespace EngineCore::UI {
 
-    class ILayoutCalculator;
-
     class ElementBase {
     friend class UIManager;
-    friend class ILayoutCalculator;
     public:
         using Callback = std::function<void()>;
 
@@ -79,6 +76,59 @@ namespace EngineCore::UI {
         float GetViewportWidth() const;
         float GetViewportHeight() const;
 
+        LayoutType GetLayoutType() const;
+        Flex::LayoutDirection GetLayoutDirection() const;
+        Flex::LayoutWrap GetLayoutWrap() const;
+        Flex::LayoutAlign GetLayoutMajor() const;
+        Flex::LayoutAlign GetLayoutMinor() const;
+        Flex::LayoutAlign GetLayoutItem() const;
+
+        // aviable
+        Vector2 GetAviableSize();
+        // size - padding
+        Vector2 GetContentSize();
+        // style size
+        Vector2 GetStyleSize();
+        // content + border
+        Vector2 GetBorderSize();
+        // content + border + margin
+        Vector2 GetMarginSize();
+
+        Vector3 GetWorldRotation();
+
+        ElementBase* GetParent() const;
+        /**
+        * @biref gets the position of this children in the parent list
+        */
+        size_t GetListPosition() const;
+
+        const Vector4& GetMargin() const;
+        float GetMarginTop() const;
+        float GetMarginLeft() const;
+        float GetMarginBottom() const;
+        float GetMarginRight() const;
+        const Vector4& GetPadding() const;
+        float GetPaddingTop() const;
+        float GetPaddingLeft() const;
+        float GetPaddingBottom() const;
+        float GetPaddingRigth() const;
+
+        const Vector4& GetBackgroundColor() const;
+        const Vector4& GetBorderColor() const;
+        const Vector4& GetBorderRadius() const;
+        const Vector4& GetBorderSize() const;
+        float GetBorderTop() const;
+        float GetBorderLeft() const;
+        float GetBorderBottom() const;
+        float GetBorderRight() const;
+        float GetDuration() const;
+
+        /**
+        * @brief Computes the total margin size of all sibling elements except this element.
+        * @return A Vector2 representing the summed margin size of the siblings.
+        */
+        Vector2 ComputeSiblingsTotalMarginSize() const;
+
         State GetState() const;
 
         size_t GetChildCount() const;
@@ -122,11 +172,6 @@ namespace EngineCore::UI {
         */
         virtual void ExtendElementBaseStyle(std::shared_ptr<Style> baseStyle) {};
 
-        ElementBase* GetParent() const;
-        /**
-        * @biref gets the position of this children in the parent list
-        */
-        size_t GetListPosition() const;
         void SetState(State state);
 
         void SetLayoutType(LayoutType layoutType);
@@ -135,6 +180,7 @@ namespace EngineCore::UI {
         void SetLayoutMajor(Flex::LayoutAlign align);
         void SetLayoutMinor(Flex::LayoutAlign align);
         void SetLayoutItem(Flex::LayoutAlign align);
+
 
         /**
         * @brief Sets the local position of the element using a Vector2.
@@ -164,29 +210,29 @@ namespace EngineCore::UI {
         void SetLocalRotation(float x, float y, float z);
 
         /**
-        * @brief Sets the local size of the element using a Vector2.
+        * @brief Sets the style size of the element using a Vector2.
         * @param size The new size (width, height).
         */
-        void SetLocalSize(const Vector2& size);
+        void SetStyleSize(const Vector2& size);
 
         /**
-        * @brief Sets the local size of the element using individual width and height values.
+        * @brief Sets the style size of the element using individual width and height values.
         * @param width The new width.
         * @param height The new height.
         */
-        void SetLocalSize(float width, float height);
+        void SetStyleSize(float width, float height);
 
         /**
-        * @brief Sets only the local width of the element.
+        * @brief Sets only the style width of the element.
         * @param width The new width.
         */
-        void SetLocalWidth(float width);
+        void SetStyleWidth(float width);
 
         /**
-        * @brief Sets only the local height of the element.
+        * @brief Sets only the style height of the element.
         * @param height The new height.
         */
-        void SetLocalHeight(float height);
+        void SetStyleHeight(float height);
 
         void SetBackgroundColor(const Vector4& color);
         void SetBorderColor(const Vector4& color);
@@ -200,34 +246,6 @@ namespace EngineCore::UI {
         void SetBorderSize(const Vector4& vec);
         void SetBorderSize(float top, float right, float bottom, float left);
         void SetDuration(float duration);
-
-        LayoutType GetLayoutType() const;
-        Flex::LayoutDirection GetLayoutDirection() const;
-        Flex::LayoutWrap GetLayoutWrap() const;
-        Flex::LayoutAlign GetLayoutMajor() const;
-        Flex::LayoutAlign GetLayoutMinor() const;
-        Flex::LayoutAlign GetLayoutItem() const;
-
-        // aviable
-        Vector2 GetAviableSize();
-        // size - padding
-        Vector2 GetContentSize();   
-        // content + border
-        Vector2 GetBorderSize();    
-        // content + border + margin
-        Vector2 GetMarginSize();   
-
-        Vector3 GetWorldRotation();
-
-        const Vector4& GetBackgroundColor() const;
-        const Vector4& GetBorderColor() const;
-        const Vector4& GetBorderRadius() const;
-        const Vector4& GetBorderSize() const;
-        float GetBorderTop() const;
-        float GetBorderLeft() const;
-        float GetBorderBottom() const;
-        float GetBorderRight() const;
-        float GetDuration() const;
 
         /*
         * @brief Checks whether a given point lies within the bounding box of this element.
@@ -344,12 +362,6 @@ namespace EngineCore::UI {
         std::shared_ptr<Style> GetElementBaseStyle();
         void SetAvailableWidth(float width) const;
         void SetAvailableHeight(float height) const;
-
-        /**
-        * @brief Computes the total margin size of all sibling elements except this element.
-        * @return A Vector2 representing the summed margin size of the siblings.
-        */
-        Vector2 ComputeSiblingsTotalMarginSize() const;
     };
 
     template <typename Derived>

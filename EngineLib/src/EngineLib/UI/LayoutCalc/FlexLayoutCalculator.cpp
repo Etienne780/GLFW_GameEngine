@@ -5,21 +5,56 @@
 
 namespace EngineCore::UI {
 
-    void FlexLayoutCalculator::CalculatePosition(ElementBase* element) {
+    Vector2 FlexLayoutCalculator::CalculatePosition(ElementBase* element) {
+        // position in the child list of the parent
+        size_t listPosition = element->GetListPosition();
+
+        return { 0,0 };
+    }
+
+    Vector2 FlexLayoutCalculator::CalculateSize(ElementBase* element) {
+        ElementBase* parent = element->GetParent();
+        auto parentLayoutDir = parent->GetLayoutDirection();
+        bool isParentLayoutDirRow = parentLayoutDir == Flex::LayoutDirection::Row;
+        bool parentWrap = (parent->GetLayoutWrap() == Flex::LayoutWrap::Wrap);
+        Axis major = (isParentLayoutDirRow) ? Axis::X : Axis::Y;
+        Axis minor = (!isParentLayoutDirRow) ? Axis::X : Axis::Y;
+
+        float parentSizeMajor = (major == Axis::X) ? parent->GetContentSize().x : parent->GetContentSize().y;
+        float parentSizeMinor = (major != Axis::X) ? parent->GetContentSize().x : parent->GetContentSize().y;
+        
+        float totalSizeMajor = (major == Axis::X) ? element->ComputeSiblingsTotalMarginSize().x : element->ComputeSiblingsTotalMarginSize().y;
+        float majorAvaibleSize = (isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
+        float minorAvaibleSize = (!isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
+
+        Vector4 margin = element->GetMargin();
+        float marginMajorStart = (isParentLayoutDirRow) ? margin.y : margin.x;
+        float marginMajorEnd = (isParentLayoutDirRow) ? margin.w : margin.z;
+        float marginMinorStart = (!isParentLayoutDirRow) ? margin.y : margin.x;
+        float marginMinorEnd = (!isParentLayoutDirRow) ? margin.w : margin.z;
+
+        AxisLayout majorAxis{ major, parent->GetLayoutMajor(), parentWrap, parentSizeMajor, totalSizeMajor, marginMajorStart, marginMajorEnd, majorAvaibleSize };
+        AxisLayout minorAxis{ minor, parent->GetLayoutMinor(), parentWrap, parentSizeMinor, 0, marginMinorStart, marginMinorEnd, minorAvaibleSize };
+    
+        // Calculates the amount of children that will be stretched
+        size_t cStretchCountMajor = 0;
+        for (const auto& c : parent->GetChildren()) {
+            if (c->GetStyleSize().x <= 0.0f)
+                cStretchCountMajor++;
+        }
+
+        return { majorAxis.CalculateSize(cStretchCountMajor),
+            minorAxis.CalculateSize(0) };
+    }
+
+    float FlexLayoutCalculator::AxisLayout::CalculatePosition(float previousEndPos = 0.0f) const {
         
     }
 
-    void FlexLayoutCalculator::CalculateSize(ElementBase* element) {
+    float FlexLayoutCalculator::AxisLayout::CalculateSize(size_t stretchCount) const {
         
     }
 
-    void FlexLayoutCalculator::CalculateMajorAxis(ElementBase* element, bool wrap) {
-        
-    }
-
-    void FlexLayoutCalculator::CalculateMinorAxis(ElementBase* element, bool wrap) {
-        
-    }
 }
 /*
 void ElementBase::UpdateLayoutPosition() {

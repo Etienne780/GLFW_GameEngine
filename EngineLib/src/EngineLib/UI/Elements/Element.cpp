@@ -260,21 +260,21 @@ namespace EngineCore::UI {
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLocalSize(const Vector2& scale) {
-        SetLocalSize(scale.x, scale.y);
+    void ElementBase::SetStyleSize(const Vector2& scale) {
+        SetStyleSize(scale.x, scale.y);
     }
 
-    void ElementBase::SetLocalSize(float x, float y) {
+    void ElementBase::SetStyleSize(float x, float y) {
         m_styleSize.Set(x, y);
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLocalWidth(float x) {
+    void ElementBase::SetStyleWidth(float x) {
         m_styleSize.x = x;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLocalHeight(float y) {
+    void ElementBase::SetStyleHeight(float y) {
         m_styleSize.y = y;
         MarkDirtyParent();
     }
@@ -393,6 +393,10 @@ namespace EngineCore::UI {
         );
     }
 
+    Vector2 ElementBase::GetStyleSize() {
+        return m_styleSize;
+    }
+
     Vector2 ElementBase::GetBorderSize() {
         Vector2 size = GetLocalSize();
         return Vector2(
@@ -411,6 +415,46 @@ namespace EngineCore::UI {
 
     Vector3 ElementBase::GetWorldRotation() {
         return m_rotation;
+    }
+
+    const Vector4& ElementBase::GetMargin() const {
+        return m_margin;
+    }
+
+    float ElementBase::GetMarginTop() const {
+        return m_margin.x;
+    }
+
+    float ElementBase::GetMarginLeft() const {
+        return m_margin.y;
+    }
+
+    float ElementBase::GetMarginBottom() const {
+        return m_margin.z;
+    }
+
+    float ElementBase::GetMarginRight() const {
+        return m_margin.w;
+    }
+
+    const Vector4& ElementBase::GetPadding() const {
+        return m_padding;
+    }
+
+    float ElementBase::GetPaddingTop() const {
+        return m_padding.x;
+    }
+
+    float ElementBase::GetPaddingLeft() const {
+        return m_padding.y;
+    }
+
+    float ElementBase::GetPaddingBottom() const {
+        return m_padding.z;
+    }
+
+    float ElementBase::GetPaddingRigth() const {
+        return m_padding.w;
     }
 
     const Vector4& ElementBase::GetBackgroundColor() const {
@@ -486,10 +530,10 @@ namespace EngineCore::UI {
 
         switch (m_parentElementPtr->GetLayoutType()) {
         case LayoutType::Flex:
-            s_flexCalculator.CalculatePosition(this);
+            m_layoutPosition = s_flexCalculator.CalculatePosition(this);
             break;
         case LayoutType::Grid:
-            s_gridCalculator.CalculatePosition(this);
+            m_layoutPosition = s_gridCalculator.CalculatePosition(this);
             break;
         case LayoutType::None:
             break;
@@ -508,10 +552,10 @@ namespace EngineCore::UI {
 
         switch (m_parentElementPtr->GetLayoutType()) {
         case LayoutType::Flex:
-            s_flexCalculator.CalculateSize(this);
+            m_layoutSize = s_flexCalculator.CalculateSize(this);
             break;
         case LayoutType::Grid:
-            s_gridCalculator.CalculateSize(this);
+            m_layoutSize = s_gridCalculator.CalculateSize(this);
             break;
         case LayoutType::None:
             m_padding.Set(0, 0, 0, 0);
@@ -661,7 +705,7 @@ namespace EngineCore::UI {
                     if (u == StyleUnit::Unit::Percent_A)
                         el->SetAvailableWidth(f);
                     else
-                        el->SetLocalWidth(f);
+                        el->SetStyleWidth(f);
                 }
             });
 
@@ -672,7 +716,7 @@ namespace EngineCore::UI {
                     if (u == StyleUnit::Unit::Percent_A)
                         el->SetAvailableHeight(f);
                     else
-                        el->SetLocalHeight(f);
+                        el->SetStyleHeight(f);
                 }
             });
 

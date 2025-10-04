@@ -8,8 +8,8 @@ namespace EngineCore::UI {
         GridLayoutCalculator() = default;
         ~GridLayoutCalculator() = default;
 
-        void CalculatePosition(ElementBase* element) override;
-        void CalculateSize(ElementBase* element) override;
+        Vector2 CalculatePosition(ElementBase* element) override;
+        Vector2 CalculateSize(ElementBase* element) override;
     };
 
 }
