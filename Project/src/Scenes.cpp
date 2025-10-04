@@ -13,6 +13,7 @@ void SetupUI() {
 	UI::SetUIRenderLayer(uiLayer);
 
 	auto defaultStyle = Style::Create("DefaultStyle");
+	defaultStyle->Set(Attribute::borderRadius, "20px 30px 40px 10px");
 	defaultStyle->Set(Attribute::borderColor, "#00ff00");
 	defaultStyle->Set(Attribute::width, "50%w");
 	defaultStyle->Set(Attribute::height, "50%h");
@@ -33,8 +34,8 @@ void SetupUI() {
 
 	auto otherStyle2 = Style::Create("OtherStyle2");
 	otherStyle2->Set(Attribute::backgroundColor, "#ffff00");
-	otherStyle2->Set(Attribute::width, "100%aw");
-	otherStyle2->Set(Attribute::height, "100%ah");
+	otherStyle2->Set(Attribute::width, "100%a");
+	otherStyle2->Set(Attribute::height, "100%a");
 
 	// UI::SetDebug(false);
 	UI::Begin<Panel>(defaultStyle); {

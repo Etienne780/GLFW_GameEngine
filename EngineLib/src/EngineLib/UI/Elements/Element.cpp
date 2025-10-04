@@ -213,27 +213,27 @@ namespace EngineCore::UI {
         SetStyleAttributes();
 	}
 
-    void ElementBase::SetLayoutDirection(LayoutDirection d) { 
+    void ElementBase::SetLayoutDirection(FlexLayoutDirection d) { 
         m_layoutDirection = d;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutWrap(LayoutWrap w) { 
+    void ElementBase::SetLayoutWrap(FlexLayoutWrap w) { 
         m_layoutWrap = w;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutMajor(LayoutAlign a) { 
+    void ElementBase::SetLayoutMajor(FlexLayoutAlign a) { 
         m_layoutMajor = a; 
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutMinor(LayoutAlign a) { 
+    void ElementBase::SetLayoutMinor(FlexLayoutAlign a) { 
         m_layoutMinor = a;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutItem(LayoutAlign a) {
+    void ElementBase::SetLayoutItem(FlexLayoutAlign a) {
         m_layoutItem = a;
         MarkDirtyParent();
     }
@@ -349,23 +349,23 @@ namespace EngineCore::UI {
         m_duration = duration;
     }
 
-    LayoutDirection ElementBase::GetLayoutDirection() const {
+    FlexLayoutDirection ElementBase::GetLayoutDirection() const {
         return m_layoutDirection;
     }
 
-    LayoutWrap ElementBase::GetLayoutWrap() const {
+    FlexLayoutWrap ElementBase::GetLayoutWrap() const {
         return m_layoutWrap;
     }
 
-    LayoutAlign ElementBase::GetLayoutMajor() const {
+    FlexLayoutAlign ElementBase::GetLayoutMajor() const {
         return m_layoutMajor;
     }
 
-    LayoutAlign ElementBase::GetLayoutMinor() const {
+    FlexLayoutAlign ElementBase::GetLayoutMinor() const {
         return m_layoutMinor;
     }
 
-    LayoutAlign ElementBase::GetLayoutItem() const {
+    FlexLayoutAlign ElementBase::GetLayoutItem() const {
         return m_layoutItem;
     }
 
@@ -473,38 +473,38 @@ namespace EngineCore::UI {
 
     void ElementBase::UpdateLayoutPosition() {
         if (m_parentElementPtr) {
-            bool wrap = (m_parentElementPtr->GetLayoutWrap() == LayoutWrap::Wrap);
-            LayoutAlign alignMajor = m_parentElementPtr->GetLayoutMajor();
-            LayoutAlign alignMinor = m_parentElementPtr->GetLayoutMinor();
+            bool wrap = (m_parentElementPtr->GetLayoutWrap() == FlexLayoutWrap::Wrap);
+            FlexLayoutAlign alignMajor = m_parentElementPtr->GetLayoutMajor();
+            FlexLayoutAlign alignMinor = m_parentElementPtr->GetLayoutMinor();
             auto& siblings = m_parentElementPtr->GetChildren();
 
             float xPosition = 0.0f;
             float yPosition = 0.0f;
 
             switch (m_parentElementPtr->GetLayoutDirection()) {
-            case LayoutDirection::Row: {
+            case FlexLayoutDirection::Row: {
                 // ---------- horizontal position ----------
                 // if layouting start and not first element
-                if (alignMajor == LayoutAlign::Start &&
+                if (alignMajor == FlexLayoutAlign::Start &&
                     m_listPosition > 0) {
                     auto preElement = m_parentElementPtr->GetChild(m_listPosition - 1);
                     xPosition = preElement->GetLocalPosition().x + preElement->GetMarginSize().x;
                 }
 
                 // -------- vertical position ----------
-                if (alignMinor == LayoutAlign::Center && !wrap) {
+                if (alignMinor == FlexLayoutAlign::Center && !wrap) {
                     float parentHeight = m_parentElementPtr->GetContentSize().y;
                     yPosition = parentHeight / 2 - GetMarginSize().y / 2;
                 }
 
-                if (alignMinor == LayoutAlign::End && !wrap) {
+                if (alignMinor == FlexLayoutAlign::End && !wrap) {
                     float parentHeight = m_parentElementPtr->GetContentSize().y;
                     yPosition = parentHeight - GetMarginSize().y;
                 }
 
                 break;
             }
-            case LayoutDirection::Column: {
+            case FlexLayoutDirection::Column: {
                 break;
             }
             }
@@ -519,14 +519,14 @@ namespace EngineCore::UI {
         // stop stretch calculations if wrap is turned on
 
         if (m_parentElementPtr) {
-            bool wrap = (m_parentElementPtr->GetLayoutWrap() == LayoutWrap::Wrap);
+            bool wrap = (m_parentElementPtr->GetLayoutWrap() == FlexLayoutWrap::Wrap);
 
             switch (m_parentElementPtr->GetLayoutDirection()) {
-            case LayoutDirection::Row:
+            case FlexLayoutDirection::Row:
                 // ---------- horizontal position ----------
                 // stretch
                 if (m_aviableSize.x < 0.0f && m_innerSize.x <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMajor() == LayoutAlign::Stretch) {
+                    m_parentElementPtr->GetLayoutMajor() == FlexLayoutAlign::Stretch) {
                     float totalChildWidth = ComputeSiblingsTotalMarginSize().x;
                     float parentWidth = m_parentElementPtr->GetContentSize().x;
                     // Calculates the amount of children that will be stretched
@@ -552,7 +552,7 @@ namespace EngineCore::UI {
                 // -------- vertical position ----------
                 // stretch
                 if (m_aviableSize.y < 0.0f && m_innerSize.y <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMinor() == LayoutAlign::Stretch) {
+                    m_parentElementPtr->GetLayoutMinor() == FlexLayoutAlign::Stretch) {
                     float pSize = m_parentElementPtr->GetContentSize().y;
                     // totalSize - topMargin - bottomMargin
                     m_innerSize.y = pSize - m_margin.x - m_margin.z;
@@ -562,10 +562,10 @@ namespace EngineCore::UI {
                     m_innerSize.y = pSize - m_margin.x - m_margin.z;
                 }
                 break;
-            case LayoutDirection::Column:
+            case FlexLayoutDirection::Column:
                 // ---------- horizontal position ----------
                 if (m_aviableSize.y < 0.0f && m_innerSize.y <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMajor() == LayoutAlign::Stretch) {
+                    m_parentElementPtr->GetLayoutMajor() == FlexLayoutAlign::Stretch) {
                     float totalChildHeight = ComputeSiblingsTotalMarginSize().y;
                     float parentHeight = m_parentElementPtr->GetContentSize().y;
                     // Calculates the amount of children that will be stretched
@@ -590,7 +590,7 @@ namespace EngineCore::UI {
 
                 // -------- vertical position ----------
                 if (m_aviableSize.x < 0.0f && m_innerSize.x <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMinor() == LayoutAlign::Stretch) {
+                    m_parentElementPtr->GetLayoutMinor() == FlexLayoutAlign::Stretch) {
                     float pSize = m_parentElementPtr->GetContentSize().x;
                     // (size - parentPadding) - leftMargin - rightMargin
                     m_innerSize.x = pSize - m_margin.y - m_margin.w;
@@ -732,13 +732,23 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::width, [](ElementBase* el, const StyleValue& val) {
                 if (float f; val.TryGetValue<float>(f, att::width)) {
-                    el->SetLocalWidth(f);
+                    StyleUnit::Unit u = val.GetUnit(0);
+
+                    if (u == StyleUnit::Unit::Percent_A)
+                        el->SetAvailableWidth(f);
+                    else
+                        el->SetLocalWidth(f);
                 }
             });
 
             RegisterAttribute(att::height, [](ElementBase* el, const StyleValue& val) {
                 if (float f; val.TryGetValue<float>(f, att::height)) {
-                    el->SetLocalHeight(f);
+                    StyleUnit::Unit u = val.GetUnit(0);
+
+                    if (u == StyleUnit::Unit::Percent_A)
+                        el->SetAvailableHeight(f);
+                    else
+                        el->SetLocalHeight(f);
                 }
             });
 
@@ -836,12 +846,12 @@ namespace EngineCore::UI {
         return totalSize;
     }
 
-    void ElementBase::SetAviableWidth(float width) const {
+    void ElementBase::SetAvailableWidth(float width) const {
         m_aviableSize.x = width;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetAviableHeight(float height) const {
+    void ElementBase::SetAvailableHeight(float height) const {
         m_aviableSize.y = height;
         MarkDirtyParent();
     }

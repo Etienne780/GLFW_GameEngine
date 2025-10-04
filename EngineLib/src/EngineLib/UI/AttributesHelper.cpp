@@ -44,20 +44,8 @@ namespace EngineCore::UI {
 			(type == NumberType::TIME && IsTimeUnit(unit)));
 	}
 
-	const std::vector<std::string>& AttributeHelper::GetAllUnits() {
-		static std::vector<std::string> units = [] {
-			std::vector<std::string> u;
-			u.reserve(m_sizeUnits.size() + m_timeUnits.size());
-			u.insert(u.end(), m_sizeUnits.begin(), m_sizeUnits.end());
-			u.insert(u.end(), m_timeUnits.begin(), m_timeUnits.end());
-			return u;
-		}();
-		return units;
-	}
-
 	bool AttributeHelper::TryGetUnit(const std::string& input, std::string& out) {
-		const auto& units = GetAllUnits();
-		for (const auto& u : units) {
+		for (const auto& u : m_units) {
 			if (input.size() >= u.size() &&
 				input.rfind(u) == input.size() - u.size()) {
 				out = u;
@@ -87,13 +75,8 @@ namespace EngineCore::UI {
 			else if (outUnit == "%h") {
 				outValue = element.GetParentHeight() * outValue / 100.0f;
 			}
-			else if (outUnit == "%aw") {
-				element.SetAviableWidth(outValue);
-				outValue = 0.0f;
-			}
-			else if (outUnit == "%ah") {
-				element.SetAviableHeight(outValue);
-				outValue = 0.0f;
+			else if (outUnit == "%a") {
+				// nothing, already in percent
 			}
 			else if (outUnit == "vh") {
 				outValue = element.GetViewportHeight() * outValue / 100.0f;
@@ -133,7 +116,7 @@ namespace EngineCore::UI {
 		float defaultValue,
 		NumberType type)
 	{
-		return StyleAttribute(name, description, StyleValue(defaultValue), { "nummber" },
+		return StyleAttribute(name, description, StyleValue(defaultValue, StyleUnit::Unit::PX), {"nummber"},
 			[type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				float f = 0;
 				bool errorType = false;
@@ -141,7 +124,7 @@ namespace EngineCore::UI {
 				if (TryGetNumber(element, val, f, unit)) {
 					errorType = true;
 					if(IsUnitType(type, unit))
-						return StyleValue(f);
+						return StyleValue(f, StyleUnit::StringToUnit(unit));
 				}
 				if(errorType)
 					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', '{}' is not a valid unit, input:'{}' invalid!", 
@@ -160,7 +143,14 @@ namespace EngineCore::UI {
 		std::vector<std::string> inputs,
 		Vector4 defaultValue) 
 	{
-		return StyleAttribute(name, description, StyleValue(defaultValue), inputs,
+		static std::vector<StyleUnit::Unit> defaultUnits{
+				StyleUnit::Unit::Unknown,
+				StyleUnit::Unit::Unknown,
+				StyleUnit::Unit::Unknown,
+				StyleUnit::Unit::Unknown
+		};
+
+		return StyleAttribute(name, description, StyleValue(defaultValue, defaultUnits), inputs,
 			[](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				bool errorType = false;
 				std::string clearString = FormatUtils::removeSpaces(val);
@@ -177,7 +167,7 @@ namespace EngineCore::UI {
 					errorType = true;
 					int b = ConversionUtils::HexToIntegral(colorStr);
 					if (b != -1)
-						return StyleValue(Vector4(b / 255.0f, b / 255.0f, b / 255.0f, 1.0f));
+						return StyleValue(Vector4(b / 255.0f, b / 255.0f, b / 255.0f, 1.0f), defaultUnits);
 				}
 				else if (colorLen == 6) {
 					errorType = true;
@@ -185,7 +175,7 @@ namespace EngineCore::UI {
 					int g = ConversionUtils::HexToIntegral(colorStr.substr(2, 2));
 					int b = ConversionUtils::HexToIntegral(colorStr.substr(4, 2));
 					if (r != -1 && g != -1 && b != -1)
-						return StyleValue(Vector4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
+						return StyleValue(Vector4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f), defaultUnits);
 				}
 				else if (colorLen == 8) {
 					errorType = true;
@@ -194,7 +184,7 @@ namespace EngineCore::UI {
 					int b = ConversionUtils::HexToIntegral(colorStr.substr(4, 2));
 					int a = ConversionUtils::HexToIntegral(colorStr.substr(6, 2));
 					if (r != -1 && g != -1 && b != -1 && a != -1)
-						return StyleValue(Vector4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
+						return StyleValue(Vector4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f), defaultUnits);
 				}
 
 				if(errorType)
@@ -287,11 +277,11 @@ namespace EngineCore::UI {
 				name, defaultValue.size(), maxInput);
 #endif 
 		StyleValue fallback;
-		// cal default value
+		// calculate default value
 		switch (maxInput)
 		{
 		case 1:
-			fallback = StyleValue((defaultValue.empty()) ? 0.0f : defaultValue[0]);
+			fallback = StyleValue((defaultValue.empty()) ? 0.0f : defaultValue[0], StyleUnit::Unit::PX);
 			break;
 		case 2: {
 			Vector2 vec;
@@ -301,7 +291,7 @@ namespace EngineCore::UI {
 			else if (defaultValue.size() == 2) {
 				vec.Set(defaultValue[0], defaultValue[1]);
 			}
-			fallback = StyleValue(vec);
+			fallback = StyleValue(vec, { StyleUnit::Unit::PX, StyleUnit::Unit::PX });
 			break;
 		}
 		case 3: {
@@ -315,7 +305,7 @@ namespace EngineCore::UI {
 			else if (defaultValue.size() == 3) {
 				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2]);
 			}
-			fallback = StyleValue(vec);
+			fallback = StyleValue(vec, { StyleUnit::Unit::PX, StyleUnit::Unit::PX, StyleUnit::Unit::PX });
 			break;
 		}
 		case 4: {
@@ -332,13 +322,13 @@ namespace EngineCore::UI {
 			else if (defaultValue.size() == 4) {
 				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[3]);
 			}
-			fallback = StyleValue(vec);
+			fallback = StyleValue(vec, { StyleUnit::Unit::PX, StyleUnit::Unit::PX, StyleUnit::Unit::PX, StyleUnit::Unit::PX });
 			break;
 		}
 		default:
 			Log::Error("AttributeHelper: Attribute '{}' has the invalid maxInput({}), maxInput needs to be 1, 2, 3 or 4!",
 				name, maxInput);
-			fallback = StyleValue(0.0f);
+			fallback = StyleValue(0.0f, StyleUnit::Unit::PX);
 			break;
 		}
 
@@ -360,7 +350,7 @@ namespace EngineCore::UI {
 						std::string unit;
 						if (TryGetNumber(element, values[0], v, unit)) {
 							if (IsUnitType(type, unit)) {
-								return StyleValue(v);
+								return StyleValue(v, StyleUnit::StringToUnit(unit));
 							}
 							errorType = 2;
 						}
@@ -377,7 +367,8 @@ namespace EngineCore::UI {
 							std::string unit;
 							if (TryGetNumber(element, values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
-									return StyleValue(Vector2(v, v));
+									StyleUnit::Unit u = StyleUnit::StringToUnit(unit);
+									return StyleValue(Vector2(v, v), { u, u});
 								}
 								errorType = 2;
 							}
@@ -388,7 +379,11 @@ namespace EngineCore::UI {
 							if (TryGetNumber(element, values[0], v1, unit1) &&
 								TryGetNumber(element, values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
-									return StyleValue(Vector2(v1, v2));
+									std::vector<StyleUnit::Unit> styleUnits{
+										StyleUnit::StringToUnit(unit1),
+										StyleUnit::StringToUnit(unit2)
+									};
+									return StyleValue(Vector2(v1, v2), styleUnits);
 								}
 								errorType = 2;
 							}
@@ -406,7 +401,8 @@ namespace EngineCore::UI {
 							std::string unit;
 							if (TryGetNumber(element, values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
-									return StyleValue(Vector3(v, v, v));
+									StyleUnit::Unit u = StyleUnit::StringToUnit(unit);
+									return StyleValue(Vector3(v, v, v), { u, u, u});
 								}
 								errorType = 2;
 							}
@@ -417,7 +413,13 @@ namespace EngineCore::UI {
 							if (TryGetNumber(element, values[0], v1, unit1) &&
 								TryGetNumber(element, values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
-									return StyleValue(Vector3(v1, v2, v2));
+									StyleUnit::Unit u2 = StyleUnit::StringToUnit(unit2);
+									std::vector<StyleUnit::Unit> styleUnits{
+										StyleUnit::StringToUnit(unit1),
+										u2,
+										u2
+									};
+									return StyleValue(Vector3(v1, v2, v2), styleUnits);
 								}
 								errorType = 2;
 							}
@@ -429,7 +431,12 @@ namespace EngineCore::UI {
 								TryGetNumber(element, values[1], v2, unit2) &&
 								TryGetNumber(element, values[2], v3, unit3)) {
 								if (IsUnitType(type, unit1, unit2, unit3)) {
-									return StyleValue(Vector3(v1, v2, v3));
+									std::vector<StyleUnit::Unit> styleUnits{
+										StyleUnit::StringToUnit(unit1),
+										StyleUnit::StringToUnit(unit2),
+										StyleUnit::StringToUnit(unit3)
+									};
+									return StyleValue(Vector3(v1, v2, v3), styleUnits);
 								}
 								errorType = 2;
 							}
@@ -447,7 +454,8 @@ namespace EngineCore::UI {
 							std::string unit;
 							if (TryGetNumber(element, values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
-									return StyleValue(Vector4(v, v, v, v));
+									StyleUnit::Unit u = StyleUnit::StringToUnit(unit);
+									return StyleValue(Vector4(v, v, v, v), { u, u, u, u });
 								}
 								errorType = 2;
 							}
@@ -458,7 +466,9 @@ namespace EngineCore::UI {
 							if (TryGetNumber(element, values[0], v1, unit1) &&
 								TryGetNumber(element, values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
-									return StyleValue(Vector4(v1, v1, v2, v2));
+									StyleUnit::Unit u1 = StyleUnit::StringToUnit(unit1);
+									StyleUnit::Unit u2 = StyleUnit::StringToUnit(unit2);
+									return StyleValue(Vector4(v1, v1, v2, v2), { u1, u1, u2, u2 });
 								}
 								errorType = 2;
 							}
@@ -470,7 +480,14 @@ namespace EngineCore::UI {
 								TryGetNumber(element, values[1], v2, unit2) &&
 								TryGetNumber(element, values[2], v3, unit3)) {
 								if (IsUnitType(type, unit1, unit2, unit3)) {
-									return StyleValue(Vector4(v1, v2, v3, v3));
+									StyleUnit::Unit u3 = StyleUnit::StringToUnit(unit3);
+									std::vector<StyleUnit::Unit> styleUnits{
+										StyleUnit::StringToUnit(unit1),
+										StyleUnit::StringToUnit(unit2),
+										u3,
+										u3
+									};
+									return StyleValue(Vector4(v1, v2, v3, v3), styleUnits);
 								}
 								errorType = 2;
 							}
@@ -483,7 +500,13 @@ namespace EngineCore::UI {
 								TryGetNumber(element, values[2], v3, unit3) &&
 								TryGetNumber(element, values[2], v4, unit4)) {
 								if (IsUnitType(type, unit1, unit2, unit3, unit4)) {
-									return StyleValue(Vector4(v1, v2, v3, v4));
+									std::vector<StyleUnit::Unit> styleUnits{
+										StyleUnit::StringToUnit(unit1),
+										StyleUnit::StringToUnit(unit2),
+										StyleUnit::StringToUnit(unit3),
+										StyleUnit::StringToUnit(unit4)
+									};
+									return StyleValue(Vector4(v1, v2, v3, v4), styleUnits);
 								}
 								errorType = 2;
 							}

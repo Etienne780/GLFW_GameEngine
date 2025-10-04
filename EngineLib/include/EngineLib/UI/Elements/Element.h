@@ -20,8 +20,7 @@ namespace EngineCore {
 namespace EngineCore::UI {
 
     class ElementBase {
-        friend class UIManager;
-        friend class AttributeHelper;
+    friend class UIManager;
     public:
         using Callback = std::function<void()>;
 
@@ -106,11 +105,11 @@ namespace EngineCore::UI {
         size_t GetListPosition() const;
         void SetState(State state);
 
-        void SetLayoutDirection(LayoutDirection direction);
-        void SetLayoutWrap(LayoutWrap wrap);
-        void SetLayoutMajor(LayoutAlign align);
-        void SetLayoutMinor(LayoutAlign align);
-        void SetLayoutItem(LayoutAlign align);
+        void SetLayoutDirection(FlexLayoutDirection direction);
+        void SetLayoutWrap(FlexLayoutWrap wrap);
+        void SetLayoutMajor(FlexLayoutAlign align);
+        void SetLayoutMinor(FlexLayoutAlign align);
+        void SetLayoutItem(FlexLayoutAlign align);
 
         void SetLocalPosition(const Vector2& position);
         void SetLocalPosition(float x, float y);
@@ -134,11 +133,11 @@ namespace EngineCore::UI {
         void SetBorderSize(float top, float right, float bottom, float left);
         void SetDuration(float duration);
 
-        LayoutDirection GetLayoutDirection() const;
-        LayoutWrap GetLayoutWrap() const;
-        LayoutAlign GetLayoutMajor() const;
-        LayoutAlign GetLayoutMinor() const;
-        LayoutAlign GetLayoutItem() const;
+        FlexLayoutDirection GetLayoutDirection() const;
+        FlexLayoutWrap GetLayoutWrap() const;
+        FlexLayoutAlign GetLayoutMajor() const;
+        FlexLayoutAlign GetLayoutMinor() const;
+        FlexLayoutAlign GetLayoutItem() const;
 
         // aviable
         Vector2 GetAviableSize();
@@ -218,11 +217,11 @@ namespace EngineCore::UI {
         Matrix4x4 m_worldTransform;
 
         // styling props
-        LayoutDirection m_layoutDirection = LayoutDirection::Row;
-        LayoutWrap m_layoutWrap = LayoutWrap::Wrap;
-        LayoutAlign m_layoutMajor = LayoutAlign::Start;
-        LayoutAlign m_layoutMinor = LayoutAlign::Start;
-        LayoutAlign m_layoutItem = LayoutAlign::Start;
+        FlexLayoutDirection m_layoutDirection = FlexLayoutDirection::Row;
+        FlexLayoutWrap m_layoutWrap = FlexLayoutWrap::Wrap;
+        FlexLayoutAlign m_layoutMajor = FlexLayoutAlign::Start;
+        FlexLayoutAlign m_layoutMinor = FlexLayoutAlign::Start;
+        FlexLayoutAlign m_layoutItem = FlexLayoutAlign::Start;
 
         // order: top, right, bottom, left
         Vector4 m_padding{ 0, 0, 0, 0 };
@@ -268,8 +267,8 @@ namespace EngineCore::UI {
         void SetStyleAttributes();
         void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
         std::shared_ptr<Style> GetElementBaseStyle();
-        void SetAviableWidth(float width) const;
-        void SetAviableHeight(float height) const;
+        void SetAvailableWidth(float width) const;
+        void SetAvailableHeight(float height) const;
 
         /**
         * @brief Computes the total margin size of all sibling elements except this element.

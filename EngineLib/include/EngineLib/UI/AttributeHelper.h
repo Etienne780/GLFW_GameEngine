@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+#include "EngineLib/UI/UITypes.h"
 #include "EngineLib/UI/StyleAttribute.h"
 
 class Vector4;
@@ -42,6 +43,12 @@ namespace EngineCore::UI {
 		*/
 		static bool IsTimeUnit(const std::string& unit);
 
+		/**
+		* @brief Checks whether the given unit corresponds to the specified NumberType
+		* @param type The NumberType to check against (e.g., SIZE, TIME)
+		* @param unit The unit string to validate
+		* @return True if the unit is valid for the given NumberType, false otherwise
+		*/
 		static bool IsUnitType(NumberType type, const std::string& unit);
 
 		/**
@@ -52,6 +59,8 @@ namespace EngineCore::UI {
 		*/
 		template<typename... Args>
 		static bool IsUnit(const Args&... args) {
+			static_assert((std::is_convertible_v<Args, std::string> && ...),
+				"All arguments must be convertible to std::string");
 			return (IsUnit(args) && ...);
 		}
 
@@ -63,6 +72,8 @@ namespace EngineCore::UI {
 		*/
 		template<typename... Args>
 		static bool IsSizeUnit(const Args&... args) {
+			static_assert((std::is_convertible_v<Args, std::string> && ...),
+				"All arguments must be convertible to std::string");
 			return (IsSizeUnit(args) && ...);
 		}
 
@@ -74,19 +85,23 @@ namespace EngineCore::UI {
 		*/
 		template<typename... Args>
 		static bool IsTimeUnit(const Args&... args) {
+			static_assert((std::is_convertible_v<Args, std::string> && ...),
+				"All arguments must be convertible to std::string");
 			return (IsTimeUnit(args) && ...);
 		}
 
+		/**
+		* @brief Checks whether all given units correspond to the specified NumberType
+		* @tparam Args Variadic template parameter for unit strings
+		* @param args The units to validate
+		* @return True if all units are valid for the given NumberType, false otherwise
+		*/
 		template<typename... Args>
 		static bool IsUnitType(NumberType type, const Args&... args) {
+			static_assert((std::is_convertible_v<Args, std::string> && ...),
+				"All arguments must be convertible to std::string");
 			return (IsUnitType(type, args) && ...);
 		}
-
-		/**
-		* @brief Retrieves all supported units (size + time)
-		* @return A constant reference to a vector of all unit strings
-		*/
-		static const std::vector<std::string>& GetAllUnits();
 
 		/**
 		* @brief Attempts to extract a unit from a given input string
@@ -207,18 +222,9 @@ namespace EngineCore::UI {
 		AttributeHelper(const AttributeHelper&) = delete;
 		AttributeHelper(AttributeHelper&&) = delete;
 
-		/*
-		* Units:
-		* px = pixel
-		* %w = percent width of the parent element
-		* %h = percent height of the parent element
-		* vw = viewport width (referenc screen width)
-		* vh = viewport height (referenc screen height)
-		* s = seconds
-		*/
-
-		static inline const std::vector<std::string> m_sizeUnits = { "px", "%w", "%h", "%aw", "%ah", "vw", "vh"};
-		static inline const std::vector<std::string> m_timeUnits = { "s", "ms" };
+		inline static std::vector<std::string> m_units = StyleUnit::GetUnitStrings();
+		inline static std::vector<std::string> m_sizeUnits = StyleUnit::GetSizeUnitStrings();
+		inline static std::vector<std::string> m_timeUnits = StyleUnit::GetTimeUnitStrings();
 	};
 
 }
