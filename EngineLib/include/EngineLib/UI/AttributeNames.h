@@ -41,10 +41,10 @@ namespace Attribute {
 	*/
 	constexpr const char* visibility = "visibility";
 	/*
-	* @brief display mode of the element and its childs, if none has no effect in layouting
-	* @param display, none
+	* @brief Layout type of the element. If set to 'none', the element will not be displayed and has no effect on layout calculations
+	* @param flex, grid, none
 	*/
-	constexpr const char* display = "display";
+	constexpr const char* layoutType = "layoutType";
 	/*
 	* @brief Sets the overflow of this element
 	* @param hidden, none

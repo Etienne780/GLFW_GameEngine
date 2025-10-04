@@ -3,6 +3,7 @@
 #include <optional>
 #include <variant>
 #include <CoreLib/Log.h>
+#include <CoreLib/FormatUtils.h>
 #include <CoreLib/Math/Vector2.h>
 #include <CoreLib/Math/Vector3.h>
 #include <CoreLib/Math/Vector4.h>
@@ -17,25 +18,64 @@ namespace EngineCore::UI {
         Disabled
     };
 
-    enum class FlexLayoutDirection {
-        Row,
-        Column,
-    };
-
-    enum class FlexLayoutWrap {
+    enum class LayoutType {
+        Unknown,
         None,
-        Wrap
+        // like flex CSS
+        Flex,
+        // like grid CSS (Not implemented)
+        Grid
     };
 
-    enum class FlexLayoutAlign {
-        Start,
-        Center,
-        End,
-        Stretch,
-        SpaceEvenly,
-        SpaceAround
-    };
+    inline LayoutType ToLayoutType(const std::string& typeStr) {
+        if (FormatUtils::toLowerCase(typeStr) == "none") return LayoutType::None;
+        if (FormatUtils::toLowerCase(typeStr) == "flex") return LayoutType::Flex;
+        if (FormatUtils::toLowerCase(typeStr) == "grid") return LayoutType::Grid;
+        Log::Error("UI::ToLayoutType: Unknown Layout type '{}', can not convert to LayoutType!", typeStr);
+        return LayoutType::Unknown;
+    }
 
+    namespace Flex {
+
+        enum class LayoutDirection {
+            Row,
+            Column,
+        };
+
+        enum class LayoutWrap {
+            None,
+            Wrap
+        };
+
+        enum class LayoutAlign {
+            Start,
+            Center,
+            End,
+            Stretch,
+            SpaceEvenly,
+            SpaceAround
+        };
+
+        inline LayoutDirection ToLayoutDirection(const std::string& dirStr) {
+            if (FormatUtils::toLowerCase(dirStr) == "row") return LayoutDirection::Row;
+            if (FormatUtils::toLowerCase(dirStr) == "column") return LayoutDirection::Column;
+            return LayoutDirection::Row;
+        }
+
+        inline LayoutWrap ToLayoutWrap(const std::string& wrapStr) {
+            if (FormatUtils::toLowerCase(wrapStr) == "wrap") return LayoutWrap::Wrap;
+            return LayoutWrap::None;
+        }
+
+        inline LayoutAlign ToLayoutAlign(const std::string& alignStr) {
+            if (FormatUtils::toLowerCase(alignStr) == "center") return LayoutAlign::Center;
+            if (FormatUtils::toLowerCase(alignStr) == "end") return LayoutAlign::End;
+            if (FormatUtils::toLowerCase(alignStr) == "stretch") return LayoutAlign::Stretch;
+            if (FormatUtils::toLowerCase(alignStr) == "space-evenly") return LayoutAlign::SpaceEvenly;
+            if (FormatUtils::toLowerCase(alignStr) == "space-around") return LayoutAlign::SpaceAround;
+            return LayoutAlign::Start;
+        }
+    }
 
     namespace StyleUnit {
    
@@ -99,7 +139,7 @@ namespace EngineCore::UI {
             return GetUnitStrings().size();
         }
     
-        inline Unit StringToUnit(const std::string& unit) {
+        inline Unit ToUnit(const std::string& unit) {
             const auto& units = GetUnitStrings();
             auto it = std::find(units.begin(), units.end(), unit);
 
@@ -112,7 +152,7 @@ namespace EngineCore::UI {
             return Unit::Unknown;
         }
     
-        inline std::string UnitToString(Unit unit) {
+        inline std::string ToString(Unit unit) {
             if (unit == Unit::Unknown) {
                 return "Unknown";
             }
@@ -125,26 +165,6 @@ namespace EngineCore::UI {
             return "Unknown";
         }
     
-    }
-
-    inline FlexLayoutDirection ToLayoutDirection(const std::string& val) {
-        if (val == "row") return FlexLayoutDirection::Row;
-        if (val == "column") return FlexLayoutDirection::Column;
-        return FlexLayoutDirection::Row;
-    }
-
-    inline FlexLayoutWrap ToLayoutWrap(const std::string& val) {
-        if (val == "wrap") return FlexLayoutWrap::Wrap;
-        return FlexLayoutWrap::None;
-    }
-
-    inline FlexLayoutAlign ToLayoutAlign(const std::string& val) {
-        if (val == "center") return FlexLayoutAlign::Center;
-        if (val == "end") return FlexLayoutAlign::End;
-        if (val == "stretch") return FlexLayoutAlign::Stretch;
-        if (val == "space-evenly") return FlexLayoutAlign::SpaceEvenly;
-        if (val == "space-around") return FlexLayoutAlign::SpaceAround;
-        return FlexLayoutAlign::Start;
     }
 
     struct StyleValue {
@@ -167,7 +187,7 @@ namespace EngineCore::UI {
 #ifndef NDEBUG
             if (unit.size() != 2)
                 Log::Warn("StyleValue: expected exactly 2 units for Vector2, but got {}. "
-                    "This may lead to inconsistent behavior.", unit.size());
+                    "This may lead to inconsistent behavior!", unit.size());
 #endif 
         }
 
@@ -176,7 +196,7 @@ namespace EngineCore::UI {
 #ifndef NDEBUG
             if (unit.size() != 3)
                 Log::Warn("StyleValue: expected exactly 3 units for Vector3, but got {}. "
-                    "This may lead to inconsistent behavior.", unit.size());
+                    "This may lead to inconsistent behavior!", unit.size());
 #endif 
         }
 
@@ -185,7 +205,7 @@ namespace EngineCore::UI {
 #ifndef NDEBUG
             if (unit.size() != 4)
                 Log::Warn("StyleValue: expected exactly 4 units for Vector4, but got {}. "
-                    "This may lead to inconsistent behavior.", unit.size());
+                    "This may lead to inconsistent behavior!", unit.size());
 #endif 
         }
 
@@ -202,7 +222,7 @@ namespace EngineCore::UI {
                 return true;
             }
 
-            Log::Warn("StyleValue: Could not get value of Attribute '{}', expected type '{}', got '{}'",
+            Log::Warn("StyleValue: Could not get value of Attribute '{}', expected type '{}', got '{}'!",
                 attributeName, typeid(T).name(), valueType);
             return false;
         }
@@ -241,7 +261,7 @@ static inline std::string FormatUtils::toString<EngineCore::UI::StyleValue::Type
 template<>
 static inline std::string FormatUtils::toString<EngineCore::UI::StyleUnit::Unit>(EngineCore::UI::StyleUnit::Unit value) {
     using namespace EngineCore::UI;
-    return StyleUnit::UnitToString(value);
+    return StyleUnit::ToString(value);
 }
 
 template<>
@@ -251,7 +271,7 @@ static inline std::string FormatUtils::toString<std::vector<EngineCore::UI::Styl
     std::string unitsStr = "[";
     for (size_t i = 0; i < values.size(); i++) {
         if (i > 0) unitsStr += ", ";
-        unitsStr += StyleUnit::UnitToString(values[i]);
+        unitsStr += StyleUnit::ToString(values[i]);
     }
     unitsStr += "]";
     return unitsStr;

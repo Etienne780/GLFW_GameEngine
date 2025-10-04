@@ -16,6 +16,7 @@ namespace EngineCore::UI::Init {
 namespace {
 
     using namespace EngineCore::UI;
+    extern const StyleAttribute LayoutTypeAtt;
 
     extern const StyleAttribute LayoutAtt;
     extern const StyleAttribute LayoutMajorAtt;

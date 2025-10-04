@@ -10,6 +10,8 @@
 #include "EngineLib/ShaderBindObject.h"
 #include "EngineLib/Renderer.h"
 #include "EngineLib/EngineTypes.h"
+#include "EngineLib/UI/LayoutCalc/FlexLayoutCalculator.h"
+#include "EngineLib/UI/LayoutCalc/GridLayoutCalculator.h"
 #include "../Style.h"
 
 namespace EngineCore {
@@ -19,8 +21,11 @@ namespace EngineCore {
 
 namespace EngineCore::UI {
 
+    class ILayoutCalculator;
+
     class ElementBase {
     friend class UIManager;
+    friend class ILayoutCalculator;
     public:
         using Callback = std::function<void()>;
 
@@ -45,9 +50,28 @@ namespace EngineCore::UI {
         const std::string& GetName() const;
         UIElementID GetID() const;
         std::shared_ptr<Style> GetStyle() const;
+        /**
+        * @brief Gets the position of the element in world coordinates, taking parent positions into account.
+        * @return The world position of the element.
+        */
         Vector2 GetWorldPosition();
+
+        /**
+        * @brief Gets the local position of the element relative to its parent.
+        * @return The local position of the element.
+        */
         Vector2 GetLocalPosition();
+
+        /**
+        * @brief Gets the size of the element in screen coordinates, including any scaling applied by UIManager.
+        * @return The scaled screen size of the element.
+        */
         Vector2 GetScreenSize();
+
+        /**
+        * @brief Gets the local size of the element (final layout size without screen scaling).
+        * @return The local size of the element.
+        */
         Vector2 GetLocalSize();
 
         float GetParentWidth() const;
@@ -105,19 +129,63 @@ namespace EngineCore::UI {
         size_t GetListPosition() const;
         void SetState(State state);
 
-        void SetLayoutDirection(FlexLayoutDirection direction);
-        void SetLayoutWrap(FlexLayoutWrap wrap);
-        void SetLayoutMajor(FlexLayoutAlign align);
-        void SetLayoutMinor(FlexLayoutAlign align);
-        void SetLayoutItem(FlexLayoutAlign align);
+        void SetLayoutType(LayoutType layoutType);
+        void SetLayoutDirection(Flex::LayoutDirection direction);
+        void SetLayoutWrap(Flex::LayoutWrap wrap);
+        void SetLayoutMajor(Flex::LayoutAlign align);
+        void SetLayoutMinor(Flex::LayoutAlign align);
+        void SetLayoutItem(Flex::LayoutAlign align);
 
+        /**
+        * @brief Sets the local position of the element using a Vector2.
+        * @param position The new local position.
+        */
         void SetLocalPosition(const Vector2& position);
+
+        /**
+        * @brief Sets the local position of the element using individual x and y values.
+        * @param x The new x-coordinate.
+        * @param y The new y-coordinate.
+        */
         void SetLocalPosition(float x, float y);
+
+        /**
+        * @brief Sets the local rotation of the element using a Vector3.
+        * @param rotation The new rotation vector (pitch, yaw, roll).
+        */
         void SetLocalRotation(const Vector3& rotation);
+
+        /**
+        * @brief Sets the local rotation of the element using individual x, y, z values.
+        * @param x Rotation around X-axis.
+        * @param y Rotation around Y-axis.
+        * @param z Rotation around Z-axis.
+        */
         void SetLocalRotation(float x, float y, float z);
+
+        /**
+        * @brief Sets the local size of the element using a Vector2.
+        * @param size The new size (width, height).
+        */
         void SetLocalSize(const Vector2& size);
+
+        /**
+        * @brief Sets the local size of the element using individual width and height values.
+        * @param width The new width.
+        * @param height The new height.
+        */
         void SetLocalSize(float width, float height);
+
+        /**
+        * @brief Sets only the local width of the element.
+        * @param width The new width.
+        */
         void SetLocalWidth(float width);
+
+        /**
+        * @brief Sets only the local height of the element.
+        * @param height The new height.
+        */
         void SetLocalHeight(float height);
 
         void SetBackgroundColor(const Vector4& color);
@@ -133,16 +201,15 @@ namespace EngineCore::UI {
         void SetBorderSize(float top, float right, float bottom, float left);
         void SetDuration(float duration);
 
-        FlexLayoutDirection GetLayoutDirection() const;
-        FlexLayoutWrap GetLayoutWrap() const;
-        FlexLayoutAlign GetLayoutMajor() const;
-        FlexLayoutAlign GetLayoutMinor() const;
-        FlexLayoutAlign GetLayoutItem() const;
+        LayoutType GetLayoutType() const;
+        Flex::LayoutDirection GetLayoutDirection() const;
+        Flex::LayoutWrap GetLayoutWrap() const;
+        Flex::LayoutAlign GetLayoutMajor() const;
+        Flex::LayoutAlign GetLayoutMinor() const;
+        Flex::LayoutAlign GetLayoutItem() const;
 
         // aviable
         Vector2 GetAviableSize();
-        // size
-        Vector2 GetSize();
         // size - padding
         Vector2 GetContentSize();   
         // content + border
@@ -192,6 +259,8 @@ namespace EngineCore::UI {
         void Init();
 
         static inline bool m_attributesRegistered = false;
+        static inline FlexLayoutCalculator s_flexCalculator;
+        static inline GridLayoutCalculator s_gridCalculator;
         /*
         * @brief Map of attribute names to behavior callbacks.
         */
@@ -203,12 +272,12 @@ namespace EngineCore::UI {
         // transform dirty flags
         mutable bool m_worldTransformDirty = true;
 
-        // position (0,0) is top left of screen or parent element
-        Vector2 m_innerPosition{ 0, 0 };
+        // Calculated final position of the element including layout effects (major/minor alignment, parent constraints, etc.)
+        Vector2 m_layoutPosition{ 0, 0 };
         // Local rotation
         Vector3 m_rotation{ 0, 0, 0 };
-        // Size in pixels (content box, without padding/border/margin).
-        Vector2 m_innerSize{ 800, 500 };
+        // Calculated final size of the element including padding, border (content + padding + border)
+        Vector2 m_layoutSize{ 800, 500 };
         Vector2 m_minSize{ 0, 0 };
         Vector2 m_maxSize{ FLT_MAX, FLT_MAX };
         mutable Vector2 m_aviableSize{ -1, -1 };
@@ -217,12 +286,18 @@ namespace EngineCore::UI {
         Matrix4x4 m_worldTransform;
 
         // styling props
-        FlexLayoutDirection m_layoutDirection = FlexLayoutDirection::Row;
-        FlexLayoutWrap m_layoutWrap = FlexLayoutWrap::Wrap;
-        FlexLayoutAlign m_layoutMajor = FlexLayoutAlign::Start;
-        FlexLayoutAlign m_layoutMinor = FlexLayoutAlign::Start;
-        FlexLayoutAlign m_layoutItem = FlexLayoutAlign::Start;
+        LayoutType m_layoutType = LayoutType::Flex;
+        Flex::LayoutDirection m_layoutDirection = Flex::LayoutDirection::Row;
+        Flex::LayoutWrap m_layoutWrap = Flex::LayoutWrap::Wrap;
+        Flex::LayoutAlign m_layoutMajor = Flex::LayoutAlign::Start;
+        Flex::LayoutAlign m_layoutMinor = Flex::LayoutAlign::Start;
+        Flex::LayoutAlign m_layoutItem = Flex::LayoutAlign::Start;
 
+        // Style-driven position (absolute or relative, as defined in style)
+        Vector2 m_stylePosition{ 0, 0 };
+
+        // Style-driven size (content box size from style, before layout adjustments)
+        Vector2 m_styleSize{ 800, 500 };
         // order: top, right, bottom, left
         Vector4 m_padding{ 0, 0, 0, 0 };
         // order: top, right, bottom, left

@@ -18,7 +18,6 @@ namespace {
     using namespace EngineCore::UI;
 
     extern const StyleAttribute Visibility;
-    extern const StyleAttribute Display;
     extern const StyleAttribute Overflow;
 
 }

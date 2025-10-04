@@ -17,6 +17,8 @@ namespace EngineCore::UI {
 
             #pragma region Layout
 
+            s->Set(a::layoutType, "flex");
+
             s->Set(a::layoutMajor, "start");
             s->Set(a::layoutMinor, "start");
 
@@ -29,7 +31,6 @@ namespace EngineCore::UI {
             #pragma region Display
 
             s->Set(a::visibility, "visible");
-            s->Set(a::display, "display");
             s->Set(a::overflow, "none");
 
             #pragma endregion
@@ -96,7 +97,7 @@ namespace EngineCore::UI {
             UpdateLayoutPosition();
         }
 
-        Vector2 pos = m_innerPosition;
+        Vector2 pos = m_layoutPosition;
         if (m_parentElementPtr) {
             pos += m_parentElementPtr->GetWorldPosition();
         }
@@ -107,16 +108,15 @@ namespace EngineCore::UI {
         if (m_positionDirty) {
             UpdateLayoutPosition();
         }
-        return m_innerPosition;
+        return m_layoutPosition;
     }
-    
+
     Vector2 ElementBase::GetScreenSize() {
         if (m_sizeDirty) {
             UpdateLayoutSize();
-            m_sizeDirty = false;
         }
 
-        Vector2 size = m_innerPosition;
+        Vector2 size = m_layoutSize;
         if (UIManager::GetUIScaling()) {
             size *= UIManager::GetUIScaleFactor();
         }
@@ -126,9 +126,8 @@ namespace EngineCore::UI {
     Vector2 ElementBase::GetLocalSize() {
         if (m_sizeDirty) {
             UpdateLayoutSize();
-            m_sizeDirty = false;
         }
-        return m_innerSize;
+        return m_layoutSize;
     }
 
     float ElementBase::GetParentWidth() const {
@@ -213,27 +212,32 @@ namespace EngineCore::UI {
         SetStyleAttributes();
 	}
 
-    void ElementBase::SetLayoutDirection(FlexLayoutDirection d) { 
+    void ElementBase::SetLayoutType(LayoutType type) {
+        m_layoutType = type;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetLayoutDirection(Flex::LayoutDirection d) {
         m_layoutDirection = d;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutWrap(FlexLayoutWrap w) { 
+    void ElementBase::SetLayoutWrap(Flex::LayoutWrap w) {
         m_layoutWrap = w;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutMajor(FlexLayoutAlign a) { 
+    void ElementBase::SetLayoutMajor(Flex::LayoutAlign a) {
         m_layoutMajor = a; 
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutMinor(FlexLayoutAlign a) { 
+    void ElementBase::SetLayoutMinor(Flex::LayoutAlign a) {
         m_layoutMinor = a;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutItem(FlexLayoutAlign a) {
+    void ElementBase::SetLayoutItem(Flex::LayoutAlign a) {
         m_layoutItem = a;
         MarkDirtyParent();
     }
@@ -243,13 +247,12 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetLocalPosition(float x, float y) {
-        m_innerPosition.Set(x,y);
+        m_stylePosition.Set(x, y);
         MarkDirtyParent();
     }
 
     void ElementBase::SetLocalRotation(const Vector3& rotation) {
-        m_rotation = rotation;
-        MarkDirtyParent();
+        SetLocalRotation(rotation.x, rotation.y, rotation.z);
     }
 
     void ElementBase::SetLocalRotation(float x, float y, float z) {
@@ -262,20 +265,17 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetLocalSize(float x, float y) {
-        m_innerSize.Set(x, y);
-        m_sbo.SetParam("uSize", m_innerSize);
+        m_styleSize.Set(x, y);
         MarkDirtyParent();
     }
 
     void ElementBase::SetLocalWidth(float x) {
-        m_innerSize.x = x;
-        m_sbo.SetParam("uSize", m_innerSize);
+        m_styleSize.x = x;
         MarkDirtyParent();
     }
 
     void ElementBase::SetLocalHeight(float y) {
-        m_innerSize.y = y;
-        m_sbo.SetParam("uSize", m_innerSize);
+        m_styleSize.y = y;
         MarkDirtyParent();
     }
 
@@ -298,30 +298,35 @@ namespace EngineCore::UI {
         if (width < 0.0f) width = 0.0f;
         m_borderSize.Set(width, width, width, width);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBorderTop(float top) {
         if (top < 0.0f) top = 0.0f;
         m_borderSize.x = top;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBorderLeft(float left) {
         if (left < 0.0f) left = 0.0f;
         m_borderSize.y = left;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBorderBottom(float bottom) {
         if (bottom < 0.0f) bottom = 0.0f;
         m_borderSize.z = bottom;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBorderRight(float right) {
         if (right < 0.0f) right = 0.0f;
         m_borderSize.w = right;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBorderSize(float width, float height) {
@@ -329,10 +334,12 @@ namespace EngineCore::UI {
         if (height < 0.0f) height = 0.0f;
         m_borderSize.Set(height, width, height, width);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBorderSize(const Vector4& vec) {
         SetBorderSize(vec.x, vec.y, vec.z, vec.w);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetBorderSize(float top, float right, float bottom, float left) {
@@ -342,6 +349,7 @@ namespace EngineCore::UI {
         if (left < 0.0f) left = 0.0f;
         m_borderSize.Set(top, right, bottom, left);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
     }
 
     void ElementBase::SetDuration(float duration) {
@@ -349,23 +357,27 @@ namespace EngineCore::UI {
         m_duration = duration;
     }
 
-    FlexLayoutDirection ElementBase::GetLayoutDirection() const {
+    LayoutType ElementBase::GetLayoutType() const {
+        return m_layoutType;
+    }
+
+    Flex::LayoutDirection ElementBase::GetLayoutDirection() const {
         return m_layoutDirection;
     }
 
-    FlexLayoutWrap ElementBase::GetLayoutWrap() const {
+    Flex::LayoutWrap ElementBase::GetLayoutWrap() const {
         return m_layoutWrap;
     }
 
-    FlexLayoutAlign ElementBase::GetLayoutMajor() const {
+    Flex::LayoutAlign ElementBase::GetLayoutMajor() const {
         return m_layoutMajor;
     }
 
-    FlexLayoutAlign ElementBase::GetLayoutMinor() const {
+    Flex::LayoutAlign ElementBase::GetLayoutMinor() const {
         return m_layoutMinor;
     }
 
-    FlexLayoutAlign ElementBase::GetLayoutItem() const {
+    Flex::LayoutAlign ElementBase::GetLayoutItem() const {
         return m_layoutItem;
     }
 
@@ -373,15 +385,8 @@ namespace EngineCore::UI {
         return m_aviableSize;
     }
 
-    Vector2 ElementBase::GetSize() {
-        if (m_sizeDirty) {
-            UpdateLayoutSize();
-        }
-        return m_innerSize;
-    }
-
     Vector2 ElementBase::GetContentSize() {
-        Vector2 size = GetSize();
+        Vector2 size = GetLocalSize();
         return Vector2(
             size.x - m_borderSize.y - m_borderSize.w,
             size.y - m_borderSize.x - m_borderSize.z
@@ -389,7 +394,7 @@ namespace EngineCore::UI {
     }
 
     Vector2 ElementBase::GetBorderSize() {
-        Vector2 size = GetSize();
+        Vector2 size = GetLocalSize();
         return Vector2(
             size.x + m_borderSize.y + m_borderSize.w, // left + right
             size.y + m_borderSize.x + m_borderSize.z  // top + bottom
@@ -472,137 +477,49 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::UpdateLayoutPosition() {
-        if (m_parentElementPtr) {
-            bool wrap = (m_parentElementPtr->GetLayoutWrap() == FlexLayoutWrap::Wrap);
-            FlexLayoutAlign alignMajor = m_parentElementPtr->GetLayoutMajor();
-            FlexLayoutAlign alignMinor = m_parentElementPtr->GetLayoutMinor();
-            auto& siblings = m_parentElementPtr->GetChildren();
+        if (!m_parentElementPtr) {
+            m_positionDirty = false;
+            return;
+        }
+        // resets position for consistency
+        m_layoutPosition.Set(0, 0);
 
-            float xPosition = 0.0f;
-            float yPosition = 0.0f;
-
-            switch (m_parentElementPtr->GetLayoutDirection()) {
-            case FlexLayoutDirection::Row: {
-                // ---------- horizontal position ----------
-                // if layouting start and not first element
-                if (alignMajor == FlexLayoutAlign::Start &&
-                    m_listPosition > 0) {
-                    auto preElement = m_parentElementPtr->GetChild(m_listPosition - 1);
-                    xPosition = preElement->GetLocalPosition().x + preElement->GetMarginSize().x;
-                }
-
-                // -------- vertical position ----------
-                if (alignMinor == FlexLayoutAlign::Center && !wrap) {
-                    float parentHeight = m_parentElementPtr->GetContentSize().y;
-                    yPosition = parentHeight / 2 - GetMarginSize().y / 2;
-                }
-
-                if (alignMinor == FlexLayoutAlign::End && !wrap) {
-                    float parentHeight = m_parentElementPtr->GetContentSize().y;
-                    yPosition = parentHeight - GetMarginSize().y;
-                }
-
-                break;
-            }
-            case FlexLayoutDirection::Column: {
-                break;
-            }
-            }
-
-            m_innerPosition.Set(xPosition, yPosition);
+        switch (m_parentElementPtr->GetLayoutType()) {
+        case LayoutType::Flex:
+            s_flexCalculator.CalculatePosition(this);
+            break;
+        case LayoutType::Grid:
+            s_gridCalculator.CalculatePosition(this);
+            break;
+        case LayoutType::None:
+            break;
         }
 
         m_positionDirty = false;
     }
 
     void ElementBase::UpdateLayoutSize() {
-        // stop stretch calculations if wrap is turned on
+        if (!m_parentElementPtr) {
+            m_sizeDirty = false;
+            return;
+        }
+        // resets size for consistency
+        m_layoutSize.Set(0, 0);
 
-        if (m_parentElementPtr) {
-            bool wrap = (m_parentElementPtr->GetLayoutWrap() == FlexLayoutWrap::Wrap);
-
-            switch (m_parentElementPtr->GetLayoutDirection()) {
-            case FlexLayoutDirection::Row:
-                // ---------- horizontal position ----------
-                // stretch
-                if (m_aviableSize.x < 0.0f && m_innerSize.x <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMajor() == FlexLayoutAlign::Stretch) {
-                    float totalChildWidth = ComputeSiblingsTotalMarginSize().x;
-                    float parentWidth = m_parentElementPtr->GetContentSize().x;
-                    // Calculates the amount of children that will be stretched
-                    size_t cStretchCount = 0;
-                    for (const auto& c : m_parentElementPtr->GetChildren()) {
-                        if (c->GetSize().x <= 0.0f)
-                            cStretchCount++;
-                    }
-                    m_innerSize.x = ((parentWidth - totalChildWidth) / cStretchCount) - m_margin.y - m_margin.w;
-                }
-                else if (m_aviableSize.x >= 0.0f && !wrap) {
-                    float totalChildWidth = ComputeSiblingsTotalMarginSize().x;
-                    float parentWidth = m_parentElementPtr->GetContentSize().x;
-
-                    size_t cStretchCount = 0;
-                    for (const auto& c : m_parentElementPtr->GetChildren()) {
-                        if (c->GetAviableSize().x >= 0.0f)
-                            cStretchCount++;
-                    }
-                    m_innerSize.x = ((parentWidth - totalChildWidth) / cStretchCount) - m_margin.y - m_margin.w;
-                }
-                
-                // -------- vertical position ----------
-                // stretch
-                if (m_aviableSize.y < 0.0f && m_innerSize.y <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMinor() == FlexLayoutAlign::Stretch) {
-                    float pSize = m_parentElementPtr->GetContentSize().y;
-                    // totalSize - topMargin - bottomMargin
-                    m_innerSize.y = pSize - m_margin.x - m_margin.z;
-                }
-                else if (m_aviableSize.y >= 0.0f && !wrap) {
-                    float pSize = m_parentElementPtr->GetContentSize().y;
-                    m_innerSize.y = pSize - m_margin.x - m_margin.z;
-                }
-                break;
-            case FlexLayoutDirection::Column:
-                // ---------- horizontal position ----------
-                if (m_aviableSize.y < 0.0f && m_innerSize.y <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMajor() == FlexLayoutAlign::Stretch) {
-                    float totalChildHeight = ComputeSiblingsTotalMarginSize().y;
-                    float parentHeight = m_parentElementPtr->GetContentSize().y;
-                    // Calculates the amount of children that will be stretched
-                    size_t cStretchCount = 0;
-                    for (const auto& c : m_parentElementPtr->GetChildren()) {
-                        if (c->GetSize().y <= 0.0f)
-                            cStretchCount++;
-                    }
-                    m_innerSize.y = ((parentHeight - totalChildHeight) / cStretchCount) - m_margin.x - m_margin.z;
-                }
-                else if (m_aviableSize.y >= 0.0f && !wrap) {
-                    float totalChildHeight = ComputeSiblingsTotalMarginSize().y;
-                    float parentHeight = m_parentElementPtr->GetContentSize().y;
-
-                    size_t cStretchCount = 0;
-                    for (const auto& c : m_parentElementPtr->GetChildren()) {
-                        if (c->GetAviableSize().y >= 0.0f)
-                            cStretchCount++;
-                    }
-                    m_innerSize.y = ((parentHeight - totalChildHeight) / cStretchCount) - m_margin.x - m_margin.z;
-                }
-
-                // -------- vertical position ----------
-                if (m_aviableSize.x < 0.0f && m_innerSize.x <= 0.0f &&
-                    m_parentElementPtr->GetLayoutMinor() == FlexLayoutAlign::Stretch) {
-                    float pSize = m_parentElementPtr->GetContentSize().x;
-                    // (size - parentPadding) - leftMargin - rightMargin
-                    m_innerSize.x = pSize - m_margin.y - m_margin.w;
-                }
-                else if (m_aviableSize.x >= 0.0f && !wrap) {
-                    float pSize = m_parentElementPtr->GetContentSize().x;
-                    m_innerSize.x = pSize - m_margin.y - m_margin.w;
-                }
-                break;
-            }
+        switch (m_parentElementPtr->GetLayoutType()) {
+        case LayoutType::Flex:
+            s_flexCalculator.CalculateSize(this);
+            break;
+        case LayoutType::Grid:
+            s_gridCalculator.CalculateSize(this);
+            break;
+        case LayoutType::None:
+            m_padding.Set(0, 0, 0, 0);
+            m_margin.Set(0, 0, 0, 0);
+            break;
         }
 
+        m_sbo.SetParam("uSize", m_layoutSize);
         m_sizeDirty = false;
     }
 
@@ -630,11 +547,11 @@ namespace EngineCore::UI {
             ConversionUtils::ToRadians(m_rotation.z + parentRotation.z)
         };
 
-        m_worldTransform = Scale(m_innerSize.x, m_innerSize.y, 1.0f);
+        m_worldTransform = Scale(m_layoutSize.x, m_layoutSize.y, 1.0f);
         MakeRotateXYZ(m_worldTransform, radians);
         MakeTranslate(m_worldTransform, 
-            m_innerPosition.x + parentPosition.x + m_margin.y, 
-            m_innerPosition.y + parentPosition.y + m_margin.x, 0.0f);
+            m_layoutPosition.x + parentPosition.x + m_margin.y, 
+            m_layoutPosition.y + parentPosition.y + m_margin.x, 0.0f);
 
         m_worldTransformDirty = false;
     }
@@ -678,22 +595,29 @@ namespace EngineCore::UI {
         m_attributesRegistered = true;
         {
             namespace att = Attribute;
+            m_layoutType;
+            RegisterAttribute(att::layoutType, [](ElementBase* el, const StyleValue& val) {
+                if (std::string type; val.TryGetValue<std::string>(type, att::layoutType)) {
+                    el->SetLayoutType(ToLayoutType(type));
+                }
+            });
+
             RegisterAttribute(att::layoutDirection, [](ElementBase* el, const StyleValue& val) {
                 if (std::string dir; val.TryGetValue<std::string>(dir, att::layoutDirection)) {
-                    el->SetLayoutDirection(ToLayoutDirection(dir));
+                    el->SetLayoutDirection(Flex::ToLayoutDirection(dir));
                 }
             });
 
             RegisterAttribute(att::layoutWrap, [](ElementBase* el, const StyleValue& val) {
                 if (std::string wrap; val.TryGetValue<std::string>(wrap, att::layoutWrap)) {
-                    el->SetLayoutWrap(ToLayoutWrap(wrap));
+                    el->SetLayoutWrap(Flex::ToLayoutWrap(wrap));
                 }
             });
 
 
             RegisterAttribute(att::layoutItem, [](ElementBase* el, const StyleValue& val) {
                 if (std::string align; val.TryGetValue<std::string>(align, att::layoutItem)) {
-                    el->SetLayoutMinor(ToLayoutAlign(align));
+                    el->SetLayoutMinor(Flex::ToLayoutAlign(align));
                 }
             });
 
@@ -701,7 +625,7 @@ namespace EngineCore::UI {
                 if (std::vector<StyleValue> atts; val.TryGetValue<std::vector<StyleValue>>(atts, att::layout)) {  
                     if (atts.size() == 1) {
                         if (std::string str; atts[0].TryGetValue(str, att::layout)) {
-                            auto align = ToLayoutAlign(str);
+                            auto align = Flex::ToLayoutAlign(str);
                             el->SetLayoutMajor(align);
                             el->SetLayoutMinor(align);
                         }
@@ -710,8 +634,8 @@ namespace EngineCore::UI {
                         if (std::string str1, str2; 
                             atts[0].TryGetValue(str1, att::layout) && 
                             atts[1].TryGetValue(str2, att::layout)) {
-                            el->SetLayoutMajor(ToLayoutAlign(str1));
-                            el->SetLayoutMinor(ToLayoutAlign(str2));
+                            el->SetLayoutMajor(Flex::ToLayoutAlign(str1));
+                            el->SetLayoutMinor(Flex::ToLayoutAlign(str2));
                         }
                     }
 
@@ -720,13 +644,13 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::layoutMajor, [](ElementBase* el, const StyleValue& val) {
                 if (std::string align; val.TryGetValue<std::string>(align, att::layoutMajor)) {
-                    el->SetLayoutMajor(ToLayoutAlign(align));
+                    el->SetLayoutMajor(Flex::ToLayoutAlign(align));
                 }
             });
 
             RegisterAttribute(att::layoutMinor, [](ElementBase* el, const StyleValue& val) {
                 if (std::string align; val.TryGetValue<std::string>(align, att::layoutMinor)) {
-                    el->SetLayoutMinor(ToLayoutAlign(align));
+                    el->SetLayoutMinor(Flex::ToLayoutAlign(align));
                 }
             });
 

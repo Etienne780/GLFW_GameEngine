@@ -13,6 +13,13 @@ namespace {
         "start", "center", "end", "stretch", "space-evenly", "space-around"
     };
 
+    const StyleAttribute LayoutTypeAtt = AttributeHelper::MakeSimpleStringAttribute(
+        Attribute::layoutType,
+        "Layout type of the element. If set to 'none', the element will not be displayed and has no effect on layout calculations",
+        { "flex", "grid", "none" },
+        "flex"
+    );
+
     #pragma region Layout
 
     const StyleAttribute LayoutAtt = AttributeHelper::MakeMultiStringAttribute(
@@ -65,6 +72,8 @@ namespace {
 namespace EngineCore::UI::Init {
 
     const bool regLayoutAtt() {
+        StyleAttribute::RegisterAttribute(LayoutTypeAtt);
+
         StyleAttribute::RegisterAttribute(LayoutAtt);
         StyleAttribute::RegisterAttribute(LayoutMajorAtt);
         StyleAttribute::RegisterAttribute(LayoutMinorAtt);

@@ -64,6 +64,7 @@
     <ClInclude Include="include\EngineLib\UI\Attribute\_Attributes.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Element.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Panel.h" />
+    <ClInclude Include="include\EngineLib\UI\LayoutCalc\GridLayoutCalculator.h" />
     <ClInclude Include="include\EngineLib\UI\UIManager.h" />
     <ClInclude Include="include\EngineLib\UI\Style.h" />
     <ClInclude Include="include\EngineLib\UI\StyleAttribute.h" />
@@ -73,6 +74,8 @@
   <ItemGroup>
     <ClCompile Include="include\EngineLib\Components\SpriteRenderer_C.h" />
     <ClCompile Include="include\EngineLib\Components\TextRenderer_C.h" />
+    <ClCompile Include="include\EngineLib\UI\LayoutCalc\FlexLayoutCalculator.h" />
+    <ClCompile Include="include\EngineLib\UI\LayoutCalc\ILayoutCalculator.h" />
     <ClCompile Include="include\EngineLib\UI\UITypes.h" />
     <ClCompile Include="include\EngineLib\Input\InputTypes.h" />
     <ClCompile Include="src\EngineLib\Components\SpriteRenderer_C.cpp" />
@@ -117,6 +120,8 @@
     <ClCompile Include="src\EngineLib\UI\Attribute\StyleAttributes.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Element.cpp" />
     <ClCompile Include="src\EngineLib\UI\Elements\Panel.cpp" />
+    <ClCompile Include="src\EngineLib\UI\LayoutCalc\FlexLayoutCalculator.cpp" />
+    <ClCompile Include="src\EngineLib\UI\LayoutCalc\GridLayoutCalculator.cpp" />
     <ClCompile Include="src\EngineLib\UI\StyleAttribute.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
     <ClCompile Include="src\EngineLib\UI\Style.cpp" />

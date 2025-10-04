@@ -124,7 +124,7 @@ namespace EngineCore::UI {
 				if (TryGetNumber(element, val, f, unit)) {
 					errorType = true;
 					if(IsUnitType(type, unit))
-						return StyleValue(f, StyleUnit::StringToUnit(unit));
+						return StyleValue(f, StyleUnit::ToUnit(unit));
 				}
 				if(errorType)
 					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', '{}' is not a valid unit, input:'{}' invalid!", 
@@ -350,7 +350,7 @@ namespace EngineCore::UI {
 						std::string unit;
 						if (TryGetNumber(element, values[0], v, unit)) {
 							if (IsUnitType(type, unit)) {
-								return StyleValue(v, StyleUnit::StringToUnit(unit));
+								return StyleValue(v, StyleUnit::ToUnit(unit));
 							}
 							errorType = 2;
 						}
@@ -367,7 +367,7 @@ namespace EngineCore::UI {
 							std::string unit;
 							if (TryGetNumber(element, values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
-									StyleUnit::Unit u = StyleUnit::StringToUnit(unit);
+									StyleUnit::Unit u = StyleUnit::ToUnit(unit);
 									return StyleValue(Vector2(v, v), { u, u});
 								}
 								errorType = 2;
@@ -380,8 +380,8 @@ namespace EngineCore::UI {
 								TryGetNumber(element, values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
 									std::vector<StyleUnit::Unit> styleUnits{
-										StyleUnit::StringToUnit(unit1),
-										StyleUnit::StringToUnit(unit2)
+										StyleUnit::ToUnit(unit1),
+										StyleUnit::ToUnit(unit2)
 									};
 									return StyleValue(Vector2(v1, v2), styleUnits);
 								}
@@ -401,7 +401,7 @@ namespace EngineCore::UI {
 							std::string unit;
 							if (TryGetNumber(element, values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
-									StyleUnit::Unit u = StyleUnit::StringToUnit(unit);
+									StyleUnit::Unit u = StyleUnit::ToUnit(unit);
 									return StyleValue(Vector3(v, v, v), { u, u, u});
 								}
 								errorType = 2;
@@ -413,9 +413,9 @@ namespace EngineCore::UI {
 							if (TryGetNumber(element, values[0], v1, unit1) &&
 								TryGetNumber(element, values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
-									StyleUnit::Unit u2 = StyleUnit::StringToUnit(unit2);
+									StyleUnit::Unit u2 = StyleUnit::ToUnit(unit2);
 									std::vector<StyleUnit::Unit> styleUnits{
-										StyleUnit::StringToUnit(unit1),
+										StyleUnit::ToUnit(unit1),
 										u2,
 										u2
 									};
@@ -432,9 +432,9 @@ namespace EngineCore::UI {
 								TryGetNumber(element, values[2], v3, unit3)) {
 								if (IsUnitType(type, unit1, unit2, unit3)) {
 									std::vector<StyleUnit::Unit> styleUnits{
-										StyleUnit::StringToUnit(unit1),
-										StyleUnit::StringToUnit(unit2),
-										StyleUnit::StringToUnit(unit3)
+										StyleUnit::ToUnit(unit1),
+										StyleUnit::ToUnit(unit2),
+										StyleUnit::ToUnit(unit3)
 									};
 									return StyleValue(Vector3(v1, v2, v3), styleUnits);
 								}
@@ -454,7 +454,7 @@ namespace EngineCore::UI {
 							std::string unit;
 							if (TryGetNumber(element, values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
-									StyleUnit::Unit u = StyleUnit::StringToUnit(unit);
+									StyleUnit::Unit u = StyleUnit::ToUnit(unit);
 									return StyleValue(Vector4(v, v, v, v), { u, u, u, u });
 								}
 								errorType = 2;
@@ -466,8 +466,8 @@ namespace EngineCore::UI {
 							if (TryGetNumber(element, values[0], v1, unit1) &&
 								TryGetNumber(element, values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
-									StyleUnit::Unit u1 = StyleUnit::StringToUnit(unit1);
-									StyleUnit::Unit u2 = StyleUnit::StringToUnit(unit2);
+									StyleUnit::Unit u1 = StyleUnit::ToUnit(unit1);
+									StyleUnit::Unit u2 = StyleUnit::ToUnit(unit2);
 									return StyleValue(Vector4(v1, v1, v2, v2), { u1, u1, u2, u2 });
 								}
 								errorType = 2;
@@ -480,10 +480,10 @@ namespace EngineCore::UI {
 								TryGetNumber(element, values[1], v2, unit2) &&
 								TryGetNumber(element, values[2], v3, unit3)) {
 								if (IsUnitType(type, unit1, unit2, unit3)) {
-									StyleUnit::Unit u3 = StyleUnit::StringToUnit(unit3);
+									StyleUnit::Unit u3 = StyleUnit::ToUnit(unit3);
 									std::vector<StyleUnit::Unit> styleUnits{
-										StyleUnit::StringToUnit(unit1),
-										StyleUnit::StringToUnit(unit2),
+										StyleUnit::ToUnit(unit1),
+										StyleUnit::ToUnit(unit2),
 										u3,
 										u3
 									};
@@ -501,10 +501,10 @@ namespace EngineCore::UI {
 								TryGetNumber(element, values[2], v4, unit4)) {
 								if (IsUnitType(type, unit1, unit2, unit3, unit4)) {
 									std::vector<StyleUnit::Unit> styleUnits{
-										StyleUnit::StringToUnit(unit1),
-										StyleUnit::StringToUnit(unit2),
-										StyleUnit::StringToUnit(unit3),
-										StyleUnit::StringToUnit(unit4)
+										StyleUnit::ToUnit(unit1),
+										StyleUnit::ToUnit(unit2),
+										StyleUnit::ToUnit(unit3),
+										StyleUnit::ToUnit(unit4)
 									};
 									return StyleValue(Vector4(v1, v2, v3, v4), styleUnits);
 								}

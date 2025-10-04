@@ -165,6 +165,9 @@
     <ClInclude Include="include\EngineLib\UI\Attribute\_Attributes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EngineLib\UI\LayoutCalc\GridLayoutCalculator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EngineLib\Application.cpp">
@@ -315,6 +318,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EngineLib\UI\Attribute\StyleAttributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\EngineLib\UI\LayoutCalc\ILayoutCalculator.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\EngineLib\UI\LayoutCalc\FlexLayoutCalculator.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\UI\LayoutCalc\FlexLayoutCalculator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\UI\LayoutCalc\GridLayoutCalculator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
