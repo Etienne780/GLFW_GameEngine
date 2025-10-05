@@ -47,10 +47,10 @@ void SetupUI() {
 
 		UI::Add<Panel>(otherStyle2);
 
-		UI::Begin<Panel>(style2); {
-			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
-		}
-		UI::End();
+		// UI::Begin<Panel>(style2); {
+		// 	UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
+		// }
+		// UI::End();
 	}
 	UI::End();
 	Log::Print();

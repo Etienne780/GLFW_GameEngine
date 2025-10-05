@@ -247,7 +247,7 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetLocalPosition(float x, float y) {
-        m_stylePosition.Set(x, y);
+        m_desiredPosition.Set(x, y);
         MarkDirtyParent();
     }
 
@@ -260,22 +260,26 @@ namespace EngineCore::UI {
         MarkDirtyParent();
     }
 
-    void ElementBase::SetStyleSize(const Vector2& scale) {
-        SetStyleSize(scale.x, scale.y);
+    void ElementBase::SetDesiredSize(const Vector2& scale) {
+        SetDesiredSize(scale.x, scale.y);
     }
 
-    void ElementBase::SetStyleSize(float x, float y) {
-        m_styleSize.Set(x, y);
+    void ElementBase::SetDesiredSize(float x, float y) {
+        if (x < 0.0f) x = 0.0f;
+        if (y < 0.0f) y = 0.0f;
+        m_desiredSize.Set(x, y);
         MarkDirtyParent();
     }
 
-    void ElementBase::SetStyleWidth(float x) {
-        m_styleSize.x = x;
+    void ElementBase::SetDesiredWidth(float x) {
+        if (x < 0.0f) x = 0.0f;
+        m_desiredSize.x = x;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetStyleHeight(float y) {
-        m_styleSize.y = y;
+    void ElementBase::SetDesiredHeight(float y) {
+        if (y < 0.0f) y = 0.0f;
+        m_desiredSize.y = y;
         MarkDirtyParent();
     }
 
@@ -381,6 +385,10 @@ namespace EngineCore::UI {
         return m_layoutItem;
     }
 
+    Vector2 ElementBase::GetDesiredPosition() {
+        return m_desiredPosition;
+    }
+
     Vector2 ElementBase::GetAviableSize() {
         return m_aviableSize;
     }
@@ -393,8 +401,8 @@ namespace EngineCore::UI {
         );
     }
 
-    Vector2 ElementBase::GetStyleSize() {
-        return m_styleSize;
+    Vector2 ElementBase::GetDesiredSize() {
+        return m_desiredSize;
     }
 
     Vector2 ElementBase::GetBorderSize() {
@@ -523,6 +531,7 @@ namespace EngineCore::UI {
     void ElementBase::UpdateLayoutPosition() {
         if (!m_parentElementPtr) {
             m_positionDirty = false;
+            m_layoutSize = m_desiredPosition;
             return;
         }
         // resets position for consistency
@@ -530,7 +539,7 @@ namespace EngineCore::UI {
 
         switch (m_parentElementPtr->GetLayoutType()) {
         case LayoutType::Flex:
-            m_layoutPosition = s_flexCalculator.CalculatePosition(this);
+            // m_layoutPosition = s_flexCalculator.CalculatePosition(this);
             break;
         case LayoutType::Grid:
             m_layoutPosition = s_gridCalculator.CalculatePosition(this);
@@ -545,6 +554,7 @@ namespace EngineCore::UI {
     void ElementBase::UpdateLayoutSize() {
         if (!m_parentElementPtr) {
             m_sizeDirty = false;
+            m_layoutSize = m_desiredSize;
             return;
         }
         // resets size for consistency
@@ -565,6 +575,9 @@ namespace EngineCore::UI {
 
         m_sbo.SetParam("uSize", m_layoutSize);
         m_sizeDirty = false;
+
+        // update position if size changes
+       // UpdateLayoutPosition();
     }
 
     void ElementBase::UpdateWorldTransform() {
@@ -705,7 +718,7 @@ namespace EngineCore::UI {
                     if (u == StyleUnit::Unit::Percent_A)
                         el->SetAvailableWidth(f);
                     else
-                        el->SetStyleWidth(f);
+                        el->SetDesiredWidth(f);
                 }
             });
 
@@ -716,7 +729,7 @@ namespace EngineCore::UI {
                     if (u == StyleUnit::Unit::Percent_A)
                         el->SetAvailableHeight(f);
                     else
-                        el->SetStyleHeight(f);
+                        el->SetDesiredHeight(f);
                 }
             });
 
@@ -808,7 +821,7 @@ namespace EngineCore::UI {
         for (auto& child : siblings) {
             // ignors this element 
             if (child->GetID() != this->m_id) {
-                totalSize += child->GetMarginSize();
+                totalSize += child->m_desiredSize + child->m_borderSize + child->m_margin;
             }
         }
         return totalSize;

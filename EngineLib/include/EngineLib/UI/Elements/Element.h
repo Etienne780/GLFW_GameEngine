@@ -83,12 +83,13 @@ namespace EngineCore::UI {
         Flex::LayoutAlign GetLayoutMinor() const;
         Flex::LayoutAlign GetLayoutItem() const;
 
+        Vector2 GetDesiredPosition();
         // aviable
         Vector2 GetAviableSize();
         // size - padding
         Vector2 GetContentSize();
         // style size
-        Vector2 GetStyleSize();
+        Vector2 GetDesiredSize();
         // content + border
         Vector2 GetBorderSize();
         // content + border + margin
@@ -210,29 +211,29 @@ namespace EngineCore::UI {
         void SetLocalRotation(float x, float y, float z);
 
         /**
-        * @brief Sets the style size of the element using a Vector2.
+        * @brief Sets the desired size of the element using a Vector2. size cannot be negative, will be clamped to 0
         * @param size The new size (width, height).
         */
-        void SetStyleSize(const Vector2& size);
+        void SetDesiredSize(const Vector2& size);
 
         /**
-        * @brief Sets the style size of the element using individual width and height values.
+        * @brief Sets the desired size of the element using individual width and height values. size cannot be negative, will be clamped to 0
         * @param width The new width.
         * @param height The new height.
         */
-        void SetStyleSize(float width, float height);
+        void SetDesiredSize(float width, float height);
 
         /**
-        * @brief Sets only the style width of the element.
+        * @brief Sets only the desired width of the element. width cannot be negative, will be clamped to 0
         * @param width The new width.
         */
-        void SetStyleWidth(float width);
+        void SetDesiredWidth(float width);
 
         /**
-        * @brief Sets only the style height of the element.
+        * @brief Sets only the desired height of the element. height cannot be negative, will be clamped to 0
         * @param height The new height.
         */
-        void SetStyleHeight(float height);
+        void SetDesiredHeight(float height);
 
         void SetBackgroundColor(const Vector4& color);
         void SetBorderColor(const Vector4& color);
@@ -291,14 +292,14 @@ namespace EngineCore::UI {
         mutable bool m_worldTransformDirty = true;
 
         // Calculated final position of the element including layout effects (major/minor alignment, parent constraints, etc.)
-        Vector2 m_layoutPosition{ 0, 0 };
+        Vector2 m_layoutPosition{ 0.0f, 0.0f };
         // Local rotation
-        Vector3 m_rotation{ 0, 0, 0 };
+        Vector3 m_rotation{ 0.0f, 0.0f, 0.0f };
         // Calculated final size of the element including padding, border (content + padding + border)
-        Vector2 m_layoutSize{ 800, 500 };
-        Vector2 m_minSize{ 0, 0 };
+        Vector2 m_layoutSize{ 800.0f, 500.0f };
+        Vector2 m_minSize{ 0.0f, 0.0f };
         Vector2 m_maxSize{ FLT_MAX, FLT_MAX };
-        mutable Vector2 m_aviableSize{ -1, -1 };
+        mutable Vector2 m_aviableSize{ -1.0f, -1.0f };
 
         // Local and world transforms
         Matrix4x4 m_worldTransform;
@@ -312,10 +313,10 @@ namespace EngineCore::UI {
         Flex::LayoutAlign m_layoutItem = Flex::LayoutAlign::Start;
 
         // Style-driven position (absolute or relative, as defined in style)
-        Vector2 m_stylePosition{ 0, 0 };
+        Vector2 m_desiredPosition{ 0, 0 };
 
         // Style-driven size (content box size from style, before layout adjustments)
-        Vector2 m_styleSize{ 800, 500 };
+        Vector2 m_desiredSize{ 800, 500 };
         // order: top, right, bottom, left
         Vector4 m_padding{ 0, 0, 0, 0 };
         // order: top, right, bottom, left

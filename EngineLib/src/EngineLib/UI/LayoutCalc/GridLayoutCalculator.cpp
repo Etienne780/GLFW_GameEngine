@@ -7,10 +7,12 @@ namespace EngineCore::UI {
 
     Vector2 GridLayoutCalculator::CalculatePosition(ElementBase* element) {
         Log::Warn("GridLayoutCalculator: Can not CalculatePosition GridLayoutCalculator is not implemented!");
+        return { 0, 0 };
     }
 
     Vector2 GridLayoutCalculator::CalculateSize(ElementBase* element) {
         Log::Warn("GridLayoutCalculator: Can not CalculateSize GridLayoutCalculator is not implemented!");
+        return { 0, 0 };
     }
 
 }
