@@ -49,6 +49,8 @@ namespace EngineCore {
 		static Vector2 GetWindowSize();
 		static float GetUIScaleFactor();
 
+		static void SetRootElementsDirty();
+
 		static void SetUIRenderLayer(RenderLayerID layerID);
 
 		static void SetDebug(bool value);

@@ -356,6 +356,16 @@ namespace EngineCore::UI {
         MarkDirtyParent();
     }
 
+    void ElementBase::SetMargin(const Vector4& margin) {
+        m_margin = margin;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetPadding(const Vector4& padding) {
+        m_padding = padding;
+        MarkDirtyParent();
+    }
+
     void ElementBase::SetDuration(float duration) {
         if (duration < 0.0f) duration = 0.0f;
         m_duration = duration;
@@ -530,8 +540,7 @@ namespace EngineCore::UI {
 
     void ElementBase::UpdateLayoutPosition() {
         if (!m_parentElementPtr) {
-            m_positionDirty = false;
-            m_layoutSize = m_desiredPosition;
+            m_layoutPosition = m_desiredPosition;
             return;
         }
         // resets position for consistency
@@ -539,7 +548,7 @@ namespace EngineCore::UI {
 
         switch (m_parentElementPtr->GetLayoutType()) {
         case LayoutType::Flex:
-            // m_layoutPosition = s_flexCalculator.CalculatePosition(this);
+            m_layoutPosition = s_flexCalculator.CalculatePosition(this);
             break;
         case LayoutType::Grid:
             m_layoutPosition = s_gridCalculator.CalculatePosition(this);
@@ -553,7 +562,6 @@ namespace EngineCore::UI {
 
     void ElementBase::UpdateLayoutSize() {
         if (!m_parentElementPtr) {
-            m_sizeDirty = false;
             m_layoutSize = m_desiredSize;
             return;
         }
@@ -574,21 +582,23 @@ namespace EngineCore::UI {
         }
 
         m_sbo.SetParam("uSize", m_layoutSize);
-        m_sizeDirty = false;
 
         // update position if size changes
-       // UpdateLayoutPosition();
+        m_positionDirty = true;
     }
 
     void ElementBase::UpdateWorldTransform() {
         using namespace GLTransform4x4;
 
-        if (m_positionDirty) {
-            UpdateLayoutPosition();
-        }
-
+        // IMPORTANT: update position after size
         if (m_sizeDirty) {
             UpdateLayoutSize();
+            m_sizeDirty = false;
+        }
+
+        if (m_positionDirty) {
+            UpdateLayoutPosition();
+            m_positionDirty = false;
         }
 
         Vector2 parentPosition;
@@ -618,7 +628,10 @@ namespace EngineCore::UI {
         // z.b. if width of this el changed. than the positions needs to recalculatet
         if (m_parentElementPtr) {
             m_parentElementPtr->MarkDirty();
+            return;
         }
+
+        UIManager::SetRootElementsDirty();
     }
 
     void ElementBase::MarkDirty() const {
@@ -786,6 +799,18 @@ namespace EngineCore::UI {
                     el->SetBorderRight(f);
                 }
             });
+
+            RegisterAttribute(att::margin, [](ElementBase* el, const StyleValue& val) {
+                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::margin)) {
+                    el->SetMargin(vec);
+                }
+            });
+
+            RegisterAttribute(att::padding, [](ElementBase* el, const StyleValue& val) {
+                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::padding)) {
+                    el->SetPadding(vec);
+                }
+            });
         }
        
         RegisterAttributes();
@@ -812,7 +837,7 @@ namespace EngineCore::UI {
         }
     }
 
-    Vector2 ElementBase::ComputeSiblingsTotalMarginSize() const {
+    Vector2 ElementBase::ComputeSiblingsTotalDesiredSize() const {
         if (!m_parentElementPtr) return Vector2();
 
         auto& siblings = m_parentElementPtr->GetChildren();
@@ -822,6 +847,21 @@ namespace EngineCore::UI {
             // ignors this element 
             if (child->GetID() != this->m_id) {
                 totalSize += child->m_desiredSize + child->m_borderSize + child->m_margin;
+            }
+        }
+        return totalSize;
+    }
+
+    Vector2 ElementBase::ComputeSiblingsTotalLayoutSize() const {
+        if (!m_parentElementPtr) return Vector2();
+
+        auto& siblings = m_parentElementPtr->GetChildren();
+
+        Vector2 totalSize;
+        for (auto& child : siblings) {
+            // ignors this element 
+            if (child->GetID() != this->m_id) {
+                totalSize += child->m_layoutSize + child->m_borderSize + child->m_margin;
             }
         }
         return totalSize;

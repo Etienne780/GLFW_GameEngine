@@ -125,10 +125,16 @@ namespace EngineCore::UI {
         float GetDuration() const;
 
         /**
-        * @brief Computes the total margin size of all sibling elements except this element.
+        * @brief Computes the total (Desired + border + margin) size of all sibling elements except this element.
         * @return A Vector2 representing the summed margin size of the siblings.
         */
-        Vector2 ComputeSiblingsTotalMarginSize() const;
+        Vector2 ComputeSiblingsTotalDesiredSize() const;
+
+        /**
+        * @brief Computes the total (Layout + border + margin)  size of all sibling elements except this element.
+        * @return A Vector2 representing the summed margin size of the siblings.
+        */
+        Vector2 ComputeSiblingsTotalLayoutSize() const;
 
         State GetState() const;
 
@@ -246,6 +252,8 @@ namespace EngineCore::UI {
         void SetBorderSize(float width, float height);
         void SetBorderSize(const Vector4& vec);
         void SetBorderSize(float top, float right, float bottom, float left);
+        void SetMargin(const Vector4& margin);
+        void SetPadding(const Vector4& padding);
         void SetDuration(float duration);
 
         /*
@@ -296,7 +304,7 @@ namespace EngineCore::UI {
         // Local rotation
         Vector3 m_rotation{ 0.0f, 0.0f, 0.0f };
         // Calculated final size of the element including padding, border (content + padding + border)
-        Vector2 m_layoutSize{ 800.0f, 500.0f };
+        Vector2 m_layoutSize{ 0.0f, 0.0f };
         Vector2 m_minSize{ 0.0f, 0.0f };
         Vector2 m_maxSize{ FLT_MAX, FLT_MAX };
         mutable Vector2 m_aviableSize{ -1.0f, -1.0f };

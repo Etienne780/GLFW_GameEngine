@@ -13,44 +13,34 @@ void SetupUI() {
 	UI::SetUIRenderLayer(uiLayer);
 
 	auto defaultStyle = Style::Create("DefaultStyle");
-	defaultStyle->Set(Attribute::borderRadius, "20px 30px 40px 10px");
-	defaultStyle->Set(Attribute::borderColor, "#00ff00");
+	defaultStyle->Set(Attribute::layoutDirection, "row");
+	defaultStyle->Set(Attribute::layout, "start start");
 	defaultStyle->Set(Attribute::width, "50%w");
 	defaultStyle->Set(Attribute::height, "50%h");
-	defaultStyle->Set(Attribute::backgroundColor, "#00ffff");
-	defaultStyle->Set(State::Hovered, Attribute::backgroundColor, "#880088");
-	defaultStyle->Set(State::Hovered, Attribute::borderRadius, "50px");
-	defaultStyle->Set(State::Pressed, Attribute::backgroundColor, "#0000ff");
+	defaultStyle->Set(Attribute::backgroundColor, "#00 00 00");
 
-	auto style2 = Style::Create("style2");
-	style2->Set(Attribute::width, "30%w");
-	style2->Set(Attribute::height, "30%h");
-	style2->Set(Attribute::backgroundColor, "#0000ff");
+	auto style1 = Style::Create("style1");
+	style1->Set(Attribute::width, "100%a");
+	style1->Set(Attribute::height, "100%a");
+	style1->Set(Attribute::backgroundColor, "#ff 00 00");
 
-	auto otherStyle = Style::Create("OtherStyle");
-	otherStyle->Set(Attribute::backgroundColor,"#ff0000");
-	otherStyle->Set(Attribute::width, "90%w");
-	otherStyle->Set(Attribute::height, "90%h");
+	auto style2 = Style::Create("style2", style1);
+	style2->Set(Attribute::width, "75px");
+	style2->Set(Attribute::backgroundColor, "#00 ff 00");
 
-	auto otherStyle2 = Style::Create("OtherStyle2");
-	otherStyle2->Set(Attribute::backgroundColor, "#ffff00");
-	otherStyle2->Set(Attribute::width, "100%a");
-	otherStyle2->Set(Attribute::height, "100%a");
+	auto style3 = Style::Create("style3", style2);
+	style3->Set(Attribute::backgroundColor, "#00 00 ff");
+
+	auto style4 = Style::Create("style4", style1);
+	style4->Set(Attribute::backgroundColor, "#ff ff 00");
 
 	// UI::SetDebug(false);
 	UI::Begin<Panel>(defaultStyle); {
 
-		UI::Begin<Panel>(style2); {
-			UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
-		}
-		UI::End();
-
-		UI::Add<Panel>(otherStyle2);
-
-		// UI::Begin<Panel>(style2); {
-		// 	UI::Add<Panel>(otherStyle)->SetOnClick([] { Log::Info("Pressed"); });
-		// }
-		// UI::End();
+		UI::Add<Panel>(style1);
+		UI::Add<Panel>(style2);
+		UI::Add<Panel>(style3);
+		UI::Add<Panel>(style4);
 	}
 	UI::End();
 	Log::Print();

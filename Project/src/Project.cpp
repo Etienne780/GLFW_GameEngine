@@ -26,6 +26,8 @@ void Project::Start() {
 	App_OpenGL_Set_FaceCulling(true);
 	App_Debug_Set_DebugKey(KeyCode::H);
 
+	App_Application_Set_Window_Cursor_LockHidden(false);
+	
 	SetupGame();
 	Scenes::LoadTest();
 }

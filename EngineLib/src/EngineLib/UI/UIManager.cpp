@@ -67,6 +67,12 @@ namespace EngineCore {
         return m_uiScaleFactor;
     }
 
+    void UIManager::SetRootElementsDirty() {
+        for (auto& element : m_roots) {
+            element->MarkDirty();
+        }
+    }
+
     void UIManager::SetUIRenderLayer(RenderLayerID layerID) {
         m_renderLayerID = layerID;
     }
