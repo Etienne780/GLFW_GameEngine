@@ -130,6 +130,10 @@ namespace EngineCore {
 		*/
 		void SortComponents();
 		/**
+		* @brief marks this GameObject as dead, so that all references know 'this' is deleted an will not be shown
+		*/
+		void Unalive();
+		/**
 		* @brief sets all the components alive variabel to false
 		*/
 		void UnaliveComponents();

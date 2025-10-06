@@ -89,7 +89,8 @@ namespace EngineCore {
 
 	void GameObjectManager::DeleteGameObjectInternal(std::shared_ptr<GameObject> gameObjectPtr) {
 		// delete children recursively
-		auto children = gameObjectPtr->m_childObjPtrs;
+		// copy child
+		std::vector<std::shared_ptr<GameObject>> children = gameObjectPtr->m_childObjPtrs;
 		for (auto& child : children) {
 			DeleteGameObjectInternal(child);
 		}
@@ -106,7 +107,7 @@ namespace EngineCore {
 
 		gameObjectPtr->UnregisterCameraFromManager();
 		gameObjectPtr->UnaliveComponents();
-		gameObjectPtr->m_alive = false;
+		gameObjectPtr->Unalive();
 		m_gameObjects.erase(std::remove(m_gameObjects.begin(), m_gameObjects.end(), gameObjectPtr), m_gameObjects.end());
 	}
 

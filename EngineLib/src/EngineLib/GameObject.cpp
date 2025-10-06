@@ -366,6 +366,10 @@ namespace EngineCore {
 		});
 	}
 
+	void GameObject::Unalive() {
+		m_alive = false;
+	}
+
 	void GameObject::UnaliveComponents() {
 		for (auto& comp : m_components) {
 			comp->m_alive = false;
