@@ -157,8 +157,8 @@ namespace EngineCore {
 		if (m_gameObjects.empty())
 			return nullptr;
 		
-		// binary search if the ids are in order
-		if (!m_idManager.IsIDFallback()) {
+		// binary search if the ids are in order and size is large enough
+		if (!m_idManager.IsIDFallback() && m_gameObjects.size() > 64) {
 			unsigned int startIndex = 0;
 			unsigned int endIndex = static_cast<unsigned int>(m_gameObjects.size() - 1);
 		
@@ -170,7 +170,8 @@ namespace EngineCore {
 					return go;
 				}
 				else if (go->GetID().value > id) {
-					if (mid == 0) break;
+					if (mid == 0) 
+						break;
 					endIndex = mid - 1;
 				}
 				else {
@@ -179,7 +180,7 @@ namespace EngineCore {
 			}
 		}
 		
-		// lineare Suche
+		// lineare search
 		for (auto& obj : m_gameObjects) {
 			if (obj->GetID().value == id) {
 				return obj;
