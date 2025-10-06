@@ -52,6 +52,43 @@ namespace Algorithm {
 		}
 
 		/**
+		* @brief Gets an element by a specific ID from a sorted list of pointers using binary search
+		* @tparam T The type of elements pointed to by the vector
+		* @tparam getIDFn Callable that returns the ID for a given element pointer
+		* @param list Reference to a sorted vector of pointers
+		* @param getID Function returning the ID of a given element pointer
+		* @param searchID The ID to search for
+		* @return Pointer to the found element, or nullptr if not found
+		*/
+		template<typename T, typename getIDFn>
+		inline T* GetBinary(std::vector<T*>& list, getIDFn getID, unsigned int searchID) {
+			if (list.empty())
+				return nullptr;
+
+			size_t startIndex = 0;
+			size_t endIndex = list.size() - 1;
+
+			while (startIndex <= endIndex) {
+				size_t mid = startIndex + (endIndex - startIndex) / 2;
+				T* element = list[mid];
+				unsigned int id = getID(*element);  // Pass the dereferenced pointer
+
+				if (id == searchID) {
+					return element;
+				}
+				else if (id > searchID) {
+					if (mid == 0) break;
+					endIndex = mid - 1;
+				}
+				else {
+					startIndex = mid + 1;
+				}
+			}
+
+			return nullptr;
+		}
+
+		/**
 		* @brief Gets an element by a specific ID from a sorted list of unique_ptr using binary search
 		* @tparam T The type of the managed elements
 		* @param list Reference to a sorted vector of unique_ptr<T>
@@ -299,6 +336,23 @@ namespace Algorithm {
 			for (auto& e : list)
 				if (condition(e))
 					return &e;
+
+			return nullptr;
+		}
+
+		/**
+		* @brief Performs a linear search on a vector of raw pointers.
+		* @tparam T Type of elements pointed to by the pointers in the vector
+		* @tparam CondFn Callable type that determines whether an element matches the search condition
+		* @param list Reference to a vector containing raw pointers to elements of type T
+		* @param condition Callable (e.g., lambda) that takes a T& and returns true if it matches the search condition
+		* @return Pointer to the found element, or nullptr if no element satisfies the condition
+		*/
+		template<typename T, typename CondFn>
+		inline T* GetLinear(std::vector<T*>& list, CondFn condition) {
+			for (auto& e : list)
+				if (condition(*e))
+					return e;
 
 			return nullptr;
 		}
