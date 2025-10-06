@@ -12,6 +12,7 @@
 #include <CoreLib/TimeUtils.h>
 #include <CoreLib/ConversionUtils.h>
 #include <CoreLib/stb_image.h>
+#include <CoreLib/Algorithm.h>
 
 #include "EngineLib/EngineTypes.h"
 #include "EngineLib/Application.h"

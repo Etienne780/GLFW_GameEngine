@@ -178,6 +178,7 @@
     <ClCompile Include="src\CoreLib\tinyfiledialogs.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\CoreLib\Algorithm.h" />
     <ClInclude Include="include\CoreLib\ColorUtils.h" />
     <ClInclude Include="include\CoreLib\ConversionUtils.h" />
     <ClInclude Include="include\CoreLib\File.h" />

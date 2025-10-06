@@ -1,4 +1,5 @@
 #include <any>
+#include <CoreLib/Algorithm.h>
 #include <CoreLib/FormatUtils.h>
 #include <CoreLib/Log.h>
 
@@ -32,7 +33,7 @@ namespace EngineCore {
 	}
 
     const UI::ElementBase* UIManager::GetElement(UIElementID elementID) {
-        
+        return nullptr;
     }
 
     void UIManager::DeleteElement(UIElementID elementID) {
@@ -220,13 +221,6 @@ namespace EngineCore {
     }
 
     void UIManager::CalculateOrthograpicMatrix(int width, int height) {
-        // float halfW = static_cast<float>(width);
-        // float halfH = static_cast<float>(height);
-        // m_orthoMat = GLTransform4x4::Orthographic(
-        //     -halfW, halfW,
-        //     -halfH, halfH,
-        //     -1000.0f, 1000.0f);
-
         m_orthoMat = GLTransform4x4::Orthographic(
             0.0f, static_cast<float>(width),
             static_cast<float>(height), 0.0f,
@@ -266,6 +260,8 @@ namespace EngineCore {
                 }
             }
         }
+
+       // Algorithm::search::GetBinary<>();
 
         // lineare search
         for (auto& element : m_roots) {
