@@ -31,7 +31,19 @@ namespace EngineCore {
 		}
 	}
 
-	void UIManager::DeleteAll() {
+    const UI::ElementBase* UIManager::GetElement(UIElementID elementID) {
+        
+    }
+
+    void UIManager::DeleteElement(UIElementID elementID) {
+        
+    }
+
+    const std::vector<std::unique_ptr<UI::ElementBase>>& UIManager::GetAllRoots() {
+        return m_roots;
+    }
+
+	void UIManager::DeleteAllRoots() {
         m_elementCount = 0;
 		for (const auto& element : m_roots) {
 			FreeIDsInternal(element.get());
@@ -65,6 +77,14 @@ namespace EngineCore {
 
     float UIManager::GetUIScaleFactor() {
         return m_uiScaleFactor;
+    }
+
+    RenderLayerID UIManager::GetRenderLayer() {
+        return m_renderLayerID;
+    }
+
+    size_t UIManager::GetElementCount() {
+        return m_elementCount;
     }
 
     void UIManager::SetRootElementsDirty() {
@@ -220,6 +240,42 @@ namespace EngineCore {
 		}
 		m_idManager.FreeUniqueIdentifier(element->GetID().value);
 	}
+
+    const UI::ElementBase* UIManager::SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>> list, UIElementID id) {
+        if (list.empty())
+            return nullptr;
+
+        // binary search if the ids are in order and size is large enough
+        if (!m_idManager.IsIDFallback() && list.size() > 64) {
+            unsigned int startIndex = 0;
+            unsigned int endIndex = static_cast<unsigned int>(m_roots.size() - 1);
+
+            while (startIndex <= endIndex) {
+                unsigned int mid = startIndex + (endIndex - startIndex) / 2;
+                auto& element = m_roots[mid];
+
+                if (element->GetID() == id) {
+                    return element.get();
+                }
+                else if (element->GetID() > id) {
+                    if (mid == 0) break;
+                    endIndex = mid - 1;
+                }
+                else {
+                    startIndex = mid + 1;
+                }
+            }
+        }
+
+        // lineare search
+        for (auto& element : m_roots) {
+            if (element->GetID() == id) {
+                return element.get();
+            }
+        }
+
+        return nullptr;
+    }
 
     void UIManager::BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level) {
         std::string indent(level * 2, ' ');

@@ -17,8 +17,8 @@ namespace EngineCore {
 	class Engine;
 	class Renderer;
 	class UIManager {
-	friend class Engine;
-	friend class Renderer;
+		friend class Engine;
+		friend class Renderer;
 	public:
 		static void Init();
 		static void Shutdown();
@@ -41,13 +41,32 @@ namespace EngineCore {
 		template<typename T, typename... Args>
 		static T* Add(Args&&... args);
 
-		static void DeleteAll();
+		/**
+		* @brief Gets an element by id
+		* @returns the element or nullptr if not found
+		*/
+		static const UI::ElementBase* GetElement(UIElementID elementID);
+		/**
+		* @brief deletes an element by id
+		*/
+		static void DeleteElement(UIElementID elementID);
+		/**
+		* @brief Gets all root elements
+		* @returns a const referenc containing all root elements
+		*/
+		static const std::vector<std::unique_ptr<UI::ElementBase>>& GetAllRoots();
+		/**
+		* @brief deletes all root elements
+		*/
+		static void DeleteAllRoots();
 
 		static std::string GetUIHierarchyString();
 		static bool GetUIScaling();
 		static Vector2 GetReferenceScreenSize();
 		static Vector2 GetWindowSize();
 		static float GetUIScaleFactor();
+		static RenderLayerID GetRenderLayer();
+		static size_t GetElementCount();
 
 		static void SetRootElementsDirty();
 
@@ -82,7 +101,7 @@ namespace EngineCore {
 		static inline RenderLayerID m_renderLayerID{ ENGINE_INVALID_ID };
 
 		static inline std::vector<std::unique_ptr<UI::ElementBase>> m_roots;
-		static inline std::stack<UI::ElementBase*> m_elementStack;
+		static inline std::stack<UI::ElementBase*> m_elementStack;// is used for creating ui hierarchy
 
 		// If true, the UI is scaled relative to the reference screen size
 		static inline bool m_enableUIScaling = false;
@@ -106,6 +125,7 @@ namespace EngineCore {
 		static float CalculateUIScaleFactor(int width, int height);
 		static void CalculateOrthograpicMatrix(int width, int height);
 		static void FreeIDsInternal(UI::ElementBase* element);
+		static const UI::ElementBase* SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>> list, UIElementID elementID);
 		static void BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level);
 
 		static Matrix4x4* GetOrthograpicMatrixPtr();
