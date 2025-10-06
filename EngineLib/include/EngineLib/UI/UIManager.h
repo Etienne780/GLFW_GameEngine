@@ -26,28 +26,40 @@ namespace EngineCore {
 		UIManager(const UIManager&) = delete;
 		UIManager& operator=(const UIManager&) = delete;
 
-		/*
-		* @brief begin needs to always end with an end
+		/**
+		* @brief Begins the creation of a new UI element. Must be paired with a corresponding End() call.
+		* @tparam T The type of the UI element, must derive from UI::ElementBase.
+		* @tparam Args Variadic template arguments forwarded to the element constructor.
+		* @param args Arguments forwarded to the constructor of the element.
+		* @return Pointer to the newly created element of type T, or nullptr if creation failed.
 		*/
 		template<typename T, typename... Args>
 		static T* Begin(Args&&... args);
-		/*
-		* @brief Begin musst be called before End
+		/**
+		* @brief Ends the most recent Begin() call, finalizing the element on top of the stack.
+		* Logs an error if End is called without a preceding Begin.
 		*/
 		static void End();
-		/*
-		* @brief Musst be between Begin and End
+		/**
+		* @brief Adds a new child element under the currently active Begin element.
+		* Must be called between Begin() and End().
+		* @tparam T The type of the UI element, must derive from UI::ElementBase.
+		* @tparam Args Variadic template arguments forwarded to the element constructor.
+		* @param args Arguments forwarded to the constructor of the element.
+		* @return Pointer to the newly added element of type T, or nullptr if addition failed.
 		*/
 		template<typename T, typename... Args>
 		static T* Add(Args&&... args);
 
 		/**
-		* @brief Gets an element by id
-		* @returns the element or nullptr if not found
+		* @brief Retrieves a constant pointer to a UI element by its ID.
+		* @param elementID The unique identifier of the element to retrieve.
+		* @return Pointer to the element if found, nullptr otherwise.
 		*/
 		static const UI::ElementBase* GetElement(UIElementID elementID);
 		/**
-		* @brief deletes an element by id
+		* @brief Deletes a UI element by its ID, removing it from its parent or root list and freeing its ID recursively.
+		* @param elementID The unique identifier of the element to delete.
 		*/
 		static void DeleteElement(UIElementID elementID);
 		/**
@@ -60,6 +72,10 @@ namespace EngineCore {
 		*/
 		static void DeleteAllRoots();
 
+		/**
+		* @brief Generates a string representation of the entire UI hierarchy, starting from root elements.
+		* @return A formatted string showing the hierarchy of all UI elements, their IDs, and style attributes.
+		*/
 		static std::string GetUIHierarchyString();
 		static bool GetUIScaling();
 		static Vector2 GetReferenceScreenSize();
@@ -124,8 +140,24 @@ namespace EngineCore {
 		static void SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element);
 		static float CalculateUIScaleFactor(int width, int height);
 		static void CalculateOrthograpicMatrix(int width, int height);
+		/**
+		* @brief Frees the unique identifiers of an element and all its children recursively.
+		* @param element Pointer to the element whose IDs should be freed.
+		*/
 		static void FreeIDsInternal(UI::ElementBase* element);
-		static const UI::ElementBase* SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID elementID);
+		/**
+		* @brief Searches for a UI element in a given list and its children recursively.
+		* @param list The list of elements to search in.
+		* @param elementID The unique identifier of the element to search for.
+		* @return Pointer to the element if found, nullptr otherwise.
+		*/
+		static UI::ElementBase* SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID elementID);
+		/**
+		* @brief Recursively builds a string representation of a UI element and its children.
+		* @param elementPtr Pointer to the element to process.
+		* @param outStr Reference to the output string to append hierarchy information to.
+		* @param level The current depth in the hierarchy, used for indentation.
+		*/
 		static void BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level);
 
 		static Matrix4x4* GetOrthograpicMatrixPtr();

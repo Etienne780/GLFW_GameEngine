@@ -33,11 +33,27 @@ namespace EngineCore {
 	}
 
     const UI::ElementBase* UIManager::GetElement(UIElementID elementID) {
-        return nullptr;
+        return SearchElementInternal(m_roots, elementID);
     }
 
     void UIManager::DeleteElement(UIElementID elementID) {
-        
+        auto* element = SearchElementInternal(m_roots, elementID);
+        auto* parent = element->GetParent();
+        FreeIDsInternal(element);
+
+        if (parent) {
+            auto& parentChilds = parent->GetChildren();
+            parentChilds.erase(
+                std::remove_if(parentChilds.begin(), parentChilds.end(),
+                    [element](const std::unique_ptr<UI::ElementBase>& ptr) { return ptr.get() == element; }),
+                parentChilds.end());
+        }
+        else {
+            m_roots.erase(
+                std::remove_if(m_roots.begin(), m_roots.end(),
+                    [element](const std::unique_ptr<UI::ElementBase>& ptr) { return ptr.get() == element; }),
+                m_roots.end());
+        }
     }
 
     const std::vector<std::unique_ptr<UI::ElementBase>>& UIManager::GetAllRoots() {
@@ -235,7 +251,7 @@ namespace EngineCore {
 		m_idManager.FreeUniqueIdentifier(element->GetID().value);
 	}
 
-    const UI::ElementBase* UIManager::SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID id) {
+    UI::ElementBase* UIManager::SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID id) {
         if (list.empty())
             return nullptr;
 
@@ -266,9 +282,13 @@ namespace EngineCore {
         std::shared_ptr<UI::Style> style = elementPtr->GetStyle();
         if (style) {
             try {
-                const auto& attributes = style->GetAllState(UI::State::Normal);
-                for (const auto& [name, styleVal] : attributes) {
-                    styleStr += " " + name + "=\"" + styleVal + "\"";
+                const auto& attributes = style->GetAllState(elementPtr->GetState());
+                // if style has to many attributes display the style name
+                styleStr += " style=\"" + style->GetName() + "\"";
+                if (attributes.size() <= 5) {
+                    for (const auto& [name, styleVal] : attributes) {
+                        styleStr += " " + name + "=\"" + styleVal + "\"";
+                    }
                 }
             }
             catch (const std::exception& e) {
