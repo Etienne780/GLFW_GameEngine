@@ -19,8 +19,12 @@ namespace Algorithm {
 		* @param searchID The ID to search for
 		* @return Pointer to the found element, or nullptr if not found
 		*/
-		template<typename T>
-		inline T* GetBinary(std::vector<T>& list, std::function<unsigned int(const T&)> getID, unsigned int searchID) {
+		template<typename T, typename getIDFn>
+		inline T* GetBinary(
+			std::vector<T>& list, 
+			getIDFn getID,
+			unsigned int searchID
+		) {
 			if (list.empty()) 
 				return nullptr;
 
@@ -55,10 +59,10 @@ namespace Algorithm {
 		* @param searchID The ID to search for
 		* @return Pointer to the found element (non-owning), or nullptr if not found
 		*/
-		template<typename T>
+		template<typename T, typename getIDFn>
 		inline T* GetBinary(
 			std::vector<std::unique_ptr<T>>& list,
-			std::function<unsigned int(const T&)> getID,
+			getIDFn getID,
 			unsigned int searchID
 		) {
 			if (list.empty()) 
@@ -95,10 +99,10 @@ namespace Algorithm {
 		* @param searchID The ID to search for
 		* @return Shared pointer to the found element, or nullptr if not found
 		*/
-		template<typename T>
+		template<typename T, typename getIDFn>
 		inline std::shared_ptr<T> GetBinary(
 			std::vector<std::shared_ptr<T>>& list,
-			std::function<unsigned int(const T&)> getID,
+			getIDFn getID,
 			unsigned int searchID
 		) {
 			if (list.empty()) 
@@ -127,6 +131,158 @@ namespace Algorithm {
 			return nullptr;
 		}
 
+		/**
+		* @brief Recursively searches for an element in a sorted vector (and its hierarchical children) using binary search.
+		* @tparam T The type of elements in the vector
+		* @tparam getIDFn Function type that returns an ID from an element
+		* @tparam ChildFn Function type that returns a reference to the children vector of an element
+		* @param list Reference to a sorted vector of T
+		* @param getID Callable that returns the ID of a given element
+		* @param searchID The ID to search for
+		* @param getChildren Callable that returns a reference to a vector of children elements for a given element
+		* @return Pointer to the found element, or nullptr if not found
+		*/
+		template<typename T, typename getIDFn, typename ChildFn>
+		inline T* GetBinaryRecursive(
+			std::vector<T>& list,
+			getIDFn getID,
+			unsigned int searchID,
+			ChildFn getChildren
+		) {
+			if (list.empty())
+				return nullptr;
+
+			size_t startIndex = 0;
+			size_t endIndex = list.size() - 1;
+
+			while (startIndex <= endIndex) {
+				size_t mid = startIndex + (endIndex - startIndex) / 2;
+				T& element = list[mid];
+				unsigned int id = getID(element);
+
+				if (id == searchID) {
+					return &element;
+				}
+				else if (id > searchID) {
+					if (mid == 0) break;
+					endIndex = mid - 1;
+				}
+				else {
+					startIndex = mid + 1;
+				}
+
+				auto& children = getChildren(element);
+				if (!children.empty()) {
+					T* found = GetBinaryRecursive(children, getID, searchID, getChildren);
+					if (found) return found;
+				}
+			}
+
+			return nullptr;
+		}
+
+		/**
+		* @brief Recursively searches for an element in a sorted vector of unique_ptr (and its hierarchical children) using binary search.
+		* @tparam T The type of elements managed by unique_ptr
+		* @tparam getIDFn Function type that returns an ID from an element
+		* @tparam ChildFn Function type that returns a reference to the children vector of an element
+		* @param list Reference to a sorted vector of std::unique_ptr<T>
+		* @param getID Callable that returns the ID of a given element
+		* @param searchID The ID to search for
+		* @param getChildren Callable that returns a reference to a vector of children elements for a given element
+		* @return Non-owning raw pointer to the found element, or nullptr if not found
+		*/
+		template<typename T, typename getIDFn, typename ChildFn>
+		inline T* GetBinaryRecursive(
+			std::vector<std::unique_ptr<T>>& list,
+			getIDFn getID,
+			unsigned int searchID,
+			ChildFn getChildren
+		) {
+			if (list.empty())
+				return nullptr;
+
+			size_t startIndex = 0;
+			size_t endIndex = list.size() - 1;
+
+			while (startIndex <= endIndex) {
+				size_t mid = startIndex + (endIndex - startIndex) / 2;
+				T& element = *list[mid];
+				unsigned int id = getID(element);
+
+				if (id == searchID) {
+					return list[mid].get();  // non-owning raw pointer
+				}
+				else if (id > searchID) {
+					if (mid == 0) break;
+					endIndex = mid - 1;
+				}
+				else {
+					startIndex = mid + 1;
+				}
+
+				auto& children = getChildren(element);
+				if (!children.empty()) {
+					T* found = GetBinaryRecursive(children, getID, searchID, getChildren);
+					if (found) return found;
+				}
+			}
+
+			return nullptr;
+		}
+
+		/**
+		* @brief Recursively searches for an element in a sorted vector of shared_ptr (and its hierarchical children) using binary search.
+		* @tparam T The type of elements managed by shared_ptr
+		* @tparam getIDFn Function type that returns an ID from an element
+		* @tparam ChildFn Function type that returns a reference to the children vector of an element
+		* @param list Reference to a sorted vector of std::shared_ptr<T>
+		* @param getID Callable that returns the ID of a given element
+		* @param searchID The ID to search for
+		* @param getChildren Callable that returns a reference to a vector of children elements for a given element
+		* @return Shared pointer to the found element, or nullptr if not found
+		*/
+		template<typename T, typename getIDFn, typename ChildFn>
+		inline std::shared_ptr<T> GetBinaryRecursive(
+			std::vector<std::shared_ptr<T>>& list,
+			getIDFn getID,
+			unsigned int searchID,
+			ChildFn getChildren
+		) {
+			if (list.empty())
+				return nullptr;
+
+			size_t startIndex = 0;
+			size_t endIndex = list.size() - 1;
+
+			while (startIndex <= endIndex) {
+				size_t mid = startIndex + (endIndex - startIndex) / 2;
+				T& element = *list[mid];
+				unsigned int id = getID(element);
+
+				if (id == searchID) {
+					return list[mid];
+				}
+				else if (id > searchID) {
+					if (mid == 0) break;
+					endIndex = mid - 1;
+				}
+				else {
+					startIndex = mid + 1;
+				}
+
+				// Recursive search in children
+				auto& children = getChildren(element);
+				if (!children.empty()) {
+					std::shared_ptr<T> found = GetBinaryRecursive(children, getID, searchID, getChildren);
+					if (found)
+						return found;
+				}
+			}
+
+			return nullptr;
+		}
+
 		#pragma endregion
 
 		#pragma region Linear
@@ -138,8 +294,8 @@ namespace Algorithm {
 		* @param condition Function that returns true for the element to find
 		* @return Pointer to the found element, or nullptr if not found
 		*/
-		template<typename T>
-		inline T* GetLinear(std::vector<T>& list, std::function<bool(const T&)> condition) {
+		template<typename T, typename CondFn>
+		inline T* GetLinear(std::vector<T>& list, CondFn condition) {
 			for (auto& e : list)
 				if (condition(e))
 					return &e;
@@ -154,8 +310,8 @@ namespace Algorithm {
 		* @param condition Function that returns true for the element to find
 		* @return Pointer to the found element (non-owning), or nullptr if not found
 		*/
-		template<typename T>
-		inline T* GetLinear(std::vector<std::unique_ptr<T>>& list, std::function<bool(const T&)> condition) {
+		template<typename T, typename CondFn>
+		inline T* GetLinear(std::vector<std::unique_ptr<T>>& list, CondFn condition) {
 			for (auto& e : list)
 				if (condition(*e))
 					return e.get();
@@ -170,8 +326,8 @@ namespace Algorithm {
 		* @param condition Function that returns true for the element to find
 		* @return Shared pointer to the found element, or nullptr if not found
 		*/
-		template<typename T>
-		inline std::shared_ptr<T> GetLinear(std::vector<std::shared_ptr<T>>& list, std::function<bool(const T&)> condition) {
+		template<typename T, typename CondFn>
+		inline std::shared_ptr<T> GetLinear(std::vector<std::shared_ptr<T>>& list, CondFn condition) {
 			for (auto& e : list)
 				if (condition(*e))
 					return e;
@@ -182,16 +338,18 @@ namespace Algorithm {
 		/**
 		* @brief Recursively searches a vector and its children for an element matching the given condition.
 		* @tparam T Type of elements in the vector
-		* @param list The vector to search through
-		* @param condition Function returning true if the element matches
-		* @param getChildren Function returning a reference to the children vector of an element
-		* @return Pointer to the found element or nullptr if not found
+		* @tparam CondFn Callable that checks if an element matches the search condition
+		* @tparam ChildFn Callable that retrieves the children vector reference
+		* @param list Vector of elements to search through
+		* @param condition Callable that returns true if an element matches the search condition
+		* @param getChildren Callable that returns a reference to the children vector of a given element
+		* @return Pointer to the found element, or nullptr if not found
 		*/
-		template<typename T>
+		template<typename T, typename CondFn, typename ChildFn>
 		inline T* GetLinearRecursive(
 			std::vector<T>& list,
-			std::function<bool(const T&)> condition,
-			std::function<std::vector<T>& (T&)> getChildren
+			CondFn condition,
+			ChildFn getChildren
 		) {
 			for (auto& element : list) {
 				if (condition(element))
@@ -207,11 +365,21 @@ namespace Algorithm {
 			return nullptr;
 		}
 
-		template<typename T>
+		/**
+		* @brief Recursively searches a vector of unique_ptr and their children for an element matching the given condition.
+		* @tparam T Type of the managed elements
+		* @tparam CondFn Callable that checks if an element matches the search condition
+		* @tparam ChildFn Callable that retrieves the children vector reference
+		* @param list Vector of unique_ptr elements to search through
+		* @param condition Callable that returns true if an element matches the search condition
+		* @param getChildren Callable that returns a reference to the children vector of a given element
+		* @return Pointer to the found element, or nullptr if not found
+		*/
+		template<typename T, typename CondFn, typename ChildFn>
 		inline T* GetLinearRecursive(
 			std::vector<std::unique_ptr<T>>& list,
-			std::function<bool(const T&)> condition,
-			std::function<std::vector<std::unique_ptr<T>>& (T&)> getChildren
+			CondFn condition,
+			ChildFn getChildren
 		) {
 			for (auto& element : list) {
 				if (condition(*element))
@@ -227,11 +395,21 @@ namespace Algorithm {
 			return nullptr;
 		}
 
-		template<typename T>
+		/**
+		* @brief Recursively searches a vector of shared_ptr and their children for an element matching the given condition.
+		* @tparam T Type of the managed elements
+		* @tparam CondFn Callable that checks if an element matches the search condition
+		* @tparam ChildFn Callable that retrieves the children vector reference
+		* @param list Vector of shared_ptr elements to search through
+		* @param condition Callable that returns true if an element matches the search condition
+		* @param getChildren Callable that returns a reference to the children vector of a given element
+		* @return Shared pointer to the found element, or empty shared_ptr if not found
+		*/
+		template<typename T, typename CondFn, typename ChildFn>
 		inline std::shared_ptr<T> GetLinearRecursive(
 			std::vector<std::shared_ptr<T>>& list,
-			std::function<bool(const T&)> condition,
-			std::function<std::vector<std::shared_ptr<T>>& (T&)> getChildren
+			CondFn condition,
+			ChildFn getChildren
 		) {
 			for (auto& element : list) {
 				if (condition(*element))
@@ -244,7 +422,7 @@ namespace Algorithm {
 						return found;
 				}
 			}
-			return nullptr;
+			return std::shared_ptr<T>{};
 		}
 
 		#pragma endregion
@@ -263,13 +441,14 @@ namespace Algorithm {
 		inline void BubbleSort(std::vector<T>& list, std::function<bool(const T& a, const T& b)> condition) {
 			size_t n = list.size();
 			for (size_t i = 0; i < n; ++i) {
+				bool swapped = false;
 				for (size_t j = 0; j < n - 1 - i; ++j) {
 					// Swap if the condition indicates list[j] should come before list[i]
 					if (!condition(list[j], list[j + 1])) {
-						T temp = list[j];
-						list[j] = list[j + 1];
-						list[j + 1] = temp;
+						std::swap(list[j], list[j + 1]);
+						swapped = true;
 					}
+					if (!swapped) break;
 				}
 			}
 		}
@@ -286,13 +465,14 @@ namespace Algorithm {
 			outList = list;
 
 			for (size_t i = 0; i < outList.size(); ++i) {
+				bool swapped = false;
 				for (size_t j = 0; j < outList.size() - 1 - i; ++j) {
 					if (!condition(outList[j], outList[j + 1])) {
-						T temp = outList[j];
-						outList[j] = outList[j + 1];
-						outList[j + 1] = temp;
+						std::swap(outList[j], outList[j + 1]);
+						swapped = true;
 					}
 				}
+				if (!swapped) break;
 			}
 		}
 
