@@ -164,7 +164,7 @@ namespace EngineCore {
 		
 			while (startIndex <= endIndex) {
 				unsigned int mid = startIndex + (endIndex - startIndex) / 2;
-				auto go = m_gameObjects[mid];
+				auto& go = m_gameObjects[mid];
 		
 				if (go->GetID().value == id) {
 					return go;
