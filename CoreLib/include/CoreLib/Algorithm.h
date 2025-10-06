@@ -165,7 +165,7 @@ namespace Algorithm {
 				}
 			}
 
-			return nullptr;
+			return std::shared_ptr<T>{};
 		}
 
 		/**
@@ -317,7 +317,7 @@ namespace Algorithm {
 				}
 			}
 
-			return nullptr;
+			return std::shared_ptr<T>{};
 		}
 
 		#pragma endregion
@@ -386,7 +386,7 @@ namespace Algorithm {
 				if (condition(*e))
 					return e;
 
-			return nullptr;
+			return std::shared_ptr<T>{};
 		}
 
 		/**
