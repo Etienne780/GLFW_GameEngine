@@ -1,5 +1,6 @@
 ﻿#include <unordered_set>
 #include <CoreLib/Log.h>
+#include <CoreLib/Algorithm.h>
 
 #include "EngineLib/Time.h"
 #include "EngineLib/Renderer.h"
@@ -156,38 +157,19 @@ namespace EngineCore {
 	std::shared_ptr<GameObject> GameObjectManager::GetGameObject(unsigned int id) {
 		if (m_gameObjects.empty())
 			return nullptr;
-		
+
 		// binary search if the ids are in order and size is large enough
 		if (!m_idManager.IsIDFallback() && m_gameObjects.size() > 64) {
-			unsigned int startIndex = 0;
-			unsigned int endIndex = static_cast<unsigned int>(m_gameObjects.size() - 1);
-		
-			while (startIndex <= endIndex) {
-				unsigned int mid = startIndex + (endIndex - startIndex) / 2;
-				auto& go = m_gameObjects[mid];
-		
-				if (go->GetID().value == id) {
-					return go;
-				}
-				else if (go->GetID().value > id) {
-					if (mid == 0) 
-						break;
-					endIndex = mid - 1;
-				}
-				else {
-					startIndex = mid + 1;
-				}
-			}
-		}
-		
-		// lineare search
-		for (auto& obj : m_gameObjects) {
-			if (obj->GetID().value == id) {
-				return obj;
-			}
+			auto element = Algorithm::Search::GetBinary<GameObject>(m_gameObjects, 
+				[](const GameObject& go) { return go.GetID().value; }, id);
+
+			if (element)
+				return element;
 		}
 
-		return nullptr;
+		return Algorithm::Search::GetLinear<GameObject>(m_gameObjects,
+			[id](const GameObject& go) { return go.GetID().value == id; }
+		);
 	}
 
 	std::shared_ptr<GameObject> GameObjectManager::GetGameObject(const std::string& name) {

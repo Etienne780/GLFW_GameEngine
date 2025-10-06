@@ -125,7 +125,7 @@ namespace EngineCore {
 		static float CalculateUIScaleFactor(int width, int height);
 		static void CalculateOrthograpicMatrix(int width, int height);
 		static void FreeIDsInternal(UI::ElementBase* element);
-		static const UI::ElementBase* SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>> list, UIElementID elementID);
+		static const UI::ElementBase* SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID elementID);
 		static void BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level);
 
 		static Matrix4x4* GetOrthograpicMatrixPtr();

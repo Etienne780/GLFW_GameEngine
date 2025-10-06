@@ -235,42 +235,22 @@ namespace EngineCore {
 		m_idManager.FreeUniqueIdentifier(element->GetID().value);
 	}
 
-    const UI::ElementBase* UIManager::SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>> list, UIElementID id) {
+    const UI::ElementBase* UIManager::SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID id) {
         if (list.empty())
             return nullptr;
 
         // binary search if the ids are in order and size is large enough
         if (!m_idManager.IsIDFallback() && list.size() > 64) {
-            unsigned int startIndex = 0;
-            unsigned int endIndex = static_cast<unsigned int>(m_roots.size() - 1);
-
-            while (startIndex <= endIndex) {
-                unsigned int mid = startIndex + (endIndex - startIndex) / 2;
-                auto& element = m_roots[mid];
-
-                if (element->GetID() == id) {
-                    return element.get();
-                }
-                else if (element->GetID() > id) {
-                    if (mid == 0) break;
-                    endIndex = mid - 1;
-                }
-                else {
-                    startIndex = mid + 1;
-                }
-            }
+            auto element = Algorithm::Search::GetBinary<UI::ElementBase>(list, 
+                [](UI::ElementBase& e) { return e.GetID().value; }, id.value);
+            if (element)
+                return element;
         }
-
-       // Algorithm::search::GetBinary<>();
 
         // lineare search
-        for (auto& element : m_roots) {
-            if (element->GetID() == id) {
-                return element.get();
-            }
-        }
-
-        return nullptr;
+        return Algorithm::Search::GetLinearRecursive(
+            list, [id](UI::ElementBase& e) { return e.GetID() == id; }, 
+            [](UI::ElementBase& e) -> std::vector<std::unique_ptr<UI::ElementBase>>& { return e.GetChildren(); });
     }
 
     void UIManager::BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level) {
