@@ -95,7 +95,6 @@ namespace EngineCore::UI {
 		*/
 		const std::unordered_map<std::string, std::string>& GetAllState(State state) const;
 
-	    
 	private:
         std::string m_name = "UNKNOWN";
         std::unordered_map<State, std::unordered_map<std::string, std::string>> m_attributes;// state, attName, attValue

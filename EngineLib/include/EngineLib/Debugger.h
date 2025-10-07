@@ -3,6 +3,7 @@
 
 #pragma once
 #include "EngineTypes.h"
+#include "UI/Elements/Element.h"
 
 struct GLFWwindow;
 class Application;
@@ -20,7 +21,8 @@ namespace EngineCore {
 	friend class Engine;
 	public:
 		std::shared_ptr<GameObject> m_debugCameraGO = nullptr;
-		std::shared_ptr<GameObject> m_hierarchySelectedGO;
+		std::shared_ptr<GameObject> m_hierarchySelectedGO = nullptr;
+		std::shared_ptr<UI::ElementBase> m_uiSelectedElement = nullptr;
 
 		~Debugger();
 

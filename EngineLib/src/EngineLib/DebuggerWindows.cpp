@@ -82,12 +82,12 @@ namespace EngineCore {
                 m_hierarchyWin = !m_hierarchyWin;
             }
 
-            if (SidebarButton(ICON_FA_TERMINAL, "Console")) {
-                m_consoleWin = !m_consoleWin;
+            if (SidebarButton(ICON_FA_CODE, "UI")) {
+                m_uiInspectorWin = !m_uiInspectorWin;
             }
 
-            if (SidebarButton(ICON_FA_ARROWS_ALT, "UI")) {
-                m_uiInspectorWin = !m_uiInspectorWin;
+            if (SidebarButton(ICON_FA_TERMINAL, "Console")) {
+                m_consoleWin = !m_consoleWin;
             }
 
             if (SidebarButton(ICON_FA_ICONS, "Icon")) {
@@ -101,8 +101,9 @@ namespace EngineCore {
             if (m_cameraWin) CameraWindow();
             if (m_hierarchyWin) HierarchyWindow();
             if (m_hierarchyWin) InspectorWindow();
-            if (m_consoleWin) ConsoleWindow();
+            if (m_uiInspectorWin) UIHierarchyWindow();
             if (m_uiInspectorWin) UIInspectorWindow();
+            if (m_consoleWin) ConsoleWindow();
             if (m_iconWin) IconDisplayWindow();
         }
         ImGui::End();
@@ -194,7 +195,7 @@ namespace EngineCore {
             // Dropdown
             if (ImGui::BeginCombo("Active Camera", currentName.c_str())) {
                 for (int i = 0; i < (int)sortedCameras.size(); ++i) {
-                    auto cam = sortedCameras[i];
+                    auto& cam = sortedCameras[i];
                     if (!cam) continue;
 
                     // Debug-Cam markieren
@@ -213,7 +214,7 @@ namespace EngineCore {
             }
 
             // aktive Kamera anzeigen & editieren
-            auto activeCam = sortedCameras[currentIndex];
+            auto& activeCam = sortedCameras[currentIndex];
             if (activeCam) {
                 m_debugger->SetMainCamera(activeCam);
                 activeCam->OnInspectorGUIImpl(m_uiRenderer);
@@ -228,7 +229,7 @@ namespace EngineCore {
         m_firstCameraWin = false;
     }
 
-    void DebuggerWindows::DrawGameObjectNode(std::shared_ptr<GameObject>& obj) {
+    void DebuggerWindows::DrawGameObjectNode(const std::shared_ptr<GameObject>& obj) {
         if (!obj) return;
 
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -260,8 +261,8 @@ namespace EngineCore {
         }
 
         if (open) {
-            auto childs = obj->GetChildren();
-            for (std::shared_ptr<GameObject>& child : childs) {
+            auto& childs = obj->GetChildren();
+            for (const std::shared_ptr<GameObject>& child : childs) {
                 DrawGameObjectNode(child);
             }
             ImGui::TreePop();
@@ -304,7 +305,7 @@ namespace EngineCore {
 
         ImGui::Begin("Inspector", &m_hierarchyWin);
         {
-            auto selectedGO = m_debugger->m_hierarchySelectedGO;
+            auto& selectedGO = m_debugger->m_hierarchySelectedGO;
             if (selectedGO && selectedGO->IsAlive()) {
                 // ----- GameObject small checkbox -----
                 bool goDisabled = !selectedGO->IsDisabled();
@@ -430,6 +431,94 @@ namespace EngineCore {
         m_firstConsoleWin = false;
     }
 
+    void DebuggerWindows::DrawUIElementNode(const std::shared_ptr<UI::ElementBase>& elem) {
+        if (!elem) return;
+
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+        bool hasChildren = !elem->GetChildren().empty();
+        if (!hasChildren)
+            flags |= ImGuiTreeNodeFlags_Leaf;
+
+        const auto& name = elem->GetName();
+        unsigned int id = elem->GetID().value;
+        std::string idStr = (id == ENGINE_INVALID_ID) ? "INVALID_ID" : std::to_string(id);
+
+        // --- Add state to label ---
+        std::string stateStr;
+        switch (elem->GetState()) {
+        case UI::State::Normal:   stateStr = "Normal"; break;
+        case UI::State::Hovered:  stateStr = "Hovered"; break;
+        case UI::State::Pressed:  stateStr = "Pressed"; break;
+        case UI::State::Focused:  stateStr = "Focused"; break;
+        case UI::State::Disabled: stateStr = "Disabled"; break;
+        default:              stateStr = "Unknown"; break;
+        }
+
+        std::string label = "<" + name + " id=\"" + idStr + "\" state=\"" + stateStr + "\"";
+
+        std::shared_ptr<UI::Style> style = elem->GetStyle();
+        if (style) {
+            label += " style=\"" + style->GetName() + "\"";
+            const auto& attrs = style->GetAllState(elem->GetState());
+            if (attrs.size() <= 5) {
+                for (const auto& [attrName, attrVal] : attrs) {
+                    label += " " + attrName + "=\"" + attrVal + "\"";
+                }
+            }
+        }
+
+        label += hasChildren ? ">" : " />";
+
+        // Safe TreeNodeEx ID
+        ImGuiID nodeID = (id == ENGINE_INVALID_ID) ? ImGui::GetID(label.c_str()) : (ImGuiID)id;
+        bool open = ImGui::TreeNodeEx((void*)(intptr_t)nodeID, flags, "%s", label.c_str());
+
+        if (ImGui::IsItemClicked())
+            m_debugger->m_uiSelectedElement = elem;
+
+        if (!open)
+            return;
+
+        if (hasChildren) {
+            for (const auto& child : elem->GetChildren()) {
+                DrawUIElementNode(child);
+            }
+            std::string endTag = "</" + name + ">";
+            ImGui::TextUnformatted(endTag.c_str());
+        }
+
+        ImGui::TreePop();
+    }
+
+    void DebuggerWindows::UIHierarchyWindow() {
+        if (m_firstUIHierarchyWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_uiHierarchyState.x, m_uiHierarchyState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_uiHierarchyState.z, m_uiHierarchyState.w));
+        }
+
+        ImGui::Begin("UI Hierarchy");
+
+        // Create a child region that allows horizontal scrolling
+        ImGui::BeginChild("UIHierarchyChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+        const auto& roots = UIManager::GetAllRoots();
+        for (const auto& root : roots) {
+            if (!root) continue;
+            DrawUIElementNode(root);
+        }
+
+        ImGui::EndChild();
+
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_uiHierarchyState.Set(pos.x, pos.y, size.x, size.y);
+
+        ImGui::End();
+
+        m_firstUIHierarchyWin = false;
+    }
+
+
     void DebuggerWindows::UIInspectorWindow() {
         if (m_firstUIInspectorWin) {
             ImGui::SetNextWindowPos(ImVec2(m_uiInspectorState.x, m_uiInspectorState.y));
@@ -450,59 +539,97 @@ namespace EngineCore {
         m_firstUIInspectorWin = false;
     }
 
-    void DebuggerWindows::IconDisplayWindow() {
-        if (m_firstIconWin) { ImGui::SetNextWindowPos(ImVec2(m_iconWinState.x, m_iconWinState.y)); } ImGui::SetNextWindowSize(ImVec2(m_iconWinState.z, m_iconWinState.w)); ImGui::Begin("Icon Overview", &m_iconWin, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
-        const float iconSize = 24.0f; // fixed icon size
-        const float padding = 2.0f;
+    void DebuggerWindows::IconDisplayWindow()
+    {
+        static char searchBuffer[128] = ""; // stores the current search text
 
-        for (int i = 0; i < FA5_ICONS_COUNT; ++i) {
-            const FontAwesome5Icon& icon = FA5_ICONS[i];
-
-            ImGui::BeginGroup();
-
-            ImVec2 pos = ImGui::GetCursorScreenPos();
-            ImVec2 windowSize = ImGui::GetContentRegionAvail();
-            float cellHeight = iconSize + 10.0f; // Höhe für Icon (Text kann umbrechen)
-
-            // --- Icon ---
-            ImGui::SetCursorScreenPos(ImVec2(pos.x + padding, pos.y + 5));
-            if (m_largeIconFont) ImGui::PushFont(m_largeIconFont);
-            ImGui::Text("%s", icon.utf8_data);
-            if (m_largeIconFont) ImGui::PopFont();
-
-            // --- Name ---
-            ImGui::SetCursorScreenPos(ImVec2(pos.x + iconSize + 2 * padding, pos.y + 5));
-            ImGui::TextWrapped("Name: %s", icon.name);
-
-            // --- Unicode ---
-            float unicodeX = pos.x + iconSize + 250; // Offset nach Name, kann angepasst werden
-            ImGui::SetCursorScreenPos(ImVec2(unicodeX, pos.y + 5));
-            ImGui::Text("Unicode: %u", icon.unicode);
-
-            // --- Index ---
-            float indexX = unicodeX + 120; // Offset nach Unicode
-            ImGui::SetCursorScreenPos(ImVec2(indexX, pos.y + 5));
-            ImGui::Text("Index: %d", i);
-
-            ImGui::EndGroup();
-
-            // --- Linie zwischen Elementen ---
-            ImVec2 lineStart = ImGui::GetCursorScreenPos();
-            lineStart.y += 2.0f; // Abstand einfügen
-            ImVec2 lineEnd = ImVec2(lineStart.x + windowSize.x, lineStart.y);
-            ImGui::GetWindowDrawList()->AddLine(lineStart, lineEnd, IM_COL32(200, 200, 200, 255), 1.0f);
-
-            // --- Abstand für nächstes Element ---
-            ImGui::Dummy(ImVec2(0, cellHeight + 10.0f));
+        if (m_firstIconWin)
+        {
+            ImGui::SetNextWindowPos(ImVec2(m_iconWinState.x, m_iconWinState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_iconWinState.z, m_iconWinState.w));
         }
 
-        // Fensterstatus speichern
+        ImGui::Begin("Icon Overview", &m_iconWin, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar);
+        {
+            // --- Searchbar section ---
+            ImGui::Text("Search:");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(250.0f);
+            ImGui::InputText("##IconSearch", searchBuffer, IM_ARRAYSIZE(searchBuffer));
+            ImGui::SameLine();
+            if (ImGui::Button("Clear")) {
+                searchBuffer[0] = '\0';
+            }
+            ImGui::Separator();
+
+            if (ImGui::BeginTable("IconTable", 4,
+                ImGuiTableFlags_Resizable |
+                ImGuiTableFlags_Borders |
+                ImGuiTableFlags_RowBg |
+                ImGuiTableFlags_ScrollY |
+                ImGuiTableFlags_ScrollX |
+                ImGuiTableFlags_NoHostExtendY))
+            {
+                // Setup column headers
+                ImGui::TableSetupScrollFreeze(0, 1);
+                ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 40.0f);
+                ImGui::TableSetupColumn("Icon", ImGuiTableColumnFlags_WidthFixed, 60.0f);
+                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Unicode", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+                ImGui::TableHeadersRow();
+
+                // Iterate through all icons
+                for (int i = 0; i < FA5_ICONS_COUNT; ++i)
+                {
+                    const FontAwesome5Icon& icon = FA5_ICONS[i];
+
+                    // --- Filtering logic ---
+                    bool show = true;
+                    if (searchBuffer[0] != '\0')
+                    {
+                        std::string query = searchBuffer;
+                        std::string name = icon.name;
+                        std::string indexStr = std::to_string(i);
+
+                        // to lower for case-insensitive search
+                        std::transform(query.begin(), query.end(), query.begin(), ::tolower);
+                        std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+
+                        if (name.find(query) == std::string::npos && indexStr.find(query) == std::string::npos)
+                            show = false;
+                    }
+
+                    if (!show)
+                        continue;
+
+                    ImGui::TableNextRow();
+
+                    // Index column
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%03d", i);
+
+                    // Icon column
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::Text("%s", icon.utf8_data);
+
+                    // Name column
+                    ImGui::TableSetColumnIndex(2);
+                    ImGui::TextUnformatted(icon.name);
+
+                    // Unicode column
+                    ImGui::TableSetColumnIndex(3);
+                    ImGui::Text("U+%04X", icon.unicode);
+                }
+
+                ImGui::EndTable();
+            }
+        }
+
         auto pos = ImGui::GetWindowPos();
         auto size = ImGui::GetWindowSize();
         m_iconWinState.Set(pos.x, pos.y, size.x, size.y);
 
         ImGui::End();
-
         m_firstIconWin = false;
     }
 

@@ -14,27 +14,27 @@ void SetupUI() {
 
 	auto defaultStyle = Style::Create("DefaultStyle");
 	defaultStyle->Set(Attribute::layoutDirection, "row");
-	defaultStyle->Set(Attribute::layout, "start start");
+	defaultStyle->Set(Attribute::layout, "center center");
 	defaultStyle->Set(Attribute::width, "50%w");
 	defaultStyle->Set(Attribute::height, "50%h");
-	defaultStyle->Set(Attribute::backgroundColor, "#00 00 00");
+	defaultStyle->Set(Attribute::backgroundColor, "#000000");
 
 	auto style1 = Style::Create("style1");
 	style1->Set(Attribute::width, "100%a");
 	style1->Set(Attribute::height, "100%a");
-	style1->Set(Attribute::backgroundColor, "#ff 00 00");
+	style1->Set(Attribute::backgroundColor, "#ff0000");
 
 	auto style2 = Style::Create("style2", style1);
 	style2->Set(Attribute::width, "75px");
-	style2->Set(Attribute::backgroundColor, "#00 ff 00");
+	style2->Set(Attribute::backgroundColor, "#00ff00");
 
 	auto style3 = Style::Create("style3", style2);
-	style3->Set(Attribute::backgroundColor, "#00 00 ff");
+	style3->Set(Attribute::backgroundColor, "#0000ff");
 
 	auto style4 = Style::Create("style4", style1);
-	style4->Set(Attribute::backgroundColor, "#ff ff 00");
+	style4->Set(Attribute::backgroundColor, "#ffff00");
 
-	// UI::SetDebug(false);
+	UI::SetDebug(true);
 	UI::Begin<Panel>(defaultStyle); {
 
 		UI::Add<Panel>(style1);

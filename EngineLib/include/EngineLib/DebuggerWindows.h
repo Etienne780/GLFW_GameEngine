@@ -3,6 +3,7 @@
 #pragma once
 #include <CoreLib/Math/Vector4.h>
 #include "ComponentRendererImGui.h"
+#include "EngineLib/UI/Elements/Element.h"
 
 using SubscriberID = size_t;
 
@@ -19,10 +20,16 @@ namespace EngineCore {
 		void MenuSidebar(float sidebarRatio, int windowWidth, int windowHeight);
 		void StatsWindow();
 		void CameraWindow();
-		void DrawGameObjectNode(std::shared_ptr<GameObject>& obj);
+		void DrawGameObjectNode(const std::shared_ptr<GameObject>& obj);
 		void HierarchyWindow();
 		void InspectorWindow();
 		void ConsoleWindow();
+		/**
+		* @brief Draws a single UI element and its children in a collapsible HTML-like tree node
+		* @param elem Shared pointer to the UI element to draw
+		*/
+		void DrawUIElementNode(const std::shared_ptr<UI::ElementBase>& elem);
+		void UIHierarchyWindow();
 		void UIInspectorWindow();
 		void IconDisplayWindow();
 		
@@ -46,6 +53,7 @@ namespace EngineCore {
 		bool m_firstHierarchyWin = true;
 		bool m_firstInspectorWin = true;
 		bool m_firstConsoleWin = true;
+		bool m_firstUIHierarchyWin = true;
 		bool m_firstUIInspectorWin = true;
 		bool m_firstIconWin = true;
 
@@ -56,8 +64,9 @@ namespace EngineCore {
 		Vector4 m_hierarchyWinState = { 80, 70, 250, 400 };
 		Vector4 m_inspectorWinState = { 80, 70, 250, 400 };
 		Vector4 m_consoleWinState = { 80, 90, 425, 300 };
-		Vector4 m_uiInspectorState = { 80, 70, 250, 400 };
-		Vector4 m_iconWinState = { 80, 90, 375, 250 };
+		Vector4 m_uiHierarchyState = { 80, 100, 250, 400 };
+		Vector4 m_uiInspectorState = { 80, 110, 250, 400 };
+		Vector4 m_iconWinState = { 80, 120, 375, 250 };
 
 		struct LogMsg {
 			std::string m_msg;
