@@ -43,14 +43,14 @@ namespace EngineCore::UI {
 		* @param name The name of the attribute
 		* @param value The value to set for the attribute
 		*/
-		void Set(const char* name, std::string value);
+		void Set(const char* name, const std::string& value);
 
 		/**
 		* @brief Sets an attribute for the normal state of the style
 		* @param name The name of the attribute
 		* @param value The value to set for the attribute
 		*/
-		void Set(std::string name, std::string value);
+		void Set(const std::string& name, const std::string& value);
 
 		/**
 		* @brief Sets an attribute for a specific state of the style
@@ -58,8 +58,24 @@ namespace EngineCore::UI {
 		* @param name The name of the attribute
 		* @param value The value to set for the attribute
 		*/
-		void Set(State state, const char* name, std::string value);
+		void Set(State state, const char* name, const std::string& value);
 
+		/**
+		* @brief Removes an attribute by name using the default state `Normal`.
+		* @param name Name of the attribute to remove.
+		*/
+		void Remove(const std::string& name);
+
+		void Clear();
+
+		void Clear(UI::State state);
+
+		/**
+		* @brief Removes an attribute by name for a specific state.
+		* @param state The state from which the attribute should be removed.
+		* @param name Name of the attribute to remove.
+		*/
+		void Remove(State state, const std::string& name);
 
 		/**
 		* @brief Retrieves the value of an attribute for the normal state
@@ -94,10 +110,16 @@ namespace EngineCore::UI {
 		* @return A constant reference to a map of attribute names to values for the given state
 		*/
 		const std::unordered_map<std::string, std::string>& GetAllState(State state) const;
+		
+		const std::unordered_map<State, std::unordered_map<std::string, std::string>>& GetAllLocal() const;
+
+		const std::unordered_map<std::string, std::string>& GetAllStateLocal(State state) const;
+
+		const std::vector<std::shared_ptr<Style>> GetAllExtendedStyles() const;
 
 	private:
         std::string m_name = "UNKNOWN";
-        std::unordered_map<State, std::unordered_map<std::string, std::string>> m_attributes;// state, attName, attValue
+		mutable std::unordered_map<State, std::unordered_map<std::string, std::string>> m_attributes;// state, attName, attValue
 		std::vector<std::shared_ptr<Style>> m_extendedStyles;
 		mutable bool m_newStyleAdded = true;
 		mutable std::unique_ptr<Style> m_cachedStyle;

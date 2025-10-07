@@ -92,6 +92,10 @@ namespace EngineCore::UI {
         return m_style; 
     }
 
+    std::shared_ptr<Style> ElementBase::GetElementStyle() const {
+        return m_baseStyle;
+    }
+
     Vector2 ElementBase::GetWorldPosition() {
         if (m_positionDirty) {
             UpdateLayoutPosition();

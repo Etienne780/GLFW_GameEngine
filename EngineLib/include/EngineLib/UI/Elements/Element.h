@@ -49,6 +49,7 @@ namespace EngineCore::UI {
         const std::string& GetName() const;
         UIElementID GetID() const;
         std::shared_ptr<Style> GetStyle() const;
+        std::shared_ptr<Style> GetElementStyle() const;
         /**
         * @brief Gets the position of the element in world coordinates, taking parent positions into account.
         * @return The world position of the element.
@@ -139,6 +140,7 @@ namespace EngineCore::UI {
         Vector2 ComputeSiblingsTotalLayoutSize() const;
 
         State GetState() const;
+        void SetStyleAttributes();
 
         size_t GetChildCount() const;
         std::shared_ptr<ElementBase> GetChild(size_t index);
@@ -368,7 +370,6 @@ namespace EngineCore::UI {
         void SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID);
         void RegisterAttributesImpl();
         void SetParent(ElementBase* elementPtr, size_t indexPos);
-        void SetStyleAttributes();
         void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
         std::shared_ptr<Style> GetElementBaseStyle();
         void SetAvailableWidth(float width) const;

@@ -64,8 +64,8 @@ namespace EngineCore {
 		Vector4 m_hierarchyWinState = { 80, 70, 250, 400 };
 		Vector4 m_inspectorWinState = { 80, 70, 250, 400 };
 		Vector4 m_consoleWinState = { 80, 90, 425, 300 };
-		Vector4 m_uiHierarchyState = { 80, 100, 250, 400 };
-		Vector4 m_uiInspectorState = { 80, 110, 250, 400 };
+		Vector4 m_uiHierarchyState = { 80, 100, 300, 450 };
+		Vector4 m_uiInspectorState = { 80, 100, 300, 450 };
 		Vector4 m_iconWinState = { 80, 120, 375, 250 };
 
 		struct LogMsg {

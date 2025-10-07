@@ -518,24 +518,189 @@ namespace EngineCore {
         m_firstUIHierarchyWin = false;
     }
 
-
     void DebuggerWindows::UIInspectorWindow() {
         if (m_firstUIInspectorWin) {
             ImGui::SetNextWindowPos(ImVec2(m_uiInspectorState.x, m_uiInspectorState.y));
             ImGui::SetNextWindowSize(ImVec2(m_uiInspectorState.z, m_uiInspectorState.w));
         }
 
-        ImGui::Begin("UIInspector", &m_consoleWin);
+        ImGui::Begin("UI Inspector", &m_uiInspectorWin);
         {
-            
+            auto& selectedElem = m_debugger->m_uiSelectedElement;
+            if (!selectedElem) {
+                ImGui::Text("No UI Element selected");
+            }
+            else {
+                ImGui::Text("Element: %s (ID: %u)", selectedElem->GetName().c_str(), selectedElem->GetID());
+
+                // --- Live Update Toggle ---
+                static bool liveUpdate = true;
+                ImGui::Checkbox("Live Update", &liveUpdate);
+
+                // --- Build style stack ---
+                std::vector<std::shared_ptr<UI::Style>> styleStack;
+                if (auto style = selectedElem->GetStyle()) styleStack.push_back(style);
+                if (auto style = selectedElem->GetStyle()) {
+                    for (auto& ext : style->GetAllExtendedStyles())
+                        if (ext) styleStack.push_back(ext);
+                }
+                if (auto baseStyle = selectedElem->GetElementStyle())
+                    styleStack.push_back(baseStyle);
+
+                ImGui::Separator();
+
+                for (size_t i = 0; i < styleStack.size(); ++i) {
+                    auto& s = styleStack[i];
+                    if (!s) continue;
+
+                    std::string headerLabel = std::to_string(i) + ": " + s->GetName();
+                    if (ImGui::CollapsingHeader(headerLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+
+                        // --- Copy attributes into editable vector ---
+                        std::vector<std::pair<std::string, std::string>> editableVec;
+                        for (auto& [name, value] : s->GetAllStateLocal(UI::State::Normal))
+                            editableVec.emplace_back(name, value);
+
+                        // --- Style for input fields ---
+                        ImVec4 bgCol = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
+                        bgCol.x *= 0.85f; bgCol.y *= 0.85f; bgCol.z *= 0.85f;
+                        float hMult = 1.1f; // hover
+                        float aMult = 1.2f; // active
+                        ImGui::PushStyleColor(ImGuiCol_FrameBg, bgCol);
+                        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(bgCol.x * hMult, bgCol.y * hMult, bgCol.z * hMult, bgCol.w));
+                        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(bgCol.x * aMult, bgCol.y * aMult, bgCol.z * aMult, bgCol.w));
+
+                        // --- Edit attributes locally ---
+                        bool anyChange = false;
+                        for (size_t attrIndex = 0; attrIndex < editableVec.size(); ++attrIndex) {
+                            auto& [attrName, attrValue] = editableVec[attrIndex];
+
+                            char nameBuf[128]; strncpy_s(nameBuf, sizeof(nameBuf), attrName.c_str(), _TRUNCATE);
+                            char valueBuf[256]; strncpy_s(valueBuf, sizeof(valueBuf), attrValue.c_str(), _TRUNCATE);
+
+                            // ImGui::Columns(3, nullptr, false); // 3 columns: name | value | delete button
+                            // ImGui::SetColumnWidth(0, 120);
+                            // ImGui::SetColumnWidth(1, 80);
+                            // ImGui::SetColumnWidth(2, 40);
+
+                            ImGui::PushID(attrIndex);
+
+                            std::string nameID = "##name_" + std::to_string(i) + "_" + std::to_string(attrIndex);
+                            std::string valueID = "##value_" + std::to_string(i) + "_" + std::to_string(attrIndex);
+                            std::string delID = "##del_" + std::to_string(i) + "_" + std::to_string(attrIndex);
+
+                            // --- Name editing (apply on enter only) ---
+                            ImGui::SetNextItemWidth(120);
+                            bool nameCommitted = ImGui::InputText(nameID.c_str(), nameBuf, sizeof(nameBuf),
+                                ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+
+                            ImGui::SameLine();
+
+                            // --- Value editing (live or commit) ---
+                            ImGui::SetNextItemWidth(80);
+                            bool valueChanged = false;
+                            if (liveUpdate) {
+                                // Update every frame
+                                if (ImGui::InputText(valueID.c_str(), valueBuf, sizeof(valueBuf))) {
+                                    std::string newVal(valueBuf);
+                                    if (newVal != attrValue) {
+                                        attrValue = newVal;
+                                        s->Set(attrName, attrValue);
+                                        anyChange = true;
+                                    }
+                                }
+                            }
+                            else {
+                                // Update only on Enter
+                                bool valueCommitted = ImGui::InputText(valueID.c_str(), valueBuf, sizeof(valueBuf),
+                                    ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+                                if (valueCommitted) {
+                                    std::string newVal(valueBuf);
+                                    if (newVal != attrValue) {
+                                        attrValue = newVal;
+                                        s->Set(attrName, attrValue);
+                                        anyChange = true;
+                                    }
+                                }
+                            }
+
+                            ImGui::SameLine();
+
+                            // --- Delete Button ---
+                            bool deleteClicked = ImGui::Button(("X" + delID).c_str());
+                            ImGui::PopID();
+
+                            std::string newName(nameBuf);
+
+                            // Apply name change only on Enter
+                            if (nameCommitted && newName != attrName) {
+                                if (!newName.empty()) {
+                                    s->Remove(attrName);
+                                    s->Set(newName, attrValue);
+                                    attrName = newName;
+                                    anyChange = true;
+                                }
+                            }
+
+                            // Handle deletion
+                            if (deleteClicked) {
+                                s->Remove(attrName);
+                                selectedElem->SetStyleAttributes();
+                                anyChange = true;
+                            }
+                        }
+
+                        if (anyChange && liveUpdate) {
+                            selectedElem->SetStyleAttributes();
+                        }
+
+                        ImGui::PopStyleColor(3);
+
+                        // --- Add new attribute (single input) ---
+                        static char newAttrEntry[256] = "";
+                        std::string newEntryID = "##newEntry_" + std::to_string((uintptr_t)s.get());
+
+                        bool valueCommitted = ImGui::InputTextWithHint(newEntryID.c_str(), "Attribute: value", newAttrEntry, sizeof(newAttrEntry), ImGuiInputTextFlags_EnterReturnsTrue);
+                        if (ImGui::Button(("Add / Update##" + std::to_string((uintptr_t)s.get())).c_str()) || valueCommitted) {
+                            std::string entryStr(newAttrEntry);
+
+                            std::size_t sepPos = entryStr.find(':');
+                            if (sepPos != std::string::npos) {
+                                std::string nameStr = entryStr.substr(0, sepPos);
+                                std::string valueStr = entryStr.substr(sepPos + 1);
+
+                                nameStr.erase(0, nameStr.find_first_not_of(" \t\n\r"));
+                                nameStr.erase(nameStr.find_last_not_of(" \t\n\r") + 1);
+                                valueStr.erase(0, valueStr.find_first_not_of(" \t\n\r"));
+                                valueStr.erase(valueStr.find_last_not_of(" \t\n\r") + 1);
+
+                                if (!nameStr.empty()) {
+                                    s->Set(nameStr, valueStr);
+                                    newAttrEntry[0] = 0;
+                                    selectedElem->SetStyleAttributes();
+                                }
+                            }
+                        }
+
+                        // --- Apply all changes once if LiveUpdate off ---
+                        if (!liveUpdate) {
+                            for (auto& [name, value] : editableVec) {
+                                if (!name.empty()) {
+                                    s->Set(name, value);
+                                }
+                            }
+                            selectedElem->SetStyleAttributes();
+                        }
+                    }
+                }
+            }
         }
 
         auto pos = ImGui::GetWindowPos();
         auto size = ImGui::GetWindowSize();
-        m_consoleWinState.Set(pos.x, pos.y, size.x, size.y);
+        m_uiInspectorState.Set(pos.x, pos.y, size.x, size.y);
 
         ImGui::End();
-
         m_firstUIInspectorWin = false;
     }
 

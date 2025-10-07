@@ -23,17 +23,43 @@ namespace EngineCore::UI {
 		m_newStyleAdded = true;
 	}
 
-	void Style::Set(const char* name, std::string value) {
+	void Style::Set(const char* name, const std::string& value) {
 		Set(State::Normal, name, value);
 	}
 
-	void Style::Set(std::string name, std::string value) {
+	void Style::Set(const std::string& name, const std::string& value) {
 		Set(State::Normal, name.c_str(), value);
 	}
 
-	void Style::Set(State state, const char* name, std::string value) {
+	void Style::Set(State state, const char* name, const std::string& value) {
 		m_attributes[state][name] = value;
 		m_newStyleAdded = true;
+	}
+
+	void Style::Remove(const std::string& name) {
+		Remove(State::Normal, name);
+	}
+
+	void Style::Clear() {
+		m_attributes.clear();
+	}
+
+	void Style::Clear(UI::State state) {
+		auto it = m_attributes.find(state);
+		if (it != m_attributes.end())
+			it->second.clear();
+	}
+
+	void Style::Remove(State state, const std::string& name) {
+		auto outerIt = m_attributes.find(state);
+		if (outerIt != m_attributes.end()) {
+			outerIt->second.erase(name);
+
+			if (outerIt->second.empty()) {
+				m_attributes.erase(outerIt);
+			}
+			m_newStyleAdded = true;
+		}
 	}
 
 	std::string Style::Get(const char* name) const {
@@ -92,6 +118,18 @@ namespace EngineCore::UI {
 			GenerateCachedStyle();
 		}
 		return m_cachedStyle->m_attributes[state];
+	}
+
+	const std::unordered_map<State, std::unordered_map<std::string, std::string>>& Style::GetAllLocal() const {
+		return m_attributes;
+	}
+
+	const std::unordered_map<std::string, std::string>& Style::GetAllStateLocal(State state) const {
+		return m_attributes[state];
+	}
+
+	const std::vector<std::shared_ptr<Style>> Style::GetAllExtendedStyles() const {
+		return m_extendedStyles;
 	}
 
 	void Style::GenerateCachedStyle() const {
