@@ -5,7 +5,7 @@
 namespace EngineCore {
 
     template<typename T, typename... Args>
-    static T* UIManager::Begin(Args&&... args) {
+    static std::shared_ptr<T> UIManager::Begin(Args&&... args) {
         static_assert(std::is_base_of<UI::ElementBase, T>::value, "T must derive from EngineCore::UI::Element");
 
         UIElementID id = UIElementID(m_idManager.GetNewUniqueIdentifier());
@@ -17,26 +17,26 @@ namespace EngineCore {
         m_elementCount++;
         if (m_elementStack.empty()) {
             // Add root element
-            auto& element = m_roots.emplace_back(std::make_unique<T>(id, std::forward<Args>(args)...));
+            std::shared_ptr<UI::ElementBase> element = m_roots.emplace_back(std::make_shared<T>(id, std::forward<Args>(args)...));
             element->Init();
-            m_elementStack.push(element.get());
+            m_elementStack.push(element);
             if (m_isDebug)
                 Log::Debug("UIManager: Started element {}({})", element->GetName(), id.value);
-            return static_cast<T*>(element.get());
+            return std::static_pointer_cast<T>(element);
         }
         else {
             // Add child element
-            auto* parent = m_elementStack.top();
-            auto* elementPtr = parent->AddChild<T>(id, std::forward<Args>(args)...);
-            m_elementStack.push(elementPtr);
+            auto& parent = m_elementStack.top();
+            std::shared_ptr<UI::ElementBase> element = parent->AddChild<T>(id, std::forward<Args>(args)...);
+            m_elementStack.push(element);
             if (m_isDebug)
-                Log::Debug("UIManager: Started element {}({})", elementPtr->GetName(), id.value);
-            return  static_cast<T*>(elementPtr);
+                Log::Debug("UIManager: Started element {}({})", element->GetName(), id.value);
+            return std::static_pointer_cast<T>(element);
         }
     }
 
     template<typename T, typename... Args>
-    T* UIManager::Add(Args&&... args) {
+    std::shared_ptr<T> UIManager::Add(Args&&... args) {
         static_assert(std::is_base_of<UI::ElementBase, T>::value, "T must derive from EngineCore::UI::Element");
         if (m_elementStack.empty()) {
             Log::Error("UIManager: Add called without Begin element!");
@@ -50,12 +50,12 @@ namespace EngineCore {
             return nullptr;
         }
 
-        auto parent = m_elementStack.top();
-        auto elementPtr = parent->AddChild<T>(id, std::forward<Args>(args)...);
+        auto& parent = m_elementStack.top();
+        std::shared_ptr<UI::ElementBase> element = parent->AddChild<T>(id, std::forward<Args>(args)...);
         if (m_isDebug)
-            Log::Debug("UIManager: Added element {}({})", elementPtr->GetName(), id.value);
+            Log::Debug("UIManager: Added element {}({})", element->GetName(), id.value);
 
-        return  static_cast<T*>(elementPtr);
+        return std::static_pointer_cast<T>(element);
     }
 
 }

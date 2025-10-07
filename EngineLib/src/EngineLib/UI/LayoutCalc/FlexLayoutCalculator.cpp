@@ -47,7 +47,7 @@ namespace EngineCore::UI {
         float preMinorEndPos = 0.0f;
         float preMinorSize = 0.0f;
         if (listPosition > 0.0f) {
-            ElementBase* preElement = parent->GetChild(listPosition - 1);
+            std::shared_ptr<ElementBase> preElement = parent->GetChild(listPosition - 1);
             if (preElement) {
                 preMajorEndPos = (isParentLayoutDirRow) ?
                     preElement->GetLocalPosition().x :

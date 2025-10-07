@@ -469,7 +469,7 @@ namespace Algorithm {
 				if (condition(*element))
 					return element;
 
-				auto& children = getChildren(element);
+				auto& children = getChildren(*element);
 				if (!children.empty()) {
 					std::shared_ptr<T> found = GetLinearRecursive(children, condition, getChildren);
 					if (found)

@@ -34,7 +34,7 @@ namespace EngineCore {
 		* @return Pointer to the newly created element of type T, or nullptr if creation failed.
 		*/
 		template<typename T, typename... Args>
-		static T* Begin(Args&&... args);
+		static std::shared_ptr<T> Begin(Args&&... args);
 		/**
 		* @brief Ends the most recent Begin() call, finalizing the element on top of the stack.
 		* Logs an error if End is called without a preceding Begin.
@@ -49,14 +49,14 @@ namespace EngineCore {
 		* @return Pointer to the newly added element of type T, or nullptr if addition failed.
 		*/
 		template<typename T, typename... Args>
-		static T* Add(Args&&... args);
+		static std::shared_ptr<T> Add(Args&&... args);
 
 		/**
 		* @brief Retrieves a constant pointer to a UI element by its ID.
 		* @param elementID The unique identifier of the element to retrieve.
-		* @return Pointer to the element if found, nullptr otherwise.
+		* @return Shared pointer to the element if found, nullptr otherwise.
 		*/
-		static const UI::ElementBase* GetElement(UIElementID elementID);
+		static const std::shared_ptr<UI::ElementBase> GetElement(UIElementID elementID);
 		/**
 		* @brief Deletes a UI element by its ID, removing it from its parent or root list and freeing its ID recursively.
 		* @param elementID The unique identifier of the element to delete.
@@ -66,7 +66,7 @@ namespace EngineCore {
 		* @brief Gets all root elements
 		* @returns a const referenc containing all root elements
 		*/
-		static const std::vector<std::unique_ptr<UI::ElementBase>>& GetAllRoots();
+		static const std::vector<std::shared_ptr<UI::ElementBase>>& GetAllRoots();
 		/**
 		* @brief deletes all root elements
 		*/
@@ -116,8 +116,8 @@ namespace EngineCore {
 		static inline size_t m_elementCount = 0;
 		static inline RenderLayerID m_renderLayerID{ ENGINE_INVALID_ID };
 
-		static inline std::vector<std::unique_ptr<UI::ElementBase>> m_roots;
-		static inline std::stack<UI::ElementBase*> m_elementStack;// is used for creating ui hierarchy
+		static inline std::vector<std::shared_ptr<UI::ElementBase>> m_roots;
+		static inline std::stack<std::shared_ptr<UI::ElementBase>> m_elementStack;// is used for creating ui hierarchy
 
 		// If true, the UI is scaled relative to the reference screen size
 		static inline bool m_enableUIScaling = false;
@@ -130,28 +130,28 @@ namespace EngineCore {
 		static inline Matrix4x4 m_orthoMat;
 
 		static void WindowResize(int width, int height);
-		static void WindowResizeChild(int width, int height, std::unique_ptr<UI::ElementBase>& element);
+		static void WindowResizeChild(int width, int height, std::shared_ptr<UI::ElementBase>& element);
 		// Updates the scale and states of the UI::Element
 		static void Update(int width, int height);
-		static void UpdateChild(std::unique_ptr<UI::ElementBase>& element);
-		static void UpdateElementState(UI::ElementBase* element, const Vector2& mousePos, bool mouseDown, bool mouseReleased);
+		static void UpdateChild(std::shared_ptr<UI::ElementBase>& element);
+		static void UpdateElementState(std::shared_ptr<UI::ElementBase> element, const Vector2& mousePos, bool mouseDown, bool mouseReleased);
 		// Sends the Draw Commands of the UI::Elements
 		static void SendDrawCommands();
-		static void SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element);
+		static void SendChildDrawCommands(std::shared_ptr<UI::ElementBase> element);
 		static float CalculateUIScaleFactor(int width, int height);
 		static void CalculateOrthograpicMatrix(int width, int height);
 		/**
 		* @brief Frees the unique identifiers of an element and all its children recursively.
 		* @param element Pointer to the element whose IDs should be freed.
 		*/
-		static void FreeIDsInternal(UI::ElementBase* element);
+		static void FreeIDsInternal(std::shared_ptr<UI::ElementBase> element);
 		/**
 		* @brief Searches for a UI element in a given list and its children recursively.
 		* @param list The list of elements to search in.
 		* @param elementID The unique identifier of the element to search for.
-		* @return Pointer to the element if found, nullptr otherwise.
+		* @return Shared pointer to the element if found, nullptr otherwise.
 		*/
-		static UI::ElementBase* SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID elementID);
+		static std::shared_ptr<UI::ElementBase> SearchElementInternal(std::vector<std::shared_ptr<UI::ElementBase>>& list, UIElementID elementID);
 		/**
 		* @brief Recursively builds a string representation of a UI element and its children.
 		* @param elementPtr Pointer to the element to process.

@@ -165,21 +165,21 @@ namespace EngineCore::UI {
         return m_children.size();
     }
 
-    ElementBase* ElementBase::GetChild(size_t index) {
+    std::shared_ptr<ElementBase> ElementBase::GetChild(size_t index) {
         if (index >= m_children.size()) {
             Log::Error("ElementBase: Child index '{}' was out of bounds for list({})", 
                 index, m_children.size());
-            static ElementBase* dummy = new ElementBase("dummy", UIElementID(ENGINE_INVALID_ID));
+            static std::shared_ptr<ElementBase> dummy = std::make_shared<ElementBase>("dummy", UIElementID(ENGINE_INVALID_ID));
             return dummy;
         }
-        return m_children[index].get();
+        return m_children[index];
     }
 
-    std::vector<std::unique_ptr<ElementBase>>& ElementBase::GetChildren() { 
+    std::vector<std::shared_ptr<ElementBase>>& ElementBase::GetChildren() {
         return m_children; 
     }
 
-    const std::vector<std::unique_ptr<ElementBase>>& ElementBase::GetChildren() const {
+    const std::vector<std::shared_ptr<ElementBase>>& ElementBase::GetChildren() const {
         return m_children;
     }
 
@@ -395,11 +395,11 @@ namespace EngineCore::UI {
         return m_layoutItem;
     }
 
-    Vector2 ElementBase::GetDesiredPosition() {
+    Vector2 ElementBase::GetDesiredPosition() const {
         return m_desiredPosition;
     }
 
-    Vector2 ElementBase::GetAviableSize() {
+    Vector2 ElementBase::GetAviableSize() const {
         return m_aviableSize;
     }
 
@@ -411,7 +411,7 @@ namespace EngineCore::UI {
         );
     }
 
-    Vector2 ElementBase::GetDesiredSize() {
+    Vector2 ElementBase::GetDesiredSize() const {
         return m_desiredSize;
     }
 
@@ -431,7 +431,7 @@ namespace EngineCore::UI {
         );
     }
 
-    Vector3 ElementBase::GetWorldRotation() {
+    Vector3 ElementBase::GetWorldRotation() const {
         return m_rotation;
     }
 

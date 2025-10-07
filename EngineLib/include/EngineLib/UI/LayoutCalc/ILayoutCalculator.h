@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <CoreLib/Math/Vector2.h>
 
 namespace EngineCore::UI {

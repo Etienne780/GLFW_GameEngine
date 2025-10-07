@@ -290,7 +290,7 @@ namespace EngineCore {
                     vec2 br = vec2(uSize.x - uBorderRadius.z, uBorderRadius.z);
                     vec2 bl = vec2(uBorderRadius.w, uBorderRadius.w);
                 
-                    // Prüfe, ob Pixel außerhalb der abgerundeten Ecken liegt → verwerfen
+                    // Prüfe, ob Pixel außerhalb der abgerundeten Ecken liegt verwerfen
                     bool outside = false;
                 
                     if (coord.x < uBorderRadius.w && coord.y < uBorderRadius.w) {

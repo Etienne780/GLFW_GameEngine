@@ -22,7 +22,7 @@ namespace EngineCore {
 
 	void UIManager::End() {
         if (!m_elementStack.empty()) {
-            auto* ended = m_elementStack.top();
+            auto& ended = m_elementStack.top();
             m_elementStack.pop();
             if (m_isDebug)
                 Log::Debug("UIManager: Ended element {}({})", ended->GetName(), ended->GetID().value);
@@ -32,38 +32,38 @@ namespace EngineCore {
 		}
 	}
 
-    const UI::ElementBase* UIManager::GetElement(UIElementID elementID) {
+    const std::shared_ptr<UI::ElementBase> UIManager::GetElement(UIElementID elementID) {
         return SearchElementInternal(m_roots, elementID);
     }
 
     void UIManager::DeleteElement(UIElementID elementID) {
-        auto* element = SearchElementInternal(m_roots, elementID);
-        auto* parent = element->GetParent();
+        auto element = SearchElementInternal(m_roots, elementID);
+        auto parent = element->GetParent();
         FreeIDsInternal(element);
 
         if (parent) {
             auto& parentChilds = parent->GetChildren();
             parentChilds.erase(
                 std::remove_if(parentChilds.begin(), parentChilds.end(),
-                    [element](const std::unique_ptr<UI::ElementBase>& ptr) { return ptr.get() == element; }),
+                    [element](const std::shared_ptr<UI::ElementBase>& ptr) { return ptr == element; }),
                 parentChilds.end());
         }
         else {
             m_roots.erase(
                 std::remove_if(m_roots.begin(), m_roots.end(),
-                    [element](const std::unique_ptr<UI::ElementBase>& ptr) { return ptr.get() == element; }),
+                    [element](const std::shared_ptr<UI::ElementBase>& ptr) { return ptr == element; }),
                 m_roots.end());
         }
     }
 
-    const std::vector<std::unique_ptr<UI::ElementBase>>& UIManager::GetAllRoots() {
+    const std::vector<std::shared_ptr<UI::ElementBase>>& UIManager::GetAllRoots() {
         return m_roots;
     }
 
 	void UIManager::DeleteAllRoots() {
         m_elementCount = 0;
 		for (const auto& element : m_roots) {
-			FreeIDsInternal(element.get());
+			FreeIDsInternal(element);
 		}
 
 		m_roots.clear();
@@ -143,7 +143,7 @@ namespace EngineCore {
         }
     }
 
-    void UIManager::WindowResizeChild(int width, int height, std::unique_ptr<UI::ElementBase>& element) {
+    void UIManager::WindowResizeChild(int width, int height, std::shared_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
             child->WindowResize(width, height);
             WindowResizeChild(width, height, child);
@@ -160,7 +160,7 @@ namespace EngineCore {
 
         for (auto& el : m_roots) {
             // needs mouse down and up
-            UpdateElementState(el.get(), 
+            UpdateElementState(el, 
                 Input::GetMousePosition(), 
                 Input::MouseJustPressed(MouseButton::LEFT), 
                 Input::MouseJustReleased(MouseButton::LEFT));
@@ -170,14 +170,14 @@ namespace EngineCore {
         }
     }
 
-    void UIManager::UpdateChild(std::unique_ptr<UI::ElementBase>& element) {
+    void UIManager::UpdateChild(std::shared_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
             child->UpdateImpl();
             UpdateChild(child);
         }
     }
 
-    void UIManager::UpdateElementState(UI::ElementBase* element, const Vector2& mousePos, bool mouseDown, bool mouseReleased) {
+    void UIManager::UpdateElementState(std::shared_ptr<UI::ElementBase> element, const Vector2& mousePos, bool mouseDown, bool mouseReleased) {
         using namespace UI;
         if (element->IsMouseOver(mousePos)) {
             if (mouseDown) {
@@ -198,7 +198,7 @@ namespace EngineCore {
         }
 
         for (auto& child : element->GetChildren()) {
-            UpdateElementState(child.get(), mousePos, mouseDown, mouseReleased);
+            UpdateElementState(child, mousePos, mouseDown, mouseReleased);
         }
     }
 
@@ -216,7 +216,7 @@ namespace EngineCore {
 		}
 	}
 
-    void UIManager::SendChildDrawCommands(std::unique_ptr<UI::ElementBase>& element) {
+    void UIManager::SendChildDrawCommands(std::shared_ptr<UI::ElementBase> element) {
         for (auto& child : element->GetChildren()) {
             child->SendDrawCommandImpl(m_renderer, m_renderLayerID);
             SendChildDrawCommands(child);
@@ -243,15 +243,15 @@ namespace EngineCore {
             -1000.0f, 1000.0f);
     }
 
-	void UIManager::FreeIDsInternal(UI::ElementBase* element) {
+	void UIManager::FreeIDsInternal(std::shared_ptr<UI::ElementBase> element) {
 		auto& childs = element->GetChildren();
 		for (const auto& child : childs) {
-			FreeIDsInternal(child.get());
+			FreeIDsInternal(child);
 		}
 		m_idManager.FreeUniqueIdentifier(element->GetID().value);
 	}
 
-    UI::ElementBase* UIManager::SearchElementInternal(std::vector<std::unique_ptr<UI::ElementBase>>& list, UIElementID id) {
+    std::shared_ptr<UI::ElementBase> UIManager::SearchElementInternal(std::vector<std::shared_ptr<UI::ElementBase>>& list, UIElementID id) {
         if (list.empty())
             return nullptr;
 
@@ -264,9 +264,9 @@ namespace EngineCore {
         }
 
         // lineare search
-        return Algorithm::Search::GetLinearRecursive(
-            list, [id](UI::ElementBase& e) { return e.GetID() == id; }, 
-            [](UI::ElementBase& e) -> std::vector<std::unique_ptr<UI::ElementBase>>& { return e.GetChildren(); });
+        return Algorithm::Search::GetLinearRecursive(list, 
+            [id](UI::ElementBase& e) { return e.GetID() == id; }, 
+            [](UI::ElementBase& e) -> std::vector<std::shared_ptr<UI::ElementBase>>& { return e.GetChildren(); });
     }
 
     void UIManager::BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level) {

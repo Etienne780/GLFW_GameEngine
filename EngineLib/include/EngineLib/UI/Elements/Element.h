@@ -32,16 +32,18 @@ namespace EngineCore::UI {
         virtual ~ElementBase() = default;
 
         template<typename T, typename... Args>
-        T* AddChild(UIElementID id, Args&&... args) {
-            static_assert(std::is_base_of<ElementBase, T>::value, "T must derive from EngineCore::UI::ElementBase");
+        std::shared_ptr<T> AddChild(UIElementID id, Args&&... args) {
+            static_assert(std::is_base_of<ElementBase, T>::value,
+                "T must derive from EngineCore::UI::ElementBase");
 
-            auto& ptr = m_children.emplace_back(
-                std::make_unique<T>(id, std::forward<Args>(args)...)
+            auto basePtr = m_children.emplace_back(
+                std::make_shared<T>(id, std::forward<Args>(args)...)
             );
 
-            ptr->SetParent(this, m_children.size());
-            ptr->Init();
-            return static_cast<T*>(ptr.get());
+            basePtr->SetParent(this, m_children.size());
+            basePtr->Init();
+
+            return std::static_pointer_cast<T>(basePtr);
         }
 
         const std::string& GetName() const;
@@ -83,19 +85,19 @@ namespace EngineCore::UI {
         Flex::LayoutAlign GetLayoutMinor() const;
         Flex::LayoutAlign GetLayoutItem() const;
 
-        Vector2 GetDesiredPosition();
+        Vector2 GetDesiredPosition() const;
         // aviable
-        Vector2 GetAviableSize();
+        Vector2 GetAviableSize() const;
         // size - padding
         Vector2 GetContentSize();
         // style size
-        Vector2 GetDesiredSize();
+        Vector2 GetDesiredSize() const;
         // content + border
         Vector2 GetBorderSize();
         // content + border + margin
         Vector2 GetMarginSize();
 
-        Vector3 GetWorldRotation();
+        Vector3 GetWorldRotation() const;
 
         ElementBase* GetParent() const;
         /**
@@ -139,9 +141,9 @@ namespace EngineCore::UI {
         State GetState() const;
 
         size_t GetChildCount() const;
-        ElementBase* GetChild(size_t index);
-        std::vector<std::unique_ptr<ElementBase>>& GetChildren();
-        const std::vector<std::unique_ptr<ElementBase>>& GetChildren() const;
+        std::shared_ptr<ElementBase> GetChild(size_t index);
+        std::vector<std::shared_ptr<ElementBase>>& GetChildren();
+        const std::vector<std::shared_ptr<ElementBase>>& GetChildren() const;
     protected:
         std::string m_elementName;
         UIElementID m_id;
@@ -152,7 +154,7 @@ namespace EngineCore::UI {
         ElementBase* m_parentElementPtr = nullptr;
         // position of this child in the parent child list
         size_t m_listPosition = 0;
-        std::vector<std::unique_ptr<ElementBase>> m_children;
+        std::vector<std::shared_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
         RenderCommand m_cmd;
         MaterialID m_materialID{ ENGINE_INVALID_ID };
