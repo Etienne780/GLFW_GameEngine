@@ -86,6 +86,10 @@ namespace EngineCore {
                 m_consoleWin = !m_consoleWin;
             }
 
+            if (SidebarButton(ICON_FA_ARROWS_ALT, "UI")) {
+                m_uiInspectorWin = !m_uiInspectorWin;
+            }
+
             if (SidebarButton(ICON_FA_ICONS, "Icon")) {
                 m_iconWin = !m_iconWin;
             }
@@ -98,6 +102,7 @@ namespace EngineCore {
             if (m_hierarchyWin) HierarchyWindow();
             if (m_hierarchyWin) InspectorWindow();
             if (m_consoleWin) ConsoleWindow();
+            if (m_uiInspectorWin) UIInspectorWindow();
             if (m_iconWin) IconDisplayWindow();
         }
         ImGui::End();
@@ -425,53 +430,77 @@ namespace EngineCore {
         m_firstConsoleWin = false;
     }
 
-    void DebuggerWindows::IconDisplayWindow() {
-        static int currentIndex = 0;
-
-        if (m_firstIconWin) {
-            ImGui::SetNextWindowPos(ImVec2(m_iconWinState.x, m_iconWinState.y));
-            ImGui::SetNextWindowSize(ImVec2(m_iconWinState.z, m_iconWinState.w));
+    void DebuggerWindows::UIInspectorWindow() {
+        if (m_firstUIInspectorWin) {
+            ImGui::SetNextWindowPos(ImVec2(m_uiInspectorState.x, m_uiInspectorState.y));
+            ImGui::SetNextWindowSize(ImVec2(m_uiInspectorState.z, m_uiInspectorState.w));
         }
 
-        ImGui::Begin("Icon Preview", &m_iconWin, ImGuiWindowFlags_NoResize);
+        ImGui::Begin("UIInspector", &m_consoleWin);
         {
-            if (currentIndex < 0) currentIndex = FA5_ICONS_COUNT - 1;
-            if (currentIndex >= FA5_ICONS_COUNT) currentIndex = 0;
-
-            FontAwesome5Icon currentIcon = FA5_ICONS[currentIndex];
-            ImGuiIO& io = ImGui::GetIO();
-
-            // 2 Spalten: links Icon, rechts Text + Buttons
-            ImGui::Columns(2, nullptr, false);
-            ImGui::SetColumnWidth(0, ImGui::GetWindowWidth() * 0.3f);
-
-            // ----- Linke Spalte: Icon -----
-            // Vertikal zentrieren
-            float colHeight = ImGui::GetContentRegionAvail().y;
-            ImVec2 textSize = ImGui::CalcTextSize(currentIcon.utf8_data);
-            ImGui::SetCursorPosY((colHeight - textSize.y) * 0.5f);
-
-            if(m_largeIconFont)
-                ImGui::PushFont(m_largeIconFont);
-            ImGui::Text("%s", currentIcon.utf8_data);
-            if (m_largeIconFont)
-                ImGui::PopFont();
-
-            ImGui::NextColumn();
-
-            // ----- Rechte Spalte -----
-            ImGui::Text(FormatUtils::formatString("Icon name: {}", currentIcon.name).c_str());
-            ImGui::Text(FormatUtils::formatString("Icon unicode: {}", currentIcon.unicode).c_str());
-            ImGui::Text(FormatUtils::formatString("Icon index: {}/{}", (currentIndex + 1), FA5_ICONS_COUNT).c_str());
-            ImGui::Dummy(ImVec2(0, 10));
-            if (ImGui::Button(ICON_FA_ARROW_ALT_CIRCLE_UP, ImVec2(-1, 30))) currentIndex--;
-            if (ImGui::Button(ICON_FA_ARROW_ALT_CIRCLE_DOWN, ImVec2(-1, 30))) currentIndex++;
-
-            ImGui::Columns(1);
+            
         }
+
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+        m_consoleWinState.Set(pos.x, pos.y, size.x, size.y);
+
+        ImGui::End();
+
+        m_firstUIInspectorWin = false;
+    }
+
+    void DebuggerWindows::IconDisplayWindow() {
+        if (m_firstIconWin) { ImGui::SetNextWindowPos(ImVec2(m_iconWinState.x, m_iconWinState.y)); } ImGui::SetNextWindowSize(ImVec2(m_iconWinState.z, m_iconWinState.w)); ImGui::Begin("Icon Overview", &m_iconWin, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+        const float iconSize = 24.0f; // fixed icon size
+        const float padding = 2.0f;
+
+        for (int i = 0; i < FA5_ICONS_COUNT; ++i) {
+            const FontAwesome5Icon& icon = FA5_ICONS[i];
+
+            ImGui::BeginGroup();
+
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+            ImVec2 windowSize = ImGui::GetContentRegionAvail();
+            float cellHeight = iconSize + 10.0f; // Höhe für Icon (Text kann umbrechen)
+
+            // --- Icon ---
+            ImGui::SetCursorScreenPos(ImVec2(pos.x + padding, pos.y + 5));
+            if (m_largeIconFont) ImGui::PushFont(m_largeIconFont);
+            ImGui::Text("%s", icon.utf8_data);
+            if (m_largeIconFont) ImGui::PopFont();
+
+            // --- Name ---
+            ImGui::SetCursorScreenPos(ImVec2(pos.x + iconSize + 2 * padding, pos.y + 5));
+            ImGui::TextWrapped("Name: %s", icon.name);
+
+            // --- Unicode ---
+            float unicodeX = pos.x + iconSize + 250; // Offset nach Name, kann angepasst werden
+            ImGui::SetCursorScreenPos(ImVec2(unicodeX, pos.y + 5));
+            ImGui::Text("Unicode: %u", icon.unicode);
+
+            // --- Index ---
+            float indexX = unicodeX + 120; // Offset nach Unicode
+            ImGui::SetCursorScreenPos(ImVec2(indexX, pos.y + 5));
+            ImGui::Text("Index: %d", i);
+
+            ImGui::EndGroup();
+
+            // --- Linie zwischen Elementen ---
+            ImVec2 lineStart = ImGui::GetCursorScreenPos();
+            lineStart.y += 2.0f; // Abstand einfügen
+            ImVec2 lineEnd = ImVec2(lineStart.x + windowSize.x, lineStart.y);
+            ImGui::GetWindowDrawList()->AddLine(lineStart, lineEnd, IM_COL32(200, 200, 200, 255), 1.0f);
+
+            // --- Abstand für nächstes Element ---
+            ImGui::Dummy(ImVec2(0, cellHeight + 10.0f));
+        }
+
+        // Fensterstatus speichern
         auto pos = ImGui::GetWindowPos();
         auto size = ImGui::GetWindowSize();
         m_iconWinState.Set(pos.x, pos.y, size.x, size.y);
+
         ImGui::End();
 
         m_firstIconWin = false;

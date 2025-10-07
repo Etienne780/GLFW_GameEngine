@@ -23,6 +23,7 @@ namespace EngineCore {
 		void HierarchyWindow();
 		void InspectorWindow();
 		void ConsoleWindow();
+		void UIInspectorWindow();
 		void IconDisplayWindow();
 		
 	private:
@@ -36,6 +37,7 @@ namespace EngineCore {
 		bool m_cameraWin = false;
 		bool m_hierarchyWin = false;// and inspector
 		bool m_consoleWin = false;
+		bool m_uiInspectorWin = false;
 		bool m_iconWin = false;
 
 		// uses state vars for pos and size of the windows if first time opening
@@ -44,6 +46,7 @@ namespace EngineCore {
 		bool m_firstHierarchyWin = true;
 		bool m_firstInspectorWin = true;
 		bool m_firstConsoleWin = true;
+		bool m_firstUIInspectorWin = true;
 		bool m_firstIconWin = true;
 
 		// pos, size				x	y	w	h
@@ -53,6 +56,7 @@ namespace EngineCore {
 		Vector4 m_hierarchyWinState = { 80, 70, 250, 400 };
 		Vector4 m_inspectorWinState = { 80, 70, 250, 400 };
 		Vector4 m_consoleWinState = { 80, 90, 425, 300 };
+		Vector4 m_uiInspectorState = { 80, 70, 250, 400 };
 		Vector4 m_iconWinState = { 80, 90, 375, 250 };
 
 		struct LogMsg {
