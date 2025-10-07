@@ -20,21 +20,20 @@ void SetupUI() {
 	defaultStyle->Set(Attribute::backgroundColor, "#000000");
 
 	auto style1 = Style::Create("style1");
-	style1->Set(Attribute::width, "100%a");
-	style1->Set(Attribute::height, "100%a");
+	style1->Set(Attribute::width, "50%a");
+	style1->Set(Attribute::height, "50%a");
 	style1->Set(Attribute::backgroundColor, "#ff0000");
 
 	auto style2 = Style::Create("style2", style1);
-	style2->Set(Attribute::width, "75px");
 	style2->Set(Attribute::backgroundColor, "#00ff00");
 
-	auto style3 = Style::Create("style3", style2);
+	auto style3 = Style::Create("style3", style1);
 	style3->Set(Attribute::backgroundColor, "#0000ff");
 
 	auto style4 = Style::Create("style4", style1);
 	style4->Set(Attribute::backgroundColor, "#ffff00");
 
-	UI::SetDebug(true);
+	UI::SetDebug(false);
 	UI::Begin<Panel>(defaultStyle); {
 
 		UI::Add<Panel>(style1);

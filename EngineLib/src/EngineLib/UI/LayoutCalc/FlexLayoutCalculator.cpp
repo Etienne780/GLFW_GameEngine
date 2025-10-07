@@ -189,8 +189,10 @@ namespace EngineCore::UI {
             }
 
         case EngineCore::UI::Flex::LayoutAlign::Stretch:
-            // For stretch, position follows normal flow; size is adjusted separately
-            return previousEndPos + previousEndSize;
+            if (m_isMajorAxis)
+                return previousEndPos + previousEndSize + m_marginStart + m_marginEnd;
+            else
+                return previousEndPos + m_marginStart + m_marginEnd;
 
         case EngineCore::UI::Flex::LayoutAlign::SpaceEvenly:
             // Space elements evenly including start and end padding
@@ -218,32 +220,40 @@ namespace EngineCore::UI {
 
     float FlexLayoutCalculator::AxisLayout::CalculateSize(size_t stretchCount, size_t avaibleStretchCount) const {
         // stop stretch if wrap is enabled
-        if (m_wrap && m_align == Flex::LayoutAlign::Stretch)
+        if (m_wrap)
             return m_desired;
 
         // m_availableSize is -1 if not used
         if (m_availableSize >= 0.0f) {
-            if (avaibleStretchCount == 0)
-                return m_desired;
-
-            float usableSpace = m_parentSize - m_totalChildrenSize;
-            float adaptiveSize = ((usableSpace / avaibleStretchCount) * (m_availableSize / 100.0f)) - m_marginStart - m_marginEnd;
-            return std::max(adaptiveSize, 0.0f);
+            if (avaibleStretchCount > 0 && m_isMajorAxis) {
+                float usableSpace = m_parentSize - m_totalChildrenSize;
+                float adaptiveSize = ((usableSpace / avaibleStretchCount) * (m_availableSize / 100.0f)) - m_marginStart - m_marginEnd;
+                return std::max(adaptiveSize, 0.0f);
+            }
+            else if(!m_isMajorAxis) {
+                return std::max((m_parentSize * (m_availableSize / 100.0f)) - m_marginStart - m_marginEnd, 0.0f);
+            }
+            return std::max(m_desired, 0.0f);
         }
 
         switch (m_align)
         {
-        // elements that have a desired size will not be streched, stretches elements to the avaible size left 
+        // elements that have a desired size will not be streched, stretches elements to the avaible size left (100%a)
         case EngineCore::UI::Flex::LayoutAlign::Stretch: {
-            // only do stretch if wrap is false
-            if (stretchCount > 0 && !m_wrap) {
+            if (m_desired > 0.0f)
+                return std::max(m_desired, 0.0f);
+
+            if (stretchCount > 0 && m_isMajorAxis) {
                 float usableSpace = m_parentSize - m_totalChildrenSize;
                 float stretchedSize = (usableSpace / stretchCount) - m_marginStart - m_marginEnd;
                 return std::max(stretchedSize, 0.0f);
             }
+            else if (!m_isMajorAxis) {
+                return std::max(m_parentSize - m_marginStart - m_marginEnd, 0.0f);
+            }
+            return std::max(m_desired, 0.0f);
             break;
         }
-
         case EngineCore::UI::Flex::LayoutAlign::Start:
         case EngineCore::UI::Flex::LayoutAlign::Center:
         case EngineCore::UI::Flex::LayoutAlign::End:
