@@ -562,10 +562,11 @@ namespace EngineCore {
                             editableVec.emplace_back(name, value);
 
                         // --- Style for input fields ---
-                        ImVec4 bgCol = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
-                        bgCol.x *= 0.85f; bgCol.y *= 0.85f; bgCol.z *= 0.85f;
+                        ImVec4 bgCol = ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_WindowBg);
+                        bgCol.x *= 1.1f; bgCol.y *= 1.1f; bgCol.z *= 1.1f;
                         float hMult = 1.1f; // hover
                         float aMult = 1.2f; // active
+
                         ImGui::PushStyleColor(ImGuiCol_FrameBg, bgCol);
                         ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(bgCol.x * hMult, bgCol.y * hMult, bgCol.z * hMult, bgCol.w));
                         ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(bgCol.x * aMult, bgCol.y * aMult, bgCol.z * aMult, bgCol.w));
@@ -578,12 +579,7 @@ namespace EngineCore {
                             char nameBuf[128]; strncpy_s(nameBuf, sizeof(nameBuf), attrName.c_str(), _TRUNCATE);
                             char valueBuf[256]; strncpy_s(valueBuf, sizeof(valueBuf), attrValue.c_str(), _TRUNCATE);
 
-                            // ImGui::Columns(3, nullptr, false); // 3 columns: name | value | delete button
-                            // ImGui::SetColumnWidth(0, 120);
-                            // ImGui::SetColumnWidth(1, 80);
-                            // ImGui::SetColumnWidth(2, 40);
-
-                            ImGui::PushID(attrIndex);
+                            ImGui::PushID(static_cast<int>(attrIndex));
 
                             std::string nameID = "##name_" + std::to_string(i) + "_" + std::to_string(attrIndex);
                             std::string valueID = "##value_" + std::to_string(i) + "_" + std::to_string(attrIndex);
