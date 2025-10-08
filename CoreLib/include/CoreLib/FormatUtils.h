@@ -90,7 +90,12 @@ public:
 
     template<typename T>
     static std::string toString(T value) {
-        if constexpr (std::is_same_v<T, bool>) {
+        if constexpr (std::is_pointer_v<T>) {
+            std::ostringstream oss;
+            oss << static_cast<const void*>(value);
+            return oss.str();
+        }
+        else if constexpr (std::is_same_v<T, bool>) {
             return (value) ? "true" : "false";
         }
         else if constexpr (std::is_arithmetic_v<T>) {
