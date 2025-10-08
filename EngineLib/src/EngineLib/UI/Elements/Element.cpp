@@ -750,7 +750,7 @@ namespace EngineCore::UI {
 
                     if (u == StyleUnit::Unit::Percent_A)
                         el->SetAvailableWidth(f);
-                    else
+                    else 
                         el->SetDesiredWidth(f);
                 }
             });
@@ -889,7 +889,7 @@ namespace EngineCore::UI {
 
     void ElementBase::SetAvailableWidth(float width) {
         m_aviableSize.x = width;
-        m_desiredSize.x = width;
+        m_desiredSize.x = 0;
         MarkDirtyParent();
     }
 

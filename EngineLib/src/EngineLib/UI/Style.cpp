@@ -195,7 +195,7 @@ namespace EngineCore::UI {
 				sub.callback();
 		}
 
-		Log::Debug("Style: called Dirt Callbacks with '{}' Inter and '{}' normal", m_dirtyCallbackInter.size(), m_dirtyCallbackInter.size());
+		Log::Debug("Style: called Dirt Callbacks with '{}' Inter and '{}' normal", m_dirtyCallbackInter.size(), m_dirtyCallback.size());
 	}
 
 }
