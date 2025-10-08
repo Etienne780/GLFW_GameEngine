@@ -20,7 +20,8 @@ namespace EngineCore::UI {
 
 	void Style::Extend(std::shared_ptr<Style> style) {
 		m_extendedStyles.emplace_back(style);
-		m_newStyleAdded = true;
+		style->SubDirtCallbackInter([this]() { SetStyleDirty(); });
+		SetStyleDirty();
 	}
 
 	void Style::Set(const char* name, const std::string& value) {
@@ -33,21 +34,11 @@ namespace EngineCore::UI {
 
 	void Style::Set(State state, const char* name, const std::string& value) {
 		m_attributes[state][name] = value;
-		m_newStyleAdded = true;
+		SetStyleDirty();
 	}
 
 	void Style::Remove(const std::string& name) {
 		Remove(State::Normal, name);
-	}
-
-	void Style::Clear() {
-		m_attributes.clear();
-	}
-
-	void Style::Clear(UI::State state) {
-		auto it = m_attributes.find(state);
-		if (it != m_attributes.end())
-			it->second.clear();
 	}
 
 	void Style::Remove(State state, const std::string& name) {
@@ -58,8 +49,21 @@ namespace EngineCore::UI {
 			if (outerIt->second.empty()) {
 				m_attributes.erase(outerIt);
 			}
-			m_newStyleAdded = true;
+			SetStyleDirty();
 		}
+	}
+
+	void Style::Clear() {
+		m_attributes.clear();
+
+	}
+
+	void Style::Clear(UI::State state) {
+		auto it = m_attributes.find(state);
+		if (it != m_attributes.end())
+			it->second.clear();
+
+		SetStyleDirty();
 	}
 
 	std::string Style::Get(const char* name) const {
@@ -67,8 +71,7 @@ namespace EngineCore::UI {
 	}
 
 	std::string Style::Get(State state, const char* name) const {
-		if (m_newStyleAdded) {
-			m_newStyleAdded = false;
+		if (m_styleDirty) {
 			GenerateCachedStyle();
 		}
 
@@ -105,16 +108,14 @@ namespace EngineCore::UI {
 	}
 
 	const std::unordered_map<State, std::unordered_map<std::string, std::string>>& Style::GetAll() const {
-		if (m_newStyleAdded) {
-			m_newStyleAdded = false;
+		if (m_styleDirty) {
 			GenerateCachedStyle();
 		}
 		return m_cachedStyle->m_attributes;
 	}
 
 	const std::unordered_map<std::string, std::string>& Style::GetAllState(State state) const {
-		if (m_newStyleAdded) {
-			m_newStyleAdded = false;
+		if (m_styleDirty) {
 			GenerateCachedStyle();
 		}
 		return m_cachedStyle->m_attributes[state];
@@ -132,24 +133,69 @@ namespace EngineCore::UI {
 		return m_extendedStyles;
 	}
 
+	Style::SubscriberID Style::SubDirtCallback(StyleDirtyCallback callback) {
+		m_dirtyCallback.push_back({ ++m_dirtyCallbackID, callback });
+		return m_dirtyCallbackID;
+	}
+
+	Style::SubscriberID Style::SubDirtCallbackInter(StyleDirtyCallback callback) {
+		m_dirtyCallbackInter.push_back({ ++m_dirtyCallbackIDInter, callback });
+		return m_dirtyCallbackIDInter;
+	}
+
+	void Style::UnsubDirtyCallback(SubscriberID id) {
+		auto it = std::find_if(m_dirtyCallback.begin(), m_dirtyCallback.end(),
+			[id](const Subscriber<StyleDirtyCallback>& sub) { return id == sub.id; }
+		);
+
+		if (it != m_dirtyCallback.end()) {
+			m_dirtyCallback.erase(it);
+		}
+	}
+
+	void Style::SetStyleDirty() {
+		m_styleDirty = true;
+		CallDirty();
+	}
+
 	void Style::GenerateCachedStyle() const {
 		m_cachedStyle = std::make_unique<Style>();
-		// applys all the extended styls in the right order
+
 		for (const auto& style : m_extendedStyles) {
 			const auto& att = style->GetAll();
-			for (auto& [state, attMap] : att) {
-				for (auto& [name, value] : attMap) {
-					m_cachedStyle->Set(state, name.c_str(), value);
+			for (const auto& [state, attMap] : att) {
+				auto& targetMap = m_cachedStyle->m_attributes[state];
+				for (const auto& [name, value] : attMap) {
+					targetMap[name] = value;
 				}
 			}
 		}
 
-		// applys the att of this style last
-		for (auto& [state, attMap] : m_attributes) {
-			for (auto& [name, value] : attMap) {
-				m_cachedStyle->Set(state, name.c_str(), value);
+		for (const auto& [state, attMap] : m_attributes) {
+			auto& targetMap = m_cachedStyle->m_attributes[state];
+			for (const auto& [name, value] : attMap) {
+				targetMap[name] = value;
 			}
 		}
+
+		m_styleDirty = false;
+	}
+
+	void Style::CallDirty() {
+		if (m_dirtyCallbackInter.empty() && m_dirtyCallback.empty())
+			return;
+
+		std::vector<Subscriber<StyleDirtyCallback>> callbacks;
+		callbacks.reserve(m_dirtyCallbackInter.size() + m_dirtyCallback.size());
+		callbacks.insert(callbacks.end(), m_dirtyCallbackInter.begin(), m_dirtyCallbackInter.end());
+		callbacks.insert(callbacks.end(), m_dirtyCallback.begin(), m_dirtyCallback.end());
+
+		for (const auto& sub : callbacks) {
+			if (sub.callback)
+				sub.callback();
+		}
+
+		Log::Debug("Style: called Dirt Callbacks with '{}' Inter and '{}' normal", m_dirtyCallbackInter.size(), m_dirtyCallbackInter.size());
 	}
 
 }

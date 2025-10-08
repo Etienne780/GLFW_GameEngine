@@ -25,10 +25,9 @@ void SetupUI() {
 	style1->Set(Attribute::backgroundColor, "#ff0000");
 
 	auto style2 = Style::Create("style2", style1);
-	style2->Set(Attribute::borderColor, "#00ff00");
 	style2->Set(Attribute::backgroundColor, "#00ff00");
 
-	auto style3 = Style::Create("style3", style2);
+	auto style3 = Style::Create("style3", style1);
 	style3->Set(Attribute::backgroundColor, "#0000ff");
 
 	auto style4 = Style::Create("style4", style1);

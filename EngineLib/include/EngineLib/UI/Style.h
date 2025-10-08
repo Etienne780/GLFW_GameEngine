@@ -14,6 +14,9 @@ namespace EngineCore::UI {
 
 	class Style {
 	public:
+		using StyleDirtyCallback = std::function<void()>;
+		using SubscriberID = size_t;
+
 		Style() = default;
 		Style(const std::string& name);
 
@@ -117,13 +120,29 @@ namespace EngineCore::UI {
 
 		const std::vector<std::shared_ptr<Style>> GetAllExtendedStyles() const;
 
+		SubscriberID SubDirtCallback(StyleDirtyCallback callback);
+		void UnsubDirtyCallback(SubscriberID id);
+
 	private:
+		template<typename T>
+		class Subscriber {
+		public:
+			SubscriberID id;
+			T callback;
+		};
         std::string m_name = "UNKNOWN";
 		mutable std::unordered_map<State, std::unordered_map<std::string, std::string>> m_attributes;// state, attName, attValue
 		std::vector<std::shared_ptr<Style>> m_extendedStyles;
-		mutable bool m_newStyleAdded = true;
+		mutable bool m_styleDirty = true;
 		mutable std::unique_ptr<Style> m_cachedStyle;
 
+		SubscriberID m_dirtyCallbackID = 0;
+		SubscriberID m_dirtyCallbackIDInter = 0;
+		std::vector<Subscriber<StyleDirtyCallback>> m_dirtyCallback;
+		// inter dirty callback to updates all styles befor other elements
+		std::vector<Subscriber<StyleDirtyCallback>> m_dirtyCallbackInter;
+
+		void SetStyleDirty();
 		/**
 		* @brief Generates a cached style by combining all extended styles and this style's attributes
 		*
@@ -132,6 +151,8 @@ namespace EngineCore::UI {
 		*/
 		void GenerateCachedStyle() const;
 
+		SubscriberID SubDirtCallbackInter(StyleDirtyCallback callback);
+		void CallDirty();
 	};
 
 }

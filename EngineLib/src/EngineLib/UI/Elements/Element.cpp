@@ -72,7 +72,17 @@ namespace EngineCore::UI {
         m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
         m_cmd.materialID = matID;
         m_baseStyle = GetElementBaseStyle();
+
+        // subs to style dirty events
+        m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { SetStyleAttributes(); });
+        m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { SetStyleAttributes(); });
 	}
+
+    ElementBase::~ElementBase() {
+        // unsubs to style dirty events
+        m_style->UnsubDirtyCallback(m_styleDirtyCallbackID);
+        m_baseStyle->UnsubDirtyCallback(m_baseStyleDirtyCallbackID);
+    }
 
     void ElementBase::Init() {
         // inits the start propetys
@@ -272,18 +282,21 @@ namespace EngineCore::UI {
         if (x < 0.0f) x = 0.0f;
         if (y < 0.0f) y = 0.0f;
         m_desiredSize.Set(x, y);
+        m_aviableSize.Set(-1, -1);
         MarkDirtyParent();
     }
 
     void ElementBase::SetDesiredWidth(float x) {
         if (x < 0.0f) x = 0.0f;
         m_desiredSize.x = x;
+        m_aviableSize.x = -1;
         MarkDirtyParent();
     }
 
     void ElementBase::SetDesiredHeight(float y) {
         if (y < 0.0f) y = 0.0f;
         m_desiredSize.y = y;
+        m_aviableSize.y = -1;
         MarkDirtyParent();
     }
 
@@ -657,6 +670,9 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID) {
+
+        // Log::Info("ID: {}, style: {}, baseStyle: {}", m_id.value, m_style.get(), m_baseStyle.get());
+
         m_cmd.renderLayerID = renderLayerID;
         m_cmd.modelMatrix = GetWorldModelMatrixPtr();
         m_cmd.shaderBindOverride = &m_sbo;
@@ -871,13 +887,15 @@ namespace EngineCore::UI {
         return totalSize;
     }
 
-    void ElementBase::SetAvailableWidth(float width) const {
+    void ElementBase::SetAvailableWidth(float width) {
         m_aviableSize.x = width;
+        m_desiredSize.x = width;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetAvailableHeight(float height) const {
+    void ElementBase::SetAvailableHeight(float height) {
         m_aviableSize.y = height;
+        m_desiredSize.y = 0;
         MarkDirtyParent();
     }
 

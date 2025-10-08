@@ -29,7 +29,7 @@ namespace EngineCore::UI {
         ElementBase(std::string name, UIElementID id,
             std::shared_ptr<Style> style = std::make_shared<Style>(),
             MaterialID matID = ASSETS::ENGINE::MATERIAL::DefaultUI());
-        virtual ~ElementBase() = default;
+        ~ElementBase();
 
         template<typename T, typename... Args>
         std::shared_ptr<T> AddChild(UIElementID id, Args&&... args) {
@@ -140,7 +140,6 @@ namespace EngineCore::UI {
         Vector2 ComputeSiblingsTotalLayoutSize() const;
 
         State GetState() const;
-        void SetStyleAttributes();
 
         size_t GetChildCount() const;
         std::shared_ptr<ElementBase> GetChild(size_t index);
@@ -151,6 +150,9 @@ namespace EngineCore::UI {
         UIElementID m_id;
         // Style m_elementStyle; needs to be later used for clean transition between styles
         // element should probably have a default style that can be modified with a function that can be overridden
+        // maybe need to add limit to how often per frame style updates can be applyd
+        Style::SubscriberID m_styleDirtyCallbackID = 0;
+        Style::SubscriberID m_baseStyleDirtyCallbackID = 0;
         std::shared_ptr<Style> m_style = nullptr;
         std::shared_ptr<Style> m_baseStyle = nullptr; // element base style
         ElementBase* m_parentElementPtr = nullptr;
@@ -311,7 +313,7 @@ namespace EngineCore::UI {
         Vector2 m_layoutSize{ 0.0f, 0.0f };
         Vector2 m_minSize{ 0.0f, 0.0f };
         Vector2 m_maxSize{ FLT_MAX, FLT_MAX };
-        mutable Vector2 m_aviableSize{ -1.0f, -1.0f };
+        Vector2 m_aviableSize{ -1.0f, -1.0f };
 
         // Local and world transforms
         Matrix4x4 m_worldTransform;
@@ -371,9 +373,10 @@ namespace EngineCore::UI {
         void RegisterAttributesImpl();
         void SetParent(ElementBase* elementPtr, size_t indexPos);
         void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
+        void SetStyleAttributes();
         std::shared_ptr<Style> GetElementBaseStyle();
-        void SetAvailableWidth(float width) const;
-        void SetAvailableHeight(float height) const;
+        void SetAvailableWidth(float width);
+        void SetAvailableHeight(float height);
     };
 
     template <typename Derived>

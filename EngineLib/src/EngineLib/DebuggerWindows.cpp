@@ -1,5 +1,6 @@
 ﻿#ifndef NDEBUG
 
+#include <sstream>
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
@@ -7,6 +8,7 @@
 #include <ImGUI/imgui.h>
 #include <ImGUI/imgui_impl_glfw.h>
 #include <ImGUI/imgui_impl_opengl3.h>
+#include <ImGUI/imgui_internal.h>
 #include <CoreLib/Math/Vector3.h>
 #include <CoreLib/Log.h>
 #include <CoreLib/FormatUtils.h>
@@ -526,7 +528,16 @@ namespace EngineCore {
 
         ImGui::Begin("UI Inspector", &m_uiInspectorWin);
         {
-            auto& selectedElem = m_debugger->m_uiSelectedElement;
+            static std::shared_ptr<UI::ElementBase> selectedElem;
+            bool elementChanged = selectedElem != m_debugger->m_uiSelectedElement;
+            selectedElem = m_debugger->m_uiSelectedElement;
+
+            // --- Clear ImGui active input when selected element changes ---
+            // NOTE: ClearActiveID is declared in imgui_internal.h (internal API).
+            if (elementChanged) {
+                ImGui::ClearActiveID();
+            }
+
             if (!selectedElem) {
                 ImGui::Text("No UI Element selected");
             }
@@ -544,16 +555,20 @@ namespace EngineCore {
                     for (auto& ext : style->GetAllExtendedStyles())
                         if (ext) styleStack.push_back(ext);
                 }
-                if (auto baseStyle = selectedElem->GetElementStyle())
-                    styleStack.push_back(baseStyle);
+                if (auto baseStyle = selectedElem->GetElementStyle()) styleStack.push_back(baseStyle);
 
                 ImGui::Separator();
+
+                // Prepare a stable string for the selected element id (works for any streamable type)
+                std::ostringstream elemIdOss;
+                elemIdOss << selectedElem->GetID().value;
+                const std::string elemIdStr = elemIdOss.str();
 
                 for (size_t i = 0; i < styleStack.size(); ++i) {
                     auto& s = styleStack[i];
                     if (!s) continue;
 
-                    std::string headerLabel = std::to_string(i) + ": " + s->GetName();
+                    std::string headerLabel = std::to_string(static_cast<unsigned long long>(i)) + ": " + s->GetName();
                     if (ImGui::CollapsingHeader(headerLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 
                         // --- Copy attributes into editable vector ---
@@ -563,7 +578,9 @@ namespace EngineCore {
 
                         // --- Style for input fields ---
                         ImVec4 bgCol = ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_WindowBg);
-                        bgCol.x *= 1.1f; bgCol.y *= 1.1f; bgCol.z *= 1.1f;
+                        bgCol.x *= 1.1f;
+                        bgCol.y *= 1.1f;
+                        bgCol.z *= 1.1f;
                         float hMult = 1.1f; // hover
                         float aMult = 1.2f; // active
 
@@ -576,27 +593,27 @@ namespace EngineCore {
                         for (size_t attrIndex = 0; attrIndex < editableVec.size(); ++attrIndex) {
                             auto& [attrName, attrValue] = editableVec[attrIndex];
 
-                            char nameBuf[128]; strncpy_s(nameBuf, sizeof(nameBuf), attrName.c_str(), _TRUNCATE);
-                            char valueBuf[256]; strncpy_s(valueBuf, sizeof(valueBuf), attrValue.c_str(), _TRUNCATE);
+                            char nameBuf[128];
+                            strncpy_s(nameBuf, sizeof(nameBuf), attrName.c_str(), _TRUNCATE);
+                            char valueBuf[256];
+                            strncpy_s(valueBuf, sizeof(valueBuf), attrValue.c_str(), _TRUNCATE);
 
                             ImGui::PushID(static_cast<int>(attrIndex));
 
-                            std::string nameID = "##name_" + std::to_string(i) + "_" + std::to_string(attrIndex);
-                            std::string valueID = "##value_" + std::to_string(i) + "_" + std::to_string(attrIndex);
-                            std::string delID = "##del_" + std::to_string(i) + "_" + std::to_string(attrIndex);
+                            // --- Make IDs unique per selected element using element ID (streamed) and indices ---
+                            std::string nameID = "##name_" + elemIdStr + "_" + std::to_string(static_cast<unsigned long long>(i)) + "_" + std::to_string(static_cast<unsigned long long>(attrIndex));
+                            std::string valueID = "##value_" + elemIdStr + "_" + std::to_string(static_cast<unsigned long long>(i)) + "_" + std::to_string(static_cast<unsigned long long>(attrIndex));
+                            std::string delID = "##del_" + elemIdStr + "_" + std::to_string(static_cast<unsigned long long>(i)) + "_" + std::to_string(static_cast<unsigned long long>(attrIndex));
 
                             // --- Name editing (apply on enter only) ---
                             ImGui::SetNextItemWidth(120);
                             bool nameCommitted = ImGui::InputText(nameID.c_str(), nameBuf, sizeof(nameBuf),
                                 ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
-
                             ImGui::SameLine();
 
                             // --- Value editing (live or commit) ---
                             ImGui::SetNextItemWidth(80);
-                            bool valueChanged = false;
                             if (liveUpdate) {
-                                // Update every frame
                                 if (ImGui::InputText(valueID.c_str(), valueBuf, sizeof(valueBuf))) {
                                     std::string newVal(valueBuf);
                                     if (newVal != attrValue) {
@@ -607,7 +624,6 @@ namespace EngineCore {
                                 }
                             }
                             else {
-                                // Update only on Enter
                                 bool valueCommitted = ImGui::InputText(valueID.c_str(), valueBuf, sizeof(valueBuf),
                                     ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
                                 if (valueCommitted) {
@@ -621,14 +637,10 @@ namespace EngineCore {
                             }
 
                             ImGui::SameLine();
-
-                            // --- Delete Button ---
                             bool deleteClicked = ImGui::Button(("X" + delID).c_str());
                             ImGui::PopID();
 
                             std::string newName(nameBuf);
-
-                            // Apply name change only on Enter
                             if (nameCommitted && newName != attrName) {
                                 if (!newName.empty()) {
                                     s->Remove(attrName);
@@ -638,42 +650,40 @@ namespace EngineCore {
                                 }
                             }
 
-                            // Handle deletion
                             if (deleteClicked) {
                                 s->Remove(attrName);
-                                selectedElem->SetStyleAttributes();
                                 anyChange = true;
                             }
-                        }
-
-                        if (anyChange && liveUpdate) {
-                            selectedElem->SetStyleAttributes();
                         }
 
                         ImGui::PopStyleColor(3);
 
                         // --- Add new attribute (single input) ---
                         static char newAttrEntry[256] = "";
-                        std::string newEntryID = "##newEntry_" + std::to_string((uintptr_t)s.get());
 
-                        bool valueCommitted = ImGui::InputTextWithHint(newEntryID.c_str(), "Attribute: value", newAttrEntry, sizeof(newAttrEntry), ImGuiInputTextFlags_EnterReturnsTrue);
-                        if (ImGui::Button(("Add / Update##" + std::to_string((uintptr_t)s.get())).c_str()) || valueCommitted) {
+                        // --- Make Add/Update input unique per element using pointer address (safe conversion via stream) ---
+                        std::ostringstream ptrOss;
+                        ptrOss << (uintptr_t)s.get();
+                        std::string sPtrStr = ptrOss.str();
+
+                        std::string newEntryID = "##newEntry_" + elemIdStr + "_" + sPtrStr;
+
+                        bool valueCommitted = ImGui::InputTextWithHint(newEntryID.c_str(), "Attribute: value",
+                            newAttrEntry, sizeof(newAttrEntry), ImGuiInputTextFlags_EnterReturnsTrue);
+
+                        if (ImGui::Button(("Add / Update##" + elemIdStr + "_" + sPtrStr).c_str()) || valueCommitted) {
                             std::string entryStr(newAttrEntry);
-
                             std::size_t sepPos = entryStr.find(':');
                             if (sepPos != std::string::npos) {
                                 std::string nameStr = entryStr.substr(0, sepPos);
                                 std::string valueStr = entryStr.substr(sepPos + 1);
-
                                 nameStr.erase(0, nameStr.find_first_not_of(" \t\n\r"));
                                 nameStr.erase(nameStr.find_last_not_of(" \t\n\r") + 1);
                                 valueStr.erase(0, valueStr.find_first_not_of(" \t\n\r"));
                                 valueStr.erase(valueStr.find_last_not_of(" \t\n\r") + 1);
-
                                 if (!nameStr.empty()) {
                                     s->Set(nameStr, valueStr);
                                     newAttrEntry[0] = 0;
-                                    selectedElem->SetStyleAttributes();
                                 }
                             }
                         }
@@ -685,7 +695,6 @@ namespace EngineCore {
                                     s->Set(name, value);
                                 }
                             }
-                            selectedElem->SetStyleAttributes();
                         }
                     }
                 }
@@ -695,7 +704,6 @@ namespace EngineCore {
         auto pos = ImGui::GetWindowPos();
         auto size = ImGui::GetWindowSize();
         m_uiInspectorState.Set(pos.x, pos.y, size.x, size.y);
-
         ImGui::End();
         m_firstUIInspectorWin = false;
     }
