@@ -498,7 +498,7 @@ namespace EngineCore {
             ImGui::SetNextWindowSize(ImVec2(m_uiHierarchyState.z, m_uiHierarchyState.w));
         }
 
-        ImGui::Begin("UI Hierarchy");
+        ImGui::Begin("UI Hierarchy", &m_uiInspectorWin);
 
         // Create a child region that allows horizontal scrolling
         ImGui::BeginChild("UIHierarchyChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
@@ -558,12 +558,15 @@ namespace EngineCore {
                 if (auto baseStyle = selectedElem->GetElementStyle()) styleStack.push_back(baseStyle);
 
                 ImGui::Separator();
-
+                
                 // Prepare a stable string for the selected element id (works for any streamable type)
                 std::ostringstream elemIdOss;
                 elemIdOss << selectedElem->GetID().value;
                 const std::string elemIdStr = elemIdOss.str();
 
+                //list that contains every attribute to higlight witch att... get overwritten
+                std::vector<std::string> attributeNames;
+                ImVec4 darkerText = ImVec4(0.2f ,0.2f ,0.2f ,1.0f);
                 for (size_t i = 0; i < styleStack.size(); ++i) {
                     auto& s = styleStack[i];
                     if (!s) continue;
@@ -575,6 +578,7 @@ namespace EngineCore {
                         std::vector<std::pair<std::string, std::string>> editableVec;
                         for (auto& [name, value] : s->GetAllStateLocal(UI::State::Normal))
                             editableVec.emplace_back(name, value);
+                            
 
                         // --- Style for input fields ---
                         ImVec4 bgCol = ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_WindowBg);
@@ -592,6 +596,10 @@ namespace EngineCore {
                         bool anyChange = false;
                         for (size_t attrIndex = 0; attrIndex < editableVec.size(); ++attrIndex) {
                             auto& [attrName, attrValue] = editableVec[attrIndex];
+                            
+                            bool attAlreadyDefined = (std::find(attributeNames.begin(), attributeNames.end(), attrName) != attributeNames.end());
+                            if(attAlreadyDefined)
+                                ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, darkerText);
 
                             char nameBuf[128];
                             strncpy_s(nameBuf, sizeof(nameBuf), attrName.c_str(), _TRUNCATE);
@@ -635,6 +643,11 @@ namespace EngineCore {
                                     }
                                 }
                             }
+                            
+                            if (!attAlreadyDefined)
+                                attributeNames.push_back(attrName);
+                            else
+                                ImGui::PopStyleColor();
 
                             ImGui::SameLine();
                             bool deleteClicked = ImGui::Button(("X" + delID).c_str());
