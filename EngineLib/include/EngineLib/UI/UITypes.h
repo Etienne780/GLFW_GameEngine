@@ -201,7 +201,8 @@ namespace EngineCore::UI {
     
     }
 
-    struct StyleValue {
+    class StyleValue {
+    public:
         using ValueVariant = std::variant<int, float, Vector2, Vector3, Vector4, std::string, std::vector<StyleValue>>;
         enum class Type { Int, Float, Vector2, Vector3, Vector4, String, Multi } valueType = Type::Float;
         std::vector<StyleUnit::Unit > unitTypes = { StyleUnit::Unit::Unknown };
@@ -257,7 +258,7 @@ namespace EngineCore::UI {
             }
 
             Log::Warn("StyleValue: Could not get value of Attribute '{}', expected type '{}', got '{}'!",
-                attributeName, typeid(T).name(), valueType);
+                attributeName, GetReadableTypeName(typeid(T)), valueType);
             return false;
         }
 
@@ -271,6 +272,19 @@ namespace EngineCore::UI {
             Log::Info("StyleValue: index '{}' out of bounds for size '{}' (Type='{}', Units={})",
                 index, unitTypes.size(), valueType, unitTypes);
             return StyleUnit::Unit::Unknown;
+        }
+
+    private:
+        // Helper: Returns a readable string for the given std::type_info
+        static const char* GetReadableTypeName(const std::type_info& type) {
+            if (type == typeid(int)) return "int";
+            if (type == typeid(float)) return "float";
+            if (type == typeid(Vector2)) return "Vector2";
+            if (type == typeid(Vector3)) return "Vector3";
+            if (type == typeid(Vector4)) return "Vector4";
+            if (type == typeid(std::string)) return "string";
+            if (type == typeid(std::vector<StyleValue>)) return "StyleValue[]";
+            return "unknown";
         }
     };
 

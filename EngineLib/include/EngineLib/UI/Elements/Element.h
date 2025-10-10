@@ -180,10 +180,6 @@ namespace EngineCore::UI {
         * @brief This function is called only once for every class. It registers all attributes this element can have and what they do.
         */
         virtual void RegisterAttributes() {};
-        /*
-        * @brief Called after base style attributes are set. Can override or add attributes.
-        */
-        virtual void ExtendElementBaseStyle(std::shared_ptr<Style> baseStyle) {};
 
         void SetState(State state);
 
@@ -374,7 +370,6 @@ namespace EngineCore::UI {
         void SetParent(ElementBase* elementPtr, size_t indexPos);
         void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
         void SetStyleAttributes();
-        std::shared_ptr<Style> GetElementBaseStyle();
         void SetAvailableWidth(float width);
         void SetAvailableHeight(float height);
     };

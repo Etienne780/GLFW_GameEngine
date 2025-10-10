@@ -20,8 +20,10 @@ namespace EngineCore {
             std::shared_ptr<UI::ElementBase> element = m_roots.emplace_back(std::make_shared<T>(id, std::forward<Args>(args)...));
             element->Init();
             m_elementStack.push(element);
+#ifndef NDEBUG
             if (m_isDebug)
                 Log::Debug("UIManager: Started element {}({})", element->GetName(), id.value);
+#endif 
             return std::static_pointer_cast<T>(element);
         }
         else {
@@ -29,8 +31,10 @@ namespace EngineCore {
             auto& parent = m_elementStack.top();
             std::shared_ptr<UI::ElementBase> element = parent->AddChild<T>(id, std::forward<Args>(args)...);
             m_elementStack.push(element);
+#ifndef NDEBUG
             if (m_isDebug)
                 Log::Debug("UIManager: Started element {}({})", element->GetName(), id.value);
+#endif 
             return std::static_pointer_cast<T>(element);
         }
     }
@@ -52,9 +56,10 @@ namespace EngineCore {
 
         auto& parent = m_elementStack.top();
         std::shared_ptr<UI::ElementBase> element = parent->AddChild<T>(id, std::forward<Args>(args)...);
+#ifndef NDEBUG
         if (m_isDebug)
             Log::Debug("UIManager: Added element {}({})", element->GetName(), id.value);
-
+#endif 
         return std::static_pointer_cast<T>(element);
     }
 

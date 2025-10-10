@@ -27,7 +27,7 @@ namespace {
         "Layouts the elements inside of a container (major, minor)",
         { 1, 2 },
         layoutAttInputs,
-        { layoutAttInputs[0], layoutAttInputs[0] }
+        layoutAttInputs[0]
     );
 
     const StyleAttribute LayoutMajorAtt = AttributeHelper::MakeSimpleStringAttribute(
@@ -40,7 +40,7 @@ namespace {
     const StyleAttribute LayoutMinorAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutMinor,
         "Minor layout of elements inside a container",
-        { "start", "center", "end", "stretch" },
+        { layoutAttInputs[0], layoutAttInputs[1], layoutAttInputs[2], "stretch" },
         layoutAttInputs[0]
     );
 
@@ -49,8 +49,8 @@ namespace {
     const StyleAttribute LayoutItemAtt = AttributeHelper::MakeSimpleStringAttribute(
         Attribute::layoutItem,
         "Minor layout aligment with other elements",
-        { "start", "center", "end", "stretch" },
-        { "start" }
+        { layoutAttInputs[0], layoutAttInputs[1], layoutAttInputs[2], "stretch" },
+        layoutAttInputs[0]
     );
 
     const StyleAttribute LayoutDirectionAtt = AttributeHelper::MakeSimpleStringAttribute(

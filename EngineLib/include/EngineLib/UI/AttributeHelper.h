@@ -116,6 +116,15 @@ namespace EngineCore::UI {
 		* @param element Reference to the element providing context for size calculations
 		* @param input The input string containing number + unit
 		* @param outValue Output parameter to receive the numeric value
+		* @return True if a valid number and unit were parsed, false otherwise
+		*/
+		static bool TryGetNumber(const ElementBase& element, const std::string& input, float& outValue);
+
+		/**
+		* @brief Attempts to extract a numeric value and its unit from an input string
+		* @param element Reference to the element providing context for size calculations
+		* @param input The input string containing number + unit
+		* @param outValue Output parameter to receive the numeric value
 		* @param outUnit Output parameter to receive the extracted unit
 		* @return True if a valid number and unit were parsed, false otherwise
 		*/
@@ -159,7 +168,7 @@ namespace EngineCore::UI {
 		static StyleAttribute MakeSimpleNumberAttribute(
 			const char* name,
 			const char* description,
-			float defaultValue,
+			const std::string& defaultValue,
 			NumberType type);
 
 		/**
@@ -174,7 +183,7 @@ namespace EngineCore::UI {
 			const char* name,
 			const char* description,
 			std::vector<std::string> inputs,
-			Vector4 defaultValue);
+			const std::string& defaultValue);
 
 		/**
 		* @brief Creates a multi-string attribute with multiple allowed input counts
@@ -190,7 +199,7 @@ namespace EngineCore::UI {
 			const char* description,
 			std::vector<size_t> numberOfInputs,
 			std::vector<std::string> inputs,
-			std::vector<std::string> defaultValues);
+			const std::string& defaultValues);
 		
 		/**
 		* @brief Creates a multi-number attribute that supports 1 to 4 numeric inputs.
@@ -214,7 +223,7 @@ namespace EngineCore::UI {
 			const char* name,
 			const char* description,
 			size_t maxInput,
-			std::vector<float> defaultValue,
+			const std::string& defaultValue,
 			NumberType type);
 
 	private:

@@ -1,4 +1,5 @@
 #include "EngineLib/UI/AttributeNames.h"
+#include "EngineLib/UI/UIManager.h"
 #include "EngineLib/UI/Style.h"
 
 namespace EngineCore::UI {
@@ -195,7 +196,10 @@ namespace EngineCore::UI {
 				sub.callback();
 		}
 
-		Log::Debug("Style: called Dirt Callbacks with '{}' Inter and '{}' normal", m_dirtyCallbackInter.size(), m_dirtyCallback.size());
+#ifndef NDEBUG
+		if(UIManager::GetDebug())
+			Log::Debug("Style: called Dirt Callbacks with '{}' Inter and '{}' normal", m_dirtyCallbackInter.size(), m_dirtyCallback.size());
+#endif
 	}
 
 }

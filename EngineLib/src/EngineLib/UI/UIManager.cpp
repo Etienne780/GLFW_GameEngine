@@ -24,8 +24,10 @@ namespace EngineCore {
         if (!m_elementStack.empty()) {
             auto& ended = m_elementStack.top();
             m_elementStack.pop();
+#ifndef NDEBUG
             if (m_isDebug)
                 Log::Debug("UIManager: Ended element {}({})", ended->GetName(), ended->GetID().value);
+#endif
         }
 		else {
             Log::Error("UIManager: End called without Begin!");
@@ -104,6 +106,10 @@ namespace EngineCore {
         return m_elementCount;
     }
 
+    bool UIManager::GetDebug() {
+        return m_isDebug;
+    }
+
     void UIManager::SetRootElementsDirty() {
         for (auto& element : m_roots) {
             element->MarkDirty();
@@ -131,6 +137,19 @@ namespace EngineCore {
 
     void UIManager::SetReferenceScreenSize(const Vector2& size) {
         m_referenceScreenSize.Set(size.x, size.y);
+    }
+
+    std::shared_ptr<UI::Style> UIManager::GetElementBaseStyle() {
+        static std::shared_ptr<UI::Style> baseStyle = [] {
+            auto s = Style::Create("Base");
+            auto& allAttributes = StyleAttribute::GetAllAttributes();
+            for (auto& [name, att] : allAttributes) {
+                s->Set(name, att.GetFallbackStr());
+            }
+            return s;
+        }();
+
+        return baseStyle;
     }
 
     void UIManager::WindowResize(int width, int height) {

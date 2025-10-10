@@ -56,6 +56,11 @@ namespace EngineCore::UI {
 		return false;
 	}
 
+	bool AttributeHelper::TryGetNumber(const ElementBase& element, const std::string& input, float& outValue) {
+		std::string out;
+		return TryGetNumber(element, input, outValue, out);
+	}
+
 	bool AttributeHelper::TryGetNumber(const ElementBase& element, const std::string& input, float& outValue, std::string& outUnit) {
 		if (TryGetUnit(input, outUnit)) {
 			// get number
@@ -97,7 +102,7 @@ namespace EngineCore::UI {
 		std::vector<std::string> inputs,
 		const std::string& defaultValue)
 	{
-		return StyleAttribute(name, description, StyleValue(defaultValue), inputs,
+		return StyleAttribute(name, description, defaultValue, inputs,
 			[](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				std::string s = FormatUtils::toLowerCase(val);
 				if (AttributeHelper::ListContains(styleAtt->GetInputs(), s))
@@ -105,7 +110,7 @@ namespace EngineCore::UI {
 
 				Log::Warn("StyleAttribute: {} could not calculate value in style '{}', input:'{}' invalid!", 
 					styleAtt->GetName(), element.GetStyle()->GetName(), val);
-				return styleAtt->GetFallbackValue();
+				return StyleValue(styleAtt->GetFallbackStr());
 			}
 		);
 	}
@@ -113,10 +118,10 @@ namespace EngineCore::UI {
 	StyleAttribute AttributeHelper::MakeSimpleNumberAttribute(
 		const char* name,
 		const char* description,
-		float defaultValue,
+		const std::string& defaultValue,
 		NumberType type)
 	{
-		return StyleAttribute(name, description, StyleValue(defaultValue, StyleUnit::Unit::PX), {"nummber"},
+		return StyleAttribute(name, description, defaultValue, {"nummber"},
 			[type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				float f = 0;
 				bool errorType = false;
@@ -132,7 +137,13 @@ namespace EngineCore::UI {
 				else
 					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', input:'{}' invalid!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
-				return styleAtt->GetFallbackValue();
+
+				if (!TryGetNumber(element, styleAtt->GetFallbackStr(), f, unit)) {
+					Log::Error("AttributeHelper: {} could not parse default value '{}' to number!",
+						styleAtt->GetName(), styleAtt->GetFallbackStr());
+				}
+
+				return StyleValue(f, StyleUnit::ToUnit(unit));
 			}
 		);
 	}
@@ -141,59 +152,89 @@ namespace EngineCore::UI {
 		const char* name,
 		const char* description,
 		std::vector<std::string> inputs,
-		Vector4 defaultValue) 
+		const std::string& defaultValue)
 	{
+		// Default unit is always unknown because colors are not numeric units
 		static std::vector<StyleUnit::Unit> defaultUnits{
-				StyleUnit::Unit::Unknown,
-				StyleUnit::Unit::Unknown,
-				StyleUnit::Unit::Unknown,
-				StyleUnit::Unit::Unknown
+			StyleUnit::Unit::Unknown,
+			StyleUnit::Unit::Unknown,
+			StyleUnit::Unit::Unknown,
+			StyleUnit::Unit::Unknown
 		};
 
-		return StyleAttribute(name, description, StyleValue(defaultValue, defaultUnits), inputs,
-			[](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
-				bool errorType = false;
-				std::string clearString = FormatUtils::removeSpaces(val);
-				size_t pos = clearString.find('#');
-				if (pos == std::string::npos) {
-					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', '#' is missing, input:'{}' invalid!", 
-						element.GetStyle()->GetName(), styleAtt->GetName(), val);
-					return styleAtt->GetFallbackValue();
+		// Lambda that parses a hex string into a Vector4 color (RGBA)
+		auto parseHexColor = [&](const std::string& input, Vector4& outColor) -> bool {
+			std::string clearString = FormatUtils::removeSpaces(input);
+			size_t pos = clearString.find('#');
+			if (pos == std::string::npos)
+				return false;
+
+			std::string colorStr = clearString.substr(pos + 1);
+			size_t colorLen = colorStr.size();
+
+			auto hexToF = [](const std::string& s) -> float {
+				int v = ConversionUtils::HexToIntegral(s);
+				return (v == -1) ? -1.0f : v / 255.0f;
+				};
+
+			if (colorLen == 2) {
+				float g = hexToF(colorStr);
+				if (g >= 0.0f) {
+					outColor = Vector4(g, g, g, 1.0f);
+					return true;
 				}
-				pos++;
-				size_t colorLen = clearString.size() - pos;
-				std::string colorStr = clearString.substr(pos, colorLen);
-				if (colorLen == 2) {
-					errorType = true;
-					int b = ConversionUtils::HexToIntegral(colorStr);
-					if (b != -1)
-						return StyleValue(Vector4(b / 255.0f, b / 255.0f, b / 255.0f, 1.0f), defaultUnits);
+			}
+			else if (colorLen == 6) {
+				float r = hexToF(colorStr.substr(0, 2));
+				float g = hexToF(colorStr.substr(2, 2));
+				float b = hexToF(colorStr.substr(4, 2));
+				if (r >= 0.0f && g >= 0.0f && b >= 0.0f) {
+					outColor = Vector4(r, g, b, 1.0f);
+					return true;
 				}
-				else if (colorLen == 6) {
-					errorType = true;
-					int r = ConversionUtils::HexToIntegral(colorStr.substr(0, 2));
-					int g = ConversionUtils::HexToIntegral(colorStr.substr(2, 2));
-					int b = ConversionUtils::HexToIntegral(colorStr.substr(4, 2));
-					if (r != -1 && g != -1 && b != -1)
-						return StyleValue(Vector4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f), defaultUnits);
+			}
+			else if (colorLen == 8) {
+				float r = hexToF(colorStr.substr(0, 2));
+				float g = hexToF(colorStr.substr(2, 2));
+				float b = hexToF(colorStr.substr(4, 2));
+				float a = hexToF(colorStr.substr(6, 2));
+				if (r >= 0.0f && g >= 0.0f && b >= 0.0f && a >= 0.0f) {
+					outColor = Vector4(r, g, b, a);
+					return true;
 				}
-				else if (colorLen == 8) {
-					errorType = true;
-					int r = ConversionUtils::HexToIntegral(colorStr.substr(0, 2));
-					int g = ConversionUtils::HexToIntegral(colorStr.substr(2, 2));
-					int b = ConversionUtils::HexToIntegral(colorStr.substr(4, 2));
-					int a = ConversionUtils::HexToIntegral(colorStr.substr(6, 2));
-					if (r != -1 && g != -1 && b != -1 && a != -1)
-						return StyleValue(Vector4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f), defaultUnits);
+			}
+
+			return false;
+			};
+
+		// Pre-parse the fallback value once so we don't repeat that in the lambda
+		Vector4 fallbackColor(0.0f);
+		if (!parseHexColor(defaultValue, fallbackColor)) {
+			Log::Error("AttributeHelper: '{}' has invalid default color '{}'. Using transparent black.", name, defaultValue);
+			fallbackColor = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+		}
+
+		return StyleAttribute(name, description, defaultValue, inputs,
+			[fallbackColor, parseHexColor](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+				Vector4 color;
+				if (parseHexColor(val, color)) {
+					return StyleValue(color, {
+						StyleUnit::Unit::Unknown,
+						StyleUnit::Unit::Unknown,
+						StyleUnit::Unit::Unknown,
+						StyleUnit::Unit::Unknown
+						});
 				}
 
-				if(errorType)
-					Log::Warn("AttributeHelper: {}, invalid hex symbols in style '{}', input:'{}'!", 
-						styleAtt->GetName(), element.GetStyle()->GetName(), val);
-				else 
-					Log::Warn("AttributeHelper: {}, invalid color format in style '{}', expected hex string with 2, 6 or 8 digits after '#', input:'{}'!", 
-						styleAtt->GetName(), element.GetStyle()->GetName(), val);
-				return styleAtt->GetFallbackValue();
+				Log::Warn("AttributeHelper: {} could not parse color in style '{}', using fallback '{}'.",
+					styleAtt->GetName(), element.GetStyle()->GetName(), styleAtt->GetFallbackStr());
+
+				return StyleValue(fallbackColor, {
+					StyleUnit::Unit::Unknown,
+					StyleUnit::Unit::Unknown,
+					StyleUnit::Unit::Unknown,
+					StyleUnit::Unit::Unknown
+					});
 			}
 		);
 	}
@@ -203,26 +244,19 @@ namespace EngineCore::UI {
 		const char* description,
 		std::vector<size_t> numberOfInputs,
 		std::vector<std::string> inputs,
-		std::vector<std::string> defaultValues)
+		const std::string& defaultValues)
 	{
 #ifndef NDEBUG
 		if (numberOfInputs.size() == 1 && numberOfInputs[0] == 1)
 			Log::Warn("AttributeHelper: Attribute '{}' is defined as MultiStringAttribute but only allows 1 input. Consider using SimpleStringAttribute instead.",
 				name);
 
-		if (!numberOfInputs.empty() && std::find(numberOfInputs.begin(), numberOfInputs.end(), defaultValues.size()) == numberOfInputs.end())
-			Log::Warn("AttributeHelper: Attribute '{}' defaultValues count ({}) does not match allowed numberOfInputs ({})",
-				name, defaultValues.size(), numberOfInputs.size());
+		auto defautlVa = AttributeHelper::GetValues(defaultValues);
+		if (!numberOfInputs.empty() && std::find(numberOfInputs.begin(), numberOfInputs.end(), defautlVa.size()) == numberOfInputs.end())
+			Log::Warn("AttributeHelper: Attribute '{}' defaultValue '{}' count ({}) does not match allowed numberOfInputs ({})",
+				name, defaultValues, defautlVa.size(), numberOfInputs.size());
 #endif 
-		// fallback to defaults
-		std::vector<StyleValue> dV;
-		dV.reserve(defaultValues.size());
-		for (auto& s : defaultValues) {
-			std::string lowerS = FormatUtils::toLowerCase(s);
-			dV.emplace_back(lowerS);
-		}
-
-		return StyleAttribute(name, description, StyleValue(dV), inputs,
+		return StyleAttribute(name, description, defaultValues, inputs,
 			[numberOfInputs](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				auto values = AttributeHelper::GetValues(val);
 				bool errorType = false;
@@ -255,7 +289,16 @@ namespace EngineCore::UI {
 					Log::Warn("AttributeHelper: '{}' could not calculate value in style '{}', invalid argument count, input '{}'",
 						styleAtt->GetName(), element.GetStyle()->GetName(), val);
 
-				return styleAtt->GetFallbackValue();
+				// creats the default values from the default string
+				std::vector<std::string> fallbackValues =
+					AttributeHelper::GetValues(styleAtt->GetFallbackStr());
+				std::vector<StyleValue> dV;
+				dV.reserve(fallbackValues.size());
+				for (auto& s : fallbackValues) {
+					std::string lowerS = FormatUtils::toLowerCase(s);
+					dV.emplace_back(lowerS);
+				}
+				return StyleValue(dV);
 			}
 		);
 	}
@@ -264,7 +307,7 @@ namespace EngineCore::UI {
 		const char* name,
 		const char* description,
 		size_t maxInput,
-		std::vector<float> defaultValue,
+		const std::string& defaultValue,
 		NumberType type) 
 	{
 #ifndef NDEBUG
@@ -272,73 +315,19 @@ namespace EngineCore::UI {
 			Log::Warn("AttributeHelper: Attribute '{}' is defined as MultiNumberAttribute but only allows 1 input. Consider using SimpleNumberAttribute instead.",
 				name);
 
-		if(maxInput != defaultValue.size())
-			Log::Warn("AttributeHelper: Attribute '{}' defaultValues({}) count does not match allowed numberOfInputs({})",
-				name, defaultValue.size(), maxInput);
+		auto defautlVa = AttributeHelper::GetValues(defaultValue);
+		if(maxInput != defautlVa.size())
+			Log::Warn("AttributeHelper: Attribute '{}' defaultValue '{}' count ({}) does not match allowed numberOfInputs({})",
+				name, defaultValue, defaultValue.size(), maxInput);
 #endif 
-		StyleValue fallback;
-		// calculate default value
-		switch (maxInput)
-		{
-		case 1:
-			fallback = StyleValue((defaultValue.empty()) ? 0.0f : defaultValue[0], StyleUnit::Unit::PX);
-			break;
-		case 2: {
-			Vector2 vec;
-			if (defaultValue.size() == 1) {
-				vec.Set(defaultValue[0], defaultValue[0]);
-			}
-			else if (defaultValue.size() == 2) {
-				vec.Set(defaultValue[0], defaultValue[1]);
-			}
-			fallback = StyleValue(vec, { StyleUnit::Unit::PX, StyleUnit::Unit::PX });
-			break;
-		}
-		case 3: {
-			Vector3 vec;
-			if (defaultValue.size() == 1) {
-				vec.Set(defaultValue[0], defaultValue[0], defaultValue[0]);
-			}
-			else if (defaultValue.size() == 2) {
-				vec.Set(defaultValue[0], defaultValue[1], defaultValue[1]);
-			}
-			else if (defaultValue.size() == 3) {
-				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2]);
-			}
-			fallback = StyleValue(vec, { StyleUnit::Unit::PX, StyleUnit::Unit::PX, StyleUnit::Unit::PX });
-			break;
-		}
-		case 4: {
-			Vector4 vec;
-			if (defaultValue.size() == 1) {
-				vec.Set(defaultValue[0], defaultValue[0], defaultValue[0], defaultValue[0]);
-			}
-			else if (defaultValue.size() == 2) {
-				vec.Set(defaultValue[0], defaultValue[0], defaultValue[1], defaultValue[1]);
-			}
-			else if (defaultValue.size() == 3) {
-				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[2]);
-			}
-			else if (defaultValue.size() == 4) {
-				vec.Set(defaultValue[0], defaultValue[1], defaultValue[2], defaultValue[3]);
-			}
-			fallback = StyleValue(vec, { StyleUnit::Unit::PX, StyleUnit::Unit::PX, StyleUnit::Unit::PX, StyleUnit::Unit::PX });
-			break;
-		}
-		default:
-			Log::Error("AttributeHelper: Attribute '{}' has the invalid maxInput({}), maxInput needs to be 1, 2, 3 or 4!",
-				name, maxInput);
-			fallback = StyleValue(0.0f, StyleUnit::Unit::PX);
-			break;
-		}
 
-		return StyleAttribute(name, description, fallback, { "nummber" },
-			[maxInput, defaultValue, type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+		return StyleAttribute(name, description, defaultValue, { "nummber" },
+			[maxInput, type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				short errorType = 0;
 				auto values = GetValues(val);
 				
 				
-				if (maxInput >= values.size()) {
+				if (values.size() <= maxInput) {
 					switch (maxInput)
 					{
 					case 1: {
@@ -498,7 +487,7 @@ namespace EngineCore::UI {
 							if (TryGetNumber(element, values[0], v1, unit1) &&
 								TryGetNumber(element, values[1], v2, unit2) &&
 								TryGetNumber(element, values[2], v3, unit3) &&
-								TryGetNumber(element, values[2], v4, unit4)) {
+								TryGetNumber(element, values[3], v4, unit4)) {
 								if (IsUnitType(type, unit1, unit2, unit3, unit4)) {
 									std::vector<StyleUnit::Unit> styleUnits{
 										StyleUnit::ToUnit(unit1),
@@ -526,7 +515,115 @@ namespace EngineCore::UI {
 					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', invalid argument count max arguments '{}', input:'{}'!", 
 						styleAtt->GetName(), element.GetStyle()->GetName(), maxInput, val);
 
-				return styleAtt->GetFallbackValue();
+				// translates default value str to float vector
+				auto defaultValues = AttributeHelper::GetValues(styleAtt->GetFallbackStr());
+				std::vector<float> defaultValueNum;
+				std::vector<StyleUnit::Unit> defaultUnits;
+				defaultValueNum.reserve(defaultValues.size());
+				defaultUnits.reserve(defaultValues.size());
+				float tempNum = 0;
+				std::string tempUnit;
+				for (auto& str : defaultValues) {
+					if (!AttributeHelper::TryGetNumber(element, str, tempNum, tempUnit)) {
+						Log::Error("AttributeHelper: {} could not convert part '{}', of default value '{}', to number!",
+							styleAtt->GetName(), str, styleAtt->GetFallbackStr());
+					}
+					defaultValueNum.push_back(tempNum);
+					defaultUnits.push_back(StyleUnit::ToUnit(tempUnit));
+				}
+
+				StyleValue fallback;
+				// calculate default value
+				switch (maxInput)
+				{
+				case 1:
+					fallback = StyleValue((defaultValueNum.empty()) ? 0.0f : defaultValueNum[0], defaultUnits[0]);
+					break;
+				case 2: {
+					Vector2 vec;
+					std::vector<StyleUnit::Unit> units;
+					units.reserve(2);
+					if (defaultValueNum.size() == 1) {
+						vec.Set(defaultValueNum[0], defaultValueNum[0]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[0]);
+					}
+					else if (defaultValueNum.size() == 2) {
+						vec.Set(defaultValueNum[0], defaultValueNum[1]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[1]);
+					}
+					fallback = StyleValue(vec, units);
+					break;
+				}
+				case 3: {
+					Vector3 vec;
+					std::vector<StyleUnit::Unit> units;
+					units.reserve(3);
+					if (defaultValueNum.size() == 1) {
+						vec.Set(defaultValueNum[0], defaultValueNum[0], defaultValueNum[0]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[0]);
+					}
+					else if (defaultValueNum.size() == 2) {
+						vec.Set(defaultValueNum[0], defaultValueNum[1], defaultValueNum[1]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[1]);
+						units.push_back(defaultUnits[1]);
+					}
+					else if (defaultValueNum.size() == 3) {
+						vec.Set(defaultValueNum[0], defaultValueNum[1], defaultValueNum[2]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[1]);
+						units.push_back(defaultUnits[2]);
+					}
+					fallback = StyleValue(vec, units);
+					break;
+				}
+				case 4: {
+					Vector4 vec;
+					std::vector<StyleUnit::Unit> units;
+					units.reserve(4);
+					if (defaultValueNum.size() == 1) {
+						vec.Set(defaultValueNum[0], defaultValueNum[0], defaultValueNum[0], defaultValueNum[0]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[0]);
+					}
+					else if (defaultValueNum.size() == 2) {
+						vec.Set(defaultValueNum[0], defaultValueNum[0], defaultValueNum[1], defaultValueNum[1]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[1]);
+						units.push_back(defaultUnits[1]);
+					}
+					else if (defaultValueNum.size() == 3) {
+						vec.Set(defaultValueNum[0], defaultValueNum[1], defaultValueNum[2], defaultValueNum[2]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[1]);
+						units.push_back(defaultUnits[2]);
+						units.push_back(defaultUnits[2]);
+					}
+					else if (defaultValueNum.size() == 4) {
+						vec.Set(defaultValueNum[0], defaultValueNum[1], defaultValueNum[2], defaultValueNum[3]);
+						units.push_back(defaultUnits[0]);
+						units.push_back(defaultUnits[1]);
+						units.push_back(defaultUnits[2]);
+						units.push_back(defaultUnits[3]);
+					}
+					fallback = StyleValue(vec, units);
+					break;
+				}
+				default:
+					Log::Error("AttributeHelper: Attribute '{}' has the invalid maxInput({}), maxInput needs to be 1, 2, 3 or 4!",
+						styleAtt->GetName(), maxInput);
+					fallback = StyleValue(0.0f, StyleUnit::Unit::PX);
+					break;
+				}
+
+				return fallback;
 			}
 		);
 	}

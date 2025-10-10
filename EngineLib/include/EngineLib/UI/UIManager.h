@@ -83,6 +83,7 @@ namespace EngineCore {
 		static float GetUIScaleFactor();
 		static RenderLayerID GetRenderLayer();
 		static size_t GetElementCount();
+		static bool GetDebug();
 
 		static void SetRootElementsDirty();
 
@@ -107,6 +108,8 @@ namespace EngineCore {
 		* @param size A 2D vector containing reference width and height in pixels.
 		*/
 		static void SetReferenceScreenSize(const Vector2& size);
+
+		static std::shared_ptr<UI::Style> GetElementBaseStyle();
 
 	private:
 		UIManager() = default;
