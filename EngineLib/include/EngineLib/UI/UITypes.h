@@ -128,8 +128,8 @@ namespace EngineCore::UI {
         inline const std::vector<std::string>& GetUnitStrings() {
             static std::vector<std::string> units = [] {
                 std::vector<std::string> u;
-                auto sizeUntis = GetSizeUnitStrings();
-                auto timeUntis = GetTimeUnitStrings();
+                auto& sizeUntis = GetSizeUnitStrings();
+                auto& timeUntis = GetTimeUnitStrings();
     
                 u.reserve(sizeUntis.size() + timeUntis.size());
                 u.insert(u.end(), sizeUntis.begin(), sizeUntis.end());
