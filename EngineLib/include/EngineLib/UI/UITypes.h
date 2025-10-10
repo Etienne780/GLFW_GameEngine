@@ -103,16 +103,28 @@ namespace EngineCore::UI {
             MS,
         };
     
+        /**
+        * @brief Returns a list of all size-related unit strings (e.g., px, %w, %h, etc.).
+        * @return Reference to a vector containing all size unit strings.
+        */
         inline const std::vector<std::string>& GetSizeUnitStrings() {
             static std::vector<std::string> sizeUnits = { "px", "%w", "%h", "%a", "vw", "vh" };
             return sizeUnits;
         }
     
+        /**
+        * @brief Returns a list of all time-related unit strings (e.g., s, ms).
+        * @return Reference to a vector containing all time unit strings.
+        */
         inline const std::vector<std::string>& GetTimeUnitStrings() {
             static std::vector<std::string> timeUnits = { "s", "ms" };
             return timeUnits;
         }
     
+        /**
+        * @brief Returns a list of all valid unit strings including both size and time units.
+        * @return Reference to a vector containing all unit strings.
+        */
         inline const std::vector<std::string>& GetUnitStrings() {
             static std::vector<std::string> units = [] {
                 std::vector<std::string> u;
@@ -127,18 +139,35 @@ namespace EngineCore::UI {
             return units;
         }
     
+        /**
+        * @brief Returns the number of available size units.
+        * @return Number of size unit strings.
+        */
         inline size_t GetSizeUnitCount() {
             return GetSizeUnitStrings().size();
         }
     
+        /**
+        * @brief Returns the number of available time units.
+        * @return Number of time unit strings.
+        */
         inline size_t GetTimeUnitCount() {
             return GetTimeUnitStrings().size();
         }
     
+        /**
+        * @brief Returns the total number of defined units (size + time).
+        * @return Total count of unit strings.
+        */
         inline size_t GetUnitCount() {
             return GetUnitStrings().size();
         }
     
+        /**
+        * @brief Converts a unit string (e.g., "px", "vw") to its corresponding Unit enum value.
+        * @param unit String representation of the unit.
+        * @return Corresponding Unit enum, or Unit::Unknown if not recognized.
+        */
         inline Unit ToUnit(const std::string& unit) {
             const auto& units = GetUnitStrings();
             auto it = std::find(units.begin(), units.end(), unit);
@@ -152,6 +181,11 @@ namespace EngineCore::UI {
             return Unit::Unknown;
         }
     
+        /**
+        * @brief Converts a Unit enum value back into its string representation.
+        * @param unit The Unit enum to convert.
+        * @return The corresponding string representation, or "Unknown" if invalid.
+        */
         inline std::string ToString(Unit unit) {
             if (unit == Unit::Unknown) {
                 return "Unknown";
