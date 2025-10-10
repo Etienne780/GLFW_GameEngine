@@ -20,9 +20,15 @@ const Vector3 Vector3::zero(0, 0, 0);
 
 Vector3::Vector3() {
 }
+
+Vector3::Vector3(float value)
+    : x(value), y(value), z(value) {
+}
+
 Vector3::Vector3(float x, float y, float z)
     : x(x), y(y), z(z) {
 }
+
 Vector3::Vector3(const Vector2& vec, float z) 
     : x(vec.x), y(vec.y), z(z) {
 }
@@ -49,6 +55,13 @@ Vector3& Vector3::Set(float _x, float _y, float _z) {
     x = _x;
     y = _y;
     z = _z;
+    return *this;
+}
+
+Vector3& Vector3::Set(float fill) {
+    x = fill;
+    y = fill;
+    z = fill;
     return *this;
 }
 

@@ -18,6 +18,10 @@ const Vector2 Vector2::zero(0, 0);
 Vector2::Vector2() {
 }
 
+Vector2::Vector2(float value)
+    : x(value), y(value) {
+}
+
 Vector2::Vector2(float x, float y) 
     : x(x), y(y) {
 }
@@ -47,6 +51,12 @@ Matrix Vector2::ToMatrix1x2() const {
 Vector2& Vector2::Set(float _x, float _y) {
     x = _x;
     y = _y;
+    return *this;
+}
+
+Vector2& Vector2::Set(float fill) {
+    x = fill;
+    y = fill;
     return *this;
 }
 

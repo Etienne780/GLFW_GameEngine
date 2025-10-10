@@ -14,6 +14,9 @@ const Vector4 Vector4::zero(0, 0, 0, 0);
 
 Vector4::Vector4() {
 }
+Vector4::Vector4(float value)
+    : x(value), y(value), z(value), w(value) {
+}
 Vector4::Vector4(float x, float y, float z, float w) 
     : x(x), y(y), z(z), w(w) {
 } 
@@ -42,6 +45,14 @@ Vector4& Vector4::Set(float _x, float _y, float _z, float _w) {
     y = _y;
     z = _z;
     w = _w;
+    return *this;
+}
+
+Vector4& Vector4::Set(float fill) {
+    x = fill;
+    y = fill;
+    z = fill;
+    w = fill;
     return *this;
 }
 

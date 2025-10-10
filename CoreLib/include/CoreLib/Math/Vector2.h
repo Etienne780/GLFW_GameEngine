@@ -24,6 +24,7 @@ public:
     float y = 0; ///< Y component of the vector
 
     Vector2();
+    Vector2(float value);
     Vector2(float x, float y);
     Vector2(const Vector3& vec);
     Vector2(const Vector4& vec);
@@ -53,6 +54,13 @@ public:
     * @return this vector
     */
     Vector2& Set(float x, float y);
+
+    /**
+    * @brief Sets each component of a vector to the given value
+    * @param fill fill value
+    * @return this vector
+    */
+    Vector2& Set(float fill);
 
     /**
     * @brief Normalizes the vector to have length 1.

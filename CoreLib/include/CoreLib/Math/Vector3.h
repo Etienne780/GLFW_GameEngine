@@ -27,6 +27,7 @@ public:
     float z = 0; ///< Z component of the vector
 
     Vector3();
+    Vector3(float value);
     Vector3(float x, float y, float z);
     Vector3(const Vector2& vec, float z);
     Vector3(const Vector4& vec);
@@ -57,6 +58,13 @@ public:
     * @return this vector
     */
     Vector3& Set(float x, float y, float z);
+
+    /**
+    * @brief Sets each component of a vector to the given value
+    * @param fill fill value
+    * @return this vector
+    */
+    Vector3& Set(float fill);
 
     /**
     * @brief Normalizes the vector to have length 1.

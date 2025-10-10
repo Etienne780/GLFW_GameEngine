@@ -21,6 +21,7 @@ public:
     float w = 0; ///< W component of the vector
 
     Vector4(); ///< Default constructor initializes to (0, 0, 0, 0)
+    Vector4(float value);
     Vector4(float x, float y, float z, float w);
     Vector4(const Vector2& vec, float z, float w);
     Vector4(const Vector3& vec, float w);
@@ -52,6 +53,13 @@ public:
     * @return this vector
     */
     Vector4& Set(float x, float y, float z, float w);
+
+    /**
+    * @brief Sets each component of a vector to the given value
+    * @param fill fill value
+    * @return this vector
+    */
+    Vector4& Set(float fill);
 
     /**
     * @brief Normalizes the vector to have length 1.
