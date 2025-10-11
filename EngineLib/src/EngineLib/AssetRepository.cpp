@@ -267,6 +267,7 @@ namespace EngineCore {
                     vTexCoord = aTexCoord;
                 }
             )";
+
             std::string frag = R"(
                 #version 330 core
                 in vec2 vTexCoord;
@@ -274,76 +275,101 @@ namespace EngineCore {
                 
                 uniform vec4 uBackgroundColor;
                 uniform vec4 uBorderColor;
-                uniform vec4 uBorderRadius;   // top-left, top-right, bottom-right, bottom-left
+                uniform vec4 uBorderRadius;   // top-left, top-right, bottom-right, bottom-left (in pixels)
                 uniform vec4 uBorderWidth;    // top, right, bottom, left
                 uniform vec2 uSize;           // width, height in pixels
-                uniform bool uFlipY;          // true, wenn Y-Achse umgedreht werden soll
+                uniform bool uFlipY;
+                
+                float roundedCornerMask(vec2 coord, vec2 size, vec4 radius) {
+                    vec2 localCoord = coord;
+                    
+                    // Bestimme welche Ecke und berechne Distanz zur Ecke
+                    vec2 corner = vec2(0.0);
+                    float cornerRadius = 0.0;
+                    
+                    if (localCoord.x < radius.w && localCoord.y < radius.w) {
+                        // bottom-left
+                        corner = vec2(radius.w, radius.w);
+                        cornerRadius = radius.w;
+                    } else if (localCoord.x > size.x - radius.z && localCoord.y < radius.z) {
+                        // bottom-right
+                        corner = vec2(size.x - radius.z, radius.z);
+                        cornerRadius = radius.z;
+                    } else if (localCoord.x > size.x - radius.y && localCoord.y > size.y - radius.y) {
+                        // top-right
+                        corner = vec2(size.x - radius.y, size.y - radius.y);
+                        cornerRadius = radius.y;
+                    } else if (localCoord.x < radius.x && localCoord.y > size.y - radius.x) {
+                        // top-left
+                        corner = vec2(radius.x, size.y - radius.x);
+                        cornerRadius = radius.x;
+                    } else {
+                        return 1.0; // nicht in einer Ecke
+                    }
+                    
+                    float dist = length(localCoord - corner);
+                    // Smooth falloff für Anti-Aliasing
+                    return smoothstep(cornerRadius + 0.5, cornerRadius - 0.5, dist);
+                }
                 
                 void main() {
-                    // optional Y-Achse umkehren (falls nötig)
                     vec2 coord = vec2(vTexCoord.x * uSize.x, (uFlipY ? (1.0 - vTexCoord.y) : vTexCoord.y) * uSize.y);
+                    
+                    // Radius und Border-Width clampen
+                    float maxRadius = min(uSize.x, uSize.y) * 0.5;
+                    vec4 radius = clamp(uBorderRadius, vec4(0.0), vec4(maxRadius));
+                    vec4 borderWidth = clamp(uBorderWidth, vec4(0.0), vec4(uSize.y, uSize.x, uSize.y, uSize.x) * 0.5);
+                
+                    // Rounded corner mask mit Anti-Aliasing
+                    float cornerAlpha = roundedCornerMask(coord, uSize, radius);
+                    if (cornerAlpha <= 0.0) discard;
+                    
                     vec4 color = uBackgroundColor;
-                
-                    // Corner centers
-                    vec2 tl = vec2(uBorderRadius.x, uSize.y - uBorderRadius.x);
-                    vec2 tr = vec2(uSize.x - uBorderRadius.y, uSize.y - uBorderRadius.y);
-                    vec2 br = vec2(uSize.x - uBorderRadius.z, uBorderRadius.z);
-                    vec2 bl = vec2(uBorderRadius.w, uBorderRadius.w);
-                
-                    // Prüfe, ob Pixel außerhalb der abgerundeten Ecken liegt verwerfen
-                    bool outside = false;
-                
-                    if (coord.x < uBorderRadius.w && coord.y < uBorderRadius.w) {
-                        // bottom-left corner
-                        outside = length(coord - bl) > uBorderRadius.w;
-                    } else if (coord.x > uSize.x - uBorderRadius.z && coord.y < uBorderRadius.z) {
-                        // bottom-right corner
-                        outside = length(coord - br) > uBorderRadius.z;
-                    } else if (coord.x < uBorderRadius.x && coord.y > uSize.y - uBorderRadius.x) {
-                        // top-left corner
-                        outside = length(coord - tl) > uBorderRadius.x;
-                    } else if (coord.x > uSize.x - uBorderRadius.y && coord.y > uSize.y - uBorderRadius.y) {
-                        // top-right corner
-                        outside = length(coord - tr) > uBorderRadius.y;
-                    }
-                
-                    if (outside) discard;
-                
-                    // Border detection
+                    
+                    // Border detection mit smoothing für Anti-Aliasing
                     bool inBorder = false;
-                
+                    float borderAlpha = 1.0;
+                    
                     // Top border
-                    if (uBorderWidth.x > 0.0 && coord.y >= uSize.y - uBorderWidth.x)
-                        inBorder = true;
-                    // Right border
-                    if (uBorderWidth.y > 0.0 && coord.x >= uSize.x - uBorderWidth.y)
-                        inBorder = true;
-                    // Bottom border
-                    if (uBorderWidth.z > 0.0 && coord.y <= uBorderWidth.z)
-                        inBorder = true;
-                    // Left border
-                    if (uBorderWidth.w > 0.0 && coord.x <= uBorderWidth.w)
-                        inBorder = true;
-                
-                    // Corner blending for rounded borders
-                    if (uBorderRadius.x > 0.0 && coord.x < uBorderRadius.x && coord.y > uSize.y - uBorderRadius.x) {
-                        float dist = length(coord - tl);
-                        inBorder = dist >= (uBorderRadius.x - max(uBorderWidth.x, uBorderWidth.w)) && dist <= uBorderRadius.x;
-                    } else if (uBorderRadius.y > 0.0 && coord.x > uSize.x - uBorderRadius.y && coord.y > uSize.y - uBorderRadius.y) {
-                        float dist = length(coord - tr);
-                        inBorder = dist >= (uBorderRadius.y - max(uBorderWidth.x, uBorderWidth.y)) && dist <= uBorderRadius.y;
-                    } else if (uBorderRadius.z > 0.0 && coord.x > uSize.x - uBorderRadius.z && coord.y < uBorderRadius.z) {
-                        float dist = length(coord - br);
-                        inBorder = dist >= (uBorderRadius.z - max(uBorderWidth.z, uBorderWidth.y)) && dist <= uBorderRadius.z;
-                    } else if (uBorderRadius.w > 0.0 && coord.x < uBorderRadius.w && coord.y < uBorderRadius.w) {
-                        float dist = length(coord - bl);
-                        inBorder = dist >= (uBorderRadius.w - max(uBorderWidth.z, uBorderWidth.w)) && dist <= uBorderRadius.w;
+                    if (borderWidth.x > 0.0) {
+                        float dist = uSize.y - coord.y;
+                        if (dist < borderWidth.x + 1.0) {
+                            inBorder = true;
+                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.x - dist);
+                        }
                     }
-                
-                    // Farbwahl
-                    if (inBorder)
+                    // Right border
+                    if (borderWidth.y > 0.0) {
+                        float dist = uSize.x - coord.x;
+                        if (dist < borderWidth.y + 1.0) {
+                            inBorder = true;
+                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.y - dist);
+                        }
+                    }
+                    // Bottom border
+                    if (borderWidth.z > 0.0) {
+                        float dist = coord.y;
+                        if (dist < borderWidth.z + 1.0) {
+                            inBorder = true;
+                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.z - dist);
+                        }
+                    }
+                    // Left border
+                    if (borderWidth.w > 0.0) {
+                        float dist = coord.x;
+                        if (dist < borderWidth.w + 1.0) {
+                            inBorder = true;
+                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.w - dist);
+                        }
+                    }
+                    
+                    if (inBorder) {
                         color = uBorderColor;
-                
+                    }
+                    
+                    // Finales Alpha kombinieren (Transparenz + Corner + Border)
+                    color.a *= cornerAlpha * borderAlpha;
+                    
                     FragColor = color;
                 }
             )";

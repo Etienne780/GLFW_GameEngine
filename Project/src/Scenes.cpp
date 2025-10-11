@@ -12,12 +12,20 @@ void SetupUI() {
 	uiLayer = RenderLayerManager::AddLayer("UILayer", 10);
 	UI::SetUIRenderLayer(uiLayer);
 
-	auto defaultStyle = Style::Create("DefaultStyle");
-	defaultStyle->Set(Attribute::layoutDirection, "row");
-	defaultStyle->Set(Attribute::layout, "center center");
-	defaultStyle->Set(Attribute::width, "50%w");
-	defaultStyle->Set(Attribute::height, "50%h");
-	defaultStyle->Set(Attribute::backgroundColor, "#000000");
+	auto container = Style::Create("Container");
+	container->Set(Attribute::width, "100%w");
+	container->Set(Attribute::height, "100%h");
+
+	auto defaultStyleRow = Style::Create("DefaultStyleRow");
+	defaultStyleRow->Set(Attribute::layoutDirection, "row");
+	defaultStyleRow->Set(Attribute::layout, "center center");
+	defaultStyleRow->Set(Attribute::width, "50%w");
+	defaultStyleRow->Set(Attribute::height, "50%h");
+	defaultStyleRow->Set(Attribute::backgroundColor, "#000000");
+
+	auto defaultStyleColumn = Style::Create("DefaultStyleColumn", defaultStyleRow);
+	defaultStyleColumn->Set(Attribute::layoutDirection, "row");
+	defaultStyleColumn->Set(Attribute::backgroundColor, "#101010");
 
 	auto style1 = Style::Create("style1");
 	style1->Set(Attribute::width, "50%a");
@@ -34,12 +42,28 @@ void SetupUI() {
 	style4->Set(Attribute::backgroundColor, "#ffff00");
 
 	UI::SetDebug(false);
-	UI::Begin<Panel>(defaultStyle); {
+	UI::Begin<Panel>(container); {
 
-		UI::Add<Panel>(style1);
-		UI::Add<Panel>(style2);
-		UI::Add<Panel>(style3);
-		UI::Add<Panel>(style4);
+		// row-layout
+		UI::Begin<Panel>(defaultStyleRow); {
+
+			UI::Add<Panel>(style1);
+			UI::Add<Panel>(style2);
+			UI::Add<Panel>(style3);
+			UI::Add<Panel>(style4);
+		}
+		UI::End();
+
+		//column-layout
+		UI::Begin<Panel>(defaultStyleColumn); {
+
+			UI::Add<Panel>(style1);
+			UI::Add<Panel>(style2);
+			UI::Add<Panel>(style3);
+			UI::Add<Panel>(style4);
+		}
+		UI::End();
+
 	}
 	UI::End();
 	Log::Print();

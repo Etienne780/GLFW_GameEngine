@@ -162,9 +162,10 @@ namespace EngineCore::UI {
 	void Style::GenerateCachedStyle() const {
 		m_cachedStyle = std::make_unique<Style>();
 
-		for (const auto& style : m_extendedStyles) {
-			const auto& att = style->GetAll();
-			for (const auto& [state, attMap] : att) {
+		// applys extended styles 
+		for (const auto& extStyle : m_extendedStyles) {
+			const auto& extAll = extStyle->GetAll();
+			for (const auto& [state, attMap] : extAll) {
 				auto& targetMap = m_cachedStyle->m_attributes[state];
 				for (const auto& [name, value] : attMap) {
 					targetMap[name] = value;
@@ -172,7 +173,22 @@ namespace EngineCore::UI {
 			}
 		}
 
+		// applys the normla state to all states as a base
+		const auto& normalStateIt = m_attributes.find(State::Normal);
+		const auto& normalState = (normalStateIt != m_attributes.end()) ? normalStateIt->second : std::unordered_map<std::string, std::string>{};
+
+		for (int s = static_cast<int>(State::Normal); s <= static_cast<int>(State::Disabled); ++s) {
+			State state = static_cast<State>(s);
+			auto& targetMap = m_cachedStyle->m_attributes[state];
+
+			for (const auto& [name, value] : normalState) {
+				targetMap[name] = value;
+			}
+		}
+
+		// copys the other stats in to the cached style 
 		for (const auto& [state, attMap] : m_attributes) {
+			if (state == State::Normal) continue;
 			auto& targetMap = m_cachedStyle->m_attributes[state];
 			for (const auto& [name, value] : attMap) {
 				targetMap[name] = value;
@@ -186,14 +202,27 @@ namespace EngineCore::UI {
 		if (m_dirtyCallbackInter.empty() && m_dirtyCallback.empty())
 			return;
 
-		std::vector<Subscriber<StyleDirtyCallback>> callbacks;
-		callbacks.reserve(m_dirtyCallbackInter.size() + m_dirtyCallback.size());
-		callbacks.insert(callbacks.end(), m_dirtyCallbackInter.begin(), m_dirtyCallbackInter.end());
-		callbacks.insert(callbacks.end(), m_dirtyCallback.begin(), m_dirtyCallback.end());
+		if (m_dirtyCallbackInter.size() > 10 && m_dirtyCallback.size() > 10) {
+			std::vector<Subscriber<StyleDirtyCallback>> callbacks;
+			callbacks.reserve(m_dirtyCallbackInter.size() + m_dirtyCallback.size());
+			callbacks.insert(callbacks.end(), m_dirtyCallbackInter.begin(), m_dirtyCallbackInter.end());
+			callbacks.insert(callbacks.end(), m_dirtyCallback.begin(), m_dirtyCallback.end());
 
-		for (const auto& sub : callbacks) {
-			if (sub.callback)
-				sub.callback();
+			for (const auto& sub : callbacks) {
+				if (sub.callback)
+					sub.callback();
+			}
+		}
+		else {
+			for (const auto& sub : m_dirtyCallbackInter) {
+				if (sub.callback)
+					sub.callback();
+			}
+
+			for (const auto& sub : m_dirtyCallback) {
+				if (sub.callback)
+					sub.callback();
+			}
 		}
 
 #ifndef NDEBUG

@@ -64,7 +64,7 @@ namespace {
         Attribute::layoutWrap,
         "Defines how child elements are arranged when they exceed the available space.",
         { "none", "wrap" },
-        "wrap"
+        "none"
     );
 
 }

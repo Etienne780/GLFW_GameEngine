@@ -111,7 +111,7 @@ namespace {
         Attribute::backgroundColor,
         "Sets the background color of this element",
         { "#ff", "#ff00ff", "#00ff00ff" },
-        "#ff");
+        "#00000000");
 
     const StyleAttribute TextColor = AttributeHelper::MakeSimpleColorAttribute(
         Attribute::textColor,
