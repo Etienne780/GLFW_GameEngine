@@ -1,7 +1,6 @@
 #include <CoreLib/ConversionUtils.h>
 #include <CoreLib/FormatUtils.h>
 
-
 #include "EngineLib/UI/UIManager.h"
 #include "EngineLib/UI/StyleAttribute.h"
 #include "EngineLib/UI/AttributeNames.h"
@@ -51,10 +50,6 @@ namespace EngineCore::UI {
     }
 
     Vector2 ElementBase::GetWorldPosition() {
-        if (m_positionDirty) {
-            UpdateLayoutPosition();
-        }
-
         Vector2 pos = m_layoutPosition;
         if (m_parentElementPtr) {
             pos += m_parentElementPtr->GetWorldPosition();
@@ -63,9 +58,6 @@ namespace EngineCore::UI {
     }
 
     Vector2 ElementBase::GetLocalPosition() {
-        if (m_positionDirty) {
-            UpdateLayoutPosition();
-        }
         return m_layoutPosition;
     }
 
@@ -294,16 +286,16 @@ namespace EngineCore::UI {
         MarkDirtyParent();
     }
 
-    void ElementBase::SetBorderSize(float width, float height) {
-        if (width < 0.0f) width = 0.0f;
-        if (height < 0.0f) height = 0.0f;
-        m_borderSize.Set(height, width, height, width);
-        m_sbo.SetParam("uBorderWidth", m_borderSize);
+    void ElementBase::SetBorderSize(const Vector4& vec) {
+        SetBorderSize(vec.x, vec.y, vec.z, vec.w);
         MarkDirtyParent();
     }
 
-    void ElementBase::SetBorderSize(const Vector4& vec) {
-        SetBorderSize(vec.x, vec.y, vec.z, vec.w);
+    void ElementBase::SetBorderSize(float hor, float ver) {
+        if (hor < 0.0f) hor = 0.0f;
+        if (ver < 0.0f) ver = 0.0f;
+        m_borderSize.Set(ver, hor, ver, hor);
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
         MarkDirtyParent();
     }
 
@@ -317,13 +309,73 @@ namespace EngineCore::UI {
         MarkDirtyParent();
     }
 
-    void ElementBase::SetMargin(const Vector4& margin) {
-        m_margin = margin;
+    void ElementBase::SetMargin(const Vector4& mar) {
+        SetMargin(mar.x, mar.y, mar.z, mar.w);
+    }
+
+    void ElementBase::SetMargin(float top, float right, float bottom, float left) {
+        if (top < 0.0f) top = 0.0f;
+        if (right < 0.0f) right = 0.0f;
+        if (bottom < 0.0f) bottom = 0.0f;
+        if (left < 0.0f) left = 0.0f;
+        m_margin.Set(top, right, bottom, left);
         MarkDirtyParent();
     }
 
-    void ElementBase::SetPadding(const Vector4& padding) {
-        m_padding = padding;
+    void ElementBase::SetMarginTop(float top) {
+        if (top < 0.0f) top = 0.0f;
+        m_margin.x = top;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetMarginRight(float right) {
+        if (right < 0.0f) right = 0.0f;
+        m_margin.y = right;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetMarginBottom(float bottom) {
+        if (bottom < 0.0f) bottom = 0.0f;
+        m_margin.z = bottom;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetMarginLeft(float left) {
+        if (left < 0.0f) left = 0.0f;
+        m_margin.w = left;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetPadding(const Vector4& pad) {
+        SetPadding(pad.x, pad.y, pad.z, pad.w);
+    }
+
+    void ElementBase::SetPadding(float top, float right, float bottom, float left) {
+        if (top < 0.0f) top = 0.0f;
+        if (right < 0.0f) right = 0.0f;
+        if (bottom < 0.0f) bottom = 0.0f;
+        if (left < 0.0f) left = 0.0f;
+        m_padding.Set(top, right, bottom, left);
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetPaddingTop(float top) {
+        if (top < 0.0f) top = 0.0f;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetPaddingRight(float right) {
+        if (right < 0.0f) right = 0.0f;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetPaddingBottom(float bottom) {
+        if (bottom < 0.0f) bottom = 0.0f;
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetPaddingLeft(float left) {
+        if (left < 0.0f) left = 0.0f;
         MarkDirtyParent();
     }
 
@@ -376,7 +428,7 @@ namespace EngineCore::UI {
         return m_desiredSize;
     }
 
-    Vector2 ElementBase::GetBorderSize() {
+    Vector2 ElementBase::GetSizeWithBorder() {
         Vector2 size = GetLocalSize();
         return Vector2(
             size.x + m_borderSize.y + m_borderSize.w, // left + right
@@ -385,7 +437,7 @@ namespace EngineCore::UI {
     }
 
     Vector2 ElementBase::GetMarginSize() {
-        Vector2 bordered = GetBorderSize();
+        Vector2 bordered = GetSizeWithBorder();
         return Vector2(
             bordered.x + m_margin.y + m_margin.w, // left + right
             bordered.y + m_margin.x + m_margin.z  // top + bottom
@@ -480,18 +532,10 @@ namespace EngineCore::UI {
     }
 
     Matrix4x4* ElementBase::GetWorldModelMatrixPtr() {
-        if (m_worldTransformDirty) {
-            UpdateWorldTransform();
-        }
-
         return &m_worldTransform;
     }
 
     const Matrix4x4& ElementBase::GetWorldModelMatrix() {
-        if (m_worldTransformDirty) {
-            UpdateWorldTransform();
-        }
-
         return m_worldTransform;
     }
 
@@ -551,17 +595,6 @@ namespace EngineCore::UI {
     void ElementBase::UpdateWorldTransform() {
         using namespace GLTransform4x4;
 
-        // IMPORTANT: update position after size
-        if (m_sizeDirty) {
-            UpdateLayoutSize();
-            m_sizeDirty = false;
-        }
-
-        if (m_positionDirty) {
-            UpdateLayoutPosition();
-            m_positionDirty = false;
-        }
-
         Vector2 parentPosition;
         Vector3 parentRotation;
         if (m_parentElementPtr) {
@@ -575,10 +608,14 @@ namespace EngineCore::UI {
             ConversionUtils::ToRadians(m_rotation.z + parentRotation.z)
         };
 
-        m_worldTransform = Scale(m_layoutSize.x, m_layoutSize.y, 1.0f);
+        // m_borderSize;
+        m_worldTransform = Scale(
+            m_layoutSize.x, 
+            m_layoutSize.y, 1.0f
+        );
         MakeRotateXYZ(m_worldTransform, radians);
         MakeTranslate(m_worldTransform, 
-            m_layoutPosition.x + parentPosition.x + m_margin.y, 
+            m_layoutPosition.x + parentPosition.x + m_margin.y,
             m_layoutPosition.y + parentPosition.y + m_margin.x, 0.0f);
 
         m_worldTransformDirty = false;
@@ -610,6 +647,23 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::UpdateImpl() {
+        // Update ui elements
+        // IMPORTANT: update position after size
+        if (m_sizeDirty) {
+            UpdateLayoutSize();
+            m_sizeDirty = false;
+        }
+
+        if (m_positionDirty) {
+            UpdateLayoutPosition();
+            m_positionDirty = false;
+        }
+
+        if (m_worldTransformDirty) {
+            UpdateWorldTransform();
+            m_worldTransformDirty = false;
+        }
+
         Update();
     }
 
@@ -728,6 +782,8 @@ namespace EngineCore::UI {
                 }
             });
 
+            #pragma region borderSize
+
             RegisterAttribute(att::borderSize, [](ElementBase* el, const StyleValue& val) {
                 if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderSize)) {
                     el->SetBorderSize(vec);
@@ -764,17 +820,75 @@ namespace EngineCore::UI {
                 }
             });
 
+            #pragma endregion
+
+            #pragma region margin
+
             RegisterAttribute(att::margin, [](ElementBase* el, const StyleValue& val) {
                 if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::margin)) {
                     el->SetMargin(vec);
                 }
             });
 
+            RegisterAttribute(att::marginTop, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::marginTop)) {
+                    el->SetMarginTop(f);
+                }
+            });
+
+            RegisterAttribute(att::marginRight, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::marginRight)) {
+                    el->SetMarginRight(f);
+                }
+            });
+
+            RegisterAttribute(att::marginBottom, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::marginBottom)) {
+                    el->SetMarginBottom(f);
+                }
+            });
+
+            RegisterAttribute(att::marginLeft, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::marginLeft)) {
+                    el->SetMarginLeft(f);
+                }
+            });
+
+            #pragma endregion
+
+            #pragma region padding
+
             RegisterAttribute(att::padding, [](ElementBase* el, const StyleValue& val) {
                 if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::padding)) {
                     el->SetPadding(vec);
                 }
             });
+
+            RegisterAttribute(att::paddingTop, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::paddingTop)) {
+                    el->SetPaddingTop(f);
+                }
+            });
+
+            RegisterAttribute(att::paddingRight, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::paddingRight)) {
+                    el->SetPaddingRight(f);
+                }
+            });
+
+            RegisterAttribute(att::paddingBottom, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::paddingBottom)) {
+                    el->SetPaddingBottom(f);
+                }
+            });
+
+            RegisterAttribute(att::paddingLeft, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::paddingLeft)) {
+                    el->SetPaddingLeft(f);
+                }
+            });
+
+            #pragma endregion
         }
        
         RegisterAttributes();

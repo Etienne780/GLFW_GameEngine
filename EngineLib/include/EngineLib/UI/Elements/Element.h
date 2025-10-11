@@ -94,7 +94,7 @@ namespace EngineCore::UI {
         // style size
         Vector2 GetDesiredSize() const;
         // content + border
-        Vector2 GetBorderSize();
+        Vector2 GetSizeWithBorder();
         // content + border + margin
         Vector2 GetMarginSize();
 
@@ -246,16 +246,30 @@ namespace EngineCore::UI {
         void SetBackgroundColor(const Vector4& color);
         void SetBorderColor(const Vector4& color);
         void SetBorderRadius(const Vector4& radius);
+
+        void SetBorderSize(const Vector4& vec);
+        void SetBorderSize(float horizontal, float vertical);
+        void SetBorderSize(float top, float right, float bottom, float left);
         void SetBorderWidth(float width);
         void SetBorderTop(float top);
-        void SetBorderLeft(float left);
-        void SetBorderBottom(float bottom);
         void SetBorderRight(float right);
-        void SetBorderSize(float width, float height);
-        void SetBorderSize(const Vector4& vec);
-        void SetBorderSize(float top, float right, float bottom, float left);
+        void SetBorderBottom(float bottom);
+        void SetBorderLeft(float left);
+
         void SetMargin(const Vector4& margin);
+        void SetMargin(float top, float right, float bottom, float left);
+        void SetMarginTop(float top);
+        void SetMarginRight(float right);
+        void SetMarginBottom(float bottom);
+        void SetMarginLeft(float left);
+
         void SetPadding(const Vector4& padding);
+        void SetPadding(float top, float right, float bottom, float left);
+        void SetPaddingTop(float top);
+        void SetPaddingRight(float right);
+        void SetPaddingBottom(float bottom);
+        void SetPaddingLeft(float left);
+
         void SetDuration(float duration);
 
         /*
