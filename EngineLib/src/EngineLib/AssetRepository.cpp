@@ -269,108 +269,93 @@ namespace EngineCore {
             )";
 
             std::string frag = R"(
-                #version 330 core
+             #version 330 core
                 in vec2 vTexCoord;
                 out vec4 FragColor;
                 
                 uniform vec4 uBackgroundColor;
                 uniform vec4 uBorderColor;
-                uniform vec4 uBorderRadius;   // top-left, top-right, bottom-right, bottom-left (in pixels)
-                uniform vec4 uBorderWidth;    // top, right, bottom, left
-                uniform vec2 uSize;           // width, height in pixels
+                uniform vec4 uBorderRadius;   // top-left, top-right, bottom-right, bottom-left (px)
+                uniform vec4 uBorderWidth;    // top, right, bottom, left (px)
+                uniform vec2 uSize;           // element size (px)
                 uniform bool uFlipY;
                 
-                float roundedCornerMask(vec2 coord, vec2 size, vec4 radius) {
-                    vec2 localCoord = coord;
-                    
-                    // Bestimme welche Ecke und berechne Distanz zur Ecke
-                    vec2 corner = vec2(0.0);
-                    float cornerRadius = 0.0;
-                    
-                    if (localCoord.x < radius.w && localCoord.y < radius.w) {
-                        // bottom-left
-                        corner = vec2(radius.w, radius.w);
-                        cornerRadius = radius.w;
-                    } else if (localCoord.x > size.x - radius.z && localCoord.y < radius.z) {
-                        // bottom-right
-                        corner = vec2(size.x - radius.z, radius.z);
-                        cornerRadius = radius.z;
-                    } else if (localCoord.x > size.x - radius.y && localCoord.y > size.y - radius.y) {
-                        // top-right
-                        corner = vec2(size.x - radius.y, size.y - radius.y);
-                        cornerRadius = radius.y;
-                    } else if (localCoord.x < radius.x && localCoord.y > size.y - radius.x) {
-                        // top-left
-                        corner = vec2(radius.x, size.y - radius.x);
-                        cornerRadius = radius.x;
-                    } else {
-                        return 1.0; // nicht in einer Ecke
+                // Accurate AA smoothing
+                float aaSmooth(float sd) {
+                    float fw = fwidth(sd);
+                    fw = max(fw, 1e-6);
+                    float aa = 1.7; // factor >1 => smoother, <1 => sharper
+                    return smoothstep(-0.5 * fw * aa, 0.5 * fw * aa, -sd);
+                }
+                
+                // CSS-style rounded rect SDF (continuous variant)
+                float sdRoundRectCSS(vec2 p, vec2 size, vec4 radius) {
+                    // Clamp radii
+                    float limit = min(size.x, size.y) * 0.5;
+                    radius = clamp(radius, vec4(0.0), vec4(limit));
+                
+                    // Compute distances to each corner
+                    vec2 q = p;
+                    // Map p into coordinate system of each corner
+                    if (p.x < radius.w && p.y < radius.w) { // bottom-left
+                        q = p - vec2(radius.w, radius.w);
+                        return length(q) - radius.w;
                     }
-                    
-                    float dist = length(localCoord - corner);
-                    // Smooth falloff für Anti-Aliasing
-                    return smoothstep(cornerRadius + 0.5, cornerRadius - 0.5, dist);
+                    if (p.x > size.x - radius.z && p.y < radius.z) { // bottom-right
+                        q = p - vec2(size.x - radius.z, radius.z);
+                        return length(q) - radius.z;
+                    }
+                    if (p.x > size.x - radius.y && p.y > size.y - radius.y) { // top-right
+                        q = p - vec2(size.x - radius.y, size.y - radius.y);
+                        return length(q) - radius.y;
+                    }
+                    if (p.x < radius.x && p.y > size.y - radius.x) { // top-left
+                        q = p - vec2(radius.x, size.y - radius.x);
+                        return length(q) - radius.x;
+                    }
+                
+                    // Otherwise inside edge region (no corner)
+                    vec2 d = max(vec2(-p.x, -p.y), vec2(p.x - size.x, p.y - size.y));
+                    return max(d.x, d.y);
                 }
                 
                 void main() {
-                    vec2 coord = vec2(vTexCoord.x * uSize.x, (uFlipY ? (1.0 - vTexCoord.y) : vTexCoord.y) * uSize.y);
-                    
-                    // Radius und Border-Width clampen
-                    float maxRadius = min(uSize.x, uSize.y) * 0.5;
-                    vec4 radius = clamp(uBorderRadius, vec4(0.0), vec4(maxRadius));
-                    vec4 borderWidth = clamp(uBorderWidth, vec4(0.0), vec4(uSize.y, uSize.x, uSize.y, uSize.x) * 0.5);
+                    vec2 coord = vec2(vTexCoord.x * uSize.x,
+                                      (uFlipY ? (1.0 - vTexCoord.y) : vTexCoord.y) * uSize.y);
                 
-                    // Rounded corner mask mit Anti-Aliasing
-                    float cornerAlpha = roundedCornerMask(coord, uSize, radius);
-                    if (cornerAlpha <= 0.0) discard;
-                    
-                    vec4 color = uBackgroundColor;
-                    
-                    // Border detection mit smoothing für Anti-Aliasing
-                    bool inBorder = false;
-                    float borderAlpha = 1.0;
-                    
-                    // Top border
-                    if (borderWidth.x > 0.0) {
-                        float dist = uSize.y - coord.y;
-                        if (dist < borderWidth.x + 1.0) {
-                            inBorder = true;
-                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.x - dist);
-                        }
-                    }
-                    // Right border
-                    if (borderWidth.y > 0.0) {
-                        float dist = uSize.x - coord.x;
-                        if (dist < borderWidth.y + 1.0) {
-                            inBorder = true;
-                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.y - dist);
-                        }
-                    }
-                    // Bottom border
-                    if (borderWidth.z > 0.0) {
-                        float dist = coord.y;
-                        if (dist < borderWidth.z + 1.0) {
-                            inBorder = true;
-                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.z - dist);
-                        }
-                    }
-                    // Left border
-                    if (borderWidth.w > 0.0) {
-                        float dist = coord.x;
-                        if (dist < borderWidth.w + 1.0) {
-                            inBorder = true;
-                            borderAlpha *= smoothstep(-0.5, 0.5, borderWidth.w - dist);
-                        }
-                    }
-                    
-                    if (inBorder) {
-                        color = uBorderColor;
-                    }
-                    
-                    // Finales Alpha kombinieren (Transparenz + Corner + Border)
-                    color.a *= cornerAlpha * borderAlpha;
-                    
-                    FragColor = color;
+                    // Outer and inner radius setup
+                    vec4 rOut = clamp(uBorderRadius, vec4(0.0), vec4(min(uSize.x, uSize.y) * 0.5));
+
+                    float top    = uBorderWidth.z;
+                    float right  = uBorderWidth.w;
+                    float bottom = uBorderWidth.x;
+                    float left   = uBorderWidth.y;
+                
+                    vec2 innerSize = vec2(uSize.x - (left + right), uSize.y - (top + bottom));
+                    innerSize = max(innerSize, vec2(0.0));
+                
+                    vec4 rIn = vec4(
+                        max(rOut.x - max(left, top), 0.0),
+                        max(rOut.y - max(top, right), 0.0),
+                        max(rOut.z - max(right, bottom), 0.0),
+                        max(rOut.w - max(bottom, left), 0.0)
+                    );
+                
+                    float sdOuter = sdRoundRectCSS(coord, uSize, rOut);
+                    float sdInner = sdRoundRectCSS(coord - vec2(left, bottom), innerSize, rIn);
+                
+                    float outerMask = aaSmooth(sdOuter);
+                    float innerMask = aaSmooth(sdInner);
+                
+                    float fillMask = outerMask * innerMask;
+                    float borderMask = outerMask * (1.0 - innerMask);
+                
+                    float borderA = borderMask * uBorderColor.a;
+                    float fillA   = fillMask * uBackgroundColor.a;
+                    float outA = borderA + fillA * (1.0 - borderA);
+                    vec3 outRGB = uBorderColor.rgb * borderA + uBackgroundColor.rgb * fillA * (1.0 - borderA);
+                
+                    FragColor = vec4(outRGB, outA);
                 }
             )";
             g_engineShaderDefaultUIID = rm->AddShaderFromMemory(vert, frag);
