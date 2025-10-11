@@ -163,32 +163,44 @@ namespace EngineCore::UI {
 	}
 
     void ElementBase::SetLayoutType(LayoutType type) {
+        if (m_layoutType == type)
+            return;
         m_layoutType = type;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutDirection(Flex::LayoutDirection d) {
-        m_layoutDirection = d;
+    void ElementBase::SetLayoutDirection(Flex::LayoutDirection dir) {
+        if (m_layoutDirection == dir)
+            return;
+        m_layoutDirection = dir;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutWrap(Flex::LayoutWrap w) {
-        m_layoutWrap = w;
+    void ElementBase::SetLayoutWrap(Flex::LayoutWrap wra) {
+        if (m_layoutWrap == wra)
+            return;
+        m_layoutWrap = wra;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutMajor(Flex::LayoutAlign a) {
-        m_layoutMajor = a; 
+    void ElementBase::SetLayoutMajor(Flex::LayoutAlign ali) {
+        if (m_layoutMajor == ali)
+            return;
+        m_layoutMajor = ali;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutMinor(Flex::LayoutAlign a) {
-        m_layoutMinor = a;
+    void ElementBase::SetLayoutMinor(Flex::LayoutAlign ali) {
+        if (m_layoutMinor == ali)
+            return;
+        m_layoutMinor = ali;
         MarkDirtyParent();
     }
 
-    void ElementBase::SetLayoutItem(Flex::LayoutAlign a) {
-        m_layoutItem = a;
+    void ElementBase::SetLayoutItem(Flex::LayoutAlign ali) {
+        if (m_layoutItem == ali)
+            return;
+        m_layoutItem = ali;
         MarkDirtyParent();
     }
 
@@ -197,6 +209,9 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetLocalPosition(float x, float y) {
+        if (m_desiredPosition.x == x && 
+            m_desiredPosition.y == y)
+            return;
         m_desiredPosition.Set(x, y);
         MarkDirtyParent();
     }
@@ -206,6 +221,10 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetLocalRotation(float x, float y, float z) {
+        if (m_rotation.x == x &&
+            m_rotation.y == y &&
+            m_rotation.z == z)
+            return;
         m_rotation.Set(x, y, z);
         MarkDirtyParent();
     }
@@ -217,6 +236,9 @@ namespace EngineCore::UI {
     void ElementBase::SetDesiredSize(float x, float y) {
         if (x < 0.0f) x = 0.0f;
         if (y < 0.0f) y = 0.0f;
+        if (m_desiredSize.x == x &&
+            m_desiredSize.y == y)
+            return;
         m_desiredSize.Set(x, y);
         m_aviableSize.Set(-1, -1);
         MarkDirtyParent();
@@ -224,6 +246,8 @@ namespace EngineCore::UI {
 
     void ElementBase::SetDesiredWidth(float x) {
         if (x < 0.0f) x = 0.0f;
+        if (m_desiredSize.x == x)
+            return;
         m_desiredSize.x = x;
         m_aviableSize.x = -1;
         MarkDirtyParent();
@@ -231,57 +255,75 @@ namespace EngineCore::UI {
 
     void ElementBase::SetDesiredHeight(float y) {
         if (y < 0.0f) y = 0.0f;
+        if (m_desiredSize.y == y)
+            return;
         m_desiredSize.y = y;
         m_aviableSize.y = -1;
         MarkDirtyParent();
     }
 
     void ElementBase::SetBackgroundColor(const Vector4& color) {
+        if (m_backgroundColor == color)
+            return;
         m_backgroundColor = color;
         m_sbo.SetParam("uBackgroundColor", m_backgroundColor);
     }
 
     void ElementBase::SetBorderColor(const Vector4& color) {
+        if (m_borderColor == color)
+            return;
         m_borderColor = color;
         m_sbo.SetParam("uBorderColor", m_borderColor);
     }
 
     void ElementBase::SetBorderRadius(const Vector4& radius) {
+        if (m_borderRadius == radius)
+            return;
         m_borderRadius = radius;
         m_sbo.SetParam("uBorderRadius", m_borderRadius);
     }
 
     void ElementBase::SetBorderWidth(float width) {
         if (width < 0.0f) width = 0.0f;
-        m_borderSize.Set(width, width, width, width);
+        if (m_borderSize == Vector4(width))
+            return;
+        m_borderSize.Set(width);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
         MarkDirtyParent();
     }
 
     void ElementBase::SetBorderTop(float top) {
         if (top < 0.0f) top = 0.0f;
+        if (m_borderSize.x == top)
+            return;
         m_borderSize.x = top;
-        m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
-    }
-
-    void ElementBase::SetBorderLeft(float left) {
-        if (left < 0.0f) left = 0.0f;
-        m_borderSize.y = left;
-        m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
-    }
-
-    void ElementBase::SetBorderBottom(float bottom) {
-        if (bottom < 0.0f) bottom = 0.0f;
-        m_borderSize.z = bottom;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
         MarkDirtyParent();
     }
 
     void ElementBase::SetBorderRight(float right) {
         if (right < 0.0f) right = 0.0f;
-        m_borderSize.w = right;
+        if (m_borderSize.y == right)
+            return;
+        m_borderSize.y = right;
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetBorderBottom(float bottom) {
+        if (bottom < 0.0f) bottom = 0.0f;
+        if (m_borderSize.z == bottom)
+            return;
+        m_borderSize.z = bottom;
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+        MarkDirtyParent();
+    }
+
+    void ElementBase::SetBorderLeft(float left) {
+        if (left < 0.0f) left = 0.0f;
+        if (m_borderSize.w == left)
+            return;
+        m_borderSize.w = left;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
         MarkDirtyParent();
     }
@@ -294,6 +336,8 @@ namespace EngineCore::UI {
     void ElementBase::SetBorderSize(float hor, float ver) {
         if (hor < 0.0f) hor = 0.0f;
         if (ver < 0.0f) ver = 0.0f;
+        if (m_borderSize == Vector4(ver, hor, ver, hor))
+            return;
         m_borderSize.Set(ver, hor, ver, hor);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
         MarkDirtyParent();
@@ -304,6 +348,8 @@ namespace EngineCore::UI {
         if (right < 0.0f) right = 0.0f;
         if (bottom < 0.0f) bottom = 0.0f;
         if (left < 0.0f) left = 0.0f;
+        if (m_borderSize == Vector4(top, right, bottom, left))
+            return;
         m_borderSize.Set(top, right, bottom, left);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
         MarkDirtyParent();
@@ -318,30 +364,40 @@ namespace EngineCore::UI {
         if (right < 0.0f) right = 0.0f;
         if (bottom < 0.0f) bottom = 0.0f;
         if (left < 0.0f) left = 0.0f;
+        if (m_margin == Vector4(top, right, bottom, left))
+            return;
         m_margin.Set(top, right, bottom, left);
         MarkDirtyParent();
     }
 
     void ElementBase::SetMarginTop(float top) {
         if (top < 0.0f) top = 0.0f;
+        if (m_margin.x == top)
+            return;
         m_margin.x = top;
         MarkDirtyParent();
     }
 
     void ElementBase::SetMarginRight(float right) {
         if (right < 0.0f) right = 0.0f;
+        if (m_margin.y == right)
+            return;
         m_margin.y = right;
         MarkDirtyParent();
     }
 
     void ElementBase::SetMarginBottom(float bottom) {
         if (bottom < 0.0f) bottom = 0.0f;
+        if (m_margin.z == bottom)
+            return;
         m_margin.z = bottom;
         MarkDirtyParent();
     }
 
     void ElementBase::SetMarginLeft(float left) {
         if (left < 0.0f) left = 0.0f;
+        if (m_margin.w == left)
+            return;
         m_margin.w = left;
         MarkDirtyParent();
     }
@@ -355,32 +411,48 @@ namespace EngineCore::UI {
         if (right < 0.0f) right = 0.0f;
         if (bottom < 0.0f) bottom = 0.0f;
         if (left < 0.0f) left = 0.0f;
+        if (m_padding == Vector4(top, right, bottom, left))
+            return;
         m_padding.Set(top, right, bottom, left);
         MarkDirtyParent();
     }
 
     void ElementBase::SetPaddingTop(float top) {
         if (top < 0.0f) top = 0.0f;
+        if (m_padding.x == top)
+            return;
+        m_padding.x = top;
         MarkDirtyParent();
     }
 
     void ElementBase::SetPaddingRight(float right) {
         if (right < 0.0f) right = 0.0f;
+        if (m_padding.y == right)
+            return;
+        m_padding.y = right;
         MarkDirtyParent();
     }
 
     void ElementBase::SetPaddingBottom(float bottom) {
         if (bottom < 0.0f) bottom = 0.0f;
+        if (m_padding.z == bottom)
+            return;
+        m_padding.z = bottom;
         MarkDirtyParent();
     }
 
     void ElementBase::SetPaddingLeft(float left) {
         if (left < 0.0f) left = 0.0f;
+        if (m_padding.w == left)
+            return;
+        m_padding.w = left;
         MarkDirtyParent();
     }
 
     void ElementBase::SetDuration(float duration) {
         if (duration < 0.0f) duration = 0.0f;
+        if (m_duration == duration)
+            return;
         m_duration = duration;
     }
 
@@ -456,7 +528,7 @@ namespace EngineCore::UI {
         return m_margin.x;
     }
 
-    float ElementBase::GetMarginLeft() const {
+    float ElementBase::GetMarginRight() const {
         return m_margin.y;
     }
 
@@ -464,7 +536,7 @@ namespace EngineCore::UI {
         return m_margin.z;
     }
 
-    float ElementBase::GetMarginRight() const {
+    float ElementBase::GetMarginLeft() const {
         return m_margin.w;
     }
 
@@ -476,7 +548,7 @@ namespace EngineCore::UI {
         return m_padding.x;
     }
 
-    float ElementBase::GetPaddingLeft() const {
+    float ElementBase::GetPaddingRigth() const {
         return m_padding.y;
     }
 
@@ -484,7 +556,7 @@ namespace EngineCore::UI {
         return m_padding.z;
     }
 
-    float ElementBase::GetPaddingRigth() const {
+    float ElementBase::GetPaddingLeft() const {
         return m_padding.w;
     }
 
@@ -508,7 +580,7 @@ namespace EngineCore::UI {
         return m_borderSize.x;
     }
 
-    float ElementBase::GetBorderLeft() const {
+    float ElementBase::GetBorderRight() const {
         return m_borderSize.y;
     }
 
@@ -516,7 +588,7 @@ namespace EngineCore::UI {
         return m_borderSize.z;
     }
 
-    float ElementBase::GetBorderRight() const {
+    float ElementBase::GetBorderLeft() const {
         return m_borderSize.w;
     }
 

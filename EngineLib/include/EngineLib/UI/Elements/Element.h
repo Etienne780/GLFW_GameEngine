@@ -108,23 +108,25 @@ namespace EngineCore::UI {
 
         const Vector4& GetMargin() const;
         float GetMarginTop() const;
-        float GetMarginLeft() const;
-        float GetMarginBottom() const;
         float GetMarginRight() const;
+        float GetMarginBottom() const;
+        float GetMarginLeft() const;
+
         const Vector4& GetPadding() const;
         float GetPaddingTop() const;
-        float GetPaddingLeft() const;
-        float GetPaddingBottom() const;
         float GetPaddingRigth() const;
+        float GetPaddingBottom() const;
+        float GetPaddingLeft() const;
 
         const Vector4& GetBackgroundColor() const;
         const Vector4& GetBorderColor() const;
         const Vector4& GetBorderRadius() const;
+
         const Vector4& GetBorderSize() const;
         float GetBorderTop() const;
-        float GetBorderLeft() const;
-        float GetBorderBottom() const;
         float GetBorderRight() const;
+        float GetBorderBottom() const;
+        float GetBorderLeft() const;
         float GetDuration() const;
 
         /**
