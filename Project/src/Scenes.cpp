@@ -21,11 +21,11 @@ void SetupUI() {
 	defaultStyleRow->Set(Attribute::layout, "center center");
 	defaultStyleRow->Set(Attribute::width, "50%w");
 	defaultStyleRow->Set(Attribute::height, "50%h");
-	defaultStyleRow->Set(Attribute::backgroundColor, "#000000");
+	defaultStyleRow->Set(Attribute::backgroundColor, "#000000A0");
 
 	auto defaultStyleColumn = Style::Create("DefaultStyleColumn", defaultStyleRow);
-	defaultStyleColumn->Set(Attribute::layoutDirection, "row");
-	defaultStyleColumn->Set(Attribute::backgroundColor, "#101010");
+	defaultStyleColumn->Set(Attribute::layoutDirection, "column");
+	defaultStyleColumn->Set(Attribute::backgroundColor, "#101010A0");
 
 	auto style1 = Style::Create("style1");
 	style1->Set(Attribute::width, "50%a");
