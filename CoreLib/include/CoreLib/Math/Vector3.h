@@ -177,6 +177,9 @@ public:
     Vector3 operator*(float scalar) const;
     Vector3 operator/(float scalar) const;
 
+    bool operator==(const Vector3& other) const;
+    bool operator!=(const Vector3& other) const;
+
     /**
      * @brief Index operator for accessing vector components.
      * @param index Component index (0 = x, 1 = y, 2 = z).

@@ -211,6 +211,14 @@ Vector4 Vector4::operator/(float scalar) const {
     return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
 }
 
+bool Vector4::operator==(const Vector4& other) const {
+    return x == other.x && y == other.y && z == other.z && w == other.w;
+}
+
+bool Vector4::operator!=(const Vector4& other) const {
+    return !(*this == other);
+}
+
 float& Vector4::operator[](int index) {
     if (index == 0) return x;
     if (index == 1) return y;

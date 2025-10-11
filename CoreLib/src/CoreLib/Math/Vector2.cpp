@@ -218,6 +218,14 @@ Vector2 Vector2::operator/(float scalar) const {
     return Vector2(x / scalar, y / scalar);
 }
 
+bool Vector2::operator==(const Vector2& other) const {
+    return x == other.x && y == other.y;
+}
+
+bool Vector2::operator!=(const Vector2& other) const {
+    return !(*this == other);
+}
+
 float& Vector2::operator[](int index) {
     if (index == 0) return x;
     if (index == 1) return y;
@@ -249,4 +257,8 @@ Vector2 operator/(float scalar, const Vector2& other) {
         throw std::runtime_error(oss.str());
     }
     return Vector2(scalar / other.x, scalar / other.y);
+}
+
+Vector2 operator==(float scalar, const Vector2& other) {
+    
 }

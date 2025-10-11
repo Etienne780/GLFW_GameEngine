@@ -174,6 +174,9 @@ public:
     Vector2 operator*(float scalar) const;
     Vector2 operator/(float scalar) const;
 
+    bool operator==(const Vector2& other) const;
+    bool operator!=(const Vector2& other) const;
+
     /**
      * @brief Index operator for accessing vector components.
      * @param index Component index (0 = x, 1 = y).
