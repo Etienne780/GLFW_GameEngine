@@ -326,8 +326,7 @@ namespace EngineCore::UI {
 				short errorType = 0;
 				auto values = GetValues(val);
 				
-				
-				if (values.size() <= maxInput) {
+				if (values.size() <= maxInput && !values.empty()) {
 					switch (maxInput)
 					{
 					case 1: {
