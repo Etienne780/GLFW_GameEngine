@@ -258,7 +258,3 @@ Vector2 operator/(float scalar, const Vector2& other) {
     }
     return Vector2(scalar / other.x, scalar / other.y);
 }
-
-Vector2 operator==(float scalar, const Vector2& other) {
-    
-}
