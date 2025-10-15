@@ -155,7 +155,6 @@ namespace EngineCore {
     void UIManager::WindowResize(int width, int height) {
         m_windowSize.Set(static_cast<float>(width), static_cast<float>(height));
         CalculateOrthograpicMatrix(width, height);
-
         SetRootElementTransDirty();
     }
 

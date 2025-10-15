@@ -757,12 +757,11 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::UpdateImpl() {
-        if (m_styleDirty) {
+        if (m_styleDirty || m_baseStyleDirty) {
             SetStyleAttributes();
             m_styleDirty = false;
         }
 
-        // Update ui elements
         // IMPORTANT: update position after size
         if (m_transformDirty) {
             UpdateLayoutSize();
@@ -775,9 +774,6 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID) {
-
-        // Log::Info("ID: {}, style: {}, baseStyle: {}", m_id.value, m_style.get(), m_baseStyle.get());
-
         m_cmd.renderLayerID = renderLayerID;
         m_cmd.modelMatrix = GetWorldModelMatrixPtr();
         m_cmd.shaderBindOverride = &m_sbo;
@@ -1011,7 +1007,6 @@ namespace EngineCore::UI {
             SetAttributes(m_baseStyle->GetAllState(m_state));
             m_baseStyleDirty = false;
         }
-
         // if state is not normal use normal state as a base
         if(m_state != State::Normal)
             SetAttributes(m_style->GetAllState(State::Normal));
