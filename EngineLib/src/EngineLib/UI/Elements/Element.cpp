@@ -617,9 +617,18 @@ namespace EngineCore::UI {
 
     void ElementBase::UpdateLayoutPosition() {
         if (!m_parentElementPtr) {
+#ifndef NDEBUG
+            if (UIManager::GetDebug())
+                Log::Debug("ElementBase: Element parent '{}'({}) Updatet position from {} to {}",
+                    m_elementName, m_id.value, m_layoutPosition, m_desiredPosition);
+#endif
             m_layoutPosition = m_desiredPosition;
             return;
         }
+#ifndef NDEBUG
+        auto prePos = m_layoutPosition;
+#endif
+
         // resets position for consistency
         m_layoutPosition.Set(0, 0);
 
@@ -635,13 +644,27 @@ namespace EngineCore::UI {
         }
 
         m_positionDirty = false;
+#ifndef NDEBUG
+        if (UIManager::GetDebug())
+            Log::Debug("ElementBase: Element '{}'({}) Updatet position from {} to {}",
+                m_elementName, m_id.value, prePos, m_layoutPosition);
+#endif
     }
 
     void ElementBase::UpdateLayoutSize() {
         if (!m_parentElementPtr) {
+#ifndef NDEBUG
+            if (UIManager::GetDebug())
+                Log::Debug("ElementBase: Element parent '{}'({}) Updatet size from {} to {}",
+                    m_elementName, m_id.value, m_layoutSize, m_desiredSize);
+#endif
             m_layoutSize = m_desiredSize;
             return;
         }
+#ifndef NDEBUG
+        auto preSize = m_layoutSize;
+#endif
+
         // resets size for consistency
         m_layoutSize.Set(0, 0);
 
@@ -662,6 +685,11 @@ namespace EngineCore::UI {
 
         // update position if size changes
         m_positionDirty = true;
+#ifndef NDEBUG
+        if (UIManager::GetDebug())
+            Log::Debug("ElementBase: Element '{}'({}) Updatet size from {} to {}",
+                m_elementName, m_id.value, preSize, m_layoutSize);
+#endif
     }
 
     void ElementBase::UpdateWorldTransform() {
