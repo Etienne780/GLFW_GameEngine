@@ -173,22 +173,8 @@ namespace EngineCore::UI {
 			}
 		}
 
-		// applys the normla state to all states as a base
-		const auto& normalStateIt = m_attributes.find(State::Normal);
-		const auto& normalState = (normalStateIt != m_attributes.end()) ? normalStateIt->second : std::unordered_map<std::string, std::string>{};
-
-		for (int s = static_cast<int>(State::Normal); s <= static_cast<int>(State::Disabled); ++s) {
-			State state = static_cast<State>(s);
-			auto& targetMap = m_cachedStyle->m_attributes[state];
-
-			for (const auto& [name, value] : normalState) {
-				targetMap[name] = value;
-			}
-		}
-
 		// copys the other stats in to the cached style 
 		for (const auto& [state, attMap] : m_attributes) {
-			if (state == State::Normal) continue;
 			auto& targetMap = m_cachedStyle->m_attributes[state];
 			for (const auto& [name, value] : attMap) {
 				targetMap[name] = value;
