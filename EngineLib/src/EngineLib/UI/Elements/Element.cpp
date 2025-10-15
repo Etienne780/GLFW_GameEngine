@@ -57,7 +57,7 @@ namespace EngineCore::UI {
         return pos;
     }
 
-    Vector2 ElementBase::GetLocalPosition() {
+    Vector2 ElementBase::GetLocalPosition() const {
         return m_layoutPosition;
     }
 
@@ -974,6 +974,10 @@ namespace EngineCore::UI {
 
     void ElementBase::SetStyleAttributes() {
         SetAttributes(m_baseStyle->GetAllState(m_state));
+
+        // if state is not normal use normal state as a base
+        if(m_state != State::Normal)
+            SetAttributes(m_style->GetAllState(State::Normal));
         SetAttributes(m_style->GetAllState(m_state));
     }
 
