@@ -26,17 +26,30 @@ namespace EngineCore::UI {
             bool m_wrap;
             float m_parentSize;
             float m_totalChildrenSize;
-            float m_marginStart;
-            float m_marginEnd;
+
+            float m_marginStart = 0;
+            float m_marginEnd = 0;
+            float m_borderStart = 0;
+            float m_borderEnd = 0;
             // can be desired position or size
             float m_desired;
             // avaible size is in the amount of percent that the element wants to fill
             float m_availableSize;
 
             AxisLayout(bool isMajorAxis, Axis axis, Flex::LayoutAlign align, bool wrap, float parentSize,
-                float totalChildrenSize, float marginStart, float marginEnd, float desiredSize, float availableSize)
-                : m_isMajorAxis(isMajorAxis), m_axis(axis), m_align(align), m_wrap(wrap), m_parentSize(parentSize), m_totalChildrenSize(totalChildrenSize),
-                m_marginStart(marginStart), m_marginEnd(marginEnd), m_desired(desiredSize), m_availableSize(availableSize) {
+                float totalChildrenSize, float desiredSize, float availableSize)
+                : m_isMajorAxis(isMajorAxis), m_axis(axis), m_align(align), m_wrap(wrap), m_parentSize(parentSize), 
+                m_totalChildrenSize(totalChildrenSize), m_desired(desiredSize), m_availableSize(availableSize) {
+            }
+
+            void SetMargin(float start, float end) {
+                m_marginStart = start;
+                m_marginEnd = end;
+            }
+
+            void SetBorder(float start, float end) {
+                m_borderStart = start;
+                m_borderEnd = end;
             }
 
             /**

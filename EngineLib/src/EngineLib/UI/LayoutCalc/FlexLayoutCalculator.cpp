@@ -24,19 +24,29 @@ namespace EngineCore::UI {
         float majorAvaibleSize = (isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
         float minorAvaibleSize = (!isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
 
-        Vector4 margin = element->GetMargin();
-        float marginMajorStart = (isParentLayoutDirRow) ? margin.y : margin.x;
-        float marginMajorEnd = (isParentLayoutDirRow) ? margin.w : margin.z;
-        float marginMinorStart = (!isParentLayoutDirRow) ? margin.y : margin.x;
-        float marginMinorEnd = (!isParentLayoutDirRow) ? margin.w : margin.z;
-
         float majorDesiredPosition = (isParentLayoutDirRow) ? element->GetDesiredPosition().x : element->GetDesiredPosition().y;
         float minorDesiredPosition = (!isParentLayoutDirRow) ? element->GetDesiredPosition().x : element->GetDesiredPosition().y;
 
         AxisLayout majorAxis{ MAJOR_AXIS, major, parent->GetLayoutMajor(), parentWrap, parentSizeMajor,
-          totalSizeMajor, marginMajorStart, marginMajorEnd, majorDesiredPosition, majorAvaibleSize };
+          totalSizeMajor, majorDesiredPosition, majorAvaibleSize };
         AxisLayout minorAxis{ MINOR_AXIS, minor, parent->GetLayoutMinor(), parentWrap, parentSizeMinor,
-            0, marginMinorStart, marginMinorEnd, minorDesiredPosition, minorAvaibleSize };
+            0, minorDesiredPosition, minorAvaibleSize };
+
+        Vector4 margin = element->GetMargin();
+        float marginMajorStart = (isParentLayoutDirRow) ? margin.w : margin.x;
+        float marginMajorEnd = (isParentLayoutDirRow) ? margin.y : margin.z;
+        float marginMinorStart = (!isParentLayoutDirRow) ? margin.w : margin.x;
+        float marginMinorEnd = (!isParentLayoutDirRow) ? margin.y : margin.z;
+        majorAxis.SetMargin(marginMajorStart, marginMajorEnd);
+        minorAxis.SetMargin(marginMinorStart, marginMinorEnd);
+
+        Vector4 border = element->GetBorderSize();
+        float borderMajorStart = (isParentLayoutDirRow) ? border.y : border.x;
+        float borderMajorEnd = (isParentLayoutDirRow) ? border.w : border.z;
+        float borderMinorStart = (!isParentLayoutDirRow) ? border.y : border.x;
+        float borderMinorEnd = (!isParentLayoutDirRow) ? border.w : border.z;
+        majorAxis.SetBorder(borderMajorStart, borderMajorEnd);
+        minorAxis.SetBorder(borderMinorStart, borderMinorEnd);
 
         float majorSize = (isParentLayoutDirRow) ? element->GetLocalSize().x : element->GetLocalSize().y;
         float minorSize = (!isParentLayoutDirRow) ? element->GetLocalSize().x : element->GetLocalSize().y;
@@ -103,20 +113,30 @@ namespace EngineCore::UI {
         float majorAvaibleSize = (isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
         float minorAvaibleSize = (!isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
 
-        Vector4 margin = element->GetMargin();
-        float marginMajorStart = (isParentLayoutDirRow) ? margin.y : margin.x;
-        float marginMajorEnd = (isParentLayoutDirRow) ? margin.w : margin.z;
-        float marginMinorStart = (!isParentLayoutDirRow) ? margin.y : margin.x;
-        float marginMinorEnd = (!isParentLayoutDirRow) ? margin.w : margin.z;
-
         float majorDesiredSize = (isParentLayoutDirRow) ? element->GetDesiredSize().x : element->GetDesiredSize().y;
         float minorDesiredSize = (!isParentLayoutDirRow) ? element->GetDesiredSize().x : element->GetDesiredSize().y;
 
         AxisLayout majorAxis{ MAJOR_AXIS, major, parent->GetLayoutMajor(), parentWrap, parentSizeMajor,
-            totalSizeMajor, marginMajorStart, marginMajorEnd, majorDesiredSize, majorAvaibleSize };
+            totalSizeMajor, majorDesiredSize, majorAvaibleSize };
         AxisLayout minorAxis{ MINOR_AXIS, minor, parent->GetLayoutMinor(), parentWrap, parentSizeMinor,
-            0, marginMinorStart, marginMinorEnd, minorDesiredSize, minorAvaibleSize };
+            0, minorDesiredSize, minorAvaibleSize };
     
+        Vector4 margin = element->GetMargin();
+        float marginMajorStart = (isParentLayoutDirRow) ? margin.w : margin.x;
+        float marginMajorEnd = (isParentLayoutDirRow) ? margin.y : margin.z;
+        float marginMinorStart = (!isParentLayoutDirRow) ? margin.w : margin.x;
+        float marginMinorEnd = (!isParentLayoutDirRow) ? margin.y : margin.z;
+        majorAxis.SetMargin(marginMajorStart, marginMajorEnd);
+        minorAxis.SetMargin(marginMinorStart, marginMinorEnd);
+
+        Vector4 border = element->GetBorderSize();
+        float borderMajorStart = (isParentLayoutDirRow) ? border.y : border.x;
+        float borderMajorEnd = (isParentLayoutDirRow) ? border.w : border.z;
+        float borderMinorStart = (!isParentLayoutDirRow) ? border.y : border.x;
+        float borderMinorEnd = (!isParentLayoutDirRow) ? border.w : border.z;
+        majorAxis.SetBorder(borderMajorStart, borderMajorEnd);
+        minorAxis.SetBorder(borderMinorStart, borderMinorEnd);
+        
         // Calculates the amount of children that will be stretched
         size_t cStretchCountMajor = 0, cAvaibleStretchCountMajor = 0;
         for (const auto& c : parent->GetChildren()) {
@@ -154,115 +174,95 @@ namespace EngineCore::UI {
 
         return newSize;
     }
-
-    float FlexLayoutCalculator::AxisLayout::CalculatePosition(float previousEndPos, float previousEndSize, float elementSize, size_t siblingCount, size_t elementIndex) const {
-         float freeSpace = m_parentSize - (m_totalChildrenSize + elementSize);
+    
+    float FlexLayoutCalculator::AxisLayout::CalculatePosition(
+        float previousEndPos,
+        float previousEndSize,
+        float elementSize,
+        size_t siblingCount,
+        size_t elementIndex) const
+    {
+        float freeSpace = m_parentSize - (m_totalChildrenSize + elementSize);
 
         switch (m_align)
         {
         case EngineCore::UI::Flex::LayoutAlign::Start:
-            if (m_isMajorAxis)
-                return previousEndPos + previousEndSize + m_marginStart + m_marginEnd;
-            else
-                return previousEndPos + m_marginStart + m_marginEnd;
+            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f) + m_marginStart;
 
         case EngineCore::UI::Flex::LayoutAlign::Center:
-            // Center the element within the parent
-            if (elementIndex == 0)
-                return freeSpace * 0.5f;
+            if (m_isMajorAxis) {
+                if (elementIndex == 0)
+                    return freeSpace * 0.5f;
+                return previousEndPos + previousEndSize;
+            }
             else {
-                if (m_isMajorAxis)
-                    return previousEndPos + previousEndSize;
-                else
-                    return previousEndPos;
+                // Minor axis: always center relative to parent
+                return (m_parentSize - elementSize) * 0.5f;
             }
 
         case EngineCore::UI::Flex::LayoutAlign::End:
-            // Align element to the end of the parent
-            if (elementIndex == 0)
-                return m_parentSize - elementSize - m_marginStart - m_marginEnd;
+            if (m_isMajorAxis) {
+                if (elementIndex == 0)
+                    return m_parentSize - elementSize - m_marginEnd;
+                return previousEndPos - previousEndSize;
+            }
             else {
-                if (m_isMajorAxis)
-                    return previousEndPos - elementSize - m_marginStart - m_marginEnd;
-                else
-                    return previousEndPos - m_marginStart - m_marginEnd;
+                // Minor axis: align relative to parent
+                return m_parentSize - elementSize - m_marginEnd;
             }
 
         case EngineCore::UI::Flex::LayoutAlign::Stretch:
-            if (m_isMajorAxis)
-                return previousEndPos + previousEndSize + m_marginStart + m_marginEnd;
-            else
-                return previousEndPos + m_marginStart + m_marginEnd;
+            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f) + m_marginStart;
 
         case EngineCore::UI::Flex::LayoutAlign::SpaceEvenly:
-            // Space elements evenly including start and end padding
-            if (siblingCount > 1)
-            {
+            if (m_isMajorAxis && siblingCount > 1) {
                 float space = (m_parentSize - m_totalChildrenSize) / (siblingCount + 1);
                 return previousEndPos + previousEndSize + space;
             }
-            return previousEndPos + previousEndSize;
+            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f);
 
         case EngineCore::UI::Flex::LayoutAlign::SpaceAround:
-            // Space elements around so each element has half-space before and after
-            if (siblingCount > 0)
-            {
+            if (m_isMajorAxis && siblingCount > 0) {
                 float space = (m_parentSize - m_totalChildrenSize) / siblingCount;
                 return previousEndPos + previousEndSize + (space * 0.5f);
             }
-            return previousEndPos + previousEndSize;
+            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f);
 
         default:
-            // Fallback: normal flow
-            return previousEndPos + previousEndSize;
+            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f);
         }
     }
 
     float FlexLayoutCalculator::AxisLayout::CalculateSize(size_t stretchCount, size_t avaibleStretchCount) const {
-        // stop stretch if wrap is enabled
         if (m_wrap)
-            return m_desired;
+            return m_desired + m_borderStart + m_borderEnd;
 
-        // m_availableSize is -1 if not used
+        float result = m_desired;
+
         if (m_availableSize >= 0.0f) {
             if (avaibleStretchCount > 0 && m_isMajorAxis) {
                 float usableSpace = m_parentSize - m_totalChildrenSize;
-                float adaptiveSize = ((usableSpace / avaibleStretchCount) * (m_availableSize / 100.0f)) - m_marginStart - m_marginEnd;
-                return std::max(adaptiveSize, 0.0f);
-            }
-            else if(!m_isMajorAxis) {
-                return std::max((m_parentSize * (m_availableSize / 100.0f)) - m_marginStart - m_marginEnd, 0.0f);
-            }
-            return std::max(m_desired, 0.0f);
-        }
-
-        switch (m_align)
-        {
-        // elements that have a desired size will not be streched, stretches elements to the avaible size left (100%a)
-        case EngineCore::UI::Flex::LayoutAlign::Stretch: {
-            if (m_desired > 0.0f)
-                return std::max(m_desired, 0.0f);
-
-            if (stretchCount > 0 && m_isMajorAxis) {
-                float usableSpace = m_parentSize - m_totalChildrenSize;
-                float stretchedSize = (usableSpace / stretchCount) - m_marginStart - m_marginEnd;
-                return std::max(stretchedSize, 0.0f);
+                float adaptiveSize = ((usableSpace / avaibleStretchCount) * (m_availableSize / 100.0f));
+                result = std::max(adaptiveSize, 0.0f);
             }
             else if (!m_isMajorAxis) {
-                return std::max(m_parentSize - m_marginStart - m_marginEnd, 0.0f);
+                result = std::max(m_parentSize * (m_availableSize / 100.0f), 0.0f);
             }
-            return std::max(m_desired, 0.0f);
-            break;
         }
-        case EngineCore::UI::Flex::LayoutAlign::Start:
-        case EngineCore::UI::Flex::LayoutAlign::Center:
-        case EngineCore::UI::Flex::LayoutAlign::End:
-        case EngineCore::UI::Flex::LayoutAlign::SpaceEvenly:
-        case EngineCore::UI::Flex::LayoutAlign::SpaceAround:
-        default:
-            return std::max(m_desired, 0.0f);
+        else if (m_align == EngineCore::UI::Flex::LayoutAlign::Stretch) {
+            if (m_desired > 0.0f)
+                result = m_desired;
+            else if (stretchCount > 0 && m_isMajorAxis) {
+                float usableSpace = m_parentSize - m_totalChildrenSize;
+                result = std::max(usableSpace / stretchCount, 0.0f);
+            }
+            else if (!m_isMajorAxis) {
+                result = std::max(m_parentSize, 0.0f);
+            }
         }
-        return std::max(m_desired, 0.0f);
+
+        // Add border, remove margin (margin affects only position)
+        return std::max(result + m_borderStart + m_borderEnd, 0.0f);
     }
 
 }

@@ -85,7 +85,7 @@ namespace EngineCore {
 		static size_t GetElementCount();
 		static bool GetDebug();
 
-		static void SetRootElementsDirty();
+		static void SetRootElementTransDirty();
 
 		static void SetUIRenderLayer(RenderLayerID layerID);
 
@@ -133,7 +133,6 @@ namespace EngineCore {
 		static inline Matrix4x4 m_orthoMat;
 
 		static void WindowResize(int width, int height);
-		static void WindowResizeChild(int width, int height, std::shared_ptr<UI::ElementBase>& element);
 		// Updates the scale and states of the UI::Element
 		static void Update(int width, int height);
 		static void UpdateChild(std::shared_ptr<UI::ElementBase>& element);

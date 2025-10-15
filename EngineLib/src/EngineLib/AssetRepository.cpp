@@ -326,10 +326,11 @@ namespace EngineCore {
                     // Outer and inner radius setup
                     vec4 rOut = clamp(uBorderRadius, vec4(0.0), vec4(min(uSize.x, uSize.y) * 0.5));
 
+                    // Are inverted
                     float top    = uBorderWidth.z;
-                    float right  = uBorderWidth.w;
+                    float right  = uBorderWidth.y;
                     float bottom = uBorderWidth.x;
-                    float left   = uBorderWidth.y;
+                    float left   = uBorderWidth.w;
                 
                     vec2 innerSize = vec2(uSize.x - (left + right), uSize.y - (top + bottom));
                     innerSize = max(innerSize, vec2(0.0));

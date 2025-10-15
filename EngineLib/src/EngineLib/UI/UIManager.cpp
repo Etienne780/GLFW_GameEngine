@@ -110,9 +110,9 @@ namespace EngineCore {
         return m_isDebug;
     }
 
-    void UIManager::SetRootElementsDirty() {
+    void UIManager::SetRootElementTransDirty() {
         for (auto& element : m_roots) {
-            element->MarkDirty();
+            element->MarkTransDirty();
         }
     }
 
@@ -156,17 +156,7 @@ namespace EngineCore {
         m_windowSize.Set(static_cast<float>(width), static_cast<float>(height));
         CalculateOrthograpicMatrix(width, height);
 
-        for (auto& el : m_roots) {
-            el->WindowResize(width, height);
-            WindowResizeChild(width, height, el);
-        }
-    }
-
-    void UIManager::WindowResizeChild(int width, int height, std::shared_ptr<UI::ElementBase>& element) {
-        for (auto& child : element->GetChildren()) {
-            child->WindowResize(width, height);
-            WindowResizeChild(width, height, child);
-        }
+        SetRootElementTransDirty();
     }
 
     void UIManager::Update(int width, int height) {
@@ -176,9 +166,7 @@ namespace EngineCore {
         if(m_enableUIScaling)
             m_uiScaleFactor = CalculateUIScaleFactor(width, height);
 
-
         for (auto& el : m_roots) {
-            // needs mouse down and up
             UpdateElementState(el, 
                 Input::GetMousePosition(), 
                 Input::MouseJustPressed(MouseButton::LEFT), 

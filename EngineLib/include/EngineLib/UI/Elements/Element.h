@@ -310,12 +310,9 @@ namespace EngineCore::UI {
         * @brief Map of attribute names to behavior callbacks.
         */
         static inline std::unordered_map<std::string, std::function<void(ElementBase*, const StyleValue&)>> m_registeredAttributes;
-
-        // layout dirty flags
-        mutable bool m_positionDirty = true;
-        mutable bool m_sizeDirty = true;
-        // transform dirty flags
-        mutable bool m_worldTransformDirty = true;
+        
+        mutable bool m_transformDirty = true;
+        mutable bool m_styleDirty = true;
 
         // Calculated final position of the element including layout effects (major/minor alignment, parent constraints, etc.)
         Vector2 m_layoutPosition{ 0.0f, 0.0f };
@@ -372,14 +369,12 @@ namespace EngineCore::UI {
         /**
         * @brief Marks the parent and its children dirty for matrix/layout recalculation.
         */
-        void MarkDirtyParent() const;
+        void MarkTransDirtyParent() const;
         /**
         * @brief Marks this element and its children dirty for matrix/layout recalculation.
         */
-        void MarkDirty() const;
+        void MarkTransDirty() const;
 
-
-        void WindowResize(int width, int height);
         void UpdateImpl();
         void SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID);
         void RegisterAttributesImpl();

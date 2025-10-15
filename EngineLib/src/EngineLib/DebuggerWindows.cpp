@@ -585,8 +585,8 @@ namespace EngineCore {
                         bgCol.x *= 1.1f;
                         bgCol.y *= 1.1f;
                         bgCol.z *= 1.1f;
-                        float hMult = 1.1f; // hover
-                        float aMult = 1.2f; // active
+                        float hMult = 1.2f; // hover
+                        float aMult = 1.4f; // active
 
                         ImGui::PushStyleColor(ImGuiCol_FrameBg, bgCol);
                         ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(bgCol.x * hMult, bgCol.y * hMult, bgCol.z * hMult, bgCol.w));
@@ -620,7 +620,7 @@ namespace EngineCore {
                             ImGui::SameLine();
 
                             // --- Value editing (live or commit) ---
-                            ImGui::SetNextItemWidth(80);
+                            ImGui::SetNextItemWidth(120);
                             if (liveUpdate) {
                                 if (ImGui::InputText(valueID.c_str(), valueBuf, sizeof(valueBuf))) {
                                     std::string newVal(valueBuf);
@@ -702,7 +702,7 @@ namespace EngineCore {
                         }
 
                         // --- Apply all changes once if LiveUpdate off ---
-                        if (!liveUpdate) {
+                        if (!liveUpdate && anyChange) {
                             for (auto& [name, value] : editableVec) {
                                 if (!name.empty()) {
                                     s->Set(name, value);

@@ -1,6 +1,7 @@
 #include <CoreLib/ConversionUtils.h>
 #include <CoreLib/FormatUtils.h>
 
+#include "EngineLib/Time.h"
 #include "EngineLib/UI/UIManager.h"
 #include "EngineLib/UI/StyleAttribute.h"
 #include "EngineLib/UI/AttributeNames.h"
@@ -9,7 +10,7 @@
 namespace EngineCore::UI {
 
 	ElementBase::ElementBase(std::string name, UIElementID id, std::shared_ptr<Style> style, MaterialID matID)
-		: m_elementName(std::move(name)), m_id(id), m_style(std::move(style)){
+		: m_elementName(std::move(name)), m_id(id), m_style(std::move(style)) {
         m_cmd.isUI = true;
         m_cmd.type = RenderCommandType::Mesh;
         m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
@@ -17,8 +18,8 @@ namespace EngineCore::UI {
         m_baseStyle = UIManager::GetElementBaseStyle();
 
         // subs to style dirty events
-        m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { SetStyleAttributes(); });
-        m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { SetStyleAttributes(); });
+        m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { m_styleDirty = true; });
+        m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { m_styleDirty = true; });
 	}
 
     ElementBase::~ElementBase() {
@@ -30,6 +31,8 @@ namespace EngineCore::UI {
     void ElementBase::Init() {
         // inits the start propetys
         RegisterAttributesImpl();
+        // applys the base style as a one time base
+        SetAttributes(m_baseStyle->GetAllState(m_state));
         SetStyleAttributes();
     }
 
@@ -62,10 +65,6 @@ namespace EngineCore::UI {
     }
 
     Vector2 ElementBase::GetScreenSize() {
-        if (m_sizeDirty) {
-            UpdateLayoutSize();
-        }
-
         Vector2 size = m_layoutSize;
         if (UIManager::GetUIScaling()) {
             size *= UIManager::GetUIScaleFactor();
@@ -74,9 +73,6 @@ namespace EngineCore::UI {
     }
 
     Vector2 ElementBase::GetLocalSize() {
-        if (m_sizeDirty) {
-            UpdateLayoutSize();
-        }
         return m_layoutSize;
     }
 
@@ -159,49 +155,49 @@ namespace EngineCore::UI {
             break;
         }
 
-        SetStyleAttributes();
+        m_styleDirty = true;
 	}
 
     void ElementBase::SetLayoutType(LayoutType type) {
         if (m_layoutType == type)
             return;
         m_layoutType = type;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetLayoutDirection(Flex::LayoutDirection dir) {
         if (m_layoutDirection == dir)
             return;
         m_layoutDirection = dir;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
-    void ElementBase::SetLayoutWrap(Flex::LayoutWrap wra) {
-        if (m_layoutWrap == wra)
+    void ElementBase::SetLayoutWrap(Flex::LayoutWrap wrap) {
+        if (m_layoutWrap == wrap)
             return;
-        m_layoutWrap = wra;
-        MarkDirtyParent();
+        m_layoutWrap = wrap;
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetLayoutMajor(Flex::LayoutAlign ali) {
         if (m_layoutMajor == ali)
             return;
         m_layoutMajor = ali;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetLayoutMinor(Flex::LayoutAlign ali) {
         if (m_layoutMinor == ali)
             return;
         m_layoutMinor = ali;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetLayoutItem(Flex::LayoutAlign ali) {
         if (m_layoutItem == ali)
             return;
         m_layoutItem = ali;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetLocalPosition(const Vector2& pos) {
@@ -213,7 +209,7 @@ namespace EngineCore::UI {
             m_desiredPosition.y == y)
             return;
         m_desiredPosition.Set(x, y);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetLocalRotation(const Vector3& rotation) {
@@ -226,7 +222,7 @@ namespace EngineCore::UI {
             m_rotation.z == z)
             return;
         m_rotation.Set(x, y, z);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetDesiredSize(const Vector2& scale) {
@@ -234,32 +230,48 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetDesiredSize(float x, float y) {
-        if (x < 0.0f) x = 0.0f;
-        if (y < 0.0f) y = 0.0f;
+        x = std::max(0.0f, x);
+        y = std::max(0.0f, y);
         if (m_desiredSize.x == x &&
             m_desiredSize.y == y)
             return;
         m_desiredSize.Set(x, y);
         m_aviableSize.Set(-1, -1);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetDesiredWidth(float x) {
-        if (x < 0.0f) x = 0.0f;
+        x = std::max(0.0f, x);
         if (m_desiredSize.x == x)
             return;
         m_desiredSize.x = x;
         m_aviableSize.x = -1;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetDesiredHeight(float y) {
-        if (y < 0.0f) y = 0.0f;
+        y = std::max(0.0f, y);
         if (m_desiredSize.y == y)
             return;
         m_desiredSize.y = y;
         m_aviableSize.y = -1;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
+    }
+
+    void ElementBase::SetAvailableWidth(float width) {
+        if (m_aviableSize.x == width)
+            return;
+        m_aviableSize.x = width;
+        m_desiredSize.x = 0;
+        MarkTransDirtyParent();
+    }
+
+    void ElementBase::SetAvailableHeight(float height) {
+        if (m_aviableSize.y == height)
+            return;
+        m_aviableSize.y = height;
+        m_desiredSize.y = 0;
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBackgroundColor(const Vector4& color) {
@@ -284,75 +296,81 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetBorderWidth(float width) {
-        if (width < 0.0f) width = 0.0f;
+        width = std::max(0.0f, width);
         if (m_borderSize == Vector4(width))
             return;
         m_borderSize.Set(width);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBorderTop(float top) {
-        if (top < 0.0f) top = 0.0f;
+        top = std::max(0.0f, top);
         if (m_borderSize.x == top)
             return;
         m_borderSize.x = top;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBorderRight(float right) {
-        if (right < 0.0f) right = 0.0f;
+        right = std::max(0.0f, right);
         if (m_borderSize.y == right)
             return;
         m_borderSize.y = right;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBorderBottom(float bottom) {
-        if (bottom < 0.0f) bottom = 0.0f;
+        bottom = std::max(0.0f, bottom);
         if (m_borderSize.z == bottom)
             return;
         m_borderSize.z = bottom;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBorderLeft(float left) {
-        if (left < 0.0f) left = 0.0f;
+        left = std::max(0.0f, left);
         if (m_borderSize.w == left)
             return;
         m_borderSize.w = left;
         m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBorderSize(const Vector4& vec) {
         SetBorderSize(vec.x, vec.y, vec.z, vec.w);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBorderSize(float hor, float ver) {
-        if (hor < 0.0f) hor = 0.0f;
-        if (ver < 0.0f) ver = 0.0f;
-        if (m_borderSize == Vector4(ver, hor, ver, hor))
+        hor = std::max(0.0f, hor);
+        ver = std::max(0.0f, ver);
+        if (m_borderSize.x == ver &&
+            m_borderSize.y == hor &&
+            m_borderSize.z == ver &&
+            m_borderSize.w == hor)
             return;
         m_borderSize.Set(ver, hor, ver, hor);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetBorderSize(float top, float right, float bottom, float left) {
-        if (top < 0.0f) top = 0.0f;
-        if (right < 0.0f) right = 0.0f;
-        if (bottom < 0.0f) bottom = 0.0f;
-        if (left < 0.0f) left = 0.0f;
-        if (m_borderSize == Vector4(top, right, bottom, left))
+        top = std::max(0.0f, top);
+        right = std::max(0.0f, right);
+        bottom = std::max(0.0f, bottom);
+        left = std::max(0.0f, left);
+        if (m_borderSize.x == top &&
+            m_borderSize.y == right &&
+            m_borderSize.z == bottom &&
+            m_borderSize.w == left)
             return;
         m_borderSize.Set(top, right, bottom, left);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetMargin(const Vector4& mar) {
@@ -360,46 +378,49 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetMargin(float top, float right, float bottom, float left) {
-        if (top < 0.0f) top = 0.0f;
-        if (right < 0.0f) right = 0.0f;
-        if (bottom < 0.0f) bottom = 0.0f;
-        if (left < 0.0f) left = 0.0f;
-        if (m_margin == Vector4(top, right, bottom, left))
+        top = std::max(0.0f, top);
+        right = std::max(0.0f, right);
+        bottom = std::max(0.0f, bottom);
+        left = std::max(0.0f, left);
+        if (m_margin.x == top &&
+            m_margin.y == right &&
+            m_margin.z == bottom &&
+            m_margin.w == left)
             return;
         m_margin.Set(top, right, bottom, left);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetMarginTop(float top) {
-        if (top < 0.0f) top = 0.0f;
+        top = std::max(0.0f, top);
         if (m_margin.x == top)
             return;
         m_margin.x = top;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetMarginRight(float right) {
-        if (right < 0.0f) right = 0.0f;
+        right = std::max(0.0f, right);
         if (m_margin.y == right)
             return;
         m_margin.y = right;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetMarginBottom(float bottom) {
-        if (bottom < 0.0f) bottom = 0.0f;
+        bottom = std::max(0.0f, bottom);
         if (m_margin.z == bottom)
             return;
         m_margin.z = bottom;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetMarginLeft(float left) {
-        if (left < 0.0f) left = 0.0f;
+        left = std::max(0.0f, left);
         if (m_margin.w == left)
             return;
         m_margin.w = left;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetPadding(const Vector4& pad) {
@@ -407,50 +428,53 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetPadding(float top, float right, float bottom, float left) {
-        if (top < 0.0f) top = 0.0f;
-        if (right < 0.0f) right = 0.0f;
-        if (bottom < 0.0f) bottom = 0.0f;
-        if (left < 0.0f) left = 0.0f;
-        if (m_padding == Vector4(top, right, bottom, left))
+        top = std::max(0.0f, top);
+        right = std::max(0.0f, right);
+        bottom = std::max(0.0f, bottom);
+        left = std::max(0.0f, left);
+        if (m_padding.x == top &&
+            m_padding.y == right &&
+            m_padding.z == bottom &&
+            m_padding.w == left)
             return;
         m_padding.Set(top, right, bottom, left);
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetPaddingTop(float top) {
-        if (top < 0.0f) top = 0.0f;
+        top = std::max(0.0f, top);
         if (m_padding.x == top)
             return;
         m_padding.x = top;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetPaddingRight(float right) {
-        if (right < 0.0f) right = 0.0f;
+        right = std::max(0.0f, right);
         if (m_padding.y == right)
             return;
         m_padding.y = right;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetPaddingBottom(float bottom) {
-        if (bottom < 0.0f) bottom = 0.0f;
+        bottom = std::max(0.0f, bottom);
         if (m_padding.z == bottom)
             return;
         m_padding.z = bottom;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetPaddingLeft(float left) {
-        if (left < 0.0f) left = 0.0f;
+        left = std::max(0.0f, left);
         if (m_padding.w == left)
             return;
         m_padding.w = left;
-        MarkDirtyParent();
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetDuration(float duration) {
-        if (duration < 0.0f) duration = 0.0f;
+        duration = std::max(0.0f, duration);
         if (m_duration == duration)
             return;
         m_duration = duration;
@@ -643,7 +667,6 @@ namespace EngineCore::UI {
             break;
         }
 
-        m_positionDirty = false;
 #ifndef NDEBUG
         if (UIManager::GetDebug())
             Log::Debug("ElementBase: Element '{}'({}) Updatet position from {} to {}",
@@ -683,8 +706,6 @@ namespace EngineCore::UI {
 
         m_sbo.SetParam("uSize", m_layoutSize);
 
-        // update position if size changes
-        m_positionDirty = true;
 #ifndef NDEBUG
         if (UIManager::GetDebug())
             Log::Debug("ElementBase: Element '{}'({}) Updatet size from {} to {}",
@@ -717,51 +738,39 @@ namespace EngineCore::UI {
         MakeTranslate(m_worldTransform, 
             m_layoutPosition.x + parentPosition.x + m_margin.y,
             m_layoutPosition.y + parentPosition.y + m_margin.x, 0.0f);
-
-        m_worldTransformDirty = false;
     }
 
-    void ElementBase::MarkDirtyParent() const {
+    void ElementBase::MarkTransDirtyParent() const {
         //Marke the parent as dirty so it updates alle the child elements
-        // z.b. if width of this el changed. than the positions needs to recalculatet
+        // z.b. if width/height of this el changed. than the positions needs to recalculatet
         if (m_parentElementPtr) {
-            m_parentElementPtr->MarkDirty();
+            m_parentElementPtr->MarkTransDirty();
             return;
         }
 
-        UIManager::SetRootElementsDirty();
+        UIManager::SetRootElementTransDirty();
     }
 
-    void ElementBase::MarkDirty() const {
-        m_positionDirty = true;
-        m_sizeDirty = true;
-        m_worldTransformDirty = true;
+    void ElementBase::MarkTransDirty() const {
+        m_transformDirty = true;
         for (auto& child : m_children) {
-            child->MarkDirty();
+            child->MarkTransDirty();
         }
-    }
-
-    void ElementBase::WindowResize(int width, int height) {
-        // update position to new window position
-        SetStyleAttributes();
     }
 
     void ElementBase::UpdateImpl() {
+        if (m_styleDirty) {
+            SetStyleAttributes();
+            m_styleDirty = false;
+        }
+
         // Update ui elements
         // IMPORTANT: update position after size
-        if (m_sizeDirty) {
+        if (m_transformDirty) {
             UpdateLayoutSize();
-            m_sizeDirty = false;
-        }
-
-        if (m_positionDirty) {
             UpdateLayoutPosition();
-            m_positionDirty = false;
-        }
-
-        if (m_worldTransformDirty) {
             UpdateWorldTransform();
-            m_worldTransformDirty = false;
+            m_transformDirty = false;
         }
 
         Update();
@@ -994,15 +1003,12 @@ namespace EngineCore::UI {
         RegisterAttributes();
     }
 
-
     void ElementBase::SetParent(ElementBase* elementPtr, size_t indexPos) {
         m_parentElementPtr = elementPtr;
         m_listPosition = indexPos - 1;
     }
 
     void ElementBase::SetStyleAttributes() {
-        SetAttributes(m_baseStyle->GetAllState(m_state));
-
         // if state is not normal use normal state as a base
         if(m_state != State::Normal)
             SetAttributes(m_style->GetAllState(State::Normal));
@@ -1047,18 +1053,6 @@ namespace EngineCore::UI {
             }
         }
         return totalSize;
-    }
-
-    void ElementBase::SetAvailableWidth(float width) {
-        m_aviableSize.x = width;
-        m_desiredSize.x = 0;
-        MarkDirtyParent();
-    }
-
-    void ElementBase::SetAvailableHeight(float height) {
-        m_aviableSize.y = height;
-        m_desiredSize.y = 0;
-        MarkDirtyParent();
     }
 
 }
