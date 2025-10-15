@@ -60,7 +60,7 @@ namespace EngineCore::UI {
         * @brief Gets the local position of the element relative to its parent.
         * @return The local position of the element.
         */
-        Vector2 GetLocalPosition();
+        Vector2 GetLocalPosition() const;
 
         /**
         * @brief Gets the size of the element in screen coordinates, including any scaling applied by UIManager.
