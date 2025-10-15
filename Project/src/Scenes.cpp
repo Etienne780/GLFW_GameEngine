@@ -41,10 +41,10 @@ void SetupUI() {
 	auto style4 = Style::Create("style4", style1);
 	style4->Set(Attribute::backgroundColor, "#ffff00");
 
-	UI::SetDebug(false);
+	UI::SetDebug(true);
 	UI::Begin<Panel>(container); {
 
-		// row-layout
+		// Row-layout
 		UI::Begin<Panel>(defaultStyleRow); {
 
 			UI::Add<Panel>(style1);
@@ -54,7 +54,7 @@ void SetupUI() {
 		}
 		UI::End();
 
-		//column-layout
+		// Column-layout
 		UI::Begin<Panel>(defaultStyleColumn); {
 
 			UI::Add<Panel>(style1);
