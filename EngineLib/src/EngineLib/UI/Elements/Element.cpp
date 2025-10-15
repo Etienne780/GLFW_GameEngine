@@ -19,7 +19,7 @@ namespace EngineCore::UI {
 
         // subs to style dirty events
         m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { m_styleDirty = true; });
-        m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { m_styleDirty = true; });
+        m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { m_baseStyleDirty = true; });
 	}
 
     ElementBase::~ElementBase() {
@@ -31,8 +31,6 @@ namespace EngineCore::UI {
     void ElementBase::Init() {
         // inits the start propetys
         RegisterAttributesImpl();
-        // applys the base style as a one time base
-        SetAttributes(m_baseStyle->GetAllState(m_state));
         SetStyleAttributes();
     }
 
@@ -1009,6 +1007,11 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetStyleAttributes() {
+        if (m_baseStyleDirty) {
+            SetAttributes(m_baseStyle->GetAllState(m_state));
+            m_baseStyleDirty = false;
+        }
+
         // if state is not normal use normal state as a base
         if(m_state != State::Normal)
             SetAttributes(m_style->GetAllState(State::Normal));
