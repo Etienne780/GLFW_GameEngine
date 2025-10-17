@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <vector>
 #include <memory>
 #include <string>
@@ -87,12 +88,11 @@ namespace EngineCore::UI {
         Flex::LayoutAlign GetLayoutItem() const;
 
         Vector2 GetDesiredPosition() const;
-        // aviable
-        Vector2 GetAviableSize() const;
         // size - padding
         Vector2 GetContentSize();
         // style size
         Vector2 GetDesiredSize() const;
+        const std::array<StyleUnit::Unit, 2>& GetSizeUnits() const;
         // content + border
         Vector2 GetSizeWithBorder();
         // content + border + margin
@@ -223,27 +223,33 @@ namespace EngineCore::UI {
         /**
         * @brief Sets the desired size of the element using a Vector2. size cannot be negative, will be clamped to 0
         * @param size The new size (width, height).
+        * @param unitX The unit of the new width
+        * @param unitY The unit of the new height
         */
-        void SetDesiredSize(const Vector2& size);
+        void SetDesiredSize(const Vector2& size, StyleUnit::Unit unitX, StyleUnit::Unit unitY);
 
         /**
         * @brief Sets the desired size of the element using individual width and height values. size cannot be negative, will be clamped to 0
         * @param width The new width.
         * @param height The new height.
+        * @param unitX The unit of the new width
+        * @param unitY The unit of the new height
         */
-        void SetDesiredSize(float width, float height);
+        void SetDesiredSize(float width, float height, StyleUnit::Unit unitX, StyleUnit::Unit unitY);
 
         /**
         * @brief Sets only the desired width of the element. width cannot be negative, will be clamped to 0
         * @param width The new width.
+        * @param unitX The unit of the new width.
         */
-        void SetDesiredWidth(float width);
+        void SetDesiredWidth(float width, StyleUnit::Unit unitX);
 
         /**
         * @brief Sets only the desired height of the element. height cannot be negative, will be clamped to 0
         * @param height The new height.
+        * @param unitY The unit of the new height.
         */
-        void SetDesiredHeight(float height);
+        void SetDesiredHeight(float height, StyleUnit::Unit unitY);
 
         void SetBackgroundColor(const Vector4& color);
         void SetBorderColor(const Vector4& color);
@@ -323,7 +329,6 @@ namespace EngineCore::UI {
         Vector2 m_layoutSize{ 0.0f, 0.0f };
         Vector2 m_minSize{ 0.0f, 0.0f };
         Vector2 m_maxSize{ FLT_MAX, FLT_MAX };
-        Vector2 m_aviableSize{ -1.0f, -1.0f };
 
         // Local and world transforms
         Matrix4x4 m_worldTransform;
@@ -340,15 +345,16 @@ namespace EngineCore::UI {
         Vector2 m_desiredPosition{ 0, 0 };
 
         // Style-driven size (content box size from style, before layout adjustments)
-        Vector2 m_desiredSize{ 800, 500 };
+        Vector2 m_desiredSize{ 0, 0 };
+        std::array<StyleUnit::Unit, 2> m_sizeUnits{ StyleUnit::Unit::PX, StyleUnit::Unit::PX };
         // order: top, right, bottom, left
         Vector4 m_padding{ 0, 0, 0, 0 };
         // order: top, right, bottom, left
         Vector4 m_margin{ 0, 0, 0, 0 };  
 
         Vector4 m_backgroundColor{ 1, 1, 1, 1 };
-        Vector4 m_borderColor{ 0.75f, 0.75f, 0.75f, 1 };
-        Vector4 m_borderRadius{ 25, 5, 100, 50 }; // top-left, top-right, bottom-right, bottom-left
+        Vector4 m_borderColor{ 0, 0, 0, 0 };
+        Vector4 m_borderRadius{ 0, 0, 0, 0 }; // top-left, top-right, bottom-right, bottom-left
         Vector4 m_borderSize{ 0, 0, 0, 0 };
         float m_duration = 0.0f;
 
@@ -382,8 +388,6 @@ namespace EngineCore::UI {
         void SetParent(ElementBase* elementPtr, size_t indexPos);
         void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
         void SetStyleAttributes();
-        void SetAvailableWidth(float width);
-        void SetAvailableHeight(float height);
     };
 
     template <typename Derived>

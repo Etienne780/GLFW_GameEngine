@@ -223,52 +223,37 @@ namespace EngineCore::UI {
         MarkTransDirtyParent();
     }
 
-    void ElementBase::SetDesiredSize(const Vector2& scale) {
-        SetDesiredSize(scale.x, scale.y);
+    void ElementBase::SetDesiredSize(const Vector2& scale, StyleUnit::Unit unitX, StyleUnit::Unit unitY) {
+        SetDesiredSize(scale.x, scale.y, unitX, unitY);
     }
 
-    void ElementBase::SetDesiredSize(float x, float y) {
+    void ElementBase::SetDesiredSize(float x, float y, StyleUnit::Unit unitX, StyleUnit::Unit unitY) {
         x = std::max(0.0f, x);
         y = std::max(0.0f, y);
         if (m_desiredSize.x == x &&
             m_desiredSize.y == y)
             return;
         m_desiredSize.Set(x, y);
-        m_aviableSize.Set(-1, -1);
+        m_sizeUnits[0] = unitX;
+        m_sizeUnits[1] = unitY;
         MarkTransDirtyParent();
     }
 
-    void ElementBase::SetDesiredWidth(float x) {
+    void ElementBase::SetDesiredWidth(float x, StyleUnit::Unit unitX) {
         x = std::max(0.0f, x);
         if (m_desiredSize.x == x)
             return;
         m_desiredSize.x = x;
-        m_aviableSize.x = -1;
+        m_sizeUnits[0] = unitX;
         MarkTransDirtyParent();
     }
 
-    void ElementBase::SetDesiredHeight(float y) {
+    void ElementBase::SetDesiredHeight(float y, StyleUnit::Unit unitY) {
         y = std::max(0.0f, y);
         if (m_desiredSize.y == y)
             return;
         m_desiredSize.y = y;
-        m_aviableSize.y = -1;
-        MarkTransDirtyParent();
-    }
-
-    void ElementBase::SetAvailableWidth(float width) {
-        if (m_aviableSize.x == width)
-            return;
-        m_aviableSize.x = width;
-        m_desiredSize.x = 0;
-        MarkTransDirtyParent();
-    }
-
-    void ElementBase::SetAvailableHeight(float height) {
-        if (m_aviableSize.y == height)
-            return;
-        m_aviableSize.y = height;
-        m_desiredSize.y = 0;
+        m_sizeUnits[1] = unitY;
         MarkTransDirtyParent();
     }
 
@@ -506,10 +491,6 @@ namespace EngineCore::UI {
         return m_desiredPosition;
     }
 
-    Vector2 ElementBase::GetAviableSize() const {
-        return m_aviableSize;
-    }
-
     Vector2 ElementBase::GetContentSize() {
         Vector2 size = GetLocalSize();
         return Vector2(
@@ -520,6 +501,10 @@ namespace EngineCore::UI {
 
     Vector2 ElementBase::GetDesiredSize() const {
         return m_desiredSize;
+    }
+
+    const std::array<StyleUnit::Unit, 2>& ElementBase::GetSizeUnits() const {
+        return m_sizeUnits;
     }
 
     Vector2 ElementBase::GetSizeWithBorder() {
@@ -740,7 +725,7 @@ namespace EngineCore::UI {
 
     void ElementBase::MarkTransDirtyParent() const {
         //Marke the parent as dirty so it updates alle the child elements
-        // z.b. if width/height of this el changed. than the positions needs to recalculatet
+        // e.g. if width/height of this el changed. than the positions needs to recalculatet
         if (m_parentElementPtr) {
             m_parentElementPtr->MarkTransDirty();
             return;
@@ -847,23 +832,14 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::width, [](ElementBase* el, const StyleValue& val) {
                 if (float f; val.TryGetValue<float>(f, att::width)) {
-                    StyleUnit::Unit u = val.GetUnit(0);
-
-                    if (u == StyleUnit::Unit::Percent_A)
-                        el->SetAvailableWidth(f);
-                    else 
-                        el->SetDesiredWidth(f);
+                    el->SetDesiredWidth(f, val.GetUnit(0));
+                       
                 }
             });
 
             RegisterAttribute(att::height, [](ElementBase* el, const StyleValue& val) {
                 if (float f; val.TryGetValue<float>(f, att::height)) {
-                    StyleUnit::Unit u = val.GetUnit(0);
-
-                    if (u == StyleUnit::Unit::Percent_A)
-                        el->SetAvailableHeight(f);
-                    else
-                        el->SetDesiredHeight(f);
+                    el->SetDesiredHeight(f, val.GetUnit(0));
                 }
             });
 
