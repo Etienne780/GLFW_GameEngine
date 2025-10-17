@@ -70,25 +70,6 @@ namespace EngineCore::UI {
 				return false;
 
 			outValue = *val;
-			// calculate in unit
-			if (outUnit == "px") {
-				// nothing, already in pixels
-			}
-			else if (outUnit == "%w") {
-				outValue = element.GetParentWidth() * outValue / 100.0f;
-			}
-			else if (outUnit == "%h") {
-				outValue = element.GetParentHeight() * outValue / 100.0f;
-			}
-			else if (outUnit == "%a") {
-				// nothing, already in percent
-			}
-			else if (outUnit == "vh") {
-				outValue = element.GetViewportHeight() * outValue / 100.0f;
-			}
-			else if (outUnit == "vw") {
-				outValue = element.GetViewportWidth() * outValue / 100.0f;
-			}
 			return true;
 		}
 		Log::Warn("AttributeHelper: Invalid unit in style '{}', input:'{}'", 
@@ -327,6 +308,7 @@ namespace EngineCore::UI {
 				auto values = GetValues(val);
 				
 				if (values.size() <= maxInput && !values.empty()) {
+					// alg for filling empty slots looks asss
 					switch (maxInput)
 					{
 					case 1: {
@@ -382,7 +364,6 @@ namespace EngineCore::UI {
 					case 3: {
 						if (values.size() > 3)
 							break;
-						// alg for filling empty slots looks asss
 						errorType = 1;
 						if (values.size() == 1) {
 							float v;
