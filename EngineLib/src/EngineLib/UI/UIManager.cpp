@@ -181,6 +181,55 @@ namespace EngineCore {
         return m_stepUIByAmount;
     }
 
+    void UIManager::SetForceState(UIElementID id, UI::State state) {
+#ifndef NDEBUG
+        auto element = GetElement(id);
+        if (!element) {
+            Log::Error("UIManager: Cannot force state for element id '{}' — element not found!", id.value);
+            return;
+        }
+
+        m_forceStateMap[id] = state;
+
+        Log::Info("UIManager: Forced state for element '{}' (id={}) -> {}",
+            element->GetName(), id.value, StateToString(state));
+#else
+        // In release builds forcing states is not supported; warn caller
+        Log::Warn("UIManager::SetForceState called in release build — forcing states is only supported in debug builds.");
+#endif
+    }
+
+    void UIManager::RemoveForceState(UIElementID id) {
+#ifndef NDEBUG
+        auto it = m_forceStateMap.find(id);
+        if (it == m_forceStateMap.end()) {
+            Log::Warn("UIManager: Cannot remove forced state for element id {} — no forced state set.", id.value);
+            return;
+        }
+
+        auto element = GetElement(id);
+        if (element) {
+            Log::Info("UIManager: Removed forced state for element '{}' (id={}).", element->GetName(), id.value);
+        }
+        else {
+            Log::Info("UIManager: Removed forced state for element id {}.", id.value);
+        }
+        element->SetState(State::Normal);
+        m_forceStateMap.erase(it);
+#else
+        Log::Warn("UIManager::RemoveForceState called in release build — removing forced states is only supported in debug builds.");
+#endif
+    }
+
+    bool UIManager::TryGetForceState(UIElementID id, UI::State& outState) {
+        auto it = m_forceStateMap.find(id);
+        if (it == m_forceStateMap.end()) {
+            return false;
+        }
+        outState = m_forceStateMap.at(id);
+        return true;
+    }
+
     void UIManager::BeginRootElement() {
         // creates the base object and sets its base values
         m_rootElement = Begin<UI::Panel>();
@@ -292,8 +341,25 @@ namespace EngineCore {
     void UIManager::UpdateElementState() {
         using namespace UI;
 
+#ifndef NDEBUG
+        // forces the states of each element
+        for (auto& [id, state] : m_forceStateMap) {
+            auto element = GetElement(id);
+            element->SetState(state);
+        }
+#endif 
+
         std::shared_ptr<UI::ElementBase> element = nullptr;
         if (TryGetHoverElement(element)) {
+#ifndef NDEBUG
+            // forces the state of the current hoverd element (Only in debug builds)
+            if (UI::State out; TryGetForceState(element->GetID(), out)) {
+                m_lastChangeElement->SetState(State::Normal);
+                element->SetState(out);
+                m_lastChangeElement = element;
+                return;
+            }
+#endif 
             if (m_leftMouseDown) {
                 element->SetState(State::Pressed);
                 element->CallOnPress();

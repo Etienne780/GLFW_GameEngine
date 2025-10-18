@@ -4,7 +4,7 @@
 
 namespace EngineCore::UI {
 	
-    const char* StateToString(UI::State s) {
+    std::string StateToString(UI::State s) {
         switch (s) {
         case UI::State::Normal:   return "Normal";
         case UI::State::Hovered:  return "Hovered";

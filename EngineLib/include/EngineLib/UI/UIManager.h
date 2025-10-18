@@ -119,6 +119,10 @@ namespace EngineCore {
 		static void StepUIForward(int amount);
 		static int GetStepUIAmount();
 
+		static void SetForceState(UIElementID id, UI::State state);
+		static void RemoveForceState(UIElementID id);
+		static bool TryGetForceState(UIElementID id, UI::State& outState);
+
 	private:
 		UIManager() = default;
 		static inline bool m_isDebug = false;
@@ -135,6 +139,8 @@ namespace EngineCore {
 		static inline std::stack<std::shared_ptr<UI::ElementBase>> m_elementStack;// is used for creating ui hierarchy
 		// the element what stat was last modified
 		static inline std::shared_ptr<UI::ElementBase> m_lastChangeElement;
+		// map containg all elemetns that have a force state
+		static inline std::unordered_map<UIElementID, UI::State> m_forceStateMap;
 
 		// If true, the UI is scaled relative to the reference screen size
 		static inline bool m_enableUIScaling = false;
