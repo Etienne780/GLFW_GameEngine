@@ -500,15 +500,56 @@ namespace EngineCore {
 
         ImGui::Begin("UI Hierarchy", &m_uiInspectorWin);
 
-        // Create a child region that allows horizontal scrolling
-        ImGui::BeginChild("UIHierarchyChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+        bool frozen = UIManager::GetFreezUI();
 
+        // CollapsingHeader mit statischem Label
+        if (ImGui::CollapsingHeader("UI Controls##UIControlsHeader")) {
+            // Statusanzeige rechts neben dem Header
+            ImGui::SameLine();
+            ImGui::TextColored(frozen ? ImVec4(1, 0, 0, 1) : ImVec4(0, 1, 0, 1),
+                frozen ? "[Frozen]" : "[Running]");
+            
+            // Freeze toggle
+            if (ImGui::Checkbox("Freeze UI", &frozen)) {
+                UIManager::SetFreezUI(frozen);
+            }
+
+            // Step forward buttons (disabled if not frozen)
+            ImGui::BeginDisabled(!frozen);
+
+            if (ImGui::Button("Step UI Forward")) {
+                UIManager::StepUIForward();
+            }
+
+            static int stepAmount = 1;
+            ImGui::SameLine();
+            if (ImGui::Button("Step UI Forward x")) {
+                UIManager::StepUIForward(stepAmount);
+            }
+
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(75);
+            ImGui::InputInt("Step Amount", &stepAmount, 1, 10);
+
+            ImGui::EndDisabled();
+
+            // Display current step amount
+            ImGui::Text("Current Step Amount: %d", UIManager::GetStepUIAmount());
+        }
+        else {
+            // Statusanzeige rechts neben dem Header
+            ImGui::SameLine();
+            ImGui::TextColored(frozen ? ImVec4(1, 0, 0, 1) : ImVec4(0, 1, 0, 1),
+                frozen ? "[Frozen]" : "[Active]");
+        }
+
+        // --- UI Hierarchy ---
+        ImGui::BeginChild("UIHierarchyChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
         const auto& roots = UIManager::GetAllRoots();
         for (const auto& root : roots) {
             if (!root) continue;
             DrawUIElementNode(root);
         }
-
         ImGui::EndChild();
 
         auto pos = ImGui::GetWindowPos();
@@ -516,7 +557,6 @@ namespace EngineCore {
         m_uiHierarchyState.Set(pos.x, pos.y, size.x, size.y);
 
         ImGui::End();
-
         m_firstUIHierarchyWin = false;
     }
 

@@ -83,13 +83,10 @@ namespace EngineCore {
 		static float GetUIScaleFactor();
 		static RenderLayerID GetRenderLayer();
 		static size_t GetElementCount();
-		static bool GetDebug();
 
 		static void SetRootElementTransDirty();
 
 		static void SetUIRenderLayer(RenderLayerID layerID);
-
-		static void SetDebug(bool value);
 		/*
 		* @brief Enables or disables automatic UI scaling relative to the reference screen size. (default true)
 		* @param value True to enable scaling, false to disable.
@@ -111,9 +108,23 @@ namespace EngineCore {
 
 		static std::shared_ptr<UI::Style> GetElementBaseStyle();
 
+		// ============== Debug stuff ==============
+
+		static void SetDebug(bool value);
+		static bool GetDebug();
+
+		static void SetFreezUI(bool value);
+		static bool GetFreezUI();
+		static void StepUIForward();
+		static void StepUIForward(int amount);
+		static int GetStepUIAmount();
+
 	private:
 		UIManager() = default;
 		static inline bool m_isDebug = false;
+		static inline bool m_freezUI = false;
+		static inline int m_stepUIByAmount = 0;
+
 		static inline IDManager m_idManager;
 		static inline Renderer* m_renderer = nullptr;
 		static inline size_t m_elementCount = 0;
@@ -140,7 +151,7 @@ namespace EngineCore {
 		static inline bool m_leftMouseJustReleased = false;
 
 		static inline Matrix4x4 m_orthoMat;
-
+		
 		static void BeginRootElement();
 		static void EndRootElement();
 		

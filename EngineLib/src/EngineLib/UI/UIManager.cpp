@@ -112,10 +112,6 @@ namespace EngineCore {
         return m_elementCount;
     }
 
-    bool UIManager::GetDebug() {
-        return m_isDebug;
-    }
-
     void UIManager::SetRootElementTransDirty() {
         for (auto& element : m_roots) {
             element->MarkTransDirty();
@@ -125,10 +121,6 @@ namespace EngineCore {
     void UIManager::SetUIRenderLayer(RenderLayerID layerID) {
         m_renderLayerID = layerID;
     }
-
-	void UIManager::SetDebug(bool value) {
-		m_isDebug = value;
-	}
 
     void UIManager::SetUIScaling(bool value) {
         m_enableUIScaling = value;
@@ -156,6 +148,37 @@ namespace EngineCore {
         }();
 
         return baseStyle;
+    }
+
+    void UIManager::SetDebug(bool value) {
+        m_isDebug = value;
+    }
+
+    bool UIManager::GetDebug() {
+        return m_isDebug;
+    }
+
+    void UIManager::SetFreezUI(bool value) {
+        m_freezUI = value;
+    }
+
+    bool UIManager::GetFreezUI() {
+        return m_freezUI;
+    }
+
+    void UIManager::StepUIForward() {
+        StepUIForward(1);
+    }
+
+    void UIManager::StepUIForward(int amount) {
+        if (!m_freezUI)
+            Log::Warn("UIManager: StepUIForward called with amount {}, but UI is not frozen. Call will have no effect.", amount);
+
+        m_stepUIByAmount = amount;
+    }
+
+    int UIManager::GetStepUIAmount() {
+        return m_stepUIByAmount;
     }
 
     void UIManager::BeginRootElement() {
@@ -187,6 +210,17 @@ namespace EngineCore {
     }
 
     void UIManager::Update(int width, int height) {
+        // freezes updating of the UI
+        if (m_freezUI) {
+            // steps UI forward by set amount
+            if (m_stepUIByAmount > 0) {
+                m_stepUIByAmount--;
+            }
+            else {
+                return;
+            }
+        }
+
         if (m_windowSize.x != width || m_windowSize.y != height)
             WindowResize(width, height);
 
