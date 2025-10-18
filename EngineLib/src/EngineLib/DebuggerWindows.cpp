@@ -446,16 +446,7 @@ namespace EngineCore {
         std::string idStr = (id == ENGINE_INVALID_ID) ? "INVALID_ID" : std::to_string(id);
 
         // --- Add state to label ---
-        std::string stateStr;
-        switch (elem->GetState()) {
-        case UI::State::Normal:   stateStr = "Normal"; break;
-        case UI::State::Hovered:  stateStr = "Hovered"; break;
-        case UI::State::Pressed:  stateStr = "Pressed"; break;
-        case UI::State::Focused:  stateStr = "Focused"; break;
-        case UI::State::Disabled: stateStr = "Disabled"; break;
-        default:              stateStr = "Unknown"; break;
-        }
-
+        std::string stateStr = StateToString(elem->GetState());
         std::string label = "<" + name + " id=\"" + idStr + "\" state=\"" + stateStr + "\"";
 
         std::shared_ptr<UI::Style> style = elem->GetStyle();
