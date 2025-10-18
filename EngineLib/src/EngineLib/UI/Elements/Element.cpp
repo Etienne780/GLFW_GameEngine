@@ -656,7 +656,6 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::CallOnDrag() {
-        Log::Debug("On Drag called");
         if (m_onDrag)
             m_onDrag();
     }
