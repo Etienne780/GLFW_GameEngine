@@ -640,6 +640,27 @@ namespace EngineCore::UI {
         return m_worldTransform;
     }
 
+    void ElementBase::CallOnClick() {
+        if (m_onClick)
+            m_onClick();
+    }
+
+    void ElementBase::CallOnHover() {
+        if (m_onHover)
+            m_onHover();
+    }
+
+    void ElementBase::CallOnPress() {
+        if (m_onPress)
+            m_onPress();
+    }
+
+    void ElementBase::CallOnDrag() {
+        Log::Debug("On Drag called");
+        if (m_onDrag)
+            m_onDrag();
+    }
+
     void ElementBase::RegisterAttribute(const std::string& name, std::function<void(ElementBase*, const StyleValue&)> func) {
         m_registeredAttributes[FormatUtils::toLowerCase(name)] = func;
     }

@@ -122,6 +122,8 @@ namespace EngineCore {
 		static inline std::shared_ptr<UI::ElementBase> m_rootElement;
 		static inline std::vector<std::shared_ptr<UI::ElementBase>> m_roots;
 		static inline std::stack<std::shared_ptr<UI::ElementBase>> m_elementStack;// is used for creating ui hierarchy
+		// the element what stat was last modified
+		static inline std::shared_ptr<UI::ElementBase> m_lastChangeElement;
 
 		// If true, the UI is scaled relative to the reference screen size
 		static inline bool m_enableUIScaling = false;
@@ -131,6 +133,12 @@ namespace EngineCore {
 		// The current scale factor applied to the UI
 		static inline float m_uiScaleFactor = 1.0f;
 
+		static inline Vector2 m_mousePos{ 0, 0 };
+		static inline Vector2 m_mouseDelta{ 0, 0 };
+		static inline bool m_leftMouseDown = false;
+		static inline bool m_leftMouseJustDown = false;
+		static inline bool m_leftMouseJustReleased = false;
+
 		static inline Matrix4x4 m_orthoMat;
 
 		static void BeginRootElement();
@@ -139,7 +147,8 @@ namespace EngineCore {
 		static void WindowResize(int width, int height);
 
 		static void Update(int width, int height);
-		static void UpdateElementState(std::shared_ptr<UI::ElementBase> element, const Vector2& mousePos, bool mouseDown, bool mouseReleased);
+		static void UpdateInput();
+		static void UpdateElementState();
 		
 		static void ComputeLayout(std::shared_ptr<UI::ElementBase>& root);
 		static void PrecomputeDesiredPixels(std::shared_ptr<UI::ElementBase>& root);
@@ -165,6 +174,14 @@ namespace EngineCore {
 		* @return Shared pointer to the element if found, nullptr otherwise.
 		*/
 		static std::shared_ptr<UI::ElementBase> SearchElementInternal(std::vector<std::shared_ptr<UI::ElementBase>>& list, UIElementID elementID);
+		
+		/*
+		* @brief trys to get the current element that is hovered
+		*/
+		static bool TryGetHoverElement(std::shared_ptr<UI::ElementBase>& outElement);
+
+		static void GetHoverElementInternal(std::shared_ptr<UI::ElementBase>& outElement);
+
 		/**
 		* @brief Recursively builds a string representation of a UI element and its children.
 		* @param elementPtr Pointer to the element to process.

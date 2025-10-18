@@ -169,9 +169,10 @@ namespace EngineCore::UI {
         MaterialID m_materialID{ ENGINE_INVALID_ID };
         ShaderBindObject m_sbo;
 
-        Callback m_onClick;
-        Callback m_onHover;
-        Callback m_onPress;
+        Callback m_onClick = nullptr;
+        Callback m_onHover = nullptr;
+        Callback m_onPress = nullptr;
+        Callback m_onDrag = nullptr;
 
         /*
         * @brief Called every frame.
@@ -185,6 +186,11 @@ namespace EngineCore::UI {
         * @brief This function is called only once for every class. It registers all attributes this element can have and what they do.
         */
         virtual void RegisterAttributes() {};
+
+        void CallOnClick();
+        void CallOnHover();
+        void CallOnPress();
+        void CallOnDrag();
 
         void SetState(State state);
 
@@ -426,6 +432,11 @@ namespace EngineCore::UI {
 
         Derived* SetOnPress(Callback cb) {
             m_onPress = std::move(cb);
+            return static_cast<Derived*>(this);
+        }
+
+        Derived* SetOnDrag(Callback cb) {
+            m_onDrag = std::move(cb);
             return static_cast<Derived*>(this);
         }
     };

@@ -193,10 +193,8 @@ namespace EngineCore {
         if(m_enableUIScaling)
             m_uiScaleFactor = CalculateUIScaleFactor(width, height);
 
-        UpdateElementState(m_rootElement,
-            Input::GetMousePosition(),
-            Input::MouseJustPressed(MouseButton::LEFT),
-            Input::MouseJustReleased(MouseButton::LEFT));
+        UpdateInput();
+        UpdateElementState();
 
         ComputeLayout(m_rootElement);
         UpdateChild(m_rootElement);
@@ -249,29 +247,44 @@ namespace EngineCore {
         }
     }
 
-    void UIManager::UpdateElementState(std::shared_ptr<UI::ElementBase> element, const Vector2& mousePos, bool mouseDown, bool mouseReleased) {
+    void UIManager::UpdateInput() {
+        m_mousePos = Input::GetMousePosition();
+        m_mouseDelta = Input::GetMousePositionDelta();
+        m_leftMouseDown = Input::MousePressed(MouseButton::LEFT);
+        m_leftMouseJustDown = Input::MouseJustPressed(MouseButton::LEFT);
+        m_leftMouseJustReleased = Input::MouseJustReleased(MouseButton::LEFT);
+    }
+
+    void UIManager::UpdateElementState() {
         using namespace UI;
-        if (element->IsMouseOver(mousePos)) {
-            if (mouseDown) {
+
+        std::shared_ptr<UI::ElementBase> element = nullptr;
+        if (TryGetHoverElement(element)) {
+            if (m_leftMouseDown) {
                 element->SetState(State::Pressed);
+                element->CallOnPress();
+
+                if (m_mouseDelta.SquaredMagnitude() > 0) {
+                    element->CallOnDrag();
+                }
             }
-            else if (mouseReleased) {
-                if (element->GetState() == State::Pressed && element->m_onClick) {
-                    element->m_onClick();
+            else if (m_leftMouseJustReleased) {
+                if (element->GetState() == State::Pressed) {
+                    element->CallOnClick();
                 }
                 element->SetState(State::Hovered);
             }
             else {
                 element->SetState(State::Hovered);
+                element->CallOnHover();
             }
         }
-        else {
-            element->SetState(State::Normal);
+
+        if (m_lastChangeElement && m_lastChangeElement != element) {
+            m_lastChangeElement->SetState(State::Normal);
         }
 
-        for (auto& child : element->GetChildren()) {
-            UpdateElementState(child, mousePos, mouseDown, mouseReleased);
-        }
+        m_lastChangeElement = element;
     }
 
 
@@ -339,6 +352,28 @@ namespace EngineCore {
         return Algorithm::Search::GetLinearRecursive(list, 
             [id](UI::ElementBase& e) { return e.GetID() == id; }, 
             [](UI::ElementBase& e) -> std::vector<std::shared_ptr<UI::ElementBase>>& { return e.GetChildren(); });
+    }
+
+    bool UIManager::TryGetHoverElement(std::shared_ptr<UI::ElementBase>& outElement) {
+        bool found = false;
+        for (auto& child : m_rootElement->GetChildren()) {
+            if (child->IsMouseOver(m_mousePos)) {
+                found = true;
+                outElement = child;
+                GetHoverElementInternal(outElement);
+            }
+        }
+
+        return found;
+    }
+
+    void UIManager::GetHoverElementInternal(std::shared_ptr<UI::ElementBase>& outElement) {
+        for (auto& child : outElement->GetChildren()) {
+            if (child->IsMouseOver(m_mousePos)) {
+                outElement = child;
+                GetHoverElementInternal(outElement);
+            }
+        }
     }
 
     void UIManager::BuildHierarchyString(const UI::ElementBase* root, std::string& outStr) {

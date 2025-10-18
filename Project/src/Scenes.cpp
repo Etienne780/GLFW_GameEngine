@@ -23,7 +23,8 @@ void SetupUI() {
 	defaultStyleRow->Set(Attribute::layout, "center center");
 	defaultStyleRow->Set(Attribute::width, "50%w");
 	defaultStyleRow->Set(Attribute::height, "50%h");
-	defaultStyleRow->Set(Attribute::backgroundColor, "#000000A0");
+	defaultStyleRow->Set(Attribute::backgroundColor, "#000000a0");
+	defaultStyleRow->Set(State::Hovered, Attribute::backgroundColor, "#000000e0");
 
 	auto defaultStyleColumn = Style::Create("DefaultStyleColumn", defaultStyleRow);
 	defaultStyleColumn->Set(Attribute::layoutDirection, "column");
@@ -32,16 +33,20 @@ void SetupUI() {
 	auto style1 = Style::Create("style1");
 	style1->Set(Attribute::width, "50%a");
 	style1->Set(Attribute::height, "50%a");
-	style1->Set(Attribute::backgroundColor, "#ff0000");
+	style1->Set(Attribute::backgroundColor, "#8f0000");
+	style1->Set(State::Hovered, Attribute::backgroundColor, "#ff0000");
 
 	auto style2 = Style::Create("style2", style1);
-	style2->Set(Attribute::backgroundColor, "#00ff00");
+	style2->Set(Attribute::backgroundColor, "#008f00");
+	style2->Set(State::Hovered, Attribute::backgroundColor, "#00ff00");
 
 	auto style3 = Style::Create("style3", style1);
-	style3->Set(Attribute::backgroundColor, "#0000ff");
+	style3->Set(Attribute::backgroundColor, "#00008f");
+	style3->Set(State::Hovered, Attribute::backgroundColor, "#0000ff");
 
 	auto style4 = Style::Create("style4", style1);
-	style4->Set(Attribute::backgroundColor, "#ffff00");
+	style4->Set(Attribute::backgroundColor, "#b0b000");
+	style4->Set(State::Hovered, Attribute::backgroundColor, "#ffff00");
 
 	UI::SetDebug(true);
 	UI::Begin<Panel>(container); {
