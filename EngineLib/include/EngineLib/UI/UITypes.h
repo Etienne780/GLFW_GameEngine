@@ -35,6 +35,13 @@ namespace EngineCore::UI {
     };
 
     /**
+    * @brief Converts a UI::State enum value into a human-readable string.
+    * @param s The UI state to convert.
+    * @return const char* A string representing the given state ("Normal", "Hovered", etc.).
+    */
+    const char* StateToString(UI::State s);
+
+    /**
     * @brief Converts a string representation of a layout type to its corresponding enum value.
     * @param typeStr Input string representing the layout type (e.g., "flex", "grid").
     * @return Corresponding LayoutType enum, or LayoutType::Unknown if not recognized.

@@ -4,6 +4,17 @@
 
 namespace EngineCore::UI {
 	
+    const char* StateToString(UI::State s) {
+        switch (s) {
+        case UI::State::Normal:   return "Normal";
+        case UI::State::Hovered:  return "Hovered";
+        case UI::State::Pressed:  return "Pressed";
+        case UI::State::Focused:  return "Focused";
+        case UI::State::Disabled: return "Disabled";
+        default:                  return "Unknown";
+        }
+    }
+
     LayoutType ToLayoutType(const std::string& typeStr) {
         if (FormatUtils::toLowerCase(typeStr) == "none") return LayoutType::None;
         if (FormatUtils::toLowerCase(typeStr) == "flex") return LayoutType::Flex;
