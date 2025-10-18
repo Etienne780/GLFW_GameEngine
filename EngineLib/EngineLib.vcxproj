@@ -125,6 +125,7 @@
     <ClCompile Include="src\EngineLib\UI\StyleAttribute.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
     <ClCompile Include="src\EngineLib\UI\Style.cpp" />
+    <ClCompile Include="src\EngineLib\UI\UITypes.cpp" />
     <ClCompile Include="src\EngineLib\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>

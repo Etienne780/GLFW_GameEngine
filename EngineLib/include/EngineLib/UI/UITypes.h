@@ -9,7 +9,11 @@
 #include <CoreLib/Math/Vector4.h>
 
 namespace EngineCore::UI {
+    class ElementBase;
 
+    /**
+    * @brief Represents the visual interaction state of a UI element.
+    */
     enum class State {
         Normal,
         Hovered,
@@ -18,6 +22,9 @@ namespace EngineCore::UI {
         Disabled
     };
 
+    /**
+    * @brief Defines layout container behavior (similar to CSS layout types).
+    */
     enum class LayoutType {
         Unknown,
         None,
@@ -27,26 +34,34 @@ namespace EngineCore::UI {
         Grid
     };
 
-    inline LayoutType ToLayoutType(const std::string& typeStr) {
-        if (FormatUtils::toLowerCase(typeStr) == "none") return LayoutType::None;
-        if (FormatUtils::toLowerCase(typeStr) == "flex") return LayoutType::Flex;
-        if (FormatUtils::toLowerCase(typeStr) == "grid") return LayoutType::Grid;
-        Log::Error("UI::ToLayoutType: Unknown Layout type '{}', can not convert to LayoutType!", typeStr);
-        return LayoutType::Unknown;
-    }
+    /**
+    * @brief Converts a string representation of a layout type to its corresponding enum value.
+    * @param typeStr Input string representing the layout type (e.g., "flex", "grid").
+    * @return Corresponding LayoutType enum, or LayoutType::Unknown if not recognized.
+    */
+    LayoutType ToLayoutType(const std::string& typeStr);
 
     namespace Flex {
 
+        /**
+        * @brief Defines the primary axis direction for a flex container.
+        */
         enum class LayoutDirection {
             Row,
             Column,
         };
 
+        /**
+        * @brief Defines whether and how flex items wrap onto multiple lines.
+        */
         enum class LayoutWrap {
             None,
             Wrap
         };
 
+        /**
+        * @brief Defines alignment along the main or cross axis in a flex container.
+        */
         enum class LayoutAlign {
             Start,
             Center,
@@ -56,29 +71,30 @@ namespace EngineCore::UI {
             SpaceAround
         };
 
-        inline LayoutDirection ToLayoutDirection(const std::string& dirStr) {
-            if (FormatUtils::toLowerCase(dirStr) == "row") return LayoutDirection::Row;
-            if (FormatUtils::toLowerCase(dirStr) == "column") return LayoutDirection::Column;
-            return LayoutDirection::Row;
-        }
+        /**
+        * @brief Converts a string into a corresponding LayoutDirection enum value.
+        * @param dirStr Input string (e.g., "row", "column").
+        * @return Corresponding LayoutDirection enum, defaults to Row if invalid.
+        */
+        LayoutDirection ToLayoutDirection(const std::string& dirStr);
+        /**
+        * @brief Converts a string into a corresponding LayoutWrap enum value.
+        * @param wrapStr Input string (e.g., "wrap", "none").
+        * @return Corresponding LayoutWrap enum, defaults to None if invalid.
+        */
+        LayoutWrap ToLayoutWrap(const std::string& wrapStr);
 
-        inline LayoutWrap ToLayoutWrap(const std::string& wrapStr) {
-            if (FormatUtils::toLowerCase(wrapStr) == "wrap") return LayoutWrap::Wrap;
-            return LayoutWrap::None;
-        }
+        /**
+        * @brief Converts a string into a corresponding LayoutAlign enum value.
+        * @param alignStr Input string (e.g., "center", "end", "stretch").
+        * @return Corresponding LayoutAlign enum, defaults to Start if invalid.
+        */
+        LayoutAlign ToLayoutAlign(const std::string& alignStr);
 
-        inline LayoutAlign ToLayoutAlign(const std::string& alignStr) {
-            if (FormatUtils::toLowerCase(alignStr) == "center") return LayoutAlign::Center;
-            if (FormatUtils::toLowerCase(alignStr) == "end") return LayoutAlign::End;
-            if (FormatUtils::toLowerCase(alignStr) == "stretch") return LayoutAlign::Stretch;
-            if (FormatUtils::toLowerCase(alignStr) == "space-evenly") return LayoutAlign::SpaceEvenly;
-            if (FormatUtils::toLowerCase(alignStr) == "space-around") return LayoutAlign::SpaceAround;
-            return LayoutAlign::Start;
-        }
     }
 
     namespace StyleUnit {
-   
+
         /**
         * @brief contains different UI units
         */
@@ -94,9 +110,9 @@ namespace EngineCore::UI {
             // Available percent of the parent element for the given achses
             Percent_A,
             // viewport percent width
-            VW,
+            Percent_VW,
             // viewport percent height
-            VH,
+            Percent_VH,
             // seconds
             S,
             // milliseconds
@@ -104,152 +120,140 @@ namespace EngineCore::UI {
         };
     
         /**
+        * @brief Converts a numerical value expressed in a specific unit into pixels.
+        * @param value Numeric value to be converted.
+        * @param unit Unit type of the input value (e.g., PX, Percent_W, Percent_H).
+        * @param element Reference to the element used for relative size evaluation.
+        * @return Converted value in pixels.
+        */
+        float EvaluateSizeUnit(float value, Unit unit, const ElementBase& element);
+
+        /**
+        * @brief Converts a numerical value expressed in a specific unit into seconds.
+        * @param value Numeric value to be converted.
+        * @param unit Unit type of the input value (e.g., S, MS).
+        * @return Converted value in seconds.
+        */
+        float EvaluateTimeUnit(float value, Unit unit);
+
+        /**
         * @brief Returns a list of all size-related unit strings (e.g., px, %w, %h, etc.).
         * @return Reference to a vector containing all size unit strings.
         */
-        inline const std::vector<std::string>& GetSizeUnitStrings() {
-            static std::vector<std::string> sizeUnits = { "px", "%w", "%h", "%a", "vw", "vh" };
-            return sizeUnits;
-        }
+        const std::vector<std::string>& GetSizeUnitStrings();
     
         /**
         * @brief Returns a list of all time-related unit strings (e.g., s, ms).
         * @return Reference to a vector containing all time unit strings.
         */
-        inline const std::vector<std::string>& GetTimeUnitStrings() {
-            static std::vector<std::string> timeUnits = { "s", "ms" };
-            return timeUnits;
-        }
+        const std::vector<std::string>& GetTimeUnitStrings();
     
         /**
         * @brief Returns a list of all valid unit strings including both size and time units.
         * @return Reference to a vector containing all unit strings.
         */
-        inline const std::vector<std::string>& GetUnitStrings() {
-            static std::vector<std::string> units = [] {
-                std::vector<std::string> u;
-                auto& sizeUntis = GetSizeUnitStrings();
-                auto& timeUntis = GetTimeUnitStrings();
-    
-                u.reserve(sizeUntis.size() + timeUntis.size());
-                u.insert(u.end(), sizeUntis.begin(), sizeUntis.end());
-                u.insert(u.end(), timeUntis.begin(), timeUntis.end());
-                return u;
-                }();
-            return units;
-        }
+        const std::vector<std::string>& GetUnitStrings();
     
         /**
         * @brief Returns the number of available size units.
         * @return Number of size unit strings.
         */
-        inline size_t GetSizeUnitCount() {
-            return GetSizeUnitStrings().size();
-        }
+        size_t GetSizeUnitCount();
     
         /**
         * @brief Returns the number of available time units.
         * @return Number of time unit strings.
         */
-        inline size_t GetTimeUnitCount() {
-            return GetTimeUnitStrings().size();
-        }
+        size_t GetTimeUnitCount();
     
         /**
         * @brief Returns the total number of defined units (size + time).
         * @return Total count of unit strings.
         */
-        inline size_t GetUnitCount() {
-            return GetUnitStrings().size();
-        }
+        size_t GetUnitCount();
     
         /**
         * @brief Converts a unit string (e.g., "px", "vw") to its corresponding Unit enum value.
         * @param unit String representation of the unit.
         * @return Corresponding Unit enum, or Unit::Unknown if not recognized.
         */
-        inline Unit ToUnit(const std::string& unit) {
-            const auto& units = GetUnitStrings();
-            auto it = std::find(units.begin(), units.end(), unit);
-
-            if (it != units.end()) {
-                // calculate enum index
-                size_t index = std::distance(units.begin(), it);
-                return static_cast<Unit>(index + 1);
-                // + 1 because enum 0 = Unknown
-            }
-            return Unit::Unknown;
-        }
+        Unit ToUnit(const std::string& unit);
     
         /**
         * @brief Converts a Unit enum value back into its string representation.
         * @param unit The Unit enum to convert.
         * @return The corresponding string representation, or "Unknown" if invalid.
         */
-        inline std::string ToString(Unit unit) {
-            if (unit == Unit::Unknown) {
-                return "Unknown";
-            }
-            // - 1 because enum 0 = Unknown and in untis vector 0 = px
-            size_t index = static_cast<size_t>(unit) - 1;
-            const auto& units = GetUnitStrings();
-            if (index < units.size()) {
-                return units[index];
-            }
-            return "Unknown";
-        }
+        std::string ToString(Unit unit);
     
     }
 
     class StyleValue {
     public:
         using ValueVariant = std::variant<int, float, Vector2, Vector3, Vector4, std::string, std::vector<StyleValue>>;
+        /**
+        * @brief Defines the underlying type of the StyleValue.
+        */
         enum class Type { Int, Float, Vector2, Vector3, Vector4, String, Multi } valueType = Type::Float;
         std::vector<StyleUnit::Unit > unitTypes = { StyleUnit::Unit::Unknown };
         ValueVariant value;
 
-        // Default constructor: initializes with float 0.0f
-        StyleValue() : valueType(Type::Float), value(0.0f) {}
-
-        //Int constructor
-        StyleValue(int v, StyleUnit::Unit unit) : valueType(Type::Int), value(v), unitTypes({ unit }) {}
-
-        // Float constructor
-        StyleValue(float v, StyleUnit::Unit unit) : valueType(Type::Float), value(v), unitTypes({ unit }) {}
-
-        // Vector2 constructor
-        StyleValue(const Vector2& v, std::vector<StyleUnit::Unit> unit) : valueType(Type::Vector2), value(v), unitTypes(unit) {
-#ifndef NDEBUG
-            if (unit.size() != 2)
-                Log::Warn("StyleValue: expected exactly 2 units for Vector2, but got {}. "
-                    "This may lead to inconsistent behavior!", unit.size());
-#endif 
-        }
-
-        // Vector3 constructor
-        StyleValue(const Vector3& v, std::vector<StyleUnit::Unit> unit) : valueType(Type::Vector3), value(v), unitTypes(unit) {
-#ifndef NDEBUG
-            if (unit.size() != 3)
-                Log::Warn("StyleValue: expected exactly 3 units for Vector3, but got {}. "
-                    "This may lead to inconsistent behavior!", unit.size());
-#endif 
-        }
-
-        // Vector4 constructor
-        StyleValue(const Vector4& v, std::vector<StyleUnit::Unit> unit) : valueType(Type::Vector4), value(v), unitTypes(unit) {
-#ifndef NDEBUG
-            if (unit.size() != 4)
-                Log::Warn("StyleValue: expected exactly 4 units for Vector4, but got {}. "
-                    "This may lead to inconsistent behavior!", unit.size());
-#endif 
-        }
-
-        // String constructor
-        StyleValue(const std::string& s) : valueType(Type::String), value(s) {}
-        StyleValue(const char* s) : valueType(Type::String), value(std::string(s)) {}
-        // Multi constructor
-        StyleValue(std::vector<StyleValue> v) : valueType(Type::Multi), value(std::move(v)) {}
-
+        /**
+        * @brief Default constructor, initializes value as float(0.0f).
+        */
+        StyleValue();
+        /**
+        * @brief Constructs a StyleValue from an integer and a unit.
+        * @param v Integer value.
+        * @param unit Unit type.
+        */
+        StyleValue(int v, StyleUnit::Unit unit);
+        /**
+        * @brief Constructs a StyleValue from a float and a unit.
+        * @param v Float value.
+        * @param unit Unit type.
+        */
+        StyleValue(float v, StyleUnit::Unit unit);
+        /**
+        * @brief Constructs a StyleValue from a Vector2 and multiple units.
+        * @param v Vector2 value.
+        * @param unit Vector of corresponding units.
+        */
+        StyleValue(const Vector2& v, std::vector<StyleUnit::Unit> unit);
+        /**
+        * @brief Constructs a StyleValue from a Vector3 and multiple units.
+        * @param v Vector3 value.
+        * @param unit Vector of corresponding units.
+        */
+        StyleValue(const Vector3& v, std::vector<StyleUnit::Unit> unit);
+        /**
+        * @brief Constructs a StyleValue from a Vector4 and multiple units.
+        * @param v Vector4 value.
+        * @param unit Vector of corresponding units.
+        */
+        StyleValue(const Vector4& v, std::vector<StyleUnit::Unit> unit);
+        /**
+        * @brief Constructs a StyleValue from a string.
+        * @param s Input string.
+        */
+        StyleValue(const std::string& s);
+        /**
+        * @brief Constructs a StyleValue from a C-style string.
+        * @param s Input C-string.
+        */
+        StyleValue(const char* s);
+        /**
+        * @brief Constructs a StyleValue containing multiple StyleValue entries.
+        * @param v Vector of StyleValue elements.
+        */
+        StyleValue(std::vector<StyleValue> v);
+        /**
+        * @brief Attempts to retrieve the stored value as a specific type.
+        * @tparam T Expected value type.
+        * @param out Output reference to receive the value.
+        * @param attributeName Name of the attribute for logging.
+        * @return True if successful, false if type mismatch.
+        */
         template<typename T>
         bool TryGetValue(T& out, const std::string& attributeName) const {
             if (std::holds_alternative<T>(value)) {
@@ -261,31 +265,25 @@ namespace EngineCore::UI {
                 attributeName, GetReadableTypeName(typeid(T)), valueType);
             return false;
         }
-
-        StyleUnit::Unit GetUnit() const  {
-            return GetUnit(0);
-        }
-
-        StyleUnit::Unit GetUnit(size_t index) const {
-            if (index < unitTypes.size())
-                return unitTypes[index];
-            Log::Info("StyleValue: index '{}' out of bounds for size '{}' (Type='{}', Units={})",
-                index, unitTypes.size(), valueType, unitTypes);
-            return StyleUnit::Unit::Unknown;
-        }
+        /**
+        * @brief Returns the unit associated with this value.
+        * @return The primary StyleUnit::Unit value.
+        */
+        StyleUnit::Unit GetUnit() const;
+        /**
+        * @brief Returns the unit at a specific index for multi-unit values.
+        * @param index Index of the unit to retrieve.
+        * @return The StyleUnit::Unit at the given index.
+        */
+        StyleUnit::Unit GetUnit(size_t index) const;
 
     private:
-        // Helper: Returns a readable string for the given std::type_info
-        static const char* GetReadableTypeName(const std::type_info& type) {
-            if (type == typeid(int)) return "int";
-            if (type == typeid(float)) return "float";
-            if (type == typeid(Vector2)) return "Vector2";
-            if (type == typeid(Vector3)) return "Vector3";
-            if (type == typeid(Vector4)) return "Vector4";
-            if (type == typeid(std::string)) return "string";
-            if (type == typeid(std::vector<StyleValue>)) return "StyleValue[]";
-            return "unknown";
-        }
+        /**
+        * @brief Helper function that returns a readable type name for type_info.
+        * @param type Type information.
+        * @return C-string representing the readable type name.
+        */
+        static const char* GetReadableTypeName(const std::type_info& type);
     };
 
 }
