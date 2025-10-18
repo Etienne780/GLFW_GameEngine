@@ -3,6 +3,8 @@
 #include <CoreLib/FormatUtils.h>
 #include <CoreLib/Log.h>
 
+#include "EngineLib/UI/Elements/Element.h"
+#include "EngineLib/UI/Style.h"
 #include "EngineLib/Renderer.h"
 #include "EngineLib/Input.h"
 #include "EngineLib/UI/UITypes.h"
@@ -15,9 +17,12 @@ namespace EngineCore {
 	void UIManager::Init() {
         m_renderer = Renderer::GetInstance();
         UI::Init::InitAttributes();
+       
+        BeginRootElement();
 	}
 
 	void UIManager::Shutdown() {
+        EndRootElement();
 	}
 
 	void UIManager::End() {
@@ -69,6 +74,7 @@ namespace EngineCore {
 		}
 
 		m_roots.clear();
+        BeginRootElement();
 	}
 
 	std::string UIManager::GetUIHierarchyString() {
@@ -76,7 +82,7 @@ namespace EngineCore {
 		hierarchyString.append("UI Hierarchy:\n");
 
 		for (const auto& elementPtr : m_roots) {
-			BuildHierarchyString(elementPtr.get(), hierarchyString, 0);
+			BuildHierarchyString(elementPtr.get(), hierarchyString);
 		}
 
 		return hierarchyString;
@@ -152,8 +158,30 @@ namespace EngineCore {
         return baseStyle;
     }
 
+    void UIManager::BeginRootElement() {
+        // creates the base object and sets its base values
+        m_rootElement = Begin<UI::Panel>();
+        m_rootElement->SetLayoutSize(m_windowSize);
+
+        // updates the root element once
+        m_rootElement->UpdateLayoutSize();
+        m_rootElement->UpdateLayoutPosition();
+        m_rootElement->UpdateWorldTransform();
+    }
+
+    void UIManager::EndRootElement() {
+        End();
+        m_rootElement = nullptr;
+    }
+
     void UIManager::WindowResize(int width, int height) {
         m_windowSize.Set(static_cast<float>(width), static_cast<float>(height));
+        m_rootElement->SetLayoutSize(m_windowSize);
+        // recalculates the root element
+        m_rootElement->UpdateLayoutSize();
+        m_rootElement->UpdateLayoutPosition();
+        m_rootElement->UpdateWorldTransform();
+
         CalculateOrthograpicMatrix(width, height);
         SetRootElementTransDirty();
     }
@@ -165,14 +193,52 @@ namespace EngineCore {
         if(m_enableUIScaling)
             m_uiScaleFactor = CalculateUIScaleFactor(width, height);
 
-        for (auto& el : m_roots) {
-            UpdateElementState(el, 
-                Input::GetMousePosition(), 
-                Input::MouseJustPressed(MouseButton::LEFT), 
-                Input::MouseJustReleased(MouseButton::LEFT));
+        UpdateElementState(m_rootElement,
+            Input::GetMousePosition(),
+            Input::MouseJustPressed(MouseButton::LEFT),
+            Input::MouseJustReleased(MouseButton::LEFT));
 
-            el->UpdateImpl();
-            UpdateChild(el);
+        ComputeLayout(m_rootElement);
+        UpdateChild(m_rootElement);
+    }
+
+    void UIManager::ComputeLayout(std::shared_ptr<UI::ElementBase>& root) {
+        // updates the scale of every element that is dirty
+        UpdateScales(root);
+
+        // updates the position of each element with the newly calculated size of each element
+        UpdatePositions(root);
+    }
+
+
+    void UIManager::PrecomputeDesiredPixels(std::shared_ptr<UI::ElementBase>& root) {
+        for (auto& child : root->GetChildren()) {
+            child->CalculateDesiredPixels();
+        }
+    }
+
+    void UIManager::UpdateScales(std::shared_ptr<UI::ElementBase>& root) {
+        PrecomputeDesiredPixels(root);
+
+        for (auto& child : root->GetChildren()) {
+            if (child->IsTransformDirty()) {
+                child->UpdateLayoutSize();
+            }
+
+            UpdateScales(child);
+        }
+    }
+
+    void UIManager::UpdatePositions(std::shared_ptr<UI::ElementBase>& root) {
+        for (auto& child : root->GetChildren()) {
+            if (child->IsTransformDirty()) {
+                child->UpdateLayoutPosition();
+                child->UpdateWorldTransform();
+
+                child->SetTransformDirty(false);
+            }
+
+            UpdatePositions(child);
         }
     }
 
@@ -275,47 +341,67 @@ namespace EngineCore {
             [](UI::ElementBase& e) -> std::vector<std::shared_ptr<UI::ElementBase>>& { return e.GetChildren(); });
     }
 
-    void UIManager::BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level) {
-        std::string indent(level * 2, ' ');
+    void UIManager::BuildHierarchyString(const UI::ElementBase* root, std::string& outStr) {
+        struct StackEntry {
+            const UI::ElementBase* element;
+            int level;
+            bool closing; // false = open tag, true = closing tag
+        };
 
-        unsigned int id = elementPtr->GetID().value;
-        std::string idStr = (id == ENGINE_INVALID_ID) ? "INVALID_ID" : std::to_string(id);
+        std::vector<StackEntry> stack;
+        stack.push_back({ root, 0, false });
 
-        bool hasChildren = (elementPtr->GetChildCount() > 0);
+        while (!stack.empty()) {
+            StackEntry current = stack.back();
+            stack.pop_back();
 
-        // Collect style attributes
-        std::string styleStr;
-        std::shared_ptr<UI::Style> style = elementPtr->GetStyle();
-        if (style) {
-            try {
-                const auto& attributes = style->GetAllState(elementPtr->GetState());
-                // if style has to many attributes display the style name
-                styleStr += " style=\"" + style->GetName() + "\"";
-                if (attributes.size() <= 5) {
-                    for (const auto& [name, styleVal] : attributes) {
-                        styleStr += " " + name + "=\"" + styleVal + "\"";
+            std::string indent(current.level * 2, ' ');
+            const auto* elementPtr = current.element;
+
+            if (current.closing) {
+                outStr.append(indent);
+                outStr.append("</" + elementPtr->GetName() + ">\n");
+                continue;
+            }
+
+            unsigned int id = elementPtr->GetID().value;
+            std::string idStr = (id == ENGINE_INVALID_ID) ? "INVALID_ID" : std::to_string(id);
+
+            bool hasChildren = (elementPtr->GetChildCount() > 0);
+
+            std::string styleStr;
+            std::shared_ptr<UI::Style> style = elementPtr->GetStyle();
+            if (style) {
+                try {
+                    const auto& attributes = style->GetAllState(elementPtr->GetState());
+                    styleStr += " style=\"" + style->GetName() + "\"";
+                    if (attributes.size() <= 5) {
+                        for (const auto& [name, styleVal] : attributes) {
+                            styleStr += " " + name + "=\"" + styleVal + "\"";
+                        }
                     }
                 }
+                catch (const std::exception& e) {
+                    Log::Error("Style conversion error: {}", e.what());
+                }
             }
-            catch (const std::exception& e) {
-                Log::Error("Style conversion error: {}", e.what());
+
+            outStr.append(indent);
+            outStr.append("<" + elementPtr->GetName() + " id=\"" + idStr + "\"" + styleStr);
+
+            if (!hasChildren) {
+                outStr.append(" />\n");
+                continue;
+            }
+
+            outStr.append(">\n");
+
+            stack.push_back({ elementPtr, current.level, true });
+            const auto& children = elementPtr->GetChildren();
+            for (auto it = children.rbegin(); it != children.rend(); ++it) {
+                stack.push_back({ it->get(), current.level + 1, false });
             }
         }
-
-        // Start Tag
-        outStr.append(indent);
-        outStr.append("<" + elementPtr->GetName() + " id=\"" + idStr + "\"" + styleStr + ((hasChildren) ? ">\n" : " />\n"));
-
-        if (!hasChildren) return;
-
-        // Children
-        for (const auto& child : elementPtr->GetChildren()) {
-            BuildHierarchyString(child.get(), outStr, level + 1);
-        }
-
-        // End Tag
-        outStr.append(indent);
-        outStr.append("</" + elementPtr->GetName() + ">\n");
     }
 
     Matrix4x4* UIManager::GetOrthograpicMatrixPtr() {

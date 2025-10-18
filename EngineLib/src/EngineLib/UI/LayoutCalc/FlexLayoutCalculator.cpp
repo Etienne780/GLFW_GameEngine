@@ -21,16 +21,14 @@ namespace EngineCore::UI {
         float parentSizeMinor = (major != Axis::X) ? parent->GetContentSize().x : parent->GetContentSize().y;
 
         float totalSizeMajor = (major == Axis::X) ? element->ComputeSiblingsTotalLayoutSize().x : element->ComputeSiblingsTotalLayoutSize().y;
-        float majorAvaibleSize = (isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
-        float minorAvaibleSize = (!isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
 
         float majorDesiredPosition = (isParentLayoutDirRow) ? element->GetDesiredPosition().x : element->GetDesiredPosition().y;
         float minorDesiredPosition = (!isParentLayoutDirRow) ? element->GetDesiredPosition().x : element->GetDesiredPosition().y;
 
         AxisLayout majorAxis{ MAJOR_AXIS, major, parent->GetLayoutMajor(), parentWrap, parentSizeMajor,
-          totalSizeMajor, majorDesiredPosition, majorAvaibleSize };
+          totalSizeMajor, majorDesiredPosition };
         AxisLayout minorAxis{ MINOR_AXIS, minor, parent->GetLayoutMinor(), parentWrap, parentSizeMinor,
-            0, minorDesiredPosition, minorAvaibleSize };
+            0, minorDesiredPosition };
 
         Vector4 margin = element->GetMargin();
         float marginMajorStart = (isParentLayoutDirRow) ? margin.w : margin.x;
@@ -106,20 +104,25 @@ namespace EngineCore::UI {
         Axis major = (isParentLayoutDirRow) ? Axis::X : Axis::Y;
         Axis minor = (!isParentLayoutDirRow) ? Axis::X : Axis::Y;
 
-        float parentSizeMajor = (major == Axis::X) ? parent->GetContentSize().x : parent->GetContentSize().y;
-        float parentSizeMinor = (major != Axis::X) ? parent->GetContentSize().x : parent->GetContentSize().y;
+        Vector2 parentSize = parent->GetContentSize();
+        float parentSizeMajor = (major == Axis::X) ? parentSize.x : parentSize.y;
+        float parentSizeMinor = (major != Axis::X) ? parentSize.x : parentSize.y;
         
-        float totalSizeMajor = (major == Axis::X) ? element->ComputeSiblingsTotalDesiredSize().x : element->ComputeSiblingsTotalDesiredSize().y;
-        float majorAvaibleSize = (isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
-        float minorAvaibleSize = (!isParentLayoutDirRow) ? element->GetAviableSize().x : element->GetAviableSize().y;
+        float totalPixelSizeMajor = (major == Axis::X) ? element->ComputeSiblingsTotalDesiredPixelSize().x : element->ComputeSiblingsTotalDesiredPixelSize().y;
+        auto unitArray = element->GetSizeUnits();
+        StyleUnit::Unit majorUnit = (isParentLayoutDirRow) ? unitArray[0] : unitArray[1];
+        StyleUnit::Unit minorUnit = (!isParentLayoutDirRow) ? unitArray[0] : unitArray[1];
 
-        float majorDesiredSize = (isParentLayoutDirRow) ? element->GetDesiredSize().x : element->GetDesiredSize().y;
-        float minorDesiredSize = (!isParentLayoutDirRow) ? element->GetDesiredSize().x : element->GetDesiredSize().y;
+        Vector2 majorSize = (majorUnit == StyleUnit::Unit::Percent_A) ? element->GetDesiredSize() : element->GetDesiredPixelSize();
+        Vector2 minorSize = (minorUnit == StyleUnit::Unit::Percent_A) ? element->GetDesiredSize() : element->GetDesiredPixelSize();
+
+        float majorDesiredPixelSize = (isParentLayoutDirRow) ? majorSize.x : majorSize.y;
+        float minorDesiredPixelSize = (!isParentLayoutDirRow) ? minorSize.x : minorSize.y;
 
         AxisLayout majorAxis{ MAJOR_AXIS, major, parent->GetLayoutMajor(), parentWrap, parentSizeMajor,
-            totalSizeMajor, majorDesiredSize, majorAvaibleSize };
+            totalPixelSizeMajor, majorDesiredPixelSize, majorUnit };
         AxisLayout minorAxis{ MINOR_AXIS, minor, parent->GetLayoutMinor(), parentWrap, parentSizeMinor,
-            0, minorDesiredSize, minorAvaibleSize };
+            0, minorDesiredPixelSize, minorUnit };
     
         Vector4 margin = element->GetMargin();
         float marginMajorStart = (isParentLayoutDirRow) ? margin.w : margin.x;
@@ -140,16 +143,17 @@ namespace EngineCore::UI {
         // Calculates the amount of children that will be stretched
         size_t cStretchCountMajor = 0, cAvaibleStretchCountMajor = 0;
         for (const auto& c : parent->GetChildren()) {
+            auto units = c->GetSizeUnits();
             if (isParentLayoutDirRow) {
                 // major axis X
-                if (c->GetAviableSize().x >= 0.0f)
+                if (units[0] == StyleUnit::Unit::Percent_A)
                     cAvaibleStretchCountMajor++;
                 else if (c->GetDesiredSize().x <= 0.0f)
                     cStretchCountMajor++;
             }
             else {
                 // major axis Y
-                if (c->GetAviableSize().y >= 0.0f)
+                if (units[1] == StyleUnit::Unit::Percent_A)
                     cAvaibleStretchCountMajor++;
                 else if (c->GetDesiredSize().y <= 0.0f)
                     cStretchCountMajor++;
@@ -239,14 +243,14 @@ namespace EngineCore::UI {
 
         float result = m_desired;
 
-        if (m_availableSize >= 0.0f) {
+        if (m_unit == StyleUnit::Unit::Percent_A) {
             if (avaibleStretchCount > 0 && m_isMajorAxis) {
                 float usableSpace = m_parentSize - m_totalChildrenSize;
-                float adaptiveSize = ((usableSpace / avaibleStretchCount) * (m_availableSize / 100.0f));
+                float adaptiveSize = ((usableSpace / avaibleStretchCount) * (m_desired / 100.0f));
                 result = std::max(adaptiveSize, 0.0f);
             }
             else if (!m_isMajorAxis) {
-                result = std::max(m_parentSize * (m_availableSize / 100.0f), 0.0f);
+                result = std::max(m_parentSize * (m_desired / 100.0f), 0.0f);
             }
         }
         else if (m_align == EngineCore::UI::Flex::LayoutAlign::Stretch) {

@@ -92,6 +92,9 @@ namespace EngineCore::UI {
         Vector2 GetContentSize();
         // style size
         Vector2 GetDesiredSize() const;
+        // style size in pixels
+        Vector2 GetDesiredPixelSize() const;
+        // unit of each axis (x, y)
         const std::array<StyleUnit::Unit, 2>& GetSizeUnits() const;
         // content + border
         Vector2 GetSizeWithBorder();
@@ -133,7 +136,7 @@ namespace EngineCore::UI {
         * @brief Computes the total (Desired + border + margin) size of all sibling elements except this element.
         * @return A Vector2 representing the summed margin size of the siblings.
         */
-        Vector2 ComputeSiblingsTotalDesiredSize() const;
+        Vector2 ComputeSiblingsTotalDesiredPixelSize() const;
 
         /**
         * @brief Computes the total (Layout + border + margin)  size of all sibling elements except this element.
@@ -308,6 +311,10 @@ namespace EngineCore::UI {
     private:
         // Gets called after construction of this element
         void Init();
+        /*
+        * @brief sets all params of this element to default values. NEEDS to be expandet on if new params of the shader get added
+        */
+        void InitShaderBindObject();
 
         static inline bool m_attributesRegistered = false;
         static inline FlexLayoutCalculator s_flexCalculator;
@@ -346,6 +353,7 @@ namespace EngineCore::UI {
 
         // Style-driven size (content box size from style, before layout adjustments)
         Vector2 m_desiredSize{ 0, 0 };
+        Vector2 m_desiredPixelSize{ 0, 0 };
         std::array<StyleUnit::Unit, 2> m_sizeUnits{ StyleUnit::Unit::PX, StyleUnit::Unit::PX };
         // order: top, right, bottom, left
         Vector4 m_padding{ 0, 0, 0, 0 };
@@ -388,10 +396,21 @@ namespace EngineCore::UI {
         void SetParent(ElementBase* elementPtr, size_t indexPos);
         void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
         void SetStyleAttributes();
+        void SetLayoutSize(const Vector2& size);
+        void SetLayoutSize(float x, float y);
+        /*
+        * @brief Calculates the desired pixels for each element. except unit %a
+        * %a needs to be Calculated by the LayoutCalculater
+        */
+        void CalculateDesiredPixels();
+
+        bool IsTransformDirty();
+        void SetTransformDirty(bool value);
     };
 
     template <typename Derived>
     class Element : public ElementBase {
+        friend class UIManager;
     public:
         using ElementBase::ElementBase;
 

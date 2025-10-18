@@ -188,6 +188,11 @@ namespace EngineCore::UI {
 		if (m_dirtyCallbackInter.empty() && m_dirtyCallback.empty())
 			return;
 
+#ifndef NDEBUG
+		if (UIManager::GetDebug())
+			Log::Debug("Style: called Dirt Callbacks with '{}' Inter and '{}' normal", m_dirtyCallbackInter.size(), m_dirtyCallback.size());
+#endif
+
 		if (m_dirtyCallbackInter.size() > 10 && m_dirtyCallback.size() > 10) {
 			std::vector<Subscriber<StyleDirtyCallback>> callbacks;
 			callbacks.reserve(m_dirtyCallbackInter.size() + m_dirtyCallback.size());
@@ -210,11 +215,6 @@ namespace EngineCore::UI {
 					sub.callback();
 			}
 		}
-
-#ifndef NDEBUG
-		if(UIManager::GetDebug())
-			Log::Debug("Style: called Dirt Callbacks with '{}' Inter and '{}' normal", m_dirtyCallbackInter.size(), m_dirtyCallback.size());
-#endif
 	}
 
 }

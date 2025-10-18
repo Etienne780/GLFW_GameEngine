@@ -31,23 +31,28 @@ namespace EngineCore::UI {
             float m_marginEnd = 0;
             float m_borderStart = 0;
             float m_borderEnd = 0;
-            // can be desired position or size
             float m_desired;
-            // avaible size is in the amount of percent that the element wants to fill
-            float m_availableSize;
+            StyleUnit::Unit m_unit = StyleUnit::Unit::PX;
 
-            AxisLayout(bool isMajorAxis, Axis axis, Flex::LayoutAlign align, bool wrap, float parentSize,
-                float totalChildrenSize, float desiredSize, float availableSize)
-                : m_isMajorAxis(isMajorAxis), m_axis(axis), m_align(align), m_wrap(wrap), m_parentSize(parentSize), 
-                m_totalChildrenSize(totalChildrenSize), m_desired(desiredSize), m_availableSize(availableSize) {
+
+            inline AxisLayout(bool isMajorAxis, Axis axis, Flex::LayoutAlign align, bool wrap, float parentSize,
+                float totalChildrenSize, float desired)
+                : m_isMajorAxis(isMajorAxis), m_axis(axis), m_align(align), m_wrap(wrap), m_parentSize(parentSize),
+                m_totalChildrenSize(totalChildrenSize), m_desired(desired) {
             }
 
-            void SetMargin(float start, float end) {
+            inline AxisLayout(bool isMajorAxis, Axis axis, Flex::LayoutAlign align, bool wrap, float parentSize,
+                float totalChildrenSize, float desired, StyleUnit::Unit unit)
+                : m_isMajorAxis(isMajorAxis), m_axis(axis), m_align(align), m_wrap(wrap), m_parentSize(parentSize), 
+                m_totalChildrenSize(totalChildrenSize), m_desired(desired), m_unit(unit) {
+            }
+
+            inline void SetMargin(float start, float end) {
                 m_marginStart = start;
                 m_marginEnd = end;
             }
 
-            void SetBorder(float start, float end) {
+            inline void SetBorder(float start, float end) {
                 m_borderStart = start;
                 m_borderEnd = end;
             }

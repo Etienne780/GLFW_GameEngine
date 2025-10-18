@@ -119,6 +119,7 @@ namespace EngineCore {
 		static inline size_t m_elementCount = 0;
 		static inline RenderLayerID m_renderLayerID{ ENGINE_INVALID_ID };
 
+		static inline std::shared_ptr<UI::ElementBase> m_rootElement;
 		static inline std::vector<std::shared_ptr<UI::ElementBase>> m_roots;
 		static inline std::stack<std::shared_ptr<UI::ElementBase>> m_elementStack;// is used for creating ui hierarchy
 
@@ -132,11 +133,21 @@ namespace EngineCore {
 
 		static inline Matrix4x4 m_orthoMat;
 
+		static void BeginRootElement();
+		static void EndRootElement();
+		
 		static void WindowResize(int width, int height);
-		// Updates the scale and states of the UI::Element
+
 		static void Update(int width, int height);
-		static void UpdateChild(std::shared_ptr<UI::ElementBase>& element);
 		static void UpdateElementState(std::shared_ptr<UI::ElementBase> element, const Vector2& mousePos, bool mouseDown, bool mouseReleased);
+		
+		static void ComputeLayout(std::shared_ptr<UI::ElementBase>& root);
+		static void PrecomputeDesiredPixels(std::shared_ptr<UI::ElementBase>& root);
+		static void UpdateScales(std::shared_ptr<UI::ElementBase>& root);
+		static void UpdatePositions(std::shared_ptr<UI::ElementBase>& root);
+
+		static void UpdateChild(std::shared_ptr<UI::ElementBase>& element);
+
 		// Sends the Draw Commands of the UI::Elements
 		static void SendDrawCommands();
 		static void SendChildDrawCommands(std::shared_ptr<UI::ElementBase> element);
@@ -160,7 +171,7 @@ namespace EngineCore {
 		* @param outStr Reference to the output string to append hierarchy information to.
 		* @param level The current depth in the hierarchy, used for indentation.
 		*/
-		static void BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr, int level);
+		static void BuildHierarchyString(const UI::ElementBase* elementPtr, std::string& outStr);
 
 		static Matrix4x4* GetOrthograpicMatrixPtr();
 	};

@@ -32,6 +32,15 @@ namespace EngineCore::UI {
         // inits the start propetys
         RegisterAttributesImpl();
         SetStyleAttributes();
+        InitShaderBindObject();
+    }
+
+    void ElementBase::InitShaderBindObject() {
+        m_sbo.SetParam("uBackgroundColor", m_backgroundColor);
+        m_sbo.SetParam("uBorderColor", m_borderColor);
+        m_sbo.SetParam("uBorderRadius", m_borderRadius);
+        m_sbo.SetParam("uBorderWidth", m_borderSize);
+        m_sbo.SetParam("uSize", m_layoutSize);
     }
 
     const std::string& ElementBase::GetName() const {
@@ -463,6 +472,15 @@ namespace EngineCore::UI {
         m_duration = duration;
     }
 
+    void ElementBase::SetLayoutSize(const Vector2& size) {
+        SetLayoutSize(size.x, size.y);
+    }
+
+    void ElementBase::SetLayoutSize(float x, float y) {
+        m_layoutSize.Set(x, y);
+        MarkTransDirtyParent();
+    }
+
     LayoutType ElementBase::GetLayoutType() const {
         return m_layoutType;
     }
@@ -501,6 +519,10 @@ namespace EngineCore::UI {
 
     Vector2 ElementBase::GetDesiredSize() const {
         return m_desiredSize;
+    }
+
+    Vector2 ElementBase::GetDesiredPixelSize() const {
+        return m_desiredPixelSize;
     }
 
     const std::array<StyleUnit::Unit, 2>& ElementBase::GetSizeUnits() const {
@@ -623,18 +645,8 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::UpdateLayoutPosition() {
-        if (!m_parentElementPtr) {
-#ifndef NDEBUG
-            if (UIManager::GetDebug())
-                Log::Debug("ElementBase: Element parent '{}'({}) Updatet position from {} to {}",
-                    m_elementName, m_id.value, m_layoutPosition, m_desiredPosition);
-#endif
-            m_layoutPosition = m_desiredPosition;
+        if (!m_parentElementPtr)
             return;
-        }
-#ifndef NDEBUG
-        auto prePos = m_layoutPosition;
-#endif
 
         // resets position for consistency
         m_layoutPosition.Set(0, 0);
@@ -649,27 +661,11 @@ namespace EngineCore::UI {
         case LayoutType::None:
             break;
         }
-
-#ifndef NDEBUG
-        if (UIManager::GetDebug())
-            Log::Debug("ElementBase: Element '{}'({}) Updatet position from {} to {}",
-                m_elementName, m_id.value, prePos, m_layoutPosition);
-#endif
     }
 
     void ElementBase::UpdateLayoutSize() {
-        if (!m_parentElementPtr) {
-#ifndef NDEBUG
-            if (UIManager::GetDebug())
-                Log::Debug("ElementBase: Element parent '{}'({}) Updatet size from {} to {}",
-                    m_elementName, m_id.value, m_layoutSize, m_desiredSize);
-#endif
-            m_layoutSize = m_desiredSize;
+        if (!m_parentElementPtr)
             return;
-        }
-#ifndef NDEBUG
-        auto preSize = m_layoutSize;
-#endif
 
         // resets size for consistency
         m_layoutSize.Set(0, 0);
@@ -688,12 +684,6 @@ namespace EngineCore::UI {
         }
 
         m_sbo.SetParam("uSize", m_layoutSize);
-
-#ifndef NDEBUG
-        if (UIManager::GetDebug())
-            Log::Debug("ElementBase: Element '{}'({}) Updatet size from {} to {}",
-                m_elementName, m_id.value, preSize, m_layoutSize);
-#endif
     }
 
     void ElementBase::UpdateWorldTransform() {
@@ -745,14 +735,6 @@ namespace EngineCore::UI {
         if (m_styleDirty || m_baseStyleDirty) {
             SetStyleAttributes();
             m_styleDirty = false;
-        }
-
-        // IMPORTANT: update position after size
-        if (m_transformDirty) {
-            UpdateLayoutSize();
-            UpdateLayoutPosition();
-            UpdateWorldTransform();
-            m_transformDirty = false;
         }
 
         Update();
@@ -833,7 +815,6 @@ namespace EngineCore::UI {
             RegisterAttribute(att::width, [](ElementBase* el, const StyleValue& val) {
                 if (float f; val.TryGetValue<float>(f, att::width)) {
                     el->SetDesiredWidth(f, val.GetUnit(0));
-                       
                 }
             });
 
@@ -999,7 +980,7 @@ namespace EngineCore::UI {
         }
     }
 
-    Vector2 ElementBase::ComputeSiblingsTotalDesiredSize() const {
+    Vector2 ElementBase::ComputeSiblingsTotalDesiredPixelSize() const {
         if (!m_parentElementPtr) return Vector2();
 
         auto& siblings = m_parentElementPtr->GetChildren();
@@ -1008,7 +989,7 @@ namespace EngineCore::UI {
         for (auto& child : siblings) {
             // ignors this element 
             if (child->GetID() != this->m_id) {
-                totalSize += child->m_desiredSize + child->m_borderSize + child->m_margin;
+                totalSize += child->m_desiredPixelSize + child->m_borderSize + child->m_margin;
             }
         }
         return totalSize;
@@ -1027,6 +1008,27 @@ namespace EngineCore::UI {
             }
         }
         return totalSize;
+    }
+
+    void ElementBase::CalculateDesiredPixels() {
+        if (m_sizeUnits[0] != StyleUnit::Unit::Percent_A)
+            m_desiredPixelSize.x = StyleUnit::EvaluateSizeUnit(m_desiredSize.x, m_sizeUnits[0], *this);
+        else
+            m_desiredPixelSize.x = 0;
+
+        if (m_sizeUnits[1] != StyleUnit::Unit::Percent_A)
+            m_desiredPixelSize.y = StyleUnit::EvaluateSizeUnit(m_desiredSize.y, m_sizeUnits[1], *this);
+        else
+            m_desiredPixelSize.y = 0;
+    }
+
+
+    bool ElementBase::IsTransformDirty() {
+        return m_transformDirty;
+    }
+
+    void ElementBase::SetTransformDirty(bool value) {
+        m_transformDirty = value;
     }
 
 }
