@@ -13,6 +13,8 @@ void SetupUI() {
 	UI::SetUIRenderLayer(uiLayer);
 
 	auto container = Style::Create("Container");
+	container->Set(Attribute::layoutType, "flex");
+	container->Set(Attribute::layout, "center");
 	container->Set(Attribute::width, "100%w");
 	container->Set(Attribute::height, "100%h");
 
@@ -46,17 +48,18 @@ void SetupUI() {
 
 		// Row-layout
 		UI::Begin<Panel>(defaultStyleRow); {
-
+		
 			UI::Add<Panel>(style1);
 			UI::Add<Panel>(style2);
 			UI::Add<Panel>(style3);
 			UI::Add<Panel>(style4);
+		
 		}
 		UI::End();
-
+		 
 		// Column-layout
 		UI::Begin<Panel>(defaultStyleColumn); {
-
+		
 			UI::Add<Panel>(style1);
 			UI::Add<Panel>(style2);
 			UI::Add<Panel>(style3);
@@ -66,8 +69,8 @@ void SetupUI() {
 
 	}
 	UI::End();
-	Log::Print();
-	Log::Print(UI::GetUIHierarchyString());
+	Log::Print(Log::levelDebug);
+	Log::Print(Log::levelDebug, UI::GetUIHierarchyString());
 }
 
 void SetupGame() {
