@@ -220,6 +220,7 @@ namespace EngineCore {
                         continue;
                     }
 
+                    // change projection matrix if ui is rendered
                     if (!cmd.isUI) {
                         currentShader->SetMatrix4("projection", cameraProjectionMat.ToOpenGLData());
                         currentShader->SetMatrix4("view", cameraViewMat.ToOpenGLData());
