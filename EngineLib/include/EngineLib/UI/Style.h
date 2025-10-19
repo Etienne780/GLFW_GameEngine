@@ -74,6 +74,12 @@ namespace EngineCore::UI {
 		void Clear(UI::State state);
 
 		/**
+		* @brief Creates a deep copy of this style, including all attributes and extended styles.
+		* @return A shared_ptr to the newly created copy of the style.
+		*/
+		std::shared_ptr<Style> Clone() const;
+
+		/**
 		* @brief Removes an attribute by name for a specific state.
 		* @param state The state from which the attribute should be removed.
 		* @param name Name of the attribute to remove.

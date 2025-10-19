@@ -20,6 +20,8 @@ namespace EngineCore::UI {
 	}
 
 	void Style::Extend(std::shared_ptr<Style> style) {
+		if (!style)
+			return;
 		m_extendedStyles.emplace_back(style);
 		style->SubDirtCallbackInter([this]() { SetStyleDirty(); });
 		SetStyleDirty();
@@ -64,6 +66,30 @@ namespace EngineCore::UI {
 			it->second.clear();
 
 		SetStyleDirty();
+	}
+
+	std::shared_ptr<Style> Style::Clone() const {
+		auto copy = std::make_shared<Style>(m_name);
+
+		// Copy own attributes
+		copy->m_attributes = m_attributes;
+
+		// Copy extended styles (shallow copy of shared_ptr is sufficient)
+		copy->m_extendedStyles = m_extendedStyles;
+
+		// Copy cached style if already generated
+		if (m_cachedStyle) {
+			copy->m_cachedStyle = std::make_unique<Style>(*m_cachedStyle);
+		}
+
+		// Copy dirty flags
+		copy->m_styleDirty = m_styleDirty;
+
+		// Don't copy subscribers (they are tied to the original element's lifecycle)
+		copy->m_dirtyCallback.clear();
+		copy->m_dirtyCallbackInter.clear();
+
+		return copy;
 	}
 
 	std::string Style::Get(const char* name) const {

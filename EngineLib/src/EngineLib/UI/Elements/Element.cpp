@@ -21,8 +21,7 @@ namespace EngineCore::UI {
         m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { m_styleDirty = true; });
         m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { m_styleDirty = true; });
 
-        m_mergedStyle = Style::Create("Merged");
-        m_mergedStyle->Extend(m_baseStyle);
+        m_mergedStyle = Style::Create("Merged", m_baseStyle);
         m_mergedStyle->Extend(m_style);
 	}
 
@@ -666,6 +665,40 @@ namespace EngineCore::UI {
     void ElementBase::CallOnDrag() {
         if (m_onDrag)
             m_onDrag();
+    }
+
+    void ElementBase::SetStyleInternal(std::shared_ptr<Style> style) {
+        m_style->UnsubDirtyCallback(m_styleDirtyCallbackID);
+        m_style = style;
+
+        if(m_style)
+            m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { m_styleDirty = true; });
+
+        m_mergedStyle = Style::Create("Merged", m_baseStyle);
+        m_mergedStyle->Extend(m_style);
+    }
+
+    void ElementBase::AddStyleInternal(std::shared_ptr<Style> style) {
+        auto newStyle = style->Clone();
+        newStyle->Extend(m_style);
+
+        SetStyleInternal(newStyle);
+    }
+
+    void ElementBase::RemoveStyleInternal(std::shared_ptr<Style> style) {
+        if (m_style == style) {
+            ClearStyleInternal();
+        }
+    }
+
+    void ElementBase::ClearStyleInternal() {
+        if(m_style)
+            m_style->UnsubDirtyCallback(m_styleDirtyCallbackID);
+
+        m_styleDirtyCallbackID = 0;
+        m_style = nullptr;
+
+        m_mergedStyle = Style::Create("Merged", m_baseStyle);
     }
 
     void ElementBase::RegisterAttribute(const std::string& name, std::function<void(ElementBase*, const StyleValue&)> func) {

@@ -193,6 +193,11 @@ namespace EngineCore::UI {
         void CallOnPress();
         void CallOnDrag();
 
+        void SetStyleInternal(std::shared_ptr<Style> style);
+        void AddStyleInternal(std::shared_ptr<Style> style);
+        void RemoveStyleInternal(std::shared_ptr<Style> style);
+        void ClearStyleInternal();
+
         void SetState(State state);
 
         void SetLayoutType(LayoutType layoutType);
@@ -437,6 +442,26 @@ namespace EngineCore::UI {
 
         Derived* SetOnDrag(Callback cb) {
             m_onDrag = std::move(cb);
+            return static_cast<Derived*>(this);
+        }
+
+        Derived* SetStyle(std::shared_ptr<Style> style) {
+            SetStyleInternal(style);
+            return static_cast<Derived*>(this);
+        }
+
+        Derived* AddStyle(std::shared_ptr<Style> style) {
+            AddStyleInternal(style);
+            return static_cast<Derived*>(this);
+        }
+
+        Derived* RemoveStyle(std::shared_ptr<Style> style) {
+            RemoveStyleInternal(style);
+            return static_cast<Derived*>(this);
+        }
+
+        Derived* ClearStyle() {
+            ClearStyleInternal();
             return static_cast<Derived*>(this);
         }
     };
