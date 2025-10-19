@@ -338,6 +338,15 @@
     <ClCompile Include="src\EngineLib\UI\UITypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\EngineLib\UI\UIElementDetailRendererImGui.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\UI\UIElementDetailRendererImGui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineLib\ComponentRendererImGui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\EngineLib\GameObject.inl">

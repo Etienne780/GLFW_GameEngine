@@ -77,8 +77,10 @@
     <ClCompile Include="include\EngineLib\Components\TextRenderer_C.h" />
     <ClCompile Include="include\EngineLib\UI\LayoutCalc\FlexLayoutCalculator.h" />
     <ClCompile Include="include\EngineLib\UI\LayoutCalc\ILayoutCalculator.h" />
+    <ClCompile Include="include\EngineLib\UI\UIElementDetailRendererImGui.h" />
     <ClCompile Include="include\EngineLib\UI\UITypes.h" />
     <ClCompile Include="include\EngineLib\Input\InputTypes.h" />
+    <ClCompile Include="src\EngineLib\ComponentRendererImGui.cpp" />
     <ClCompile Include="src\EngineLib\Components\SpriteRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\Components\TextRenderer_C.cpp" />
     <ClCompile Include="src\EngineLib\FontAsset.cpp" />
@@ -124,6 +126,7 @@
     <ClCompile Include="src\EngineLib\UI\LayoutCalc\FlexLayoutCalculator.cpp" />
     <ClCompile Include="src\EngineLib\UI\LayoutCalc\GridLayoutCalculator.cpp" />
     <ClCompile Include="src\EngineLib\UI\StyleAttribute.cpp" />
+    <ClCompile Include="src\EngineLib\UI\UIElementDetailRendererImGui.cpp" />
     <ClCompile Include="src\EngineLib\UI\UIManager.cpp" />
     <ClCompile Include="src\EngineLib\UI\Style.cpp" />
     <ClCompile Include="src\EngineLib\UI\UITypes.cpp" />
