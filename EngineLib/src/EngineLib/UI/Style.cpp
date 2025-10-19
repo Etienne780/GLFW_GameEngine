@@ -74,16 +74,8 @@ namespace EngineCore::UI {
 		// Copy own attributes
 		copy->m_attributes = m_attributes;
 
-		// Copy extended styles (shallow copy of shared_ptr is sufficient)
 		copy->m_extendedStyles = m_extendedStyles;
-
-		// Copy cached style if already generated
-		if (m_cachedStyle) {
-			copy->m_cachedStyle = std::make_unique<Style>(*m_cachedStyle);
-		}
-
-		// Copy dirty flags
-		copy->m_styleDirty = m_styleDirty;
+		copy->m_styleDirty = true;
 
 		// Don't copy subscribers (they are tied to the original element's lifecycle)
 		copy->m_dirtyCallback.clear();
