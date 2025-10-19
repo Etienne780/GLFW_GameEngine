@@ -120,6 +120,8 @@ namespace EngineCore::UI {
 
 		const std::vector<std::shared_ptr<Style>> GetAllExtendedStyles() const;
 
+		std::string ToString() const;
+
 		SubscriberID SubDirtCallback(StyleDirtyCallback callback);
 		void UnsubDirtyCallback(SubscriberID id);
 

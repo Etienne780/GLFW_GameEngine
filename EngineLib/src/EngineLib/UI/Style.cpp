@@ -56,7 +56,6 @@ namespace EngineCore::UI {
 
 	void Style::Clear() {
 		m_attributes.clear();
-
 	}
 
 	void Style::Clear(UI::State state) {
@@ -134,6 +133,39 @@ namespace EngineCore::UI {
 		return m_extendedStyles;
 	}
 
+	std::string Style::ToString() const {
+		std::ostringstream ss;
+
+		ss << "Style: " << (m_name.empty() ? "<unnamed>" : m_name) << "\n";
+
+		if (!m_extendedStyles.empty()) {
+			ss << "Extended from: ";
+			for (size_t i = 0; i < m_extendedStyles.size(); ++i) {
+				ss << m_extendedStyles[i]->GetName();
+				if (i < m_extendedStyles.size() - 1)
+					ss << ", ";
+			}
+			ss << "\n";
+		}
+
+		if (m_styleDirty) {
+			GenerateCachedStyle();
+		}
+
+		for (const auto& [state, attMap] : m_cachedStyle->GetAll()) {
+			ss << "\n[";
+
+			ss << StateToString(state);
+
+			ss << "]\n";
+			for (const auto& [name, value] : attMap) {
+				ss << "  " << name << " = " << value << "\n";
+			}
+		}
+
+		return ss.str();
+	}
+
 	Style::SubscriberID Style::SubDirtCallback(StyleDirtyCallback callback) {
 		m_dirtyCallback.push_back({ ++m_dirtyCallbackID, callback });
 		return m_dirtyCallbackID;
@@ -164,6 +196,7 @@ namespace EngineCore::UI {
 
 		// applys extended styles 
 		for (const auto& extStyle : m_extendedStyles) {
+
 			const auto& extAll = extStyle->GetAll();
 			for (const auto& [state, attMap] : extAll) {
 				auto& targetMap = m_cachedStyle->m_attributes[state];
@@ -171,6 +204,7 @@ namespace EngineCore::UI {
 					targetMap[name] = value;
 				}
 			}
+
 		}
 
 		// copys the other stats in to the cached style 
