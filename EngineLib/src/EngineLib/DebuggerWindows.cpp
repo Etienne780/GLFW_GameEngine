@@ -506,13 +506,8 @@ namespace EngineCore {
 
             // Step forward buttons
             ImGui::BeginDisabled(!frozen);
-            if (ImGui::Button("Step UI Forward")) {
-                UIManager::StepUIForward();
-            }
-
             static int stepAmount = 1;
-            ImGui::SameLine();
-            if (ImGui::Button("Step UI Forward x")) {
+            if (ImGui::Button("Step UI Forward")) {
                 UIManager::StepUIForward(stepAmount);
             }
 
