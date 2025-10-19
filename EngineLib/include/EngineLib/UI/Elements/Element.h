@@ -160,6 +160,7 @@ namespace EngineCore::UI {
         Style::SubscriberID m_baseStyleDirtyCallbackID = 0;
         std::shared_ptr<Style> m_style = nullptr;
         std::shared_ptr<Style> m_baseStyle = nullptr; // element base style
+        std::shared_ptr<Style> m_mergedStyle = nullptr;// style extended form m_baseStyle and m_style
         ElementBase* m_parentElementPtr = nullptr;
         // position of this child in the parent child list
         size_t m_listPosition = 0;
@@ -332,7 +333,6 @@ namespace EngineCore::UI {
         
         mutable bool m_transformDirty = true;
         mutable bool m_styleDirty = true;
-        mutable bool m_baseStyleDirty = true;
 
         // Calculated final position of the element including layout effects (major/minor alignment, parent constraints, etc.)
         Vector2 m_layoutPosition{ 0.0f, 0.0f };

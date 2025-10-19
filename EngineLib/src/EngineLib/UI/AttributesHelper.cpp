@@ -56,12 +56,12 @@ namespace EngineCore::UI {
 		return false;
 	}
 
-	bool AttributeHelper::TryGetNumber(const ElementBase& element, const std::string& input, float& outValue) {
+	bool AttributeHelper::TryGetNumber(const std::string& input, float& outValue) {
 		std::string out;
-		return TryGetNumber(element, input, outValue, out);
+		return TryGetNumber(input, outValue, out);
 	}
 
-	bool AttributeHelper::TryGetNumber(const ElementBase& element, const std::string& input, float& outValue, std::string& outUnit) {
+	bool AttributeHelper::TryGetNumber(const std::string& input, float& outValue, std::string& outUnit) {
 		if (TryGetUnit(input, outUnit)) {
 			// get number
 			std::string numberPart = input.substr(0, input.size() - outUnit.size());
@@ -72,8 +72,6 @@ namespace EngineCore::UI {
 			outValue = *val;
 			return true;
 		}
-		Log::Warn("AttributeHelper: Invalid unit in style '{}', input:'{}'", 
-			element.GetStyle()->GetName(), input);
 		return false;
 	}
 
@@ -84,13 +82,13 @@ namespace EngineCore::UI {
 		const std::string& defaultValue)
 	{
 		return StyleAttribute(name, description, defaultValue, inputs,
-			[](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+			[](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				std::string s = FormatUtils::toLowerCase(val);
 				if (AttributeHelper::ListContains(styleAtt->GetInputs(), s))
 					return StyleValue(s);
 
-				Log::Warn("StyleAttribute: {} could not calculate value in style '{}', input:'{}' invalid!", 
-					styleAtt->GetName(), element.GetStyle()->GetName(), val);
+				Log::Warn("StyleAttribute: {} could not calculate value, input:'{}' invalid!", 
+					styleAtt->GetName(), val);
 				return StyleValue(styleAtt->GetFallbackStr());
 			}
 		);
@@ -103,23 +101,23 @@ namespace EngineCore::UI {
 		NumberType type)
 	{
 		return StyleAttribute(name, description, defaultValue, {"nummber"},
-			[type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+			[type](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				float f = 0;
 				bool errorType = false;
 				std::string unit;
-				if (TryGetNumber(element, val, f, unit)) {
+				if (TryGetNumber(val, f, unit)) {
 					errorType = true;
 					if(IsUnitType(type, unit))
 						return StyleValue(f, StyleUnit::ToUnit(unit));
 				}
 				if(errorType)
-					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', '{}' is not a valid unit, input:'{}' invalid!", 
-						styleAtt->GetName(), element.GetStyle()->GetName(), unit, val);
+					Log::Warn("AttributeHelper: {} could not calculate value, '{}' is not a valid unit, input:'{}' invalid!", 
+						styleAtt->GetName(), unit, val);
 				else
-					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', input:'{}' invalid!", 
-						styleAtt->GetName(), element.GetStyle()->GetName(), val);
+					Log::Warn("AttributeHelper: {} could not calculate value, input:'{}' invalid!", 
+						styleAtt->GetName(), val);
 
-				if (!TryGetNumber(element, styleAtt->GetFallbackStr(), f, unit)) {
+				if (!TryGetNumber(styleAtt->GetFallbackStr(), f, unit)) {
 					Log::Error("AttributeHelper: {} could not parse default value '{}' to number!",
 						styleAtt->GetName(), styleAtt->GetFallbackStr());
 				}
@@ -196,7 +194,7 @@ namespace EngineCore::UI {
 		}
 
 		return StyleAttribute(name, description, defaultValue, inputs,
-			[fallbackColor, parseHexColor](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+			[fallbackColor, parseHexColor](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				Vector4 color;
 				if (parseHexColor(val, color)) {
 					return StyleValue(color, {
@@ -207,8 +205,8 @@ namespace EngineCore::UI {
 						});
 				}
 
-				Log::Warn("AttributeHelper: {} could not parse color in style '{}', using fallback '{}'.",
-					styleAtt->GetName(), element.GetStyle()->GetName(), styleAtt->GetFallbackStr());
+				Log::Warn("AttributeHelper: {} could not parse color, using fallback '{}'.",
+					styleAtt->GetName(), styleAtt->GetFallbackStr());
 
 				return StyleValue(fallbackColor, {
 					StyleUnit::Unit::Unknown,
@@ -238,7 +236,7 @@ namespace EngineCore::UI {
 				name, defaultValues, defautlVa.size(), numberOfInputs.size());
 #endif 
 		return StyleAttribute(name, description, defaultValues, inputs,
-			[numberOfInputs](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+			[numberOfInputs](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				auto values = AttributeHelper::GetValues(val);
 				bool errorType = false;
 
@@ -264,11 +262,11 @@ namespace EngineCore::UI {
 				}
 
 				if (errorType)
-					Log::Warn("AttributeHelper: '{}' could not calculate value in style '{}', invalid token in input '{}'",
-						styleAtt->GetName(), element.GetStyle()->GetName(), val);
+					Log::Warn("AttributeHelper: '{}' could not calculate value, invalid token in input '{}'",
+						styleAtt->GetName(), val);
 				else
-					Log::Warn("AttributeHelper: '{}' could not calculate value in style '{}', invalid argument count, input '{}'",
-						styleAtt->GetName(), element.GetStyle()->GetName(), val);
+					Log::Warn("AttributeHelper: '{}' could not calculate value, invalid argument count, input '{}'",
+						styleAtt->GetName(), val);
 
 				// creats the default values from the default string
 				std::vector<std::string> fallbackValues =
@@ -303,7 +301,7 @@ namespace EngineCore::UI {
 #endif 
 
 		return StyleAttribute(name, description, defaultValue, { "nummber" },
-			[maxInput, type](const ElementBase& element, const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+			[maxInput, type](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				short errorType = 0;
 				auto values = GetValues(val);
 				
@@ -318,7 +316,7 @@ namespace EngineCore::UI {
 						errorType = 1;
 						float v;
 						std::string unit;
-						if (TryGetNumber(element, values[0], v, unit)) {
+						if (TryGetNumber(values[0], v, unit)) {
 							if (IsUnitType(type, unit)) {
 								return StyleValue(v, StyleUnit::ToUnit(unit));
 							}
@@ -335,7 +333,7 @@ namespace EngineCore::UI {
 						if (values.size() == 1) {
 							float v;
 							std::string unit;
-							if (TryGetNumber(element, values[0], v, unit)) {
+							if (TryGetNumber(values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
 									StyleUnit::Unit u = StyleUnit::ToUnit(unit);
 									return StyleValue(Vector2(v, v), { u, u});
@@ -346,8 +344,8 @@ namespace EngineCore::UI {
 						else {
 							float v1, v2;
 							std::string unit1, unit2;
-							if (TryGetNumber(element, values[0], v1, unit1) &&
-								TryGetNumber(element, values[1], v2, unit2)) {
+							if (TryGetNumber(values[0], v1, unit1) &&
+								TryGetNumber(values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
 									std::vector<StyleUnit::Unit> styleUnits{
 										StyleUnit::ToUnit(unit1),
@@ -368,7 +366,7 @@ namespace EngineCore::UI {
 						if (values.size() == 1) {
 							float v;
 							std::string unit;
-							if (TryGetNumber(element, values[0], v, unit)) {
+							if (TryGetNumber(values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
 									StyleUnit::Unit u = StyleUnit::ToUnit(unit);
 									return StyleValue(Vector3(v, v, v), { u, u, u});
@@ -379,8 +377,8 @@ namespace EngineCore::UI {
 						else if (values.size() == 2) {
 							float v1, v2;
 							std::string unit1, unit2;
-							if (TryGetNumber(element, values[0], v1, unit1) &&
-								TryGetNumber(element, values[1], v2, unit2)) {
+							if (TryGetNumber(values[0], v1, unit1) &&
+								TryGetNumber(values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
 									StyleUnit::Unit u2 = StyleUnit::ToUnit(unit2);
 									std::vector<StyleUnit::Unit> styleUnits{
@@ -396,9 +394,9 @@ namespace EngineCore::UI {
 						else {
 							float v1, v2, v3;
 							std::string unit1, unit2, unit3;
-							if (TryGetNumber(element, values[0], v1, unit1) &&
-								TryGetNumber(element, values[1], v2, unit2) &&
-								TryGetNumber(element, values[2], v3, unit3)) {
+							if (TryGetNumber(values[0], v1, unit1) &&
+								TryGetNumber(values[1], v2, unit2) &&
+								TryGetNumber(values[2], v3, unit3)) {
 								if (IsUnitType(type, unit1, unit2, unit3)) {
 									std::vector<StyleUnit::Unit> styleUnits{
 										StyleUnit::ToUnit(unit1),
@@ -421,7 +419,7 @@ namespace EngineCore::UI {
 						if (values.size() == 1) {
 							float v;
 							std::string unit;
-							if (TryGetNumber(element, values[0], v, unit)) {
+							if (TryGetNumber(values[0], v, unit)) {
 								if (IsUnitType(type, unit)) {
 									StyleUnit::Unit u = StyleUnit::ToUnit(unit);
 									return StyleValue(Vector4(v, v, v, v), { u, u, u, u });
@@ -432,8 +430,8 @@ namespace EngineCore::UI {
 						else if (values.size() == 2) {
 							float v1, v2;
 							std::string unit1, unit2;
-							if (TryGetNumber(element, values[0], v1, unit1) &&
-								TryGetNumber(element, values[1], v2, unit2)) {
+							if (TryGetNumber(values[0], v1, unit1) &&
+								TryGetNumber(values[1], v2, unit2)) {
 								if (IsUnitType(type, unit1, unit2)) {
 									StyleUnit::Unit u1 = StyleUnit::ToUnit(unit1);
 									StyleUnit::Unit u2 = StyleUnit::ToUnit(unit2);
@@ -445,9 +443,9 @@ namespace EngineCore::UI {
 						else if (values.size() == 3) {
 							float v1, v2, v3;
 							std::string unit1, unit2, unit3;
-							if (TryGetNumber(element, values[0], v1, unit1) &&
-								TryGetNumber(element, values[1], v2, unit2) &&
-								TryGetNumber(element, values[2], v3, unit3)) {
+							if (TryGetNumber(values[0], v1, unit1) &&
+								TryGetNumber(values[1], v2, unit2) &&
+								TryGetNumber(values[2], v3, unit3)) {
 								if (IsUnitType(type, unit1, unit2, unit3)) {
 									StyleUnit::Unit u3 = StyleUnit::ToUnit(unit3);
 									std::vector<StyleUnit::Unit> styleUnits{
@@ -464,10 +462,10 @@ namespace EngineCore::UI {
 						else {
 							float v1, v2, v3, v4;
 							std::string unit1, unit2, unit3, unit4;
-							if (TryGetNumber(element, values[0], v1, unit1) &&
-								TryGetNumber(element, values[1], v2, unit2) &&
-								TryGetNumber(element, values[2], v3, unit3) &&
-								TryGetNumber(element, values[3], v4, unit4)) {
+							if (TryGetNumber(values[0], v1, unit1) &&
+								TryGetNumber(values[1], v2, unit2) &&
+								TryGetNumber(values[2], v3, unit3) &&
+								TryGetNumber(values[3], v4, unit4)) {
 								if (IsUnitType(type, unit1, unit2, unit3, unit4)) {
 									std::vector<StyleUnit::Unit> styleUnits{
 										StyleUnit::ToUnit(unit1),
@@ -486,14 +484,14 @@ namespace EngineCore::UI {
 				}
 
 				if (errorType == 2)
-					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', invalid unit, input:'{}'!", 
-						styleAtt->GetName(), element.GetStyle()->GetName(), val);
+					Log::Warn("AttributeHelper: {} could not calculate value, invalid unit, input:'{}'!", 
+						styleAtt->GetName(), val);
 				else if (errorType == 1)
-					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', invalid number, input:'{}'!", 
-						styleAtt->GetName(), element.GetStyle()->GetName(), val);
+					Log::Warn("AttributeHelper: {} could not calculate value, invalid number, input:'{}'!", 
+						styleAtt->GetName(), val);
 				else
-					Log::Warn("AttributeHelper: {} could not calculate value in style '{}', invalid argument count max arguments '{}', input:'{}'!", 
-						styleAtt->GetName(), element.GetStyle()->GetName(), maxInput, val);
+					Log::Warn("AttributeHelper: {} could not calculate value, invalid argument count max arguments '{}', input:'{}'!", 
+						styleAtt->GetName(), maxInput, val);
 
 				// translates default value str to float vector
 				auto defaultValues = AttributeHelper::GetValues(styleAtt->GetFallbackStr());
@@ -504,7 +502,7 @@ namespace EngineCore::UI {
 				float tempNum = 0;
 				std::string tempUnit;
 				for (auto& str : defaultValues) {
-					if (!AttributeHelper::TryGetNumber(element, str, tempNum, tempUnit)) {
+					if (!AttributeHelper::TryGetNumber(str, tempNum, tempUnit)) {
 						Log::Error("AttributeHelper: {} could not convert part '{}', of default value '{}', to number!",
 							styleAtt->GetName(), str, styleAtt->GetFallbackStr());
 					}

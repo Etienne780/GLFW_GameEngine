@@ -124,11 +124,6 @@ namespace Attribute {
 	*/
 	constexpr const char* borderSize = "borderSize";
 	/*
-	* @brief Sets the width of the border for this element
-	* @param number
-	*/
-	constexpr const char* borderWidth = "borderWidth";
-	/*
 	* @brief Sets the top width of the border for this element
 	* @param number
 	*/

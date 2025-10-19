@@ -19,7 +19,11 @@ namespace EngineCore::UI {
 
         // subs to style dirty events
         m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { m_styleDirty = true; });
-        m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { m_baseStyleDirty = true; });
+        m_baseStyleDirtyCallbackID = m_baseStyle->SubDirtCallback([this]() { m_styleDirty = true; });
+
+        m_mergedStyle = Style::Create("Merged");
+        m_mergedStyle->Extend(m_baseStyle);
+        m_mergedStyle->Extend(m_style);
 	}
 
     ElementBase::~ElementBase() {
@@ -240,7 +244,9 @@ namespace EngineCore::UI {
         x = std::max(0.0f, x);
         y = std::max(0.0f, y);
         if (m_desiredSize.x == x &&
-            m_desiredSize.y == y)
+            m_desiredSize.y == y &&
+            m_sizeUnits[0] == unitX &&
+            m_sizeUnits[1] == unitY)
             return;
         m_desiredSize.Set(x, y);
         m_sizeUnits[0] = unitX;
@@ -250,7 +256,8 @@ namespace EngineCore::UI {
 
     void ElementBase::SetDesiredWidth(float x, StyleUnit::Unit unitX) {
         x = std::max(0.0f, x);
-        if (m_desiredSize.x == x)
+        if (m_desiredSize.x == x &&
+            m_sizeUnits[0] == unitX)
             return;
         m_desiredSize.x = x;
         m_sizeUnits[0] = unitX;
@@ -259,7 +266,8 @@ namespace EngineCore::UI {
 
     void ElementBase::SetDesiredHeight(float y, StyleUnit::Unit unitY) {
         y = std::max(0.0f, y);
-        if (m_desiredSize.y == y)
+        if (m_desiredSize.y == y &&
+            m_sizeUnits[1] == unitY)
             return;
         m_desiredSize.y = y;
         m_sizeUnits[1] = unitY;
@@ -752,7 +760,7 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::UpdateImpl() {
-        if (m_styleDirty || m_baseStyleDirty) {
+        if (m_styleDirty) {
             SetStyleAttributes();
             m_styleDirty = false;
         }
@@ -795,28 +803,7 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::layoutItem, [](ElementBase* el, const StyleValue& val) {
                 if (std::string align; val.TryGetValue<std::string>(align, att::layoutItem)) {
-                    el->SetLayoutMinor(Flex::ToLayoutAlign(align));
-                }
-            });
-
-            RegisterAttribute(att::layout, [](ElementBase* el, const StyleValue& val) {
-                if (std::vector<StyleValue> atts; val.TryGetValue<std::vector<StyleValue>>(atts, att::layout)) {  
-                    if (atts.size() == 1) {
-                        if (std::string str; atts[0].TryGetValue(str, att::layout)) {
-                            auto align = Flex::ToLayoutAlign(str);
-                            el->SetLayoutMajor(align);
-                            el->SetLayoutMinor(align);
-                        }
-                    }
-                    else if(atts.size() == 2) {
-                        if (std::string str1, str2; 
-                            atts[0].TryGetValue(str1, att::layout) && 
-                            atts[1].TryGetValue(str2, att::layout)) {
-                            el->SetLayoutMajor(Flex::ToLayoutAlign(str1));
-                            el->SetLayoutMinor(Flex::ToLayoutAlign(str2));
-                        }
-                    }
-
+                    el->SetLayoutItem(Flex::ToLayoutAlign(align));
                 }
             });
 
@@ -864,18 +851,6 @@ namespace EngineCore::UI {
 
             #pragma region borderSize
 
-            RegisterAttribute(att::borderSize, [](ElementBase* el, const StyleValue& val) {
-                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderSize)) {
-                    el->SetBorderSize(vec);
-                }
-            });
-
-            RegisterAttribute(att::borderWidth, [](ElementBase* el, const StyleValue& val) {
-                if (float f;  val.TryGetValue<float>(f, att::borderWidth)) {
-                    el->SetBorderWidth(f);
-                }
-            });
-
             RegisterAttribute(att::borderTop, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::borderTop)) {
                     el->SetBorderTop(f);
@@ -903,12 +878,6 @@ namespace EngineCore::UI {
             #pragma endregion
 
             #pragma region margin
-
-            RegisterAttribute(att::margin, [](ElementBase* el, const StyleValue& val) {
-                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::margin)) {
-                    el->SetMargin(vec);
-                }
-            });
 
             RegisterAttribute(att::marginTop, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::marginTop)) {
@@ -938,12 +907,6 @@ namespace EngineCore::UI {
 
             #pragma region padding
 
-            RegisterAttribute(att::padding, [](ElementBase* el, const StyleValue& val) {
-                if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::padding)) {
-                    el->SetPadding(vec);
-                }
-            });
-
             RegisterAttribute(att::paddingTop, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::paddingTop)) {
                     el->SetPaddingTop(f);
@@ -969,9 +932,9 @@ namespace EngineCore::UI {
             });
 
             #pragma endregion
+
+            RegisterAttributes();
         }
-       
-        RegisterAttributes();
     }
 
     void ElementBase::SetParent(ElementBase* elementPtr, size_t indexPos) {
@@ -980,19 +943,23 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetStyleAttributes() {
-        if (m_baseStyleDirty) {
-            SetAttributes(m_baseStyle->GetAllState(m_state));
-            m_baseStyleDirty = false;
-        }
-        // if state is not normal use normal state as a base
-        if(m_state != State::Normal)
-            SetAttributes(m_style->GetAllState(State::Normal));
-        SetAttributes(m_style->GetAllState(m_state));
+
+        // SetAttributes(m_baseStyle->GetAllState(m_state));
+        // // if state is not normal use normal state as a base
+        // if(m_state != State::Normal)
+        //     SetAttributes(m_style->GetAllState(State::Normal));
+        // SetAttributes(m_style->GetAllState(m_state));
+
+
+        //SetAttributes(m_baseStyle->GetAllState(m_state));
+        if (m_state != State::Normal)
+            SetAttributes(m_mergedStyle->GetAllState(State::Normal));
+        SetAttributes(m_mergedStyle->GetAllState(m_state));
     }
 
     void ElementBase::SetAttributes(const std::unordered_map<std::string, std::string>& attribute) {
         for (auto& [name, valueStr] : attribute) {
-            const StyleValue& value = StyleAttribute::GetAttributeValue(name, *this, valueStr);
+            const StyleValue& value = StyleAttribute::GetAttributeValue(name, valueStr);
             auto it = m_registeredAttributes.find(FormatUtils::toLowerCase(name));
             if (it != m_registeredAttributes.end()) {
                 it->second(this, value);

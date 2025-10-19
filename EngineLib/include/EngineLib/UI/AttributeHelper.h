@@ -113,22 +113,20 @@ namespace EngineCore::UI {
 
 		/**
 		* @brief Attempts to extract a numeric value and its unit from an input string
-		* @param element Reference to the element providing context for size calculations
 		* @param input The input string containing number + unit
 		* @param outValue Output parameter to receive the numeric value
 		* @return True if a valid number and unit were parsed, false otherwise
 		*/
-		static bool TryGetNumber(const ElementBase& element, const std::string& input, float& outValue);
+		static bool TryGetNumber(const std::string& input, float& outValue);
 
 		/**
 		* @brief Attempts to extract a numeric value and its unit from an input string
-		* @param element Reference to the element providing context for size calculations
 		* @param input The input string containing number + unit
 		* @param outValue Output parameter to receive the numeric value
 		* @param outUnit Output parameter to receive the extracted unit
 		* @return True if a valid number and unit were parsed, false otherwise
 		*/
-		static bool TryGetNumber(const ElementBase& element, const std::string& input, float& outValue, std::string& outUnit);
+		static bool TryGetNumber(const std::string& input, float& outValue, std::string& outUnit);
 
 		/**
 		* @brief Checks whether a value exists in a given list

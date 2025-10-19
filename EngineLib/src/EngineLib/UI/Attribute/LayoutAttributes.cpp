@@ -74,7 +74,8 @@ namespace EngineCore::UI::Init {
     const bool regLayoutAtt() {
         StyleAttribute::RegisterAttribute(LayoutTypeAtt);
 
-        StyleAttribute::RegisterAttribute(LayoutAtt);
+        StyleAttribute::RegisterCompositeAttribute(LayoutAtt, Attribute::layoutMajor, Attribute::layoutMinor);
+
         StyleAttribute::RegisterAttribute(LayoutMajorAtt);
         StyleAttribute::RegisterAttribute(LayoutMinorAtt);
 

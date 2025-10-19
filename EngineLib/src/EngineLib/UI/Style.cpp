@@ -201,7 +201,17 @@ namespace EngineCore::UI {
 			for (const auto& [state, attMap] : extAll) {
 				auto& targetMap = m_cachedStyle->m_attributes[state];
 				for (const auto& [name, value] : attMap) {
-					targetMap[name] = value;
+					const StyleAttribute& att = StyleAttribute::GetAttribute(name);
+					
+					if (att.IsComposite()) {
+						auto map = att.ParseCompositeValues(value);
+						for (const auto& [n, v] : map) {
+							targetMap[n] = v;
+						}
+					}
+					else {
+						targetMap[name] = value;
+					}
 				}
 			}
 
@@ -211,7 +221,17 @@ namespace EngineCore::UI {
 		for (const auto& [state, attMap] : m_attributes) {
 			auto& targetMap = m_cachedStyle->m_attributes[state];
 			for (const auto& [name, value] : attMap) {
-				targetMap[name] = value;
+				const StyleAttribute& att = StyleAttribute::GetAttribute(name);
+
+				if (att.IsComposite()) {
+					auto map = att.ParseCompositeValues(value);
+					for (const auto& [n, v] : map) {
+						targetMap[n] = v;
+					}
+				}
+				else {
+					targetMap[name] = value;
+				}
 			}
 		}
 

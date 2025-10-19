@@ -133,11 +133,6 @@ namespace {
         4, "0px 0px 0px 0px",
         AHel::NumberType::SIZE);
 
-    const StyleAttribute BorderWidth = AttributeHelper::MakeSimpleNumberAttribute(
-        Attribute::borderWidth,
-        "Sets the width of the border for this element",
-        "0px", AHel::NumberType::SIZE);
-
     const StyleAttribute BorderTop = AttributeHelper::MakeSimpleNumberAttribute(
         Attribute::borderTop,
         "Sets the top width of the border for this element",
@@ -177,40 +172,40 @@ namespace {
 namespace EngineCore::UI::Init {
 
     const bool regStyleAtt() {
+        namespace Att = Attribute;
         // Size
         StyleAttribute::RegisterAttribute(Width);
         StyleAttribute::RegisterAttribute(Height);
         
         // Rotation
-        StyleAttribute::RegisterAttribute(Rotation);
+        StyleAttribute::RegisterCompositeAttribute(Rotation, Att::rotationX, Att::rotationY, Att::rotationZ);
         StyleAttribute::RegisterAttribute(RotationX);
         StyleAttribute::RegisterAttribute(RotationY);
         StyleAttribute::RegisterAttribute(RotationZ);
 
         // Margin
-        StyleAttribute::RegisterAttribute(Margin);
+        StyleAttribute::RegisterCompositeAttribute(Margin, Att::marginTop, Att::marginRight, Att::marginBottom, Att::marginLeft);
         StyleAttribute::RegisterAttribute(MarginTop);
+        StyleAttribute::RegisterAttribute(MarginRight);
         StyleAttribute::RegisterAttribute(MarginBottom);
         StyleAttribute::RegisterAttribute(MarginLeft);
-        StyleAttribute::RegisterAttribute(MarginRight);
 
         // Padding
-        StyleAttribute::RegisterAttribute(Padding);
+        StyleAttribute::RegisterCompositeAttribute(Padding, Att::paddingTop, Att::paddingRight, Att::paddingBottom, Att::paddingLeft);
         StyleAttribute::RegisterAttribute(PaddingTop);
+        StyleAttribute::RegisterAttribute(PaddingRight);
         StyleAttribute::RegisterAttribute(PaddingBottom);
         StyleAttribute::RegisterAttribute(PaddingLeft);
-        StyleAttribute::RegisterAttribute(PaddingRight);
         
         StyleAttribute::RegisterAttribute(BackgroundColor);
         StyleAttribute::RegisterAttribute(TextColor);
         StyleAttribute::RegisterAttribute(BorderColor);
         // Border size
-        StyleAttribute::RegisterAttribute(BorderSize);
-        StyleAttribute::RegisterAttribute(BorderWidth);
+        StyleAttribute::RegisterCompositeAttribute(BorderSize, Att::borderTop, Att::borderRight, Att::borderBottom, Att::borderLeft);
         StyleAttribute::RegisterAttribute(BorderTop);
+        StyleAttribute::RegisterAttribute(BorderRight);
         StyleAttribute::RegisterAttribute(BorderLeft);
         StyleAttribute::RegisterAttribute(BorderBottom);
-        StyleAttribute::RegisterAttribute(BorderRight);
 
         StyleAttribute::RegisterAttribute(BorderRadius);
         StyleAttribute::RegisterAttribute(Duration);

@@ -36,16 +36,16 @@ namespace {
     // Margin
     extern const StyleAttribute Margin;
     extern const StyleAttribute MarginTop;
+    extern const StyleAttribute MarginRight;
     extern const StyleAttribute MarginBottom;
     extern const StyleAttribute MarginLeft;
-    extern const StyleAttribute MarginRight;
 
     // Padding
     extern const StyleAttribute Padding;
     extern const StyleAttribute PaddingTop;
+    extern const StyleAttribute PaddingRight;
     extern const StyleAttribute PaddingBottom;
     extern const StyleAttribute PaddingLeft;
-    extern const StyleAttribute PaddingRight;
 
 
     extern const StyleAttribute BackgroundColor;
@@ -54,11 +54,10 @@ namespace {
 
     //Border size
     extern const StyleAttribute BorderSize;
-    extern const StyleAttribute BorderWidth;
     extern const StyleAttribute BorderTop;
+    extern const StyleAttribute BorderRight;
     extern const StyleAttribute BorderLeft;
     extern const StyleAttribute BorderBottom;
-    extern const StyleAttribute BorderRight;
 
     extern const StyleAttribute BorderRadius;
     extern const StyleAttribute Duration;
