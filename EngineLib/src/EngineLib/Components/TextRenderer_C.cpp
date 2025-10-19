@@ -23,7 +23,7 @@ namespace EngineCore::Component {
 		m_fontID = id;
 	}
 
-	void TextRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {		
+	void TextRenderer::OnInspectorGUIImpl(IComponentUIRenderer& ui) {		
 		ui.DrawLabel(FormatUtils::formatString("Font ID: {}", (m_fontID.value == ENGINE_INVALID_ID) ? std::string("ENGINE_INVALID_ID") : std::to_string(m_fontID.value).c_str()));
 		ui.DrawInputText("Text", &m_text);
 		ui.DrawDragFloat("Text Size", &m_textSize, 0.075F, 1, 256);

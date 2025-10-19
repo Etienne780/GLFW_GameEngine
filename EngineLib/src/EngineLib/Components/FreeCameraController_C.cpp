@@ -12,7 +12,7 @@ namespace EngineCore {
 			trans = go->GetTransform();
 		}
 
-		void FreeCameraController::OnInspectorGUI(IUIRenderer& ui) {
+		void FreeCameraController::OnInspectorGUI(IComponentUIRenderer& ui) {
 			ui.DrawSeparatorText("Camera Control");
 			ui.DrawCheckbox("Disable if not Main Camera", &m_disableIfNotMainCamera);
 

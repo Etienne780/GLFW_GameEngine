@@ -90,7 +90,7 @@ namespace EngineCore {
 		virtual void UpdateAlwaysImpl() {}
 		void CSubmitDrawCall();
 		virtual void SubmitDrawCall() {}
-		virtual void OnInspectorGUIImpl(IUIRenderer& ui) { ui.DrawLabel("No Component UI defined"); }
+		virtual void OnInspectorGUIImpl(IComponentUIRenderer& ui) { ui.DrawLabel("No Component UI defined"); }
 	
 	private:
 		ExecutionOrder m_executionOrder = ExecutionOrder::BaseComponent;

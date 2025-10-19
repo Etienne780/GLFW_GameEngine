@@ -14,7 +14,7 @@ namespace EngineCore {
 			friend class EngineCore::Engine;
 		public:
 			Camera(GameObjectID gameObjectID);
-			void OnInspectorGUIImpl(IUIRenderer& ui) override;
+			void OnInspectorGUIImpl(IComponentUIRenderer& ui) override;
 			bool CanDisalbe() const override { return false; }
 
 			COMPONENT_TYPE_DEFINITION(Camera);

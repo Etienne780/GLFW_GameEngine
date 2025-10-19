@@ -15,7 +15,7 @@ namespace EngineCore {
 			m_gameObject = GetGameObject();
 		}
 
-		void MeshRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {
+		void MeshRenderer::OnInspectorGUIImpl(IComponentUIRenderer& ui) {
 			ui.DrawLabel(FormatUtils::formatString("Mesh ID: {}", m_meshID.value));
 			ui.DrawLabel(FormatUtils::formatString("Material ID: {}", m_materialID.value));
 			ui.DrawCheckbox("Mesh Inverted", &m_invertMesh);

@@ -8,7 +8,7 @@ namespace EngineCore {
 		class FreeCameraController : public EngineCore::Script {
 		public:
 			FreeCameraController(GameObjectID gameObjectID);
-			void OnInspectorGUI(IUIRenderer& ui) override;
+			void OnInspectorGUI(IComponentUIRenderer& ui) override;
 
 			COMPONENT_TYPE_DEFINITION(FreeCameraController);
 

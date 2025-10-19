@@ -14,7 +14,7 @@ namespace EngineCore {
 		class SpriteRenderer : public EngineCore::ComponentBase {
 		public:
 			SpriteRenderer(GameObjectID gameObjectID);
-			void OnInspectorGUIImpl(IUIRenderer& ui) override;
+			void OnInspectorGUIImpl(IComponentUIRenderer& ui) override;
 
 			COMPONENT_TYPE_DEFINITION(SpriteRenderer);
 

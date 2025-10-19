@@ -10,7 +10,7 @@ namespace EngineCore {
 		app = Application::GetInstance();
 	}
 
-	void Script::OnInspectorGUIImpl(IUIRenderer& ui) {
+	void Script::OnInspectorGUIImpl(IComponentUIRenderer& ui) {
 		OnInspectorGUI(ui);
 	}
 

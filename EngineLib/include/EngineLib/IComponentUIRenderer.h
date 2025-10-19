@@ -7,9 +7,9 @@ class Vector4;
 
 namespace EngineCore {
 
-    class IUIRenderer {
+    class IComponentUIRenderer {
     public:
-        virtual ~IUIRenderer() = default;
+        virtual ~IComponentUIRenderer() = default;
 
         // Labels
         virtual void DrawLabel(const std::string& text) = 0;

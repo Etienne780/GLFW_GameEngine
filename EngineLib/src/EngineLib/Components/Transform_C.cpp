@@ -14,7 +14,7 @@ namespace EngineCore {
 			m_gameObject = GetGameObject();
 		}
 
-		void Transform::OnInspectorGUIImpl(IUIRenderer& ui) {
+		void Transform::OnInspectorGUIImpl(IComponentUIRenderer& ui) {
 			ui.DrawDragFloat3("Position", &m_position, 0.15f);
 			ui.DrawDragFloat3("Rotation", &m_rotation, 0.3f);
 			ui.DrawDragFloat3("Scale", &m_scale, 0.2f);

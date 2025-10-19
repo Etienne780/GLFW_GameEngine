@@ -7,7 +7,7 @@
 
 namespace EngineCore {
 
-    class ImGuiRenderer : public IUIRenderer {
+    class ImGuiRenderer : public IComponentUIRenderer {
     public:
         // Labels
         void DrawLabel(const std::string& text) override {

@@ -17,7 +17,7 @@ namespace EngineCore {
 			m_gameObject = GetGameObject();
 		}
 
-		void SpriteRenderer::OnInspectorGUIImpl(IUIRenderer& ui) {
+		void SpriteRenderer::OnInspectorGUIImpl(IComponentUIRenderer& ui) {
 			ui.DrawLabel(FormatUtils::formatString("Texture ID: {}", m_textureID.value));
 			ui.DrawCheckbox("Sprite Inverted", &m_invertMesh);
 			ui.DrawDragInt("Z-Order", &m_zOrder);

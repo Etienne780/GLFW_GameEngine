@@ -20,7 +20,7 @@ namespace EngineCore {
 			m_renderLayers.push_back(RenderLayerManager::GetLayerID("Default"));
 		}
 
-		void Camera::OnInspectorGUIImpl(IUIRenderer& ui) {
+		void Camera::OnInspectorGUIImpl(IComponentUIRenderer& ui) {
 			ui.DrawSeparatorText("Projection");
 
 			ui.DrawCheckbox("Orthographic", &m_isOrthograpic);

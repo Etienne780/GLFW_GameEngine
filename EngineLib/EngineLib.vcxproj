@@ -64,6 +64,7 @@
     <ClInclude Include="include\EngineLib\UI\Attribute\_Attributes.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Element.h" />
     <ClInclude Include="include\EngineLib\UI\Elements\Panel.h" />
+    <ClInclude Include="include\EngineLib\UI\IUIElementDetailRenderer.h" />
     <ClInclude Include="include\EngineLib\UI\LayoutCalc\GridLayoutCalculator.h" />
     <ClInclude Include="include\EngineLib\UI\UIManager.h" />
     <ClInclude Include="include\EngineLib\UI\Style.h" />
