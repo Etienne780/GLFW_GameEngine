@@ -1,47 +1,52 @@
-#include "EngineLib/UI/UIElementDetailRendererImGui.h"
 #include <ImGUI/imgui.h>
+
+#include "EngineLib/UI/UIElementDetailRendererImGui.h"
 
 namespace EngineCore::UI {
 
     // --- Labels ---
-    void UIElementDetailRendererImGui::DrawLabel(const std::string& text) {
+    void ImGuiUIElementDetailRenderer::DrawLabel(const std::string& text) {
         ImGui::TextUnformatted(text.c_str());
     }
 
-    void UIElementDetailRendererImGui::DrawLabelDisabled(const std::string& text) {
+    void ImGuiUIElementDetailRenderer::DrawLabelDisabled(const std::string& text) {
         ImGui::TextDisabled("%s", text.c_str());
     }
 
     // --- Separators ---
-    void UIElementDetailRendererImGui::DrawSeparator() {
+    void ImGuiUIElementDetailRenderer::DrawSeparator() {
         ImGui::Separator();
     }
 
+    void ImGuiUIElementDetailRenderer::DrawSeparatorText(const std::string& label) {
+        ImGui::SeparatorText(label.c_str());
+    }
+
     // --- Collapsing headers ---
-    bool UIElementDetailRendererImGui::DrawCollapsingHeader(const std::string& text, bool defaultOpen) {
+    bool ImGuiUIElementDetailRenderer::DrawCollapsingHeader(const std::string& text, bool defaultOpen) {
         return ImGui::CollapsingHeader(text.c_str(), defaultOpen ? ImGuiTreeNodeFlags_DefaultOpen : 0);
     }
 
     // --- Indentation ---
-    void UIElementDetailRendererImGui::Indent(float width) {
+    void ImGuiUIElementDetailRenderer::Indent(float width) {
         ImGui::Indent(width);
     }
 
-    void UIElementDetailRendererImGui::Unindent(float width) {
+    void ImGuiUIElementDetailRenderer::Unindent(float width) {
         ImGui::Unindent(width);
     }
 
     // --- Child regions ---
-    void UIElementDetailRendererImGui::BeginChild(const std::string& id, float width, float height, bool border) {
+    void ImGuiUIElementDetailRenderer::BeginChild(const std::string& id, float width, float height, bool border) {
         ImGui::BeginChild(id.c_str(), ImVec2(width, height), border);
     }
 
-    void UIElementDetailRendererImGui::EndChild() {
+    void ImGuiUIElementDetailRenderer::EndChild() {
         ImGui::EndChild();
     }
 
     // --- Spacing ---
-    void UIElementDetailRendererImGui::AddSpacing(float height) {
+    void ImGuiUIElementDetailRenderer::AddSpacing(float height) {
         if (height <= 0.0f) {
             ImGui::Spacing();
         }

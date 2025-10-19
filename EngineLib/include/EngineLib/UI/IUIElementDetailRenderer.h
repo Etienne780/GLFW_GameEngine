@@ -13,6 +13,7 @@ namespace EngineCore::UI {
 
         // --- Separators ---
         virtual void DrawSeparator() = 0;
+        virtual void DrawSeparatorText(const std::string& label) = 0;
 
         // --- Collapsing headers ---
         virtual bool DrawCollapsingHeader(const std::string& text, bool defaultOpen = true) = 0;

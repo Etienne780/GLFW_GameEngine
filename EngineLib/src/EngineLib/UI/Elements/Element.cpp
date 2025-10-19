@@ -46,6 +46,102 @@ namespace EngineCore::UI {
         m_sbo.SetParam("uSize", m_layoutSize);
     }
 
+    void ElementBase::OnUIElementGUI(IUIElementDetailRenderer& ui) {
+        using FU = FormatUtils;
+        float indentAmount = 15;
+
+        // --- Custom element-specific details ---
+        if (ui.DrawCollapsingHeader(m_elementName)) {
+            OnUIElementGUIImpl(ui);
+        }
+
+        // --- Base element information ---
+        if (ui.DrawCollapsingHeader("Base")) {
+            ui.DrawLabel(FU::formatString("ID: {}", m_id.value));
+            ui.DrawSeparator();
+
+            // Parent element
+            if (m_parentElementPtr) {
+                if (ui.DrawCollapsingHeader("Parent")) {
+                    ui.Indent(indentAmount);
+                    ui.DrawLabel(FU::formatString("ID: {}", m_parentElementPtr->GetID().value));
+                    ui.DrawLabel(FU::formatString("Element: {}", m_parentElementPtr->GetName()));
+                    ui.DrawLabel(FU::formatString("Style: {}", m_parentElementPtr->GetStyle()->GetName()));
+                    ui.Unindent(indentAmount);
+                    ui.DrawSeparator();
+                }
+            }
+            else {
+                ui.DrawLabelDisabled("No Parent");
+                ui.DrawSeparator();
+            }
+
+            // Style and children
+            ui.DrawLabel(FU::formatString("Style: {}", m_style->GetName()));
+            ui.DrawLabel(FU::formatString("Children Count: {}", GetChildCount()));
+            ui.DrawSeparator();
+
+            // Element state
+            ui.DrawLabel(FU::formatString("Element state: {}", m_state));
+            ui.DrawSeparatorText("Registered Events");
+
+            ui.Indent(indentAmount);
+            if (m_onClick || m_onHover || m_onPress || m_onDrag) {
+                if (m_onClick) ui.DrawLabel("- OnClick");
+                if (m_onHover) ui.DrawLabel("- OnHover");
+                if (m_onPress) ui.DrawLabel("- OnPress");
+                if (m_onDrag) ui.DrawLabel("- OnDrag");
+            }
+            else {
+                ui.DrawLabelDisabled("No events registered");
+            }
+            ui.Unindent(indentAmount);
+            ui.DrawSeparatorText("Layout Info");
+
+            // Layout information
+            ui.DrawLabel(FU::formatString("Layout pos: {}", m_layoutPosition));
+            ui.DrawLabel(FU::formatString("Layout size: {}", m_layoutSize));
+            ui.DrawLabel(FU::formatString("Layout rot: {}", m_rotation));
+            ui.DrawLabel(FU::formatString("Max size: {}", m_maxSize));
+            ui.DrawLabel(FU::formatString("Min size: {}", m_minSize));
+
+            if (ui.DrawCollapsingHeader("Layout")) {
+                ui.Indent(indentAmount);
+                ui.DrawLabel(FU::formatString("Type: {}", m_layoutType));
+                if (m_layoutType == LayoutType::Flex) {
+                    ui.DrawLabel(FU::formatString("Direction: {}", m_layoutDirection));
+                    ui.DrawLabel(FU::formatString("Wrap: {}", m_layoutWrap));
+                    ui.DrawLabel(FU::formatString("Layout: {} {}", m_layoutMajor, m_layoutMinor));
+                    ui.DrawLabel(FU::formatString("Item: {}", m_layoutItem));
+                }
+                ui.Unindent(indentAmount);
+            }
+            ui.DrawSeparatorText("Desired Size/Position");
+
+            ui.DrawLabel(FU::formatString("Desired pos: {}", m_desiredPosition));
+            ui.DrawLabel(FU::formatString(
+                "Desired size: [{}{}, {}{}]",
+                m_desiredSize.x, m_sizeUnits[0],
+                m_desiredSize.y, m_sizeUnits[1]
+            ));
+            ui.DrawLabel(FU::formatString(
+                "Desired pixel size: [{}px, {}px]",
+                m_desiredPixelSize.x, m_desiredPixelSize.y
+            ));
+            ui.DrawSeparatorText("Styling");
+
+            ui.DrawLabel(FU::formatString("Padding: {}", m_padding));
+            ui.DrawLabel(FU::formatString("Margin: {}", m_margin));
+            ui.DrawLabel(FU::formatString("BG color: {}", m_backgroundColor));
+            ui.DrawLabel(FU::formatString("Border color: {}", m_borderColor));
+            ui.DrawLabel(FU::formatString("Border Radius: {}", m_borderRadius));
+            ui.DrawLabel(FU::formatString("Border Size: {}", m_borderSize));
+            ui.DrawSeparatorText("Animation/Timing");
+
+            ui.DrawLabel(FU::formatString("Duration: {}s", m_duration));
+        }
+    }
+
     const std::string& ElementBase::GetName() const {
         return m_elementName; 
     }

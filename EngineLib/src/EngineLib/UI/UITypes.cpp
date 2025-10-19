@@ -23,6 +23,17 @@ namespace EngineCore::UI {
         return LayoutType::Unknown;
     }
 
+    std::string ToString(LayoutType layoutType) {
+        switch (layoutType)
+        {
+        case EngineCore::UI::LayoutType::Unknown: return "Unknown";
+        case EngineCore::UI::LayoutType::None: return "none";
+        case EngineCore::UI::LayoutType::Flex: return "flex";
+        case EngineCore::UI::LayoutType::Grid: return "grid";
+        default: return "Unknown";
+        }
+    }
+
     namespace Flex {
     
         LayoutDirection ToLayoutDirection(const std::string& dirStr) {
@@ -43,6 +54,37 @@ namespace EngineCore::UI {
             if (FormatUtils::toLowerCase(alignStr) == "space-evenly") return LayoutAlign::SpaceEvenly;
             if (FormatUtils::toLowerCase(alignStr) == "space-around") return LayoutAlign::SpaceAround;
             return LayoutAlign::Start;
+        }
+
+        std::string ToString(LayoutDirection layoutDirection) {
+            switch (layoutDirection)
+            {
+            case EngineCore::UI::Flex::LayoutDirection::Row: return "row";
+            case EngineCore::UI::Flex::LayoutDirection::Column: return "column";
+            default: return "Unknown";
+            }
+        }
+
+        std::string ToString(LayoutWrap layoutWrap) {
+            switch (layoutWrap)
+            {
+            case EngineCore::UI::Flex::LayoutWrap::None: return "none";
+            case EngineCore::UI::Flex::LayoutWrap::Wrap: return "wrap";
+            default: return "Unknown";
+            }
+        }
+
+        std::string ToString(LayoutAlign layoutAlign) {
+            switch (layoutAlign)
+            {
+            case EngineCore::UI::Flex::LayoutAlign::Start: return "start";
+            case EngineCore::UI::Flex::LayoutAlign::Center: return "center";
+            case EngineCore::UI::Flex::LayoutAlign::End: return "end";
+            case EngineCore::UI::Flex::LayoutAlign::Stretch: return "stretch";
+            case EngineCore::UI::Flex::LayoutAlign::SpaceEvenly: return "space-evenly";
+            case EngineCore::UI::Flex::LayoutAlign::SpaceAround: return "space-around";
+            default: return "Unknown";
+            }
         }
 
     }

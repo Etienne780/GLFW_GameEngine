@@ -4,10 +4,10 @@
 
 namespace EngineCore::UI {
 
-    class UIElementDetailRendererImGui : public IUIElementDetailRenderer {
+    class ImGuiUIElementDetailRenderer : public IUIElementDetailRenderer {
     public:
-        UIElementDetailRendererImGui() = default;
-        ~UIElementDetailRendererImGui() override = default;
+        ImGuiUIElementDetailRenderer() = default;
+        ~ImGuiUIElementDetailRenderer() override = default;
 
         // --- Labels ---
         void DrawLabel(const std::string& text) override;
@@ -15,9 +15,10 @@ namespace EngineCore::UI {
 
         // --- Separators ---
         void DrawSeparator() override;
+        void DrawSeparatorText(const std::string& label) override;
 
         // --- Collapsing headers ---
-        bool DrawCollapsingHeader(const std::string& text, bool defaultOpen = true) override;
+        bool DrawCollapsingHeader(const std::string& text, bool defaultOpen = false) override;
 
         // --- Indentation ---
         void Indent(float width = 0.0f) override;

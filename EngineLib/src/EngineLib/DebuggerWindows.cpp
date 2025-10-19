@@ -219,7 +219,7 @@ namespace EngineCore {
             auto& activeCam = sortedCameras[currentIndex];
             if (activeCam) {
                 m_debugger->SetMainCamera(activeCam);
-                activeCam->OnInspectorGUIImpl(m_uiRenderer);
+                activeCam->OnInspectorGUIImpl(m_uiComponentRenderer);
             }
         }
 
@@ -337,7 +337,7 @@ namespace EngineCore {
                     }
 
                     if (ImGui::CollapsingHeader(comp->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
-                        comp->OnInspectorGUIImpl(m_uiRenderer);
+                        comp->OnInspectorGUIImpl(m_uiComponentRenderer);
                     }
 
                     ImGui::PopID();
@@ -489,6 +489,8 @@ namespace EngineCore {
             ImGui::SetNextWindowSize(ImVec2(m_uiHierarchyState.z, m_uiHierarchyState.w));
         }
 
+        static bool showUIElementDetails = false;
+        auto selected = m_debugger->m_uiSelectedElement;
         ImGui::Begin("UI Hierarchy", &m_uiInspectorWin);
 
         bool frozen = UIManager::GetFreezUI();
@@ -499,18 +501,38 @@ namespace EngineCore {
             ImGui::TextColored(frozen ? ImVec4(1, 0, 0, 1) : ImVec4(0, 1, 0, 1),
                 frozen ? "[Frozen]" : "[Running]");
 
-            // Freeze toggle
+            // Button to open detail popup
+
+            ImGui::BeginDisabled(selected == nullptr);
+            if (ImGui::Button("Show Details")) {
+                showUIElementDetails = true;
+            }
+            ImGui::EndDisabled();
+
+
+            // --- Popup Window ---
+            if (showUIElementDetails && selected) {
+                ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+                ImGui::SetNextWindowSizeConstraints(ImVec2(400, 300), ImVec2(800, 600));
+
+                if (ImGui::Begin("UI Element Details", &showUIElementDetails, ImGuiWindowFlags_HorizontalScrollbar)) {
+                    // Scrollbar für langen Inhalt
+                    ImGui::BeginChild("DetailsScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+                    selected->OnUIElementGUI(m_uiElementDetailRenderer);
+                    ImGui::EndChild();
+                }
+                ImGui::End();
+            }
+
             if (ImGui::Checkbox("Freeze UI", &frozen)) {
                 UIManager::SetFreezUI(frozen);
             }
 
-            // Step forward buttons
             ImGui::BeginDisabled(!frozen);
             static int stepAmount = 1;
             if (ImGui::Button("Step UI Forward")) {
                 UIManager::StepUIForward(stepAmount);
             }
-
             ImGui::SameLine();
             ImGui::SetNextItemWidth(75);
             ImGui::InputInt("Step Amount", &stepAmount, 1, 10);
@@ -519,42 +541,31 @@ namespace EngineCore {
             ImGui::Text("Current Step Amount: %d", UIManager::GetStepUIAmount());
 
             if (ImGui::CollapsingHeader("UI Force State##UIControlsHeader")) {
-                auto selected = m_debugger->m_uiSelectedElement;
                 if (selected) {
                     unsigned int id = selected->GetID().value;
                     ImGui::Text("Selected: %s (id=%u)", selected->GetName().c_str(), id);
 
-                    // Available states (including "none")
+                    // Forced state combo
                     static const char* stateNames[] = { "(no forced state)", "Normal", "Hovered", "Pressed", "Focused", "Disabled" };
-                    static UI::State states[] = {
-                        UI::State::Normal, UI::State::Hovered, UI::State::Pressed, UI::State::Focused, UI::State::Disabled
-                    };
+                    static UI::State states[] = { UI::State::Normal, UI::State::Hovered, UI::State::Pressed, UI::State::Focused, UI::State::Disabled };
 
                     UI::State forcedState;
                     int currentIndex = 0;
                     if (UIManager::TryGetForceState(selected->GetID(), forcedState)) {
                         for (int i = 0; i < IM_ARRAYSIZE(states); ++i) {
-                            if (states[i] == forcedState) {
-                                currentIndex = i + 1; // +1 because index 0 is "(no forced state)"
-                                break;
-                            }
+                            if (states[i] == forcedState) { currentIndex = i + 1; break; }
                         }
                     }
 
-                    // Persistent combo selection
                     static int selectedIndex = 0;
                     selectedIndex = currentIndex;
 
                     ImGui::SetNextItemWidth(160);
                     if (ImGui::Combo("Forced State", &selectedIndex, stateNames, IM_ARRAYSIZE(stateNames))) {
-                        if (selectedIndex == 0) {
-                            // Remove forced state
+                        if (selectedIndex == 0)
                             UIManager::RemoveForceState(selected->GetID());
-                        }
-                        else {
-                            // Apply selected forced state
+                        else
                             UIManager::SetForceState(selected->GetID(), states[selectedIndex - 1]);
-                        }
                     }
                 }
                 else {
@@ -569,6 +580,7 @@ namespace EngineCore {
         }
 
         ImGui::Separator();
+
         // --- UI Hierarchy ---
         ImGui::BeginChild("UIHierarchyChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
         const auto& roots = UIManager::GetAllRoots();

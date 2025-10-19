@@ -48,6 +48,8 @@ namespace EngineCore::UI {
     */
     LayoutType ToLayoutType(const std::string& typeStr);
 
+    std::string ToString(LayoutType layoutType);
+
     namespace Flex {
 
         /**
@@ -97,6 +99,10 @@ namespace EngineCore::UI {
         * @return Corresponding LayoutAlign enum, defaults to Start if invalid.
         */
         LayoutAlign ToLayoutAlign(const std::string& alignStr);
+
+        std::string ToString(LayoutDirection layoutDirection);
+        std::string ToString(LayoutWrap layoutWrap);
+        std::string ToString(LayoutAlign layoutAlign);
 
     }
 
@@ -309,6 +315,36 @@ static inline std::string FormatUtils::toString<EngineCore::UI::StyleValue::Type
     case T::Multi: return "Multi";
     default: return "UNKNOWN_TYPE";
     }
+}
+
+template<>
+static inline std::string FormatUtils::toString<EngineCore::UI::State>(EngineCore::UI::State value) {
+    using namespace EngineCore::UI;
+    return StateToString(value);
+}
+
+template<>
+static inline std::string FormatUtils::toString<EngineCore::UI::LayoutType>(EngineCore::UI::LayoutType value) {
+    using namespace EngineCore::UI;
+    return ToString(value);
+}
+
+template<>
+static inline std::string FormatUtils::toString<EngineCore::UI::Flex::LayoutDirection>(EngineCore::UI::Flex::LayoutDirection value) {
+    using namespace EngineCore::UI;
+    return Flex::ToString(value);
+}
+
+template<>
+static inline std::string FormatUtils::toString<EngineCore::UI::Flex::LayoutWrap>(EngineCore::UI::Flex::LayoutWrap value) {
+    using namespace EngineCore::UI;
+    return Flex::ToString(value);
+}
+
+template<>
+static inline std::string FormatUtils::toString<EngineCore::UI::Flex::LayoutAlign>(EngineCore::UI::Flex::LayoutAlign value) {
+    using namespace EngineCore::UI;
+    return Flex::ToString(value);
 }
 
 template<>

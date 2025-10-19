@@ -13,6 +13,7 @@
 #include "EngineLib/EngineTypes.h"
 #include "EngineLib/UI/LayoutCalc/FlexLayoutCalculator.h"
 #include "EngineLib/UI/LayoutCalc/GridLayoutCalculator.h"
+#include "EngineLib/UI/IUIElementDetailRenderer.h"
 #include "../Style.h"
 
 namespace EngineCore {
@@ -46,6 +47,11 @@ namespace EngineCore::UI {
 
             return std::static_pointer_cast<T>(basePtr);
         }
+
+        /*
+        * @brief Displays UIElement detail
+        */
+        void OnUIElementGUI(IUIElementDetailRenderer& ui);
 
         const std::string& GetName() const;
         UIElementID GetID() const;
@@ -187,6 +193,8 @@ namespace EngineCore::UI {
         * @brief This function is called only once for every class. It registers all attributes this element can have and what they do.
         */
         virtual void RegisterAttributes() {};
+
+        virtual void OnUIElementGUIImpl(IUIElementDetailRenderer& ui) {};
 
         void CallOnClick();
         void CallOnHover();

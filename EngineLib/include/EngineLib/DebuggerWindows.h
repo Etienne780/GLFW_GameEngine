@@ -3,6 +3,7 @@
 #pragma once
 #include <CoreLib/Math/Vector4.h>
 #include "ComponentRendererImGui.h"
+#include "UI/UIElementDetailRendererImGui.h"
 #include "EngineLib/UI/Elements/Element.h"
 
 using SubscriberID = size_t;
@@ -34,7 +35,8 @@ namespace EngineCore {
 		void IconDisplayWindow();
 		
 	private:
-		ImGuiRenderer m_uiRenderer;
+		ImGuiComponentRenderer m_uiComponentRenderer;
+		UI::ImGuiUIElementDetailRenderer m_uiElementDetailRenderer;
 		Debugger* m_debugger = nullptr;
 
 		ImFont* m_smallIconFont = nullptr;
@@ -58,7 +60,6 @@ namespace EngineCore {
 		bool m_firstIconWin = true;
 
 		// pos, size				x	y	w	h
-
 		Vector4 m_statsWinState = { 80, 30, 250, 150 };
 		Vector4 m_cameraWinState = { 80, 50, 300, 400 };
 		Vector4 m_hierarchyWinState = { 80, 70, 250, 400 };

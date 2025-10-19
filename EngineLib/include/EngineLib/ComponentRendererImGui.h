@@ -6,7 +6,7 @@ class Vector4;
 
 namespace EngineCore {
 
-    class ImGuiRenderer : public IComponentUIRenderer {
+    class ImGuiComponentRenderer : public IComponentUIRenderer {
     public:
         // Labels
         void DrawLabel(const std::string& text) override;
