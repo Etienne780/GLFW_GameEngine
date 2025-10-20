@@ -268,7 +268,7 @@ namespace EngineCore::UI {
         * @return True if successful, false if type mismatch.
         */
         template<typename T>
-        bool TryGetValue(T& out, const std::string& attributeName) const {
+        bool TryGetValue(T& out, const std::string& attributeName = "-") const {
             if (std::holds_alternative<T>(m_value)) {
                 out = std::get<T>(m_value);
                 return true;
