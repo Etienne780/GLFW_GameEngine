@@ -215,19 +215,19 @@ namespace EngineCore::UI {
     #pragma region class StyleValue
 
     StyleValue::StyleValue() 
-        : valueType(Type::Float), value(0.0f) {
+        : m_valueType(Type::Float), m_value(0.0f) {
     }
 
     StyleValue::StyleValue(int v, StyleUnit::Unit unit) 
-        : valueType(Type::Int), value(v), unitTypes({ unit }) {
+        : m_valueType(Type::Int), m_value(v), m_unitTypes({ unit }) {
     }
 
     StyleValue::StyleValue(float v, StyleUnit::Unit unit) 
-        : valueType(Type::Float), value(v), unitTypes({ unit }) {
+        : m_valueType(Type::Float), m_value(v), m_unitTypes({ unit }) {
     }
 
     StyleValue::StyleValue(const Vector2& v, std::vector<StyleUnit::Unit> unit) 
-        : valueType(Type::Vector2), value(v), unitTypes(unit) {
+        : m_valueType(Type::Vector2), m_value(v), m_unitTypes(unit) {
 #ifndef NDEBUG
             if (unit.size() != 2)
                 Log::Warn("StyleValue: expected exactly 2 units for Vector2, but got {}. This may lead to inconsistent behavior!", 
@@ -236,7 +236,7 @@ namespace EngineCore::UI {
     }
 
     StyleValue::StyleValue(const Vector3& v, std::vector<StyleUnit::Unit> unit) 
-        : valueType(Type::Vector3), value(v), unitTypes(unit) {
+        : m_valueType(Type::Vector3), m_value(v), m_unitTypes(unit) {
 #ifndef NDEBUG
             if (unit.size() != 3)
                 Log::Warn("StyleValue: expected exactly 3 units for Vector3, but got {}. This may lead to inconsistent behavior!", 
@@ -245,7 +245,7 @@ namespace EngineCore::UI {
     }
 
     StyleValue::StyleValue(const Vector4& v, std::vector<StyleUnit::Unit> unit) 
-        : valueType(Type::Vector4), value(v), unitTypes(unit) {
+        : m_valueType(Type::Vector4), m_value(v), m_unitTypes(unit) {
 #ifndef NDEBUG
             if (unit.size() != 4)
                 Log::Warn("StyleValue: expected exactly 4 units for Vector4, but got {}. This may lead to inconsistent behavior!", unit.size());
@@ -253,15 +253,19 @@ namespace EngineCore::UI {
     }
 
     StyleValue::StyleValue(const std::string& s) 
-        : valueType(Type::String), value(s) {
+        : m_valueType(Type::String), m_value(s) {
     }
 
     StyleValue::StyleValue(const char* s) 
-        : valueType(Type::String), value(std::string(s)) {
+        : m_valueType(Type::String), m_value(std::string(s)) {
     }
 
     StyleValue::StyleValue(std::vector<StyleValue> v) 
-        : valueType(Type::Multi), value(std::move(v)) {
+        : m_valueType(Type::Multi), m_value(std::move(v)) {
+    }
+
+    StyleValue::Type StyleValue::GetType() const {
+        return m_valueType;
     }
 
     StyleUnit::Unit StyleValue::GetUnit() const {
@@ -269,11 +273,23 @@ namespace EngineCore::UI {
     }
     
     StyleUnit::Unit StyleValue::GetUnit(size_t index) const {
-        if (index < unitTypes.size())
-            return unitTypes[index];
-        Log::Info("StyleValue: index '{}' out of bounds for size '{}' (Type='{}', Units={})",
-            index, unitTypes.size(), valueType, unitTypes);
+        if (index < m_unitTypes.size())
+            return m_unitTypes[index];
+        Log::Error("StyleValue: index '{}' out of bounds for size '{}' (Type='{}', Units={})",
+            index, m_unitTypes.size(), m_valueType, m_unitTypes);
         return StyleUnit::Unit::Unknown;
+    }
+
+    std::vector<StyleUnit::Unit> StyleValue::GetAllUnits() {
+        return m_unitTypes;
+    }
+
+    const std::vector<StyleUnit::Unit>& StyleValue::GetAllUnits() const {
+        return m_unitTypes;
+    }
+
+    size_t StyleValue::GetNumberOfUnits() const {
+        return m_unitTypes.size();
     }
     
     const char* StyleValue::GetReadableTypeName(const std::type_info& type) {

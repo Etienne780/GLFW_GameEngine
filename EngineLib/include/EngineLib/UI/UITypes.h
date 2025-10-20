@@ -203,13 +203,7 @@ namespace EngineCore::UI {
 
     class StyleValue {
     public:
-        using ValueVariant = std::variant<int, float, Vector2, Vector3, Vector4, std::string, std::vector<StyleValue>>;
-        /**
-        * @brief Defines the underlying type of the StyleValue.
-        */
-        enum class Type { Int, Float, Vector2, Vector3, Vector4, String, Multi } valueType = Type::Float;
-        std::vector<StyleUnit::Unit > unitTypes = { StyleUnit::Unit::Unknown };
-        ValueVariant value;
+        enum class Type { Int, Float, Vector2, Vector3, Vector4, String, Multi };
 
         /**
         * @brief Default constructor, initializes value as float(0.0f).
@@ -269,15 +263,22 @@ namespace EngineCore::UI {
         */
         template<typename T>
         bool TryGetValue(T& out, const std::string& attributeName) const {
-            if (std::holds_alternative<T>(value)) {
-                out = std::get<T>(value);
+            if (std::holds_alternative<T>(m_value)) {
+                out = std::get<T>(m_value);
                 return true;
             }
 
             Log::Warn("StyleValue: Could not get value of Attribute '{}', expected type '{}', got '{}'!",
-                attributeName, GetReadableTypeName(typeid(T)), valueType);
+                attributeName, GetReadableTypeName(typeid(T)), m_valueType);
             return false;
         }
+
+        /**
+        * @brief Returns the current type of the style value.
+        * @return The StyleValue::Type representing the stored data type.
+        */
+        Type GetType() const;
+
         /**
         * @brief Returns the unit associated with this value.
         * @return The primary StyleUnit::Unit value.
@@ -289,8 +290,31 @@ namespace EngineCore::UI {
         * @return The StyleUnit::Unit at the given index.
         */
         StyleUnit::Unit GetUnit(size_t index) const;
+        /**
+        * @brief Returns all units stored in this value (non-const version).
+        * @return A copy of the vector containing all StyleUnit::Unit entries.
+        */
+        std::vector<StyleUnit::Unit> GetAllUnits();
+        /**
+        * @brief Returns all units stored in this value (const version).
+        * @return A const reference to the vector containing all StyleUnit::Unit entries.
+        */
+        const std::vector<StyleUnit::Unit>& GetAllUnits() const;
+        /**
+        * @brief Returns the number of units contained in this value.
+        * @return The total count of StyleUnit::Unit entries.
+        */
+        size_t GetNumberOfUnits() const;
 
     private:
+        using ValueVariant = std::variant<int, float, Vector2, Vector3, Vector4, std::string, std::vector<StyleValue>>;
+        /**
+        * @brief Defines the underlying type of the StyleValue.
+        */
+        Type m_valueType = Type::Float;
+        std::vector<StyleUnit::Unit > m_unitTypes = { StyleUnit::Unit::Unknown };
+        ValueVariant m_value;
+
         /**
         * @brief Helper function that returns a readable type name for type_info.
         * @param type Type information.
