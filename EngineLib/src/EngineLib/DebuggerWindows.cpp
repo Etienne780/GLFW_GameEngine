@@ -518,7 +518,7 @@ namespace EngineCore {
                 if (ImGui::Begin("UI Element Details", &showUIElementDetails, ImGuiWindowFlags_HorizontalScrollbar)) {
                     // Scrollbar für langen Inhalt
                     ImGui::BeginChild("DetailsScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-                    selected->OnUIElementGUI(m_uiElementDetailRenderer);
+                    selected->OnUIElementDetailGUI(m_uiElementDetailRenderer);
                     ImGui::EndChild();
                 }
                 ImGui::End();

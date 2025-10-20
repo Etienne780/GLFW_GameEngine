@@ -51,7 +51,7 @@ namespace EngineCore::UI {
         /*
         * @brief Displays UIElement detail
         */
-        void OnUIElementGUI(IUIElementDetailRenderer& ui);
+        void OnUIElementDetailGUI(IUIElementDetailRenderer& ui);
 
         const std::string& GetName() const;
         UIElementID GetID() const;

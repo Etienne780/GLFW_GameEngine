@@ -46,7 +46,7 @@ namespace EngineCore::UI {
         m_sbo.SetParam("uSize", m_layoutSize);
     }
 
-    void ElementBase::OnUIElementGUI(IUIElementDetailRenderer& ui) {
+    void ElementBase::OnUIElementDetailGUI(IUIElementDetailRenderer& ui) {
         using FU = FormatUtils;
         float indentAmount = 15;
 
