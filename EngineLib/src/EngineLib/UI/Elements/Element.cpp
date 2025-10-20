@@ -910,7 +910,6 @@ namespace EngineCore::UI {
         m_attributesRegistered = true;
         {
             namespace att = Attribute;
-            m_layoutType;
             RegisterAttribute(att::layoutType, [](ElementBase* el, const StyleValue& val) {
                 if (std::string type; val.TryGetValue<std::string>(type, att::layoutType)) {
                     el->SetLayoutType(ToLayoutType(type));
@@ -974,7 +973,7 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::borderRadius, [](ElementBase* el, const StyleValue& val) {
                 if (Vector4 vec;  val.TryGetValue<Vector4>(vec, att::borderRadius)) {
-                    el->SetBorderRadius(vec);
+                    el->SetBorderRadius(StyleUnit::EvaluateSizeUnit(vec, val.GetAllUnits(), *el));
                 }
             });
 
@@ -982,25 +981,25 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::borderTop, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::borderTop)) {
-                    el->SetBorderTop(f);
+                    el->SetBorderTop(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::borderLeft, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::borderLeft)) {
-                    el->SetBorderLeft(f);
+                    el->SetBorderLeft(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::borderBottom, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::borderBottom)) {
-                    el->SetBorderBottom(f);
+                    el->SetBorderBottom(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::borderRight, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::borderRight)) {
-                    el->SetBorderRight(f);
+                    el->SetBorderRight(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
@@ -1010,25 +1009,25 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::marginTop, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::marginTop)) {
-                    el->SetMarginTop(f);
+                    el->SetMarginTop(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::marginRight, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::marginRight)) {
-                    el->SetMarginRight(f);
+                    el->SetMarginRight(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::marginBottom, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::marginBottom)) {
-                    el->SetMarginBottom(f);
+                    el->SetMarginBottom(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::marginLeft, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::marginLeft)) {
-                    el->SetMarginLeft(f);
+                    el->SetMarginLeft(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
@@ -1038,29 +1037,35 @@ namespace EngineCore::UI {
 
             RegisterAttribute(att::paddingTop, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::paddingTop)) {
-                    el->SetPaddingTop(f);
+                    el->SetPaddingTop(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::paddingRight, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::paddingRight)) {
-                    el->SetPaddingRight(f);
+                    el->SetPaddingRight(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::paddingBottom, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::paddingBottom)) {
-                    el->SetPaddingBottom(f);
+                    el->SetPaddingBottom(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             RegisterAttribute(att::paddingLeft, [](ElementBase* el, const StyleValue& val) {
                 if (float f;  val.TryGetValue<float>(f, att::paddingLeft)) {
-                    el->SetPaddingLeft(f);
+                    el->SetPaddingLeft(StyleUnit::EvaluateSizeUnit(f, val.GetUnit(), *el));
                 }
             });
 
             #pragma endregion
+
+            RegisterAttribute(att::duration, [](ElementBase* el, const StyleValue& val) {
+                if (float f;  val.TryGetValue<float>(f, att::duration)) {
+                    el->SetDuration(StyleUnit::EvaluateTimeUnit(f, val.GetUnit()));
+                }
+            });
 
             RegisterAttributes();
         }
