@@ -140,6 +140,9 @@ namespace EngineCore::UI {
         * @return Converted value in pixels.
         */
         float EvaluateSizeUnit(float value, Unit unit, const ElementBase& element);
+        Vector2 EvaluateSizeUnit(const Vector2& value, const std::vector<Unit>& units, const ElementBase& element);
+        Vector3 EvaluateSizeUnit(const Vector3& value, const std::vector<Unit>& units, const ElementBase& element);
+        Vector4 EvaluateSizeUnit(const Vector4& value, const std::vector<Unit>& units, const ElementBase& element);
 
         /**
         * @brief Converts a numerical value expressed in a specific unit into seconds.
@@ -148,6 +151,9 @@ namespace EngineCore::UI {
         * @return Converted value in seconds.
         */
         float EvaluateTimeUnit(float value, Unit unit);
+        Vector2 EvaluateTimeUnit(const Vector2& value, const std::vector<Unit>& units);
+        Vector3 EvaluateTimeUnit(const Vector3& value, const std::vector<Unit>& units);
+        Vector4 EvaluateTimeUnit(const Vector4& value, const std::vector<Unit>& units);
 
         /**
         * @brief Returns a list of all size-related unit strings (e.g., px, %w, %h, etc.).

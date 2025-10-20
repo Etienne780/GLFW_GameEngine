@@ -122,6 +122,66 @@ namespace EngineCore::UI {
             return value;
         }
 
+        Vector2 EvaluateSizeUnit(const Vector2& value, const std::vector<Unit>& units, const ElementBase& element) {
+            if (units.size() < 2) {
+#ifndef NDEBUG
+                Log::Warn("StyleUnit::EvaluateSizeUnit(Vector2): Expected at least 2 units, but got '{}'! Using the first unit for all dimensions. Units = {}", units.size(), units);
+#endif
+                return Vector2(EvaluateSizeUnit(value.x, units[0], element),
+                    EvaluateSizeUnit(value.y, units[0], element));
+            }
+            else {
+#ifndef NDEBUG
+                if (units.size() > 2)
+                    Log::Warn("StyleUnit::EvaluateSizeUnit(Vector2): Expected exactly 2 units, but received '{}'! Extra units will be ignored. Units = {}", units.size(), units);
+#endif
+                return Vector2(EvaluateSizeUnit(value.x, units[0], element),
+                    EvaluateSizeUnit(value.y, units[1], element));
+            }
+        }
+
+        Vector3 EvaluateSizeUnit(const Vector3& value, const std::vector<Unit>& units, const ElementBase& element) {
+            if (units.size() < 3) {
+#ifndef NDEBUG
+                Log::Warn("StyleUnit::EvaluateSizeUnit(Vector3): Expected at least 3 units, but got '{}'! Using the first unit for all dimensions. Units = {}", units.size(), units);
+#endif
+                return Vector3(EvaluateSizeUnit(value.x, units[0], element),
+                    EvaluateSizeUnit(value.y, units[0], element),
+                    EvaluateSizeUnit(value.z, units[0], element));
+            }
+            else {
+#ifndef NDEBUG
+                if (units.size() > 3)
+                    Log::Warn("StyleUnit::EvaluateSizeUnit(Vector3): Expected exactly 3 units, but received '{}'! Extra units will be ignored. Units = {}", units.size(), units);
+#endif
+                return Vector3(EvaluateSizeUnit(value.x, units[0], element),
+                    EvaluateSizeUnit(value.y, units[1], element),
+                    EvaluateSizeUnit(value.z, units[2], element));
+            }
+        }
+
+        Vector4 EvaluateSizeUnit(const Vector4& value, const std::vector<Unit>& units, const ElementBase& element) {
+            if (units.size() < 4) {
+#ifndef NDEBUG
+                Log::Warn("StyleUnit::EvaluateSizeUnit(Vector4): Expected at least 4 units, but got '{}'! Using the first unit for all dimensions. Units = {}", units.size(), units);
+#endif
+                return Vector4(EvaluateSizeUnit(value.x, units[0], element),
+                    EvaluateSizeUnit(value.y, units[0], element),
+                    EvaluateSizeUnit(value.z, units[0], element),
+                    EvaluateSizeUnit(value.w, units[0], element));
+            }
+            else {
+#ifndef NDEBUG
+                if (units.size() > 4)
+                    Log::Warn("StyleUnit::EvaluateSizeUnit(Vector4): Expected exactly 4 units, but received '{}'! Extra units will be ignored. Units = {}", units.size(), units);
+#endif
+                return Vector4(EvaluateSizeUnit(value.x, units[0], element),
+                    EvaluateSizeUnit(value.y, units[1], element),
+                    EvaluateSizeUnit(value.z, units[2], element),
+                    EvaluateSizeUnit(value.w, units[3], element));
+            }
+        }
+
         float EvaluateTimeUnit(float value, Unit unit) {
             switch (unit)
             {
@@ -146,6 +206,66 @@ namespace EngineCore::UI {
             }
 
             return value;
+        }
+
+        Vector2 EvaluateTimeUnit(const Vector2& value, const std::vector<Unit>& units) {
+            if (units.size() < 2) {
+#ifndef NDEBUG
+                Log::Warn("StyleUnit::EvaluateTimeUnit(Vector2): Expected at least 2 units, but got '{}'! Using the first unit for all dimensions. Units = {}", units.size(), units);
+#endif
+                return Vector2(EvaluateTimeUnit(value.x, units[0]),
+                    EvaluateTimeUnit(value.y, units[0]));
+            }
+            else {
+#ifndef NDEBUG
+                if (units.size() > 2)
+                    Log::Warn("StyleUnit::EvaluateTimeUnit(Vector2): Expected exactly 2 units, but received '{}'! Extra units will be ignored. Units = {}", units.size(), units);
+#endif
+                return Vector2(EvaluateTimeUnit(value.x, units[0]),
+                    EvaluateTimeUnit(value.y, units[1]));
+            }
+        }
+
+        Vector3 EvaluateTimeUnit(const Vector3& value, const std::vector<Unit>& units) {
+            if (units.size() < 3) {
+#ifndef NDEBUG
+                Log::Warn("StyleUnit::EvaluateTimeUnit(Vector3): Expected at least 3 units, but got '{}'! Using the first unit for all dimensions. Units = {}", units.size(), units);
+#endif
+                return Vector3(EvaluateTimeUnit(value.x, units[0]),
+                    EvaluateTimeUnit(value.y, units[0]),
+                    EvaluateTimeUnit(value.z, units[0]));
+            }
+            else {
+#ifndef NDEBUG
+                if (units.size() > 3)
+                    Log::Warn("StyleUnit::EvaluateTimeUnit(Vector3): Expected exactly 3 units, but received '{}'! Extra units will be ignored. Units = {}", units.size(), units);
+#endif
+                return Vector3(EvaluateTimeUnit(value.x, units[0]),
+                    EvaluateTimeUnit(value.y, units[1]),
+                    EvaluateTimeUnit(value.z, units[2]));
+            }
+        }
+
+        Vector4 EvaluateTimeUnit(const Vector4& value, const std::vector<Unit>& units) {
+            if (units.size() < 4) {
+#ifndef NDEBUG
+                Log::Warn("StyleUnit::EvaluateTimeUnit(Vector4): Expected at least 4 units, but got '{}'! Using the first unit for all dimensions. Units = {}", units.size(), units);
+#endif
+                return Vector4(EvaluateTimeUnit(value.x, units[0]),
+                    EvaluateTimeUnit(value.y, units[0]),
+                    EvaluateTimeUnit(value.z, units[0]),
+                    EvaluateTimeUnit(value.w, units[0]));
+            }
+            else {
+#ifndef NDEBUG
+                if (units.size() > 4)
+                    Log::Warn("StyleUnit::EvaluateTimeUnit(Vector4): Expected exactly 4 units, but received '{}'! Extra units will be ignored. Units = {}", units.size(), units);
+#endif
+                return Vector4(EvaluateTimeUnit(value.x, units[0]),
+                    EvaluateTimeUnit(value.y, units[1]),
+                    EvaluateTimeUnit(value.z, units[2]),
+                    EvaluateTimeUnit(value.w, units[3]));
+            }
         }
 
         const std::vector<std::string>& GetSizeUnitStrings() {
