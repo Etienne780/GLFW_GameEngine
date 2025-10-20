@@ -17,7 +17,7 @@ namespace EngineCore {
 	void UIManager::Init() {
         m_renderer = Renderer::GetInstance();
         UI::Init::InitAttributes();
-       
+        m_rootStyle = UI::Style::Create("root");
         BeginRootElement();
 	}
 
@@ -232,7 +232,7 @@ namespace EngineCore {
 
     void UIManager::BeginRootElement() {
         // creates the base object and sets its base values
-        m_rootElement = Begin<UI::Panel>();
+        m_rootElement = Begin<UI::Panel>(m_rootStyle);
         m_rootElement->SetLayoutSize(m_windowSize);
 
         // updates the root element once

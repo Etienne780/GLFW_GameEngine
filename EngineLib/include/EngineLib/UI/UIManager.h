@@ -134,6 +134,7 @@ namespace EngineCore {
 		static inline size_t m_elementCount = 0;
 		static inline RenderLayerID m_renderLayerID{ ENGINE_INVALID_ID };
 
+		static inline std::shared_ptr<UI::Style> m_rootStyle;
 		static inline std::shared_ptr<UI::ElementBase> m_rootElement;
 		static inline std::vector<std::shared_ptr<UI::ElementBase>> m_roots;
 		static inline std::stack<std::shared_ptr<UI::ElementBase>> m_elementStack;// is used for creating ui hierarchy
