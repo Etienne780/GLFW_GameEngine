@@ -182,6 +182,7 @@
     <ClInclude Include="include\CoreLib\ColorUtils.h" />
     <ClInclude Include="include\CoreLib\ConversionUtils.h" />
     <ClInclude Include="include\CoreLib\File.h" />
+    <ClInclude Include="include\CoreLib\MatchSet.h" />
     <ClInclude Include="include\CoreLib\Math.h" />
     <ClInclude Include="include\CoreLib\FormatUtils.h" />
     <ClInclude Include="include\CoreLib\Log.h" />

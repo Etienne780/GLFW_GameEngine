@@ -101,5 +101,8 @@
     <ClInclude Include="include\CoreLib\Algorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\CoreLib\MatchSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
