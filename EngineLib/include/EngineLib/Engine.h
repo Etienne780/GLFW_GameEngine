@@ -29,6 +29,7 @@
 #include "EngineLib/RenderLayerManager.h"
 #include "EngineLib/FontManager.h"
 #include "EngineLib/UI.h"
+#include "EngineLib/Profiler.h"
 
 namespace EngineCore {
 
