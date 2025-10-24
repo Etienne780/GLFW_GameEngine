@@ -8,7 +8,7 @@ namespace EngineCore {
 
 	public:
 		// Gets the current frame count of the programm
-		static int GetFrameCount();
+		static size_t GetFrameCount();
 		// Gets the time since the programm started in seconds
 		static float GetTime();
 		// Gets the time diff between current frame and last frame time in seconds
@@ -26,6 +26,6 @@ namespace EngineCore {
 
 		static inline double m_lastFrameTimeSec = 0.0;
 		static inline double m_deltaTimeSec = 0.0;
-		static inline unsigned int m_frameCount = 0;// maybe std::uint64_t
+		static inline size_t m_frameCount = 0;
 	};
 }

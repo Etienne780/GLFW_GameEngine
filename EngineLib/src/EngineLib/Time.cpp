@@ -19,7 +19,7 @@ namespace EngineCore {
 		m_deltaTimeSec = currentTimeSec - m_lastFrameTimeSec;
 	}
 
-	int Time::GetFrameCount() {
+	size_t Time::GetFrameCount() {
 		return m_frameCount;
 	}
 
