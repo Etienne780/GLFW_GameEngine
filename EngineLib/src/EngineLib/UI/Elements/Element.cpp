@@ -1159,10 +1159,8 @@ namespace EngineCore::UI {
             });
 
             RegisterAttribute(att::visibility, [](ElementBase* el, const StyleValue& val) {
-                if (std::string s;  val.TryGetValue<std::string>(s, att::visibility)) {
-                    // should not return a string. instead return a int for better performance
-                    // needs new string attribute that maps string values to number. reduce string compar
-                    el->SetVisibility(s != "hidden");
+                if (int i;  val.TryGetValue<int>(i, att::visibility)) {
+                    el->SetVisibility(i == 0);
                 }
             });
 

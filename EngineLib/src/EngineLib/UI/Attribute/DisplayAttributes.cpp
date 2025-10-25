@@ -9,14 +9,14 @@
 
 namespace  {
 
-    const StyleAttribute Visibility = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute Visibility = AttributeHelper::MakeIndexedAttribute(
         Attribute::visibility,
         "Visibility of the element and its childs, still effects layouting",
         { "visible", "hidden" },
         "visible"
     );
     
-    const StyleAttribute Overflow = AttributeHelper::MakeSimpleStringAttribute(
+    const StyleAttribute Overflow = AttributeHelper::MakeIndexedAttribute(
         Attribute::overflow,
         "Controls what happens when the element's content is larger than its available space.",
         { "hidden", "none" },

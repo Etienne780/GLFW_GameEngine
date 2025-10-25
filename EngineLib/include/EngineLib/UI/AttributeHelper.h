@@ -142,6 +142,25 @@ namespace EngineCore::UI {
 		}
 
 		/**
+		* @brief Checks whether a value exists in a given list and optionally returns its index. If the value is not found, outIndex is left unmodified.
+		*
+		* @tparam T The type of elements in the list
+		* @param list The list to search in
+		* @param value The value to check for
+		* @param outIndex Reference to a variable that will store the index of the value if found
+		* @return True if the value exists in the list, false otherwise
+		*/
+		template<typename T>
+		static bool ListContains(const std::vector<T>& list, const T& value, size_t& outIndex) {
+			auto it = std::find(list.begin(), list.end(), value);
+			if (it != list.end()) {
+				outIndex = std::distance(list.begin(), it);
+				return true;
+			}
+			return false;
+		}
+
+		/**
 		* @brief Creates a simple string attribute
 		* @param name The name of the attribute
 		* @param description A description of the attribute
@@ -154,6 +173,12 @@ namespace EngineCore::UI {
 			const char* description,
 			std::vector<std::string> inputs,
 			const std::string& defaultValue);
+
+		static StyleAttribute MakeIndexedAttribute(
+			const char* name,
+			const char* description,
+			std::vector<std::string> inputs,
+			std::string defaultValue);
 
 		/**
 		* @brief Creates a simple number attribute
