@@ -138,7 +138,7 @@ namespace EngineCore {
 			if (IsDead("Cant get View-Matrix")) {
 				return Matrix4x4();
 			}
-			static int lastFrame = -1;
+			
 			if (lastFrame < Time::GetFrameCount()) {
 				CreateViewMatrix();
 				lastFrame = Time::GetFrameCount();

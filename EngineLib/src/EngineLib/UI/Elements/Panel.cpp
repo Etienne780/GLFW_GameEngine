@@ -7,7 +7,6 @@ namespace EngineCore::UI {
     }
 
     void Panel::SendDrawCommand(Renderer* renderer) {
-        auto d = this;
         renderer->Submit(m_cmd);
     }
 

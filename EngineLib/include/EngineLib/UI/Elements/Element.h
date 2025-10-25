@@ -137,6 +137,7 @@ namespace EngineCore::UI {
         float GetBorderBottom() const;
         float GetBorderLeft() const;
         float GetDuration() const;
+        bool IsVisible() const;
 
         /**
         * @brief Computes the total (Desired + border + margin) size of all sibling elements except this element.
@@ -173,8 +174,11 @@ namespace EngineCore::UI {
         std::vector<std::shared_ptr<ElementBase>> m_children;
         State m_state = State::Normal;
         RenderCommand m_cmd;
-        MaterialID m_materialID{ ENGINE_INVALID_ID };
         ShaderBindObject m_sbo;
+#ifndef NDEBUG
+        RenderCommand m_cmdDebug;
+        ShaderBindObject m_sboDebug;
+#endif
 
         Callback m_onClick = nullptr;
         Callback m_onHover = nullptr;
@@ -302,6 +306,10 @@ namespace EngineCore::UI {
         void SetPaddingLeft(float left);
 
         void SetDuration(float duration);
+        /**
+        * @brief Sets the visibility of this element and its children
+        */
+        void SetVisibility(bool value);
 
         /*
         * @brief Checks whether a given point lies within the bounding box of this element.
@@ -351,13 +359,17 @@ namespace EngineCore::UI {
         Vector2 m_layoutPosition{ 0.0f, 0.0f };
         // Local rotation
         Vector3 m_rotation{ 0.0f, 0.0f, 0.0f };
-        // Calculated final size of the element including padding, border (content + padding + border)
+        // Calculated final size of the element including, border (content + border)
         Vector2 m_layoutSize{ 0.0f, 0.0f };
         Vector2 m_minSize{ 0.0f, 0.0f };
         Vector2 m_maxSize{ FLT_MAX, FLT_MAX };
 
         // Local and world transforms
         Matrix4x4 m_worldTransform;
+#ifndef NDEBUG
+        // same as m_worldTransform but starts at margin instead of at border size
+        Matrix4x4 m_worldTransformDebug;
+#endif
 
         // styling props
         LayoutType m_layoutType = LayoutType::Flex;
@@ -385,6 +397,9 @@ namespace EngineCore::UI {
         Vector4 m_borderSize{ 0, 0, 0, 0 };
         float m_duration = 0.0f;
 
+        bool m_isVisible = true;
+        bool m_isParentVisible = true;
+
         /**
         * @brief Calculates the layout-relative position (taking into account margin and alignment).
         */
@@ -411,12 +426,15 @@ namespace EngineCore::UI {
 
         void UpdateImpl();
         void SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID);
+        void SendDebugDrawCommand(Renderer* renderer, RenderLayerID renderLayerID);
         void RegisterAttributesImpl();
         void SetParent(ElementBase* elementPtr, size_t indexPos);
         void SetAttributes(const std::unordered_map<std::string, std::string>& attribute);
         void SetStyleAttributes();
         void SetLayoutSize(const Vector2& size);
         void SetLayoutSize(float x, float y);
+        void SetParentVisibility(bool value);
+        bool IsParentVisible() const;
         /*
         * @brief Calculates the desired pixels for each element. except unit %a
         * %a needs to be Calculated by the LayoutCalculater

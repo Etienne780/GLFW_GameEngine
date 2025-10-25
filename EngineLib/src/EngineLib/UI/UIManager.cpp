@@ -3,6 +3,7 @@
 #include <CoreLib/FormatUtils.h>
 #include <CoreLib/Log.h>
 
+#include "EngineLib/Time.h"
 #include "EngineLib/UI/Elements/Element.h"
 #include "EngineLib/UI/Style.h"
 #include "EngineLib/Renderer.h"
@@ -150,6 +151,8 @@ namespace EngineCore {
         return baseStyle;
     }
 
+    #pragma region Debug funcs
+
     void UIManager::SetDebug(bool value) {
         m_isDebug = value;
     }
@@ -158,30 +161,30 @@ namespace EngineCore {
         return m_isDebug;
     }
 
-    void UIManager::SetFreezUI(bool value) {
+    void UIManager::SetDebugFreezUI(bool value) {
         m_freezUI = value;
     }
 
-    bool UIManager::GetFreezUI() {
+    bool UIManager::GetDebugFreezUI() {
         return m_freezUI;
     }
 
-    void UIManager::StepUIForward() {
-        StepUIForward(1);
+    void UIManager::SetDebugStepUIForward() {
+        SetDebugStepUIForward(1);
     }
 
-    void UIManager::StepUIForward(int amount) {
+    void UIManager::SetDebugStepUIForward(int amount) {
         if (!m_freezUI)
             Log::Warn("UIManager: StepUIForward called with amount {}, but UI is not frozen. Call will have no effect.", amount);
 
         m_stepUIByAmount = amount;
     }
 
-    int UIManager::GetStepUIAmount() {
+    int UIManager::GetDebugStepUIAmount() {
         return m_stepUIByAmount;
     }
 
-    void UIManager::SetForceState(UIElementID id, UI::State state) {
+    void UIManager::SetDebugForceState(UIElementID id, UI::State state) {
 #ifndef NDEBUG
         auto element = GetElement(id);
         if (!element) {
@@ -199,7 +202,7 @@ namespace EngineCore {
 #endif
     }
 
-    void UIManager::RemoveForceState(UIElementID id) {
+    void UIManager::RemoveDebugForceState(UIElementID id) {
 #ifndef NDEBUG
         auto it = m_forceStateMap.find(id);
         if (it == m_forceStateMap.end()) {
@@ -221,7 +224,7 @@ namespace EngineCore {
 #endif
     }
 
-    bool UIManager::TryGetForceState(UIElementID id, UI::State& outState) {
+    bool UIManager::TryGetDebugForceState(UIElementID id, UI::State& outState) {
         auto it = m_forceStateMap.find(id);
         if (it == m_forceStateMap.end()) {
             return false;
@@ -229,6 +232,60 @@ namespace EngineCore {
         outState = m_forceStateMap.at(id);
         return true;
     }
+
+    void UIManager::SetDebugOverlayElement(UIElementID id) {
+        m_debugOverlayElement = id;
+    }
+
+    bool UIManager::GetDebugColorChanged() {
+        return m_debugColorChanged;
+    }
+
+    #pragma region Debug - color
+
+    void UIManager::SetDebugMarginColor(const Vector4& color) {
+        m_debugMarginColor = color;
+        m_debugColorChangedFrame = Time::GetFrameCount();
+        m_debugColorChanged = true;
+    }
+
+    void UIManager::SetDebugBorderColor(const Vector4& color) {
+        m_debugBorderColor = color;
+        m_debugColorChangedFrame = Time::GetFrameCount();
+        m_debugColorChanged = true;
+    }
+
+    void UIManager::SetDebugPaddingColor(const Vector4& color) {
+        m_debugPaddingColor = color;
+        m_debugColorChangedFrame = Time::GetFrameCount();
+        m_debugColorChanged = true;
+    }
+
+    void UIManager::SetDebugSizeColor(const Vector4& color) {
+        m_debugSizeColor = color;
+        m_debugColorChangedFrame = Time::GetFrameCount();
+        m_debugColorChanged = true;
+    }
+
+    const Vector4& UIManager::GetDebugMarginColor() {
+        return m_debugMarginColor;
+    }
+
+    const Vector4& UIManager::GetDebugBorderColor() {
+        return m_debugBorderColor;
+    }
+
+    const Vector4& UIManager::GetDebugPaddingColor() {
+        return m_debugPaddingColor;
+    }
+
+    const Vector4& UIManager::GetDebugSizeColor() {
+        return m_debugSizeColor;
+    }
+
+    #pragma endregion
+
+    #pragma endregion
 
     void UIManager::BeginRootElement() {
         // creates the base object and sets its base values
@@ -353,7 +410,7 @@ namespace EngineCore {
         if (TryGetHoverElement(element)) {
 #ifndef NDEBUG
             // forces the state of the current hoverd element (Only in debug builds)
-            if (UI::State out; TryGetForceState(element->GetID(), out)) {
+            if (UI::State out; TryGetDebugForceState(element->GetID(), out)) {
                 m_lastChangeElement->SetState(State::Normal);
                 element->SetState(out);
                 m_lastChangeElement = element;
@@ -399,12 +456,38 @@ namespace EngineCore {
 			element->SendDrawCommandImpl(m_renderer, m_renderLayerID);
 			SendChildDrawCommands(element);
 		}
+
+        for (auto& element : m_roots) {
+            if (m_debugOverlayElement == element->GetID()) {
+                element->SendDebugDrawCommand(m_renderer, m_renderLayerID);
+                break;
+            }
+            else {
+                SendChildDebugDrawCommands(element);
+            }
+        }
+
+        if (m_debugColorChanged && m_debugColorChangedFrame < Time::GetFrameCount()) {
+            m_debugColorChanged = false;
+        }
 	}
 
     void UIManager::SendChildDrawCommands(std::shared_ptr<UI::ElementBase> element) {
         for (auto& child : element->GetChildren()) {
             child->SendDrawCommandImpl(m_renderer, m_renderLayerID);
             SendChildDrawCommands(child);
+        }
+    }
+
+    void UIManager::SendChildDebugDrawCommands(std::shared_ptr<UI::ElementBase> element) {
+        for (auto& child : element->GetChildren()) {
+            if (m_debugOverlayElement == child->GetID()) {
+                child->SendDebugDrawCommand(m_renderer, m_renderLayerID);
+                break;
+            }
+            else {
+                SendChildDebugDrawCommands(child);
+            }
         }
     }
 

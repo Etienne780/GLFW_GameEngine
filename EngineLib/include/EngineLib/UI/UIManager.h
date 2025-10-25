@@ -5,6 +5,7 @@
 #include <string>
 #include <CoreLib/Log.h>
 #include <CoreLib/Math/Vector2.h>
+#include <CoreLib/Math/Vector4.h>
 #include <CoreLib/Math/Matrix4x4.h>
 
 #include "AttributeNames.h"
@@ -113,21 +114,46 @@ namespace EngineCore {
 		static void SetDebug(bool value);
 		static bool GetDebug();
 
-		static void SetFreezUI(bool value);
-		static bool GetFreezUI();
-		static void StepUIForward();
-		static void StepUIForward(int amount);
-		static int GetStepUIAmount();
+		static void SetDebugFreezUI(bool value);
+		static bool GetDebugFreezUI();
+		static void SetDebugStepUIForward();
+		static void SetDebugStepUIForward(int amount);
+		static int GetDebugStepUIAmount();
 
-		static void SetForceState(UIElementID id, UI::State state);
-		static void RemoveForceState(UIElementID id);
-		static bool TryGetForceState(UIElementID id, UI::State& outState);
+		static void SetDebugForceState(UIElementID id, UI::State state);
+		static void RemoveDebugForceState(UIElementID id);
+		static bool TryGetDebugForceState(UIElementID id, UI::State& outState);
+
+		static void SetDebugOverlayElement(UIElementID id);
+
+		/**
+		* @brief Is true for one frame after a debug color was changed like DebugMarginColor
+		*/
+		static bool GetDebugColorChanged();
+
+		static void SetDebugMarginColor(const Vector4& color);
+		static void SetDebugBorderColor(const Vector4& color);
+		static void SetDebugPaddingColor(const Vector4& color);
+		static void SetDebugSizeColor(const Vector4& color);
+
+		static const Vector4& GetDebugMarginColor();
+		static const Vector4& GetDebugBorderColor();
+		static const Vector4& GetDebugPaddingColor();
+		static const Vector4& GetDebugSizeColor();
 
 	private:
 		UIManager() = default;
 		static inline bool m_isDebug = false;
 		static inline bool m_freezUI = false;
 		static inline int m_stepUIByAmount = 0;
+
+		static inline UIElementID m_debugOverlayElement{ ENGINE_INVALID_ID };
+		static inline Vector4 m_debugMarginColor{ 1.0f, 0.0f, 0.0f, 0.5f };
+		static inline Vector4 m_debugBorderColor{ 0.0f, 1.0f, 0.0f, 0.5f };
+		static inline Vector4 m_debugPaddingColor{ 0.0f, 0.0f, 1.0f, 0.5f };
+		static inline Vector4 m_debugSizeColor{ 0.0f, 1.0f, 1.0f, 0.5f };
+		static inline size_t m_debugColorChangedFrame = 0;
+		static inline bool m_debugColorChanged = false;
 
 		static inline IDManager m_idManager;
 		static inline Renderer* m_renderer = nullptr;
@@ -178,6 +204,7 @@ namespace EngineCore {
 		// Sends the Draw Commands of the UI::Elements
 		static void SendDrawCommands();
 		static void SendChildDrawCommands(std::shared_ptr<UI::ElementBase> element);
+		static void SendChildDebugDrawCommands(std::shared_ptr<UI::ElementBase> element);
 		static float CalculateUIScaleFactor(int width, int height);
 		static void CalculateOrthograpicMatrix(int width, int height);
 		/**

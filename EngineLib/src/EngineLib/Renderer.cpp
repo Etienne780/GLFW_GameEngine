@@ -206,13 +206,11 @@ namespace EngineCore {
                     currentMaterialID.value = ENGINE_INVALID_ID;
                     continue;
                 }
-        
+
                 ShaderID newShaderID = currentMaterial->GetShaderID();
                 if (currentShaderID != newShaderID || isUI != cmd.isUI) {
                     currentShaderID = newShaderID;
                     isUI = cmd.isUI;
-                    if (isUI)
-                        isUI = true;
 
                     currentShader = currentMaterial->BindToShader();
                     if (!currentShader) {

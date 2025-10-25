@@ -10,15 +10,21 @@
 
 EngineCore::Texture2DID g_engineTextureMissingID = EngineCore::Texture2DID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::Texture2DID g_engineTextureCursedmod3ID = EngineCore::Texture2DID(EngineCore::ENGINE_INVALID_ID);
+
 EngineCore::MeshID g_engineMeshCubeID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MeshID g_engineMeshPlainID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MeshID g_engineMeshUIPlainID = EngineCore::MeshID(EngineCore::ENGINE_INVALID_ID);
+
 EngineCore::ShaderID g_engineShaderDefaultID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::ShaderID g_engineShaderDefaultTextID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::ShaderID g_engineShaderDefaultUIID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::ShaderID g_engineShaderDefaultDebugUIID = EngineCore::ShaderID(EngineCore::ENGINE_INVALID_ID);
+
 EngineCore::MaterialID g_engineMaterialDefaultID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MaterialID g_engineMaterialDefaultTextID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
 EngineCore::MaterialID g_engineMaterialDefaultUIID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
+EngineCore::MaterialID g_engineMaterialDefaultDebugUIID = EngineCore::MaterialID(EngineCore::ENGINE_INVALID_ID);
+
 EngineCore::FontID g_engineFontDefaultID = EngineCore::FontID(EngineCore::ENGINE_INVALID_ID);
 
 namespace EngineCore::ASSETS::ENGINE::TEXTURE {
@@ -36,12 +42,14 @@ namespace EngineCore::ASSETS::ENGINE::SHADER {
     ShaderID Default() { return g_engineShaderDefaultID; }
     ShaderID DefaultText() { return g_engineShaderDefaultTextID; }
     ShaderID DefaultUI() { return g_engineShaderDefaultUIID; }
+    ShaderID DefaultDebugUI() { return g_engineShaderDefaultDebugUIID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::MATERIAL {
     MaterialID Default() { return g_engineMaterialDefaultID; }
     MaterialID DefaultText() { return g_engineMaterialDefaultTextID; }
     MaterialID DefaultUI() { return g_engineMaterialDefaultUIID; }
+    MaterialID DefaultDebugUI() { return g_engineMaterialDefaultDebugUIID; }
 }
 
 namespace EngineCore::ASSETS::ENGINE::FONT {
@@ -363,6 +371,105 @@ namespace EngineCore {
         }
         #pragma endregion
 
+        #pragma region SHADER::DefaultDebugUI
+        {
+            std::string vert = R"(
+                #version 330 core
+                layout(location = 0) in vec3 aPos;
+                layout(location = 1) in vec2 aTexCoord;
+                layout(location = 3) in mat4 instanceModel;
+                
+                out vec2 vTexCoord;
+                uniform mat4 projection;
+                
+                void main() {
+                    gl_Position = projection * instanceModel * vec4(aPos, 1.0);
+                    vTexCoord = aTexCoord;
+                }
+            )";
+
+            std::string frag = R"(
+                #version 330 core
+                in vec2 vTexCoord;
+                out vec4 FragColor;
+                
+                // rgba colors
+                uniform vec4 uMarginColor;
+                uniform vec4 uBorderColor;
+                uniform vec4 uPaddingColor;
+                uniform vec4 uSizeColor;
+                
+                // top, right, bottom, left (px)
+                uniform vec4 uMarginSize;
+                uniform vec4 uBorderSize;
+                uniform vec4 uPaddingSize;
+                
+                // total size (in px) = margin + border + padding + content
+                uniform vec2 uSize;
+                
+                // Helper to check if a point is within an area
+                // area = vec4(top, right, bottom, left)
+                bool IsInArea(vec2 p, vec4 area) {
+                    return (p.x >= area.w && p.x <= area.y &&
+                            p.y >= area.x && p.y <= area.z);
+                }
+                
+                void main()
+                {
+                    // convert normalized uv (0–1) to pixel coordinates
+                    vec2 point = vec2(vTexCoord.x * uSize.x, vTexCoord.y * uSize.y);
+                
+                    // --- full outer rect ---
+                    vec4 outer = vec4(0.0, uSize.x, uSize.y, 0.0);
+                
+                    // --- margin area ---
+                    vec4 marginInner = vec4(
+                        outer.x + uMarginSize.x,
+                        outer.y - uMarginSize.y,
+                        outer.z - uMarginSize.z,
+                        outer.w + uMarginSize.w
+                    );
+                
+                    // --- border area ---
+                    vec4 borderInner = vec4(
+                        marginInner.x + uBorderSize.x,
+                        marginInner.y - uBorderSize.y,
+                        marginInner.z - uBorderSize.z,
+                        marginInner.w + uBorderSize.w
+                    );
+                
+                    // --- padding area ---
+                    vec4 paddingInner = vec4(
+                        borderInner.x + uPaddingSize.x,
+                        borderInner.y - uPaddingSize.y,
+                        borderInner.z - uPaddingSize.z,
+                        borderInner.w + uPaddingSize.w
+                    );
+
+                    vec4 color = vec4(1.0);
+                    if (IsInArea(point, outer) && !IsInArea(point, marginInner)) {
+                        color = uMarginColor;
+                    } 
+                    else if (IsInArea(point, marginInner) && !IsInArea(point, borderInner)) {
+                       color = uBorderColor;
+                    } 
+                    else if (IsInArea(point, borderInner) && !IsInArea(point, paddingInner)) {
+                       color = uPaddingColor;
+                    } 
+                    else if (IsInArea(point, paddingInner)) {
+                       color = uSizeColor;
+                    }
+
+                    if (color.a < 0.1)
+                        discard;
+                    FragColor = color;
+                }
+            )";
+
+            g_engineShaderDefaultDebugUIID = rm->AddShaderFromMemory(vert, frag);
+        }
+        #pragma endregion
+
         #pragma region MATERIAL::Default
         {
             g_engineMaterialDefaultID = rm->AddMaterial(g_engineShaderDefaultID);
@@ -380,6 +487,12 @@ namespace EngineCore {
         #pragma region MATERIAL::DefaultUI
         {
             g_engineMaterialDefaultUIID = rm->AddMaterial(g_engineShaderDefaultUIID);
+        }
+        #pragma endregion
+
+        #pragma region MATERIAL::DefaultDebugUI
+        {
+            g_engineMaterialDefaultDebugUIID = rm->AddMaterial(g_engineShaderDefaultDebugUIID);
         }
         #pragma endregion
 

@@ -21,12 +21,14 @@ namespace EngineCore {
 				ShaderID Default();
 				ShaderID DefaultText();
 				ShaderID DefaultUI();
+				ShaderID DefaultDebugUI();
 			}
 
 			namespace MATERIAL {
 				MaterialID Default();
 				MaterialID DefaultText();
 				MaterialID DefaultUI();
+				MaterialID DefaultDebugUI();
 			}
 
 			namespace FONT {

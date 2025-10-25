@@ -436,6 +436,8 @@ namespace EngineCore {
     void DebuggerWindows::DrawUIElementNode(const std::shared_ptr<UI::ElementBase>& elem) {
         if (!elem) return;
 
+        bool isVisible = elem->IsVisible();
+
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
         bool hasChildren = !elem->GetChildren().empty();
         if (!hasChildren)
@@ -462,12 +464,21 @@ namespace EngineCore {
 
         label += hasChildren ? ">" : " />";
 
+        if (!isVisible)
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+
         // Safe TreeNodeEx ID
         ImGuiID nodeID = (id == ENGINE_INVALID_ID) ? ImGui::GetID(label.c_str()) : (ImGuiID)id;
         bool open = ImGui::TreeNodeEx((void*)(intptr_t)nodeID, flags, "%s", label.c_str());
 
+        if (!isVisible)
+            ImGui::PopStyleColor();
+
         if (ImGui::IsItemClicked())
             m_debugger->m_uiSelectedElement = elem;
+
+        if (ImGui::IsItemHovered())
+            m_debugger->m_hoveredUIElement = elem;
 
         if (!open)
             return;
@@ -490,10 +501,11 @@ namespace EngineCore {
         }
 
         static bool showUIElementDetails = false;
+        static bool showOverlay = false;
         auto selected = m_debugger->m_uiSelectedElement;
         ImGui::Begin("UI Hierarchy", &m_uiInspectorWin);
 
-        bool frozen = UIManager::GetFreezUI();
+        bool frozen = UIManager::GetDebugFreezUI();
 
         // --- CollapsingHeader: UI Controls ---
         if (ImGui::CollapsingHeader("UI Controls##UIControlsHeader")) {
@@ -524,21 +536,27 @@ namespace EngineCore {
                 ImGui::End();
             }
 
+            ImGui::Checkbox("Show Overlay", &showOverlay);
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Shows an overlay of the elements margin, border, padding, and content");
+
             if (ImGui::Checkbox("Freeze UI", &frozen)) {
-                UIManager::SetFreezUI(frozen);
+                UIManager::SetDebugFreezUI(frozen);
             }
+            if(ImGui::IsItemHovered())
+                ImGui::SetTooltip("Pauses UI updates and event processing");
 
             ImGui::BeginDisabled(!frozen);
             static int stepAmount = 1;
             if (ImGui::Button("Step UI Forward")) {
-                UIManager::StepUIForward(stepAmount);
+                UIManager::SetDebugStepUIForward(stepAmount);
             }
             ImGui::SameLine();
             ImGui::SetNextItemWidth(75);
             ImGui::InputInt("Step Amount", &stepAmount, 1, 10);
             ImGui::EndDisabled();
 
-            ImGui::Text("Current Step Amount: %d", UIManager::GetStepUIAmount());
+            ImGui::Text("Current Step Amount: %d", UIManager::GetDebugStepUIAmount());
 
             if (ImGui::CollapsingHeader("UI Force State##UIControlsHeader")) {
                 if (selected) {
@@ -551,7 +569,7 @@ namespace EngineCore {
 
                     UI::State forcedState;
                     int currentIndex = 0;
-                    if (UIManager::TryGetForceState(selected->GetID(), forcedState)) {
+                    if (UIManager::TryGetDebugForceState(selected->GetID(), forcedState)) {
                         for (int i = 0; i < IM_ARRAYSIZE(states); ++i) {
                             if (states[i] == forcedState) { currentIndex = i + 1; break; }
                         }
@@ -563,9 +581,9 @@ namespace EngineCore {
                     ImGui::SetNextItemWidth(160);
                     if (ImGui::Combo("Forced State", &selectedIndex, stateNames, IM_ARRAYSIZE(stateNames))) {
                         if (selectedIndex == 0)
-                            UIManager::RemoveForceState(selected->GetID());
+                            UIManager::RemoveDebugForceState(selected->GetID());
                         else
-                            UIManager::SetForceState(selected->GetID(), states[selectedIndex - 1]);
+                            UIManager::SetDebugForceState(selected->GetID(), states[selectedIndex - 1]);
                     }
                 }
                 else {
@@ -596,6 +614,19 @@ namespace EngineCore {
 
         ImGui::End();
         m_firstUIHierarchyWin = false;
+
+        auto hovered = m_debugger->m_hoveredUIElement.get();
+        if (hovered) {
+            UIManager::SetDebugOverlayElement(hovered->GetID());
+        }
+        else if (showOverlay && selected) {
+            UIManager::SetDebugOverlayElement(selected->GetID());
+        }
+        else {
+            UIManager::SetDebugOverlayElement(UIElementID(ENGINE_INVALID_ID));
+        }
+
+        m_debugger->m_hoveredUIElement.reset();
     }
 
     void DebuggerWindows::UIInspectorWindow() {

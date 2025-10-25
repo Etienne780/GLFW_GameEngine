@@ -16,6 +16,14 @@ namespace EngineCore::UI {
         m_cmd.meshID = ASSETS::ENGINE::MESH::UIPlain();
         m_cmd.materialID = matID;
         m_baseStyle = UIManager::GetElementBaseStyle();
+        
+#ifndef NDEBUG
+        // Setup debug render command 
+        m_cmdDebug.isUI = true;
+        m_cmdDebug.type = RenderCommandType::Mesh;
+        m_cmdDebug.meshID = ASSETS::ENGINE::MESH::UIPlain();
+        m_cmdDebug.materialID = ASSETS::ENGINE::MATERIAL::DefaultDebugUI();
+#endif
 
         // subs to style dirty events
         m_styleDirtyCallbackID = m_style->SubDirtCallback([this]() { m_styleDirty = true; });
@@ -36,6 +44,9 @@ namespace EngineCore::UI {
         RegisterAttributesImpl();
         SetStyleAttributes();
         InitShaderBindObject();
+
+        // sets if the parent is hidden
+        m_isParentVisible = IsParentVisible();
     }
 
     void ElementBase::InitShaderBindObject() {
@@ -44,6 +55,14 @@ namespace EngineCore::UI {
         m_sbo.SetParam("uBorderRadius", m_borderRadius);
         m_sbo.SetParam("uBorderWidth", m_borderSize);
         m_sbo.SetParam("uSize", m_layoutSize);
+
+
+#ifndef NDEBUG
+        m_sboDebug.SetParam("uMarginColor", UIManager::GetDebugMarginColor());
+        m_sboDebug.SetParam("uBorderColor", UIManager::GetDebugBorderColor());
+        m_sboDebug.SetParam("uPaddingColor", UIManager::GetDebugPaddingColor());
+        m_sboDebug.SetParam("uSizeColor", UIManager::GetDebugSizeColor());
+#endif
     }
 
     void ElementBase::OnUIElementDetailGUI(IUIElementDetailRenderer& ui) {
@@ -83,8 +102,8 @@ namespace EngineCore::UI {
 
             // Element state
             ui.DrawLabel(FU::formatString("Element state: {}", m_state));
-            ui.DrawSeparatorText("Registered Events");
 
+            ui.DrawSeparatorText("Registered Events");
             ui.Indent(indentAmount);
             if (m_onClick || m_onHover || m_onPress || m_onDrag) {
                 if (m_onClick) ui.DrawLabel("- OnClick");
@@ -96,8 +115,8 @@ namespace EngineCore::UI {
                 ui.DrawLabelDisabled("No events registered");
             }
             ui.Unindent(indentAmount);
-            ui.DrawSeparatorText("Layout Info");
 
+            ui.DrawSeparatorText("Layout Info");
             // Layout information
             ui.DrawLabel(FU::formatString("Layout pos: {}", m_layoutPosition));
             ui.DrawLabel(FU::formatString("Layout size: {}", m_layoutSize));
@@ -116,8 +135,8 @@ namespace EngineCore::UI {
                 }
                 ui.Unindent(indentAmount);
             }
-            ui.DrawSeparatorText("Desired Size/Position");
 
+            ui.DrawSeparatorText("Desired Size/Position");
             ui.DrawLabel(FU::formatString("Desired pos: {}", m_desiredPosition));
             ui.DrawLabel(FU::formatString(
                 "Desired size: [{}{}, {}{}]",
@@ -128,16 +147,18 @@ namespace EngineCore::UI {
                 "Desired pixel size: [{}px, {}px]",
                 m_desiredPixelSize.x, m_desiredPixelSize.y
             ));
-            ui.DrawSeparatorText("Styling");
 
+            ui.DrawSeparatorText("Styling");
             ui.DrawLabel(FU::formatString("Padding: {}", m_padding));
             ui.DrawLabel(FU::formatString("Margin: {}", m_margin));
             ui.DrawLabel(FU::formatString("BG color: {}", m_backgroundColor));
             ui.DrawLabel(FU::formatString("Border color: {}", m_borderColor));
             ui.DrawLabel(FU::formatString("Border Radius: {}", m_borderRadius));
             ui.DrawLabel(FU::formatString("Border Size: {}", m_borderSize));
-            ui.DrawSeparatorText("Animation/Timing");
+            ui.DrawLabel(FU::formatString("IsVisible: {}", m_isVisible));
+            ui.DrawLabel(FU::formatString("IsParentVisible: {}", m_isParentVisible));
 
+            ui.DrawSeparatorText("Animation/Timing");
             ui.DrawLabel(FU::formatString("Duration: {}s", m_duration));
         }
     }
@@ -575,6 +596,16 @@ namespace EngineCore::UI {
         m_duration = duration;
     }
 
+    void ElementBase::SetVisibility(bool value) {
+        if (m_isVisible == value)
+            return;
+        m_isVisible = value;
+        
+        for (auto& child : m_children) {
+            child->SetParentVisibility(value);
+        }
+    }
+
     void ElementBase::SetLayoutSize(const Vector2& size) {
         SetLayoutSize(size.x, size.y);
     }
@@ -582,6 +613,22 @@ namespace EngineCore::UI {
     void ElementBase::SetLayoutSize(float x, float y) {
         m_layoutSize.Set(x, y);
         MarkTransDirtyParent();
+    }
+
+    void ElementBase::SetParentVisibility(bool value) {
+        if (m_isParentVisible == value)
+            return;
+        m_isParentVisible = value;
+
+        for (auto& child : m_children) {
+            child->SetParentVisibility(value);
+        }
+    }
+
+    bool ElementBase::IsParentVisible() const {
+        if (!m_parentElementPtr)
+            return true;
+        return m_parentElementPtr->IsVisible();
     }
 
     LayoutType ElementBase::GetLayoutType() const {
@@ -728,6 +775,10 @@ namespace EngineCore::UI {
         return m_duration;
     }
 
+    bool ElementBase::IsVisible() const {
+        return (m_isVisible && m_isParentVisible);
+    }
+
     bool ElementBase::IsMouseOver(const Vector2& mousePos) {
         Vector2 pos = GetWorldPosition();
         Vector2 size = GetScreenSize();
@@ -868,6 +919,18 @@ namespace EngineCore::UI {
         MakeTranslate(m_worldTransform, 
             m_layoutPosition.x + parentPosition.x + m_margin.y,
             m_layoutPosition.y + parentPosition.y + m_margin.x, 0.0f);
+
+#ifndef NDEBUG
+        m_worldTransformDebug = Scale(
+            m_layoutSize.x + m_margin.y + m_margin.w, 
+            m_layoutSize.y + m_margin.x + m_margin.z, 1.0f
+        );
+
+        MakeRotateXYZ(m_worldTransformDebug, radians);
+        MakeTranslate(m_worldTransformDebug,
+            m_layoutPosition.x + parentPosition.x,
+            m_layoutPosition.y + parentPosition.y, 0.0f);
+#endif
     }
 
     void ElementBase::MarkTransDirtyParent() const {
@@ -898,10 +961,38 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SendDrawCommandImpl(Renderer* renderer, RenderLayerID renderLayerID) {
+        if (!m_isVisible || !m_isParentVisible)
+            return;
+
         m_cmd.renderLayerID = renderLayerID;
         m_cmd.modelMatrix = GetWorldModelMatrixPtr();
         m_cmd.shaderBindOverride = &m_sbo;
         SendDrawCommand(renderer);
+    }
+
+    void ElementBase::SendDebugDrawCommand(Renderer* renderer, RenderLayerID renderLayerID) {
+#ifndef NDEBUG
+        if(UIManager::GetDebugColorChanged()) {
+            m_sboDebug.SetParam("uMarginColor", UIManager::GetDebugMarginColor());
+            m_sboDebug.SetParam("uBorderColor", UIManager::GetDebugBorderColor());
+            m_sboDebug.SetParam("uPaddingColor", UIManager::GetDebugPaddingColor());
+            m_sboDebug.SetParam("uSizeColor", UIManager::GetDebugSizeColor());
+        }
+
+        m_sboDebug.SetParam("uMarginSize", m_margin);
+        m_sboDebug.SetParam("uBorderSize", m_borderSize);
+        m_sboDebug.SetParam("uPaddingSize", m_padding);
+        // total size (in px) = margin + border + padding + content
+        m_sboDebug.SetParam("uSize", Vector2(
+            m_layoutSize.x + m_margin.y + m_margin.w + m_padding.y + m_padding.w,
+            m_layoutSize.y + m_margin.x + m_margin.z + m_padding.x + m_padding.z)
+        );
+
+        m_cmdDebug.renderLayerID = renderLayerID;
+        m_cmdDebug.modelMatrix = &m_worldTransformDebug;
+        m_cmdDebug.shaderBindOverride = &m_sboDebug;
+        renderer->Submit(m_cmdDebug);
+#endif
     }
 
     void ElementBase::RegisterAttributesImpl() {
@@ -1067,6 +1158,14 @@ namespace EngineCore::UI {
                 }
             });
 
+            RegisterAttribute(att::visibility, [](ElementBase* el, const StyleValue& val) {
+                if (std::string s;  val.TryGetValue<std::string>(s, att::visibility)) {
+                    // should not return a string. instead return a int for better performance
+                    // needs new string attribute that maps string values to number. reduce string compar
+                    el->SetVisibility(s != "hidden");
+                }
+            });
+
             RegisterAttributes();
         }
     }
@@ -1077,15 +1176,6 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::SetStyleAttributes() {
-
-        // SetAttributes(m_baseStyle->GetAllState(m_state));
-        // // if state is not normal use normal state as a base
-        // if(m_state != State::Normal)
-        //     SetAttributes(m_style->GetAllState(State::Normal));
-        // SetAttributes(m_style->GetAllState(m_state));
-
-
-        //SetAttributes(m_baseStyle->GetAllState(m_state));
         if (m_state != State::Normal)
             SetAttributes(m_mergedStyle->GetAllState(State::Normal));
         SetAttributes(m_mergedStyle->GetAllState(m_state));

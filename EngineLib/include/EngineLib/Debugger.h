@@ -23,6 +23,7 @@ namespace EngineCore {
 		std::shared_ptr<GameObject> m_debugCameraGO = nullptr;
 		std::shared_ptr<GameObject> m_hierarchySelectedGO = nullptr;
 		std::shared_ptr<UI::ElementBase> m_uiSelectedElement = nullptr;
+		std::shared_ptr<UI::ElementBase> m_hoveredUIElement = nullptr;
 
 		~Debugger();
 

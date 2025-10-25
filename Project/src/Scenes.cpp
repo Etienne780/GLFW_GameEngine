@@ -17,6 +17,7 @@ void SetupUI() {
 	container->Set(Attribute::layout, "center");
 	container->Set(Attribute::width, "100%w");
 	container->Set(Attribute::height, "100%h");
+	// container->Set(Attribute::visibility, "hidden");
 
 	auto defaultStyleRow = Style::Create("DefaultStyleRow");
 	defaultStyleRow->Set(Attribute::layoutDirection, "row");

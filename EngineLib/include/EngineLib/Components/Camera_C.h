@@ -65,6 +65,7 @@ namespace EngineCore {
 			float m_aspectRatio = 16.0f / 9.0f;
 			float m_nearPlane = 0.1f;
 			float m_farPlane = 1000.0f;
+			size_t lastFrame = 0;
 
 			Matrix4x4 m_projection;
 			Matrix4x4 m_view;
