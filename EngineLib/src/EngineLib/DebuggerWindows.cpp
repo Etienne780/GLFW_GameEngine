@@ -644,6 +644,10 @@ namespace EngineCore {
         ImGui::End();
         m_firstUIHierarchyWin = false;
 
+        /*shows the debug overlay if:
+            hovered element 
+        else
+            all selected element if the option is on*/
         static size_t oldListLength = 0;
         static bool lastShowOverlay = false;
         static std::shared_ptr<UI::ElementBase> lastHovered = nullptr;
