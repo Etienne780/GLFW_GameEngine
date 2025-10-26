@@ -1,5 +1,6 @@
-#include <memory>
 #ifndef NDEBUG
+#include <memory>
+#include <vector>
 
 #pragma once
 #include "EngineTypes.h"
@@ -22,6 +23,7 @@ namespace EngineCore {
 	public:
 		std::shared_ptr<GameObject> m_debugCameraGO = nullptr;
 		std::shared_ptr<GameObject> m_hierarchySelectedGO = nullptr;
+		std::vector<std::shared_ptr<UI::ElementBase>> m_uiSelectedElements;
 		std::shared_ptr<UI::ElementBase> m_uiSelectedElement = nullptr;
 		std::shared_ptr<UI::ElementBase> m_hoveredUIElement = nullptr;
 
@@ -56,7 +58,11 @@ namespace EngineCore {
 		bool m_cursorLock = true;
 		bool m_isDebugCameraActive = false;
 
+		// ===== options =====
+
 		float m_menuSidebarWidthRatio = 0.07f;// is in %
+		// selects the debug camera when the debug menu is opend
+		bool m_selectDebugCamOnStart = true;
 
 		void DebugCameraInit();
 		void SetVariables();

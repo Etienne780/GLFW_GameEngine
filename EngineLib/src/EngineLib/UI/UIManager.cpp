@@ -184,7 +184,7 @@ namespace EngineCore {
         return m_stepUIByAmount;
     }
 
-    void UIManager::SetDebugForceState(UIElementID id, UI::State state) {
+    void UIManager::SetDebugForceState(const UIElementID& id, UI::State state) {
 #ifndef NDEBUG
         auto element = GetElement(id);
         if (!element) {
@@ -202,7 +202,7 @@ namespace EngineCore {
 #endif
     }
 
-    void UIManager::RemoveDebugForceState(UIElementID id) {
+    void UIManager::RemoveDebugForceState(const UIElementID& id) {
 #ifndef NDEBUG
         auto it = m_forceStateMap.find(id);
         if (it == m_forceStateMap.end()) {
@@ -224,7 +224,15 @@ namespace EngineCore {
 #endif
     }
 
-    bool UIManager::TryGetDebugForceState(UIElementID id, UI::State& outState) {
+    void UIManager::ClearDebugForceState() {
+#ifndef NDEBUG
+        m_forceStateMap.clear();
+#else
+        Log::Warn("UIManager::ClearDebugForceState called in release build — clearing forced states is only supported in debug builds.");
+#endif
+    }
+
+    bool UIManager::TryGetDebugForceState(const UIElementID& id, UI::State& outState) {
         auto it = m_forceStateMap.find(id);
         if (it == m_forceStateMap.end()) {
             return false;
@@ -233,8 +241,24 @@ namespace EngineCore {
         return true;
     }
 
-    void UIManager::SetDebugOverlayElement(UIElementID id) {
-        m_debugOverlayElement = id;
+    void UIManager::AddDebugOverlayElement(const UIElementID& id) {
+        if (!IsInDebugOverlayList(id))
+            m_debugOverlayElements.push_back(id);
+    }
+
+    void UIManager::RemoveDebugOverlayElement(const UIElementID& id) {
+        auto& list = m_debugOverlayElements;
+        list.erase(std::remove(list.begin(), list.end(), id), list.end());
+    }
+
+    void UIManager::ClearDebugOverlayElement() {
+        m_debugOverlayElements.clear();
+    }
+
+    bool UIManager::IsInDebugOverlayList(const UIElementID& id) {
+        auto& list = m_debugOverlayElements;
+        auto it = std::find(list.begin(), list.end(), id);
+        return (it != list.end());
     }
 
     bool UIManager::GetDebugColorChanged() {
@@ -457,38 +481,34 @@ namespace EngineCore {
 			SendChildDrawCommands(element);
 		}
 
+#ifndef NDEBUG
         for (auto& element : m_roots) {
-            if (m_debugOverlayElement == element->GetID()) {
+            if(IsInDebugOverlayList(element->GetID()))
                 element->SendDebugDrawCommand(m_renderer, m_renderLayerID);
-                break;
-            }
-            else {
-                SendChildDebugDrawCommands(element);
-            }
+            SendChildDebugDrawCommands(element);
         }
 
         if (m_debugColorChanged && m_debugColorChangedFrame < Time::GetFrameCount()) {
             m_debugColorChanged = false;
         }
+#endif 
 	}
 
-    void UIManager::SendChildDrawCommands(std::shared_ptr<UI::ElementBase> element) {
+    void UIManager::SendChildDrawCommands(const std::shared_ptr<UI::ElementBase>& element) {
         for (auto& child : element->GetChildren()) {
             child->SendDrawCommandImpl(m_renderer, m_renderLayerID);
             SendChildDrawCommands(child);
         }
     }
 
-    void UIManager::SendChildDebugDrawCommands(std::shared_ptr<UI::ElementBase> element) {
+    void UIManager::SendChildDebugDrawCommands(const std::shared_ptr<UI::ElementBase>& element) {
+#ifndef NDEBUG
         for (auto& child : element->GetChildren()) {
-            if (m_debugOverlayElement == child->GetID()) {
+            if (IsInDebugOverlayList(child->GetID()))
                 child->SendDebugDrawCommand(m_renderer, m_renderLayerID);
-                break;
-            }
-            else {
-                SendChildDebugDrawCommands(child);
-            }
+            SendChildDebugDrawCommands(child);
         }
+#endif 
     }
 
     float UIManager::CalculateUIScaleFactor(int width, int height) {

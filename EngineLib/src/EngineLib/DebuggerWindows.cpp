@@ -15,6 +15,7 @@
 
 #include "EngineLib/IconsFontAwesome5Pro.h"
 #include "EngineLib/Time.h"
+#include "EngineLib/Input.h"
 #include "EngineLib/GameObject.h"
 #include "EngineLib/GameObjectManager.h"
 #include "EngineLib/Application.h"
@@ -252,6 +253,14 @@ namespace EngineCore {
             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(static_cast<int>(color.x), static_cast<int>(color.y), static_cast<int>(color.z), 255));
         }
 
+        bool isSelected = (m_debugger->m_hierarchySelectedGO == obj);
+        ImVec2 min = ImGui::GetCursorScreenPos();
+        ImVec2 max = ImVec2(min.x + ImGui::GetContentRegionAvail().x, min.y + ImGui::GetTextLineHeightWithSpacing() - 4);
+
+        if (isSelected) {
+            ImGui::GetWindowDrawList()->AddRectFilled(min, max, IM_COL32(60, 120, 255, 80));
+        }
+
         bool open = ImGui::TreeNodeEx((void*)(intptr_t)obj->GetID().value, flags, "%s", obj->GetName().c_str());
 
         if (obj->IsDisabled() || obj->IsPersistent()) {
@@ -467,6 +476,16 @@ namespace EngineCore {
         if (!isVisible)
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
 
+        auto& list = m_debugger->m_uiSelectedElements;
+        auto it = std::find(list.begin(), list.end(), elem);
+        bool isSelected = (it != list.end());
+        ImVec2 min = ImGui::GetCursorScreenPos();
+        ImVec2 max = ImVec2(min.x + ImGui::GetContentRegionAvail().x, min.y + ImGui::GetTextLineHeightWithSpacing() - 4);
+
+        if (isSelected) {
+            ImGui::GetWindowDrawList()->AddRectFilled(min, max, IM_COL32(60, 120, 255, 80));
+        }
+
         // Safe TreeNodeEx ID
         ImGuiID nodeID = (id == ENGINE_INVALID_ID) ? ImGui::GetID(label.c_str()) : (ImGuiID)id;
         bool open = ImGui::TreeNodeEx((void*)(intptr_t)nodeID, flags, "%s", label.c_str());
@@ -474,8 +493,19 @@ namespace EngineCore {
         if (!isVisible)
             ImGui::PopStyleColor();
 
-        if (ImGui::IsItemClicked())
-            m_debugger->m_uiSelectedElement = elem;
+        if (ImGui::IsItemClicked()) {
+            // Clears all selected elements if left-ctrl not pressed
+            if (!Input::KeyPressed(KeyCode::LEFT_CONTROL))
+                m_debugger->m_uiSelectedElements.clear();
+
+            auto& list = m_debugger->m_uiSelectedElements;
+            auto it = std::find(list.begin(), list.end(), elem);
+            // Adds the element to the selection if it is not already selected
+            if (it == list.end())
+                list.push_back(elem);
+
+            Log::Debug("List size: {}", list.size());
+        }
 
         if (ImGui::IsItemHovered())
             m_debugger->m_hoveredUIElement = elem;
@@ -502,7 +532,7 @@ namespace EngineCore {
 
         static bool showUIElementDetails = false;
         static bool showOverlay = false;
-        auto selected = m_debugger->m_uiSelectedElement;
+        auto selected = (!m_debugger->m_uiSelectedElements.empty()) ? m_debugger->m_uiSelectedElements.back() : nullptr;
         ImGui::Begin("UI Hierarchy", &m_uiInspectorWin);
 
         bool frozen = UIManager::GetDebugFreezUI();
@@ -517,24 +547,9 @@ namespace EngineCore {
 
             ImGui::BeginDisabled(selected == nullptr);
             if (ImGui::Button("Show Details")) {
-                showUIElementDetails = true;
+                showUIElementDetails = !showUIElementDetails;
             }
             ImGui::EndDisabled();
-
-
-            // --- Popup Window ---
-            if (showUIElementDetails && selected) {
-                ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
-                ImGui::SetNextWindowSizeConstraints(ImVec2(400, 300), ImVec2(800, 600));
-
-                if (ImGui::Begin("UI Element Details", &showUIElementDetails, ImGuiWindowFlags_HorizontalScrollbar)) {
-                    // Scrollbar für langen Inhalt
-                    ImGui::BeginChild("DetailsScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-                    selected->OnUIElementDetailGUI(m_uiElementDetailRenderer);
-                    ImGui::EndChild();
-                }
-                ImGui::End();
-            }
 
             ImGui::Checkbox("Show Overlay", &showOverlay);
             if (ImGui::IsItemHovered())
@@ -597,6 +612,20 @@ namespace EngineCore {
                 frozen ? "[Frozen]" : "[Active]");
         }
 
+        // --- UIElement detail Popup Window ---
+        if (showUIElementDetails && selected) {
+            ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowSizeConstraints(ImVec2(400, 300), ImVec2(800, 600));
+
+            if (ImGui::Begin("UI Element Details", &showUIElementDetails, ImGuiWindowFlags_HorizontalScrollbar)) {
+                // Scrollbar für langen Inhalt
+                ImGui::BeginChild("DetailsScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+                selected->OnUIElementDetailGUI(m_uiElementDetailRenderer);
+                ImGui::EndChild();
+            }
+            ImGui::End();
+        }
+
         ImGui::Separator();
 
         // --- UI Hierarchy ---
@@ -615,15 +644,27 @@ namespace EngineCore {
         ImGui::End();
         m_firstUIHierarchyWin = false;
 
-        auto hovered = m_debugger->m_hoveredUIElement.get();
-        if (hovered) {
-            UIManager::SetDebugOverlayElement(hovered->GetID());
-        }
-        else if (showOverlay && selected) {
-            UIManager::SetDebugOverlayElement(selected->GetID());
-        }
-        else {
-            UIManager::SetDebugOverlayElement(UIElementID(ENGINE_INVALID_ID));
+        static size_t oldListLength = 0;
+        static bool lastShowOverlay = false;
+        static std::shared_ptr<UI::ElementBase> lastHovered = nullptr;
+
+        auto hovered = m_debugger->m_hoveredUIElement;
+        if((lastShowOverlay != showOverlay || lastHovered != hovered) ||
+            oldListLength != m_debugger->m_uiSelectedElements.size()){
+            lastShowOverlay = showOverlay;
+            lastHovered = hovered;
+            oldListLength = m_debugger->m_uiSelectedElements.size();
+
+            UIManager::ClearDebugOverlayElement();
+            if (hovered) {
+                UIManager::AddDebugOverlayElement(hovered->GetID());
+            } else if (showOverlay && oldListLength > 0) {
+
+                for (auto& e : m_debugger->m_uiSelectedElements) {
+                    UIManager::AddDebugOverlayElement(e->GetID());
+                }
+
+            }
         }
 
         m_debugger->m_hoveredUIElement.reset();
@@ -638,8 +679,10 @@ namespace EngineCore {
         ImGui::Begin("UI Inspector", &m_uiInspectorWin);
         {
             static std::shared_ptr<UI::ElementBase> selectedElem;
-            bool elementChanged = selectedElem != m_debugger->m_uiSelectedElement;
-            selectedElem = m_debugger->m_uiSelectedElement;
+            auto& list = m_debugger->m_uiSelectedElements;
+            auto newElem = (list.size() > 0) ? list.back() : nullptr;
+            bool elementChanged = selectedElem != newElem;
+            selectedElem = newElem;
 
             // --- Clear ImGui active input when selected element changes ---
             // NOTE: ClearActiveID is declared in imgui_internal.h (internal API).

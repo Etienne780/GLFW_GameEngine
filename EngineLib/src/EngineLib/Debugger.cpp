@@ -75,13 +75,21 @@ namespace EngineCore {
 		m_debugCameraGO = GameObject::Create("Debug-Camera");
 		m_debugCameraGO->SetPersistent(true);
 		auto cam = m_debugCameraGO->AddComponent<Component::Camera>();
-		cam->AddCameraLayer(RenderLayerManager::GetLayerID("Debug"));
+		// gives the debug camera all existing layers
+		for (auto& id : RenderLayerManager::GetAllRenderLayerIDs()) {
+			cam->AddCameraLayer(id);
+		}
 		m_debugCameraGO->AddComponent<Component::FreeCameraController>()->m_isZoomDisabled = true;
 		m_debugCameraGO->Disable(true);
 	}
 
 	void Debugger::Start() {
 		DebugCameraInit();
+
+		if (m_selectDebugCamOnStart) {
+			m_debugCameraGO->Disable(false);
+			SetMainCamera(m_debugCameraGO->GetComponent<Component::Camera>());
+		}
 	}
 
 	void Debugger::Update() {

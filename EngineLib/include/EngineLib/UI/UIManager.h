@@ -120,11 +120,15 @@ namespace EngineCore {
 		static void SetDebugStepUIForward(int amount);
 		static int GetDebugStepUIAmount();
 
-		static void SetDebugForceState(UIElementID id, UI::State state);
-		static void RemoveDebugForceState(UIElementID id);
-		static bool TryGetDebugForceState(UIElementID id, UI::State& outState);
+		static void SetDebugForceState(const UIElementID& id, UI::State state);
+		static void RemoveDebugForceState(const UIElementID& id);
+		static void ClearDebugForceState();
+		static bool TryGetDebugForceState(const UIElementID& id, UI::State& outState);
 
-		static void SetDebugOverlayElement(UIElementID id);
+		static void AddDebugOverlayElement(const UIElementID& id);
+		static void RemoveDebugOverlayElement(const UIElementID& id);
+		static void ClearDebugOverlayElement();
+		static bool IsInDebugOverlayList(const UIElementID& id);
 
 		/**
 		* @brief Is true for one frame after a debug color was changed like DebugMarginColor
@@ -147,7 +151,7 @@ namespace EngineCore {
 		static inline bool m_freezUI = false;
 		static inline int m_stepUIByAmount = 0;
 
-		static inline UIElementID m_debugOverlayElement{ ENGINE_INVALID_ID };
+		static inline std::vector<UIElementID> m_debugOverlayElements;
 		static inline Vector4 m_debugMarginColor{ 1.0f, 0.0f, 0.0f, 0.5f };
 		static inline Vector4 m_debugBorderColor{ 0.0f, 1.0f, 0.0f, 0.5f };
 		static inline Vector4 m_debugPaddingColor{ 0.0f, 0.0f, 1.0f, 0.5f };
@@ -203,8 +207,8 @@ namespace EngineCore {
 
 		// Sends the Draw Commands of the UI::Elements
 		static void SendDrawCommands();
-		static void SendChildDrawCommands(std::shared_ptr<UI::ElementBase> element);
-		static void SendChildDebugDrawCommands(std::shared_ptr<UI::ElementBase> element);
+		static void SendChildDrawCommands(const std::shared_ptr<UI::ElementBase>& element);
+		static void SendChildDebugDrawCommands(const std::shared_ptr<UI::ElementBase>& element);
 		static float CalculateUIScaleFactor(int width, int height);
 		static void CalculateOrthograpicMatrix(int width, int height);
 		/**
