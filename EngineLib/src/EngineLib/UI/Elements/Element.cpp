@@ -191,7 +191,7 @@ namespace EngineCore::UI {
         return m_layoutPosition;
     }
 
-    Vector2 ElementBase::GetScreenSize() {
+    Vector2 ElementBase::GetScreenSize() const {
         Vector2 size = m_layoutSize;
         if (UIManager::GetUIScaling()) {
             size *= UIManager::GetUIScaleFactor();
@@ -1232,7 +1232,7 @@ namespace EngineCore::UI {
     }
 
 
-    bool ElementBase::IsTransformDirty() {
+    bool ElementBase::IsTransformDirty() const {
         return m_transformDirty;
     }
 

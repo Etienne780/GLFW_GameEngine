@@ -73,7 +73,7 @@ namespace EngineCore::UI {
         * @brief Gets the size of the element in screen coordinates, including any scaling applied by UIManager.
         * @return The scaled screen size of the element.
         */
-        Vector2 GetScreenSize();
+        Vector2 GetScreenSize() const;
 
         /**
         * @brief Gets the local size of the element (final layout size without screen scaling).
@@ -441,7 +441,7 @@ namespace EngineCore::UI {
         */
         void CalculateDesiredPixels();
 
-        bool IsTransformDirty();
+        bool IsTransformDirty() const;
         void SetTransformDirty(bool value);
     };
 
