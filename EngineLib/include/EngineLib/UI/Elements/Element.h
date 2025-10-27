@@ -136,6 +136,7 @@ namespace EngineCore::UI {
         float GetBorderRight() const;
         float GetBorderBottom() const;
         float GetBorderLeft() const;
+        int GetBorderType() const;
         float GetDuration() const;
         bool IsVisible() const;
 
@@ -290,6 +291,7 @@ namespace EngineCore::UI {
         void SetBorderRight(float right);
         void SetBorderBottom(float bottom);
         void SetBorderLeft(float left);
+        void SetBorderType(int type);
 
         void SetMargin(const Vector4& margin);
         void SetMargin(float top, float right, float bottom, float left);
@@ -395,6 +397,7 @@ namespace EngineCore::UI {
         Vector4 m_borderColor{ 0, 0, 0, 0 };
         Vector4 m_borderRadius{ 0, 0, 0, 0 }; // top-left, top-right, bottom-right, bottom-left
         Vector4 m_borderSize{ 0, 0, 0, 0 };
+        int m_borderType = 0;
         float m_duration = 0.0f;
 
         bool m_isVisible = true;

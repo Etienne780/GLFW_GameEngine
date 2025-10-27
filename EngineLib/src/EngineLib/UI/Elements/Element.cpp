@@ -489,6 +489,10 @@ namespace EngineCore::UI {
         MarkTransDirtyParent();
     }
 
+    void ElementBase::SetBorderType(int type) {
+        m_borderType = type;
+    }
+
     void ElementBase::SetMargin(const Vector4& mar) {
         SetMargin(mar.x, mar.y, mar.z, mar.w);
     }
@@ -769,6 +773,10 @@ namespace EngineCore::UI {
 
     float ElementBase::GetBorderLeft() const {
         return m_borderSize.w;
+    }
+
+    int ElementBase::GetBorderType() const {
+        return m_borderType;
     }
 
     float ElementBase::GetDuration() const {
@@ -1096,6 +1104,12 @@ namespace EngineCore::UI {
 
             #pragma endregion
 
+            RegisterAttribute(att::borderType, [](ElementBase* el, const StyleValue& val) {
+                if (int i;  val.TryGetValue<int>(i, att::borderType)) {
+                    el->SetBorderType(i);
+                }
+            });
+
             #pragma region margin
 
             RegisterAttribute(att::marginTop, [](ElementBase* el, const StyleValue& val) {
@@ -1220,6 +1234,12 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::CalculateDesiredPixels() {
+        int borderX = 0, borderY = 0;
+        if (m_borderType == 1) {
+            borderX = m_borderSize.y + m_borderSize.w;
+            borderY = m_borderSize.x + m_borderSize.z;
+        }
+
         if (m_sizeUnits[0] != StyleUnit::Unit::Percent_A)
             m_desiredPixelSize.x = StyleUnit::EvaluateSizeUnit(m_desiredSize.x, m_sizeUnits[0], *this);
         else
