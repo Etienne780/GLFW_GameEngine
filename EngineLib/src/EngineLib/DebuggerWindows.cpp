@@ -503,8 +503,6 @@ namespace EngineCore {
             // Adds the element to the selection if it is not already selected
             if (it == list.end())
                 list.push_back(elem);
-
-            Log::Debug("List size: {}", list.size());
         }
 
         if (ImGui::IsItemHovered())
