@@ -165,7 +165,7 @@ namespace EngineCore::UI {
 		* @param name The name of the attribute
 		* @param description A description of the attribute
 		* @param inputs Valid input values
-		* @param defaultValue The default value
+		* @param defaultValue The default value index
 		* @return A StyleAttribute representing the string attribute
 		*/
 		static StyleAttribute MakeSimpleStringAttribute(
@@ -178,7 +178,7 @@ namespace EngineCore::UI {
 			const char* name,
 			const char* description,
 			std::vector<std::string> inputs,
-			std::string defaultValue);
+			unsigned int defaultValue);
 
 		/**
 		* @brief Creates a simple number attribute

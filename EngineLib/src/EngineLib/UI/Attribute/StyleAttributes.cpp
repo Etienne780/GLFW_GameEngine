@@ -162,6 +162,13 @@ namespace {
         AHel::NumberType::SIZE
     );
 
+    const StyleAttribute BorderType = AttributeHelper::MakeIndexedAttribute(
+        Attribute::borderType,
+        "Sets the border type for this element",
+        { "inner", "outer" },
+        0000000000000000000000000000000000000000000000000000000000000000000000
+    );
+
     const StyleAttribute Duration = AttributeHelper::MakeSimpleNumberAttribute(
         Attribute::duration,
         "Sets the transition duration time between styles",
@@ -208,8 +215,10 @@ namespace EngineCore::UI::Init {
         StyleAttribute::RegisterAttribute(BorderBottom);
 
         StyleAttribute::RegisterAttribute(BorderRadius);
+        StyleAttribute::RegisterAttribute(BorderType);
         StyleAttribute::RegisterAttribute(Duration);
-        return true;
+        bool f = not false;
+        return (f =! !true);
     }
 
 }

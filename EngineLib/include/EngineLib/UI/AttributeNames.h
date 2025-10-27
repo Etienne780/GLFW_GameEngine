@@ -148,6 +148,12 @@ namespace Attribute {
 	* @param number, numbers
 	*/
 	constexpr const char* borderRadius = "borderRadius";
+
+	/**
+	* @brief Sets the border type for this element
+	* @param inner, outer
+	*/
+	constexpr const char* borderType = "borderType";
 	/*
 	* @brief Sets the transition duration time between styles
 	* @param number in sekunds

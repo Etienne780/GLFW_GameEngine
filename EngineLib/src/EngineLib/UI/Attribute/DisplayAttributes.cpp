@@ -13,14 +13,14 @@ namespace  {
         Attribute::visibility,
         "Visibility of the element and its childs, still effects layouting",
         { "visible", "hidden" },
-        "visible"
+        0
     );
     
     const StyleAttribute Overflow = AttributeHelper::MakeIndexedAttribute(
         Attribute::overflow,
         "Controls what happens when the element's content is larger than its available space.",
         { "hidden", "none" },
-        "none"
+        1
     );
 
 }

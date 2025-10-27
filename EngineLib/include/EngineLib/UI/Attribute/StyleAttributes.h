@@ -60,6 +60,7 @@ namespace {
     extern const StyleAttribute BorderBottom;
 
     extern const StyleAttribute BorderRadius;
+    extern const StyleAttribute BorderType;
     extern const StyleAttribute Duration;
 
 }
