@@ -217,8 +217,7 @@ namespace EngineCore::UI::Init {
         StyleAttribute::RegisterAttribute(BorderRadius);
         StyleAttribute::RegisterAttribute(BorderType);
         StyleAttribute::RegisterAttribute(Duration);
-        bool f = not false;
-        return (f =! !true);
+        return true;
     }
 
 }
