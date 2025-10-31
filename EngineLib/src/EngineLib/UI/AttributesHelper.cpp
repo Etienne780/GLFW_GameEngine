@@ -99,9 +99,9 @@ namespace EngineCore::UI {
 		const char* name,
 		const char* description,
 		std::vector<std::string> inputs,
-		std::string defaultValue)
+		unsigned int defaultValue)
 	{
-		return StyleAttribute(name, description, defaultValue, inputs,
+		return StyleAttribute(name, description, inputs[defaultValue], inputs,
 			[](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				std::string s = FormatUtils::toLowerCase(val);
 				if (size_t index; AttributeHelper::ListContains(styleAtt->GetInputs(), s, index))
