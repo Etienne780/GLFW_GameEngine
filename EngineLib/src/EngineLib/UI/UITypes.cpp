@@ -412,7 +412,7 @@ namespace EngineCore::UI {
         return m_unitTypes.size();
     }
     
-    const char* StyleValue::GetReadableTypeName(const std::type_info& type) {
+    std::string StyleValue::GetReadableTypeName(const std::type_info& type) {
         if (type == typeid(int)) return "int";
         if (type == typeid(float)) return "float";
         if (type == typeid(Vector2)) return "Vector2";

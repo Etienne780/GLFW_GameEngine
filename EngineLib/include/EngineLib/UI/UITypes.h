@@ -324,9 +324,9 @@ namespace EngineCore::UI {
         /**
         * @brief Helper function that returns a readable type name for type_info.
         * @param type Type information.
-        * @return C-string representing the readable type name.
+        * @return std::string representing the readable type name.
         */
-        static const char* GetReadableTypeName(const std::type_info& type);
+        static std::string GetReadableTypeName(const std::type_info& type);
     };
 
 }
