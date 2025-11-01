@@ -1212,7 +1212,7 @@ namespace EngineCore::UI {
         for (auto& child : siblings) {
             // ignors this element 
             if (child->GetID() != this->m_id) {
-                totalSize += child->m_desiredPixelSize + child->m_borderSize + child->m_margin;
+                totalSize += child->m_desiredPixelSize + child->m_margin;
             }
         }
         return totalSize;
@@ -1234,19 +1234,19 @@ namespace EngineCore::UI {
     }
 
     void ElementBase::CalculateDesiredPixels() {
-        int borderX = 0, borderY = 0;
+        float borderX = 0, borderY = 0;
         if (m_borderType == 1) {
             borderX = m_borderSize.y + m_borderSize.w;
             borderY = m_borderSize.x + m_borderSize.z;
         }
 
         if (m_sizeUnits[0] != StyleUnit::Unit::Percent_A)
-            m_desiredPixelSize.x = StyleUnit::EvaluateSizeUnit(m_desiredSize.x, m_sizeUnits[0], *this);
+            m_desiredPixelSize.x = StyleUnit::EvaluateSizeUnit(m_desiredSize.x + borderX, m_sizeUnits[0], *this);
         else
             m_desiredPixelSize.x = 0;
 
         if (m_sizeUnits[1] != StyleUnit::Unit::Percent_A)
-            m_desiredPixelSize.y = StyleUnit::EvaluateSizeUnit(m_desiredSize.y, m_sizeUnits[1], *this);
+            m_desiredPixelSize.y = StyleUnit::EvaluateSizeUnit(m_desiredSize.y + borderY, m_sizeUnits[1], *this);
         else
             m_desiredPixelSize.y = 0;
     }
