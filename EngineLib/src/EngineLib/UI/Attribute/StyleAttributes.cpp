@@ -166,7 +166,7 @@ namespace {
         Attribute::borderType,
         "Sets the border type for this element",
         { "inner", "outer" },
-        0
+        1
     );
 
     const StyleAttribute Duration = AttributeHelper::MakeSimpleNumberAttribute(
