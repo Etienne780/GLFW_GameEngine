@@ -102,14 +102,14 @@ namespace EngineCore::UI {
 		unsigned int defaultValue)
 	{
 		return StyleAttribute(name, description, inputs[defaultValue], inputs,
-			[](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
+			[defaultValue](const StyleAttribute* styleAtt, const std::string& val) -> StyleValue {
 				std::string s = FormatUtils::toLowerCase(val);
 				if (size_t index; AttributeHelper::ListContains(styleAtt->GetInputs(), s, index))
 					return StyleValue(static_cast<int>(index), StyleUnit::Unit::Unknown);
 
 				Log::Warn("StyleAttribute: {} could not calculate value, input:'{}' invalid!",
 					styleAtt->GetName(), val);
-				return StyleValue(styleAtt->GetFallbackStr());
+				return StyleValue(static_cast<int>(defaultValue), StyleUnit::Unit::Unknown);
 			}
 		);
 	}
