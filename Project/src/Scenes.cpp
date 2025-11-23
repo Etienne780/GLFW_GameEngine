@@ -49,6 +49,25 @@ void SetupUI() {
 	style4->Set(Attribute::backgroundColor, "#b0b000");
 	style4->Set(State::Hovered, Attribute::backgroundColor, "#ffff00");
 
+	auto test = Style::Create("Test");
+	test->Set(Attribute::backgroundColor, "#cf00cf");
+	test->Set(Attribute::width, "100px");
+	test->Set(Attribute::height, "100px");
+	test->Set(Attribute::borderSize, "20px");
+	test->Set(Attribute::borderType, "outer");
+
+	UI::Begin<Panel>(container); {
+		UI::Begin<Panel>(defaultStyleRow); {
+
+			UI::Add<Panel>(style1);
+			UI::Add<Panel>(style2);
+
+		}
+	}
+	UI::End();
+
+	return;
+
 	UI::SetDebug(true);
 	UI::Begin<Panel>(container); {
 

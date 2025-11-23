@@ -191,7 +191,7 @@ namespace EngineCore::UI {
         switch (m_align)
         {
         case EngineCore::UI::Flex::LayoutAlign::Start:
-            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f) + m_marginStart;
+            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f);
 
         case EngineCore::UI::Flex::LayoutAlign::Center:
             if (m_isMajorAxis) {
@@ -207,16 +207,16 @@ namespace EngineCore::UI {
         case EngineCore::UI::Flex::LayoutAlign::End:
             if (m_isMajorAxis) {
                 if (elementIndex == 0)
-                    return m_parentSize - elementSize - m_marginEnd;
+                    return m_parentSize - elementSize;
                 return previousEndPos - previousEndSize;
             }
             else {
                 // Minor axis: align relative to parent
-                return m_parentSize - elementSize - m_marginEnd;
+                return m_parentSize - elementSize;
             }
 
         case EngineCore::UI::Flex::LayoutAlign::Stretch:
-            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f) + m_marginStart;
+            return previousEndPos + (m_isMajorAxis ? previousEndSize : 0.0f);
 
         case EngineCore::UI::Flex::LayoutAlign::SpaceEvenly:
             if (m_isMajorAxis && siblingCount > 1) {
@@ -239,7 +239,7 @@ namespace EngineCore::UI {
 
     float FlexLayoutCalculator::AxisLayout::CalculateSize(size_t stretchCount, size_t avaibleStretchCount) const {
         if (m_wrap)
-            return m_desired + m_borderStart + m_borderEnd;
+            return m_desired;
 
         float result = m_desired;
 
@@ -265,8 +265,7 @@ namespace EngineCore::UI {
             }
         }
 
-        // Add border, remove margin (margin affects only position)
-        return std::max(result + m_borderStart + m_borderEnd, 0.0f);
+        return std::max(result, 0.0f);
     }
 
 }

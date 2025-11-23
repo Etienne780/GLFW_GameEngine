@@ -361,7 +361,7 @@ namespace EngineCore::UI {
         Vector2 m_layoutPosition{ 0.0f, 0.0f };
         // Local rotation
         Vector3 m_rotation{ 0.0f, 0.0f, 0.0f };
-        // Calculated final size of the element including, border (content + border)
+        // Calculated final size of the element including, border (content + outer-border + margin)
         Vector2 m_layoutSize{ 0.0f, 0.0f };
         Vector2 m_minSize{ 0.0f, 0.0f };
         Vector2 m_maxSize{ FLT_MAX, FLT_MAX };

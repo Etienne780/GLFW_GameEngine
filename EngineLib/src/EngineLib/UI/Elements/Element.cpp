@@ -491,6 +491,7 @@ namespace EngineCore::UI {
 
     void ElementBase::SetBorderType(int type) {
         m_borderType = type;
+        MarkTransDirtyParent();
     }
 
     void ElementBase::SetMargin(const Vector4& mar) {
@@ -666,8 +667,8 @@ namespace EngineCore::UI {
     Vector2 ElementBase::GetContentSize() {
         Vector2 size = GetLocalSize();
         return Vector2(
-            size.x - m_borderSize.y - m_borderSize.w,
-            size.y - m_borderSize.x - m_borderSize.z
+            size.x,
+            size.y
         );
     }
 
@@ -686,16 +687,16 @@ namespace EngineCore::UI {
     Vector2 ElementBase::GetSizeWithBorder() {
         Vector2 size = GetLocalSize();
         return Vector2(
-            size.x + m_borderSize.y + m_borderSize.w, // left + right
-            size.y + m_borderSize.x + m_borderSize.z  // top + bottom
+            size.x, // left + right
+            size.y  // top + bottom
         );
     }
 
     Vector2 ElementBase::GetMarginSize() {
         Vector2 bordered = GetSizeWithBorder();
         return Vector2(
-            bordered.x + m_margin.y + m_margin.w, // left + right
-            bordered.y + m_margin.x + m_margin.z  // top + bottom
+            bordered.x, // left + right
+            bordered.y  // top + bottom
         );
     }
 
@@ -894,8 +895,6 @@ namespace EngineCore::UI {
             m_layoutSize = s_gridCalculator.CalculateSize(this);
             break;
         case LayoutType::None:
-            m_padding.Set(0, 0, 0, 0);
-            m_margin.Set(0, 0, 0, 0);
             break;
         }
 
@@ -918,20 +917,19 @@ namespace EngineCore::UI {
             ConversionUtils::ToRadians(m_rotation.z + parentRotation.z)
         };
 
-        // m_borderSize;
         m_worldTransform = Scale(
-            m_layoutSize.x, 
-            m_layoutSize.y, 1.0f
+            m_layoutSize.x - (m_margin.y + m_margin.w), 
+            m_layoutSize.y - (m_margin.z + m_margin.x), 1.0f
         );
         MakeRotateXYZ(m_worldTransform, radians);
         MakeTranslate(m_worldTransform, 
-            m_layoutPosition.x + parentPosition.x + m_margin.y,
+            m_layoutPosition.x + parentPosition.x + m_margin.w,
             m_layoutPosition.y + parentPosition.y + m_margin.x, 0.0f);
 
 #ifndef NDEBUG
         m_worldTransformDebug = Scale(
-            m_layoutSize.x + m_margin.y + m_margin.w, 
-            m_layoutSize.y + m_margin.x + m_margin.z, 1.0f
+            m_layoutSize.x, 
+            m_layoutSize.y, 1.0f
         );
 
         MakeRotateXYZ(m_worldTransformDebug, radians);
@@ -990,11 +988,8 @@ namespace EngineCore::UI {
         m_sboDebug.SetParam("uMarginSize", m_margin);
         m_sboDebug.SetParam("uBorderSize", m_borderSize);
         m_sboDebug.SetParam("uPaddingSize", m_padding);
-        // total size (in px) = margin + border + padding + content
-        m_sboDebug.SetParam("uSize", Vector2(
-            m_layoutSize.x + m_margin.y + m_margin.w + m_padding.y + m_padding.w,
-            m_layoutSize.y + m_margin.x + m_margin.z + m_padding.x + m_padding.z)
-        );
+        // total size (in px) = margin + outer-border + content
+        m_sboDebug.SetParam("uSize", m_layoutSize);
 
         m_cmdDebug.renderLayerID = renderLayerID;
         m_cmdDebug.modelMatrix = &m_worldTransformDebug;
@@ -1212,7 +1207,7 @@ namespace EngineCore::UI {
         for (auto& child : siblings) {
             // ignors this element 
             if (child->GetID() != this->m_id) {
-                totalSize += child->m_desiredPixelSize + child->m_margin;
+                totalSize += child->m_desiredPixelSize;
             }
         }
         return totalSize;
@@ -1227,7 +1222,7 @@ namespace EngineCore::UI {
         for (auto& child : siblings) {
             // ignors this element 
             if (child->GetID() != this->m_id) {
-                totalSize += child->m_layoutSize + child->m_borderSize + child->m_margin;
+                totalSize += child->m_layoutSize;
             }
         }
         return totalSize;
@@ -1241,12 +1236,12 @@ namespace EngineCore::UI {
         }
 
         if (m_sizeUnits[0] != StyleUnit::Unit::Percent_A)
-            m_desiredPixelSize.x = StyleUnit::EvaluateSizeUnit(m_desiredSize.x + borderX, m_sizeUnits[0], *this);
+            m_desiredPixelSize.x = StyleUnit::EvaluateSizeUnit(m_desiredSize.x, m_sizeUnits[0], *this) + borderX + m_margin.y + m_margin.w;
         else
             m_desiredPixelSize.x = 0;
 
         if (m_sizeUnits[1] != StyleUnit::Unit::Percent_A)
-            m_desiredPixelSize.y = StyleUnit::EvaluateSizeUnit(m_desiredSize.y + borderY, m_sizeUnits[1], *this);
+            m_desiredPixelSize.y = StyleUnit::EvaluateSizeUnit(m_desiredSize.y, m_sizeUnits[1], *this) + borderY + m_margin.x + m_margin.z;
         else
             m_desiredPixelSize.y = 0;
     }
