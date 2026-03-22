@@ -12,16 +12,15 @@ This project is a personal learning exercise aimed at gaining a deeper understan
 
 ## Goals
 
-- Learn how to build a minimal game engine framework  
-- Understand how to separate engine logic from game logic  
-- Practice modern C++ design (templates, smart pointers, virtual functions)
+- Learn how to build a minimal game engine framework    
+- Practice C++ (templates, smart pointers, virtual functions)
 
 ## Build Requirements
 
 - Tested with **C++20**
 - **GLFW**
 - **GLAD**
-- **Visual Studio 2022** (must learn **CMake**)
+- **Visual Studio 2022** (must learn a build system)
 
 ## External Dependencies
 
